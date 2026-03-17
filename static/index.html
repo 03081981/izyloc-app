@@ -1,0 +1,1618 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+<meta name="theme-color" content="#1565E8"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="default"/>
+<title>iZY'lOC — Gestão de Carteira de Locação</title>
+<link rel="manifest" href="/static/manifest.json"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/signature_pad/4.1.7/signature_pad.umd.min.js"></script>
+
+<style>
+:root {
+  --blue: #1565E8;
+  --blue-dark: #0D4FC4;
+  --blue-light: #EBF1FD;
+  --blue-mid: #3B82F6;
+  --black: #0A0A0A;
+  --text: #1A1A1A;
+  --text-muted: #6B7280;
+  --text-light: #9CA3AF;
+  --bg: #F5F6FA;
+  --white: #FFFFFF;
+  --border: #E5E7EB;
+  --border-light: #F3F4F6;
+  --danger: #DC2626;
+  --warning: #D97706;
+  --success: #16A34A;
+  --radius-sm: 8px;
+  --radius: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+  --shadow-xs: 0 1px 3px rgba(0,0,0,0.06);
+  --shadow: 0 2px 8px rgba(0,0,0,0.08);
+  --shadow-md: 0 4px 16px rgba(0,0,0,0.10);
+  --shadow-lg: 0 8px 32px rgba(0,0,0,0.14);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+html, body { height: 100%; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ─── TOP BAR ─── */
+.topbar {
+  background: var(--white);
+  padding: 0 16px;
+  height: 56px;
+  display: none;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky; top: 0; z-index: 200;
+  border-bottom: 1px solid var(--border);
+  box-shadow: var(--shadow-xs);
+}
+.topbar.visible { display: flex; }
+.topbar-back {
+  width: 36px; height: 36px;
+  display: flex; align-items: center; justify-content: center;
+  background: none; border: none; cursor: pointer;
+  border-radius: 50%; color: var(--blue); font-size: 22px;
+  transition: background 0.15s;
+}
+.topbar-back:hover { background: var(--blue-light); }
+.topbar-back.hidden { visibility: hidden; pointer-events: none; }
+.topbar-center { position: absolute; left: 50%; transform: translateX(-50%);
+                  font-size: 16px; font-weight: 600; color: var(--text); }
+.topbar-logo-small {
+  font-size: 20px; font-weight: 900; letter-spacing: -0.5px;
+}
+.topbar-logo-small .blue { color: var(--blue); }
+.topbar-logo-small .black { color: var(--black); }
+.topbar-right { width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; }
+.btn-logout {
+  background: none; border: none; cursor: pointer; color: var(--text-muted);
+  font-size: 18px; width: 36px; height: 36px; display: flex; align-items: center;
+  justify-content: center; border-radius: 50%;
+}
+.btn-logout:hover { background: var(--border-light); }
+
+/* ─── PAGES ─── */
+.page { display: none; }
+.page.active { display: block; }
+
+/* ─── AUTH PAGE ─── */
+.auth-page {
+  min-height: 100vh;
+  background: var(--white);
+  display: flex; flex-direction: column;
+}
+.auth-hero {
+  background: var(--blue);
+  padding: 60px 24px 48px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.auth-hero::before {
+  content: '';
+  position: absolute; bottom: -40px; left: -40px; right: -40px;
+  height: 80px;
+  background: var(--white);
+  border-radius: 50%;
+}
+.auth-hero-logo {
+  font-size: 52px; font-weight: 900; letter-spacing: -2px;
+  line-height: 1; margin-bottom: 8px;
+}
+.auth-hero-logo .blue-part { color: var(--white); }
+.auth-hero-logo .black-part { color: rgba(0,0,0,0.75); }
+.auth-hero-tagline {
+  font-size: 13px; color: rgba(255,255,255,0.85); margin-top: 6px; font-weight: 500;
+}
+.auth-body {
+  flex: 1; padding: 32px 24px; max-width: 420px; margin: 0 auto; width: 100%;
+}
+.auth-title { font-size: 24px; font-weight: 700; color: var(--text); margin-bottom: 6px; }
+.auth-subtitle { font-size: 14px; color: var(--text-muted); margin-bottom: 28px; }
+
+/* ─── FORMS ─── */
+.form-group { margin-bottom: 16px; }
+.form-label {
+  display: block; font-size: 13px; font-weight: 600;
+  color: var(--text); margin-bottom: 6px;
+}
+.form-input {
+  width: 100%; padding: 13px 16px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius); font-size: 15px; color: var(--text);
+  background: var(--white); outline: none; transition: border 0.2s, box-shadow 0.2s;
+  -webkit-appearance: none;
+}
+.form-input:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(21,101,232,0.12); }
+.form-input::placeholder { color: var(--text-light); }
+select.form-input {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' viewBox='0 0 24 24'%3E%3Cpath stroke='%236B7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 12px center;
+  padding-right: 38px; cursor: pointer;
+}
+textarea.form-input { resize: vertical; min-height: 88px; line-height: 1.5; }
+.form-input-icon { position: relative; }
+.form-input-icon .form-input { padding-right: 42px; }
+.form-input-icon .icon { position: absolute; right: 14px; top: 50%; transform: translateY(-50%);
+                           color: var(--text-muted); cursor: pointer; font-size: 16px; }
+
+/* ─── BUTTONS ─── */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 7px;
+  padding: 13px 22px; border-radius: var(--radius); font-size: 15px; font-weight: 600;
+  cursor: pointer; border: none; transition: all 0.18s; text-decoration: none;
+  letter-spacing: -0.1px; white-space: nowrap;
+}
+.btn-primary { background: var(--blue); color: white; }
+.btn-primary:hover { background: var(--blue-dark); transform: translateY(-1px); box-shadow: var(--shadow-md); }
+.btn-primary:active { transform: translateY(0); box-shadow: none; }
+.btn-black { background: var(--black); color: white; }
+.btn-black:hover { background: #222; transform: translateY(-1px); }
+.btn-outline { background: white; color: var(--blue); border: 1.5px solid var(--blue); }
+.btn-outline:hover { background: var(--blue-light); }
+.btn-ghost { background: none; border: none; color: var(--text-muted); padding: 8px 12px; font-size: 14px; cursor: pointer; }
+.btn-danger { background: var(--danger); color: white; }
+.btn-danger:hover { background: #b91c1c; }
+.btn-full { width: 100%; }
+.btn:disabled { opacity: 0.45; cursor: not-allowed; transform: none !important; box-shadow: none !important; }
+.btn-sm { padding: 8px 14px; font-size: 13px; border-radius: var(--radius-sm); }
+.btn-icon { padding: 10px; border-radius: var(--radius); }
+.btn-link { background: none; border: none; color: var(--blue); font-size: 14px;
+             cursor: pointer; font-weight: 500; padding: 0; text-decoration: underline; }
+
+/* ─── AUTH TABS ─── */
+.auth-tabs {
+  display: flex; background: var(--bg); border-radius: var(--radius); padding: 3px; margin-bottom: 24px;
+}
+.auth-tab {
+  flex: 1; padding: 10px; text-align: center; border-radius: 10px;
+  font-size: 14px; font-weight: 600; cursor: pointer; color: var(--text-muted);
+  border: none; background: none; transition: all 0.2s;
+}
+.auth-tab.active { background: white; color: var(--blue); box-shadow: var(--shadow-xs); }
+
+/* ─── DASHBOARD ─── */
+.dash-header {
+  background: var(--white);
+  padding: 20px 16px 0;
+  border-bottom: 1px solid var(--border);
+}
+.dash-logo {
+  font-size: 30px; font-weight: 900; letter-spacing: -1px; line-height: 1; margin-bottom: 2px;
+}
+.dash-logo .blue { color: var(--blue); }
+.dash-logo .black { color: var(--black); }
+.dash-tagline { font-size: 11px; color: var(--text-muted); font-weight: 500; margin-bottom: 16px; }
+.dash-nav-tabs {
+  display: flex; gap: 0; border-bottom: none; margin: 0 -16px;
+}
+.dash-nav-tab {
+  flex: 1; padding: 10px 8px; text-align: center; font-size: 13px; font-weight: 600;
+  color: var(--text-muted); cursor: pointer; border-bottom: 2px solid transparent;
+  border-top: none; border-left: none; border-right: none;
+  background: none; transition: all 0.2s;
+}
+.dash-nav-tab.active { color: var(--blue); border-bottom-color: var(--blue); }
+
+/* ─── STATS ─── */
+.stats-section { padding: 16px; }
+.stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 0; }
+.stat-card {
+  background: var(--white); border-radius: var(--radius); padding: 16px 14px;
+  box-shadow: var(--shadow-xs); border: 1px solid var(--border);
+}
+.stat-number { font-size: 32px; font-weight: 800; color: var(--blue); line-height: 1; }
+.stat-label { font-size: 12px; color: var(--text-muted); margin-top: 4px; font-weight: 500; }
+
+/* ─── SECTION ─── */
+.section { padding: 0 16px 16px; }
+.section-header {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 16px 0 10px;
+}
+.section-title { font-size: 17px; font-weight: 700; color: var(--text); }
+.section-link { font-size: 13px; color: var(--blue); font-weight: 600; cursor: pointer;
+                 background: none; border: none; }
+
+/* ─── INSPECTION CARDS ─── */
+.insp-card {
+  background: var(--white); border-radius: var(--radius); padding: 14px 16px;
+  box-shadow: var(--shadow-xs); margin-bottom: 8px; cursor: pointer;
+  border: 1px solid var(--border); transition: all 0.18s;
+  display: flex; align-items: center; gap: 12px;
+}
+.insp-card:hover { box-shadow: var(--shadow-md); transform: translateY(-1px); }
+.insp-card:active { transform: translateY(0); box-shadow: var(--shadow-xs); }
+.insp-card-icon {
+  width: 44px; height: 44px; border-radius: var(--radius-sm);
+  background: var(--blue-light); display: flex; align-items: center;
+  justify-content: center; font-size: 20px; flex-shrink: 0;
+}
+.insp-card-body { flex: 1; min-width: 0; }
+.insp-card-addr { font-size: 14px; font-weight: 600; color: var(--text); white-space: nowrap;
+                    overflow: hidden; text-overflow: ellipsis; }
+.insp-card-type { font-size: 13px; color: var(--blue); font-weight: 600; margin-top: 1px; }
+.insp-card-date { font-size: 12px; color: var(--text-muted); margin-top: 1px; }
+.insp-card-right { flex-shrink: 0; display: flex; flex-direction: column;
+                    align-items: flex-end; gap: 4px; }
+.insp-card-doc { font-size: 20px; color: var(--text-light); }
+.status-dot { width: 8px; height: 8px; border-radius: 50%; }
+.status-dot.rascunho { background: var(--warning); }
+.status-dot.assinado { background: var(--blue); }
+.status-dot.concluido { background: var(--success); }
+
+/* ─── FAB ─── */
+.fab {
+  position: fixed; bottom: 24px; right: 24px; z-index: 100;
+  width: 56px; height: 56px; border-radius: 50%;
+  background: var(--blue); color: white; border: none; cursor: pointer;
+  font-size: 26px; display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 4px 20px rgba(21,101,232,0.4);
+  transition: all 0.2s;
+}
+.fab:hover { background: var(--blue-dark); transform: scale(1.05); }
+
+/* ─── PAGE CONTENT ─── */
+.page-content { padding: 16px; }
+.page-scroll { padding-bottom: 100px; }
+
+/* ─── CARDS ─── */
+.card {
+  background: var(--white); border-radius: var(--radius); padding: 16px;
+  box-shadow: var(--shadow-xs); border: 1px solid var(--border); margin-bottom: 12px;
+}
+.card-title { font-size: 15px; font-weight: 700; color: var(--text); margin-bottom: 12px; }
+.card-subtitle { font-size: 12px; color: var(--text-muted); margin-bottom: 12px; }
+
+/* ─── SECTION HEADER CHIP ─── */
+.chip-header {
+  background: var(--blue); color: white; border-radius: var(--radius-sm);
+  padding: 8px 14px; font-size: 13px; font-weight: 700; margin-bottom: 12px;
+  text-transform: uppercase; letter-spacing: 0.5px;
+}
+
+/* ─── WIZARD STEPPER ─── */
+.stepper { display: flex; align-items: center; margin-bottom: 24px; }
+.stepper-step { display: flex; align-items: center; flex: 1; }
+.stepper-step:last-child { flex: 0; }
+.step-circle {
+  width: 28px; height: 28px; border-radius: 50%; border: 2px solid var(--border);
+  background: var(--white); color: var(--text-muted); font-size: 12px; font-weight: 700;
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  transition: all 0.2s;
+}
+.step-circle.active { background: var(--blue); border-color: var(--blue); color: white; }
+.step-circle.done { background: var(--blue); border-color: var(--blue); color: white; }
+.step-line { flex: 1; height: 2px; background: var(--border); margin: 0 4px; }
+.step-line.done { background: var(--blue); }
+
+/* ─── PROPERTY HEADER ─── */
+.prop-header {
+  background: var(--white); border-bottom: 1px solid var(--border);
+  padding: 20px 16px;
+}
+.prop-name { font-size: 22px; font-weight: 800; color: var(--text); }
+.prop-addr { font-size: 14px; color: var(--text-muted); margin-top: 2px; }
+
+/* ─── ROOM CARDS ─── */
+.room-card {
+  background: var(--white); border-radius: var(--radius); border: 1px solid var(--border);
+  margin-bottom: 10px; overflow: hidden; box-shadow: var(--shadow-xs);
+}
+.room-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 16px; cursor: pointer;
+}
+.room-header-left { display: flex; align-items: center; gap: 10px; }
+.room-icon { width: 36px; height: 36px; background: var(--blue-light); border-radius: var(--radius-sm);
+              display: flex; align-items: center; justify-content: center; font-size: 18px; }
+.room-name { font-size: 15px; font-weight: 700; color: var(--text); }
+.room-count { font-size: 12px; color: var(--text-muted); }
+.room-chevron { color: var(--text-muted); font-size: 12px; transition: transform 0.2s; }
+.room-chevron.open { transform: rotate(180deg); }
+.room-body { padding: 0 16px 16px; border-top: 1px solid var(--border-light); }
+
+/* ─── ITEM CARDS ─── */
+.item-card {
+  background: var(--bg); border-radius: var(--radius-sm); padding: 12px;
+  margin-bottom: 8px; border: 1px solid var(--border);
+}
+.item-header { display: flex; align-items: center; justify-content: space-between; }
+.item-name { font-size: 14px; font-weight: 600; color: var(--text); }
+.item-photo { width: 100%; border-radius: var(--radius-sm); max-height: 200px;
+               object-fit: cover; margin-top: 8px; }
+.ai-badge {
+  display: inline-block; background: var(--blue-light); color: var(--blue);
+  font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 20px;
+  text-transform: uppercase; letter-spacing: 0.5px; margin-top: 8px;
+}
+.ai-description { font-size: 13px; color: var(--text); margin-top: 6px; line-height: 1.55; }
+.item-actions { display: flex; gap: 6px; margin-top: 10px; flex-wrap: wrap; }
+
+/* ─── PHOTO UPLOAD ─── */
+.photo-zone {
+  border: 2px dashed var(--blue); border-radius: var(--radius);
+  padding: 24px 16px; text-align: center; cursor: pointer;
+  background: var(--blue-light); transition: all 0.2s; margin-bottom: 12px;
+}
+.photo-zone:hover { background: #dce9fc; }
+.photo-zone-icon { font-size: 32px; margin-bottom: 8px; }
+.photo-zone-text { font-size: 13px; color: var(--blue); font-weight: 600; }
+.photo-zone-sub { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+
+/* ─── ROOM SELECT CHECKBOXES ─── */
+.room-check-list { display: flex; flex-direction: column; gap: 8px; }
+.room-check-item {
+  display: flex; align-items: center; gap: 12px; padding: 14px 16px;
+  background: var(--white); border: 1.5px solid var(--border); border-radius: var(--radius);
+  cursor: pointer; transition: all 0.15s;
+}
+.room-check-item.checked { border-color: var(--blue); background: var(--blue-light); }
+.check-box {
+  width: 22px; height: 22px; border-radius: 50%; border: 2px solid var(--border);
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  background: white; transition: all 0.15s;
+}
+.check-box.checked { background: var(--blue); border-color: var(--blue); }
+.check-box.checked::after { content: '✓'; color: white; font-size: 13px; font-weight: 700; }
+.room-check-label { font-size: 15px; font-weight: 600; color: var(--text); }
+
+/* ─── SIGNATURE ─── */
+.sig-block { background: var(--white); border-radius: var(--radius); border: 1px solid var(--border);
+              margin-bottom: 12px; overflow: hidden; }
+.sig-block-header { padding: 12px 16px; border-bottom: 1px solid var(--border);
+                     display: flex; justify-content: space-between; align-items: center; }
+.sig-block-title { font-size: 14px; font-weight: 700; color: var(--text); }
+.sig-block-name { font-size: 13px; color: var(--text-muted); }
+.sig-block-status { font-size: 13px; font-weight: 600; color: var(--blue); }
+.sig-block-status.done { color: var(--success); }
+.sig-canvas-wrap { background: #FAFAFA; }
+.sig-canvas { width: 100%; height: 140px; display: block; touch-action: none; }
+.sig-actions {
+  display: flex; gap: 8px; padding: 10px 14px;
+  border-top: 1px solid var(--border); background: var(--white);
+}
+
+/* ─── CONDITION BADGES ─── */
+.cond { display: inline-block; padding: 2px 10px; border-radius: 20px;
+         font-size: 11px; font-weight: 700; }
+.cond-otimo, .cond-bom { background: #D1FAE5; color: #065F46; }
+.cond-regular { background: #FEF3C7; color: #92400E; }
+.cond-ruim, .cond-pessimo { background: #FEE2E2; color: #991B1B; }
+.cond-default { background: var(--border-light); color: var(--text-muted); }
+
+/* ─── TOAST ─── */
+.toast {
+  position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+  background: var(--black); color: white; padding: 12px 22px; border-radius: 24px;
+  font-size: 14px; font-weight: 500; z-index: 9999; max-width: 88vw; text-align: center;
+  box-shadow: var(--shadow-lg); animation: toastIn 0.25s ease;
+}
+.toast.success { background: var(--success); }
+.toast.error { background: var(--danger); }
+.toast.warning { background: var(--warning); }
+@keyframes toastIn {
+  from { transform: translateX(-50%) translateY(16px); opacity: 0; }
+  to   { transform: translateX(-50%) translateY(0); opacity: 1; }
+}
+
+/* ─── LOADING ─── */
+.loading-overlay {
+  position: fixed; inset: 0; background: rgba(255,255,255,0.8);
+  backdrop-filter: blur(4px); z-index: 9000;
+  display: none; align-items: center; justify-content: center;
+}
+.loading-box { text-align: center; }
+.spinner {
+  width: 44px; height: 44px; border: 3.5px solid var(--border);
+  border-top-color: var(--blue); border-radius: 50%;
+  animation: spin 0.7s linear infinite; margin: 0 auto 12px;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.loading-text { font-size: 14px; color: var(--text); font-weight: 600; }
+
+/* ─── MODAL ─── */
+.modal-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.45); z-index: 500;
+  display: none; align-items: flex-end; justify-content: center;
+}
+.modal-overlay.open { display: flex; }
+.modal {
+  background: var(--white); border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+  padding: 8px 20px 32px; width: 100%; max-width: 520px; max-height: 88vh; overflow-y: auto;
+  animation: slideModal 0.28s ease;
+}
+@keyframes slideModal { from { transform: translateY(100%); } to { transform: translateY(0); } }
+.modal-handle { width: 38px; height: 4px; background: var(--border); border-radius: 2px;
+                 margin: 10px auto 18px; }
+.modal-title { font-size: 18px; font-weight: 700; color: var(--text); margin-bottom: 16px; }
+
+/* ─── EMPTY STATE ─── */
+.empty-state { text-align: center; padding: 56px 24px; }
+.empty-icon { font-size: 64px; margin-bottom: 16px; }
+.empty-title { font-size: 20px; font-weight: 700; color: var(--text); margin-bottom: 8px; }
+.empty-text { font-size: 14px; color: var(--text-muted); margin-bottom: 24px; line-height: 1.5; }
+
+/* ─── UTILS ─── */
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.flex { display: flex; align-items: center; }
+.flex-between { display: flex; justify-content: space-between; align-items: center; }
+.gap-8 { gap: 8px; } .gap-10 { gap: 10px; } .gap-12 { gap: 12px; }
+.mt-4 { margin-top: 4px; } .mt-8 { margin-top: 8px; } .mt-12 { margin-top: 12px; }
+.mt-16 { margin-top: 16px; } .mt-24 { margin-top: 24px; }
+.mb-8 { margin-bottom: 8px; } .mb-12 { margin-bottom: 12px; } .mb-16 { margin-bottom: 16px; }
+.pb-100 { padding-bottom: 100px; }
+.text-center { text-align: center; }
+.text-small { font-size: 13px; color: var(--text-muted); }
+.text-muted { color: var(--text-muted); }
+.text-blue { color: var(--blue); }
+.divider { border: none; border-top: 1px solid var(--border); margin: 16px 0; }
+.tag { display: inline-block; padding: 4px 10px; border-radius: 20px;
+        font-size: 12px; font-weight: 600; }
+.tag-entrada { background: #EBF1FD; color: var(--blue); }
+.tag-saida { background: #FEE2E2; color: var(--danger); }
+.tag-rascunho { background: #FEF3C7; color: #92400E; }
+.tag-assinado { background: #DBEAFE; color: #1E40AF; }
+.tag-concluido { background: #D1FAE5; color: #065F46; }
+
+@media (min-width: 600px) {
+  .page-content { max-width: 560px; margin: 0 auto; }
+  .stats-grid { grid-template-columns: repeat(4, 1fr); }
+  .fab { right: calc(50% - 280px + 24px); }
+}
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div class="topbar" id="topbar">
+  <button class="topbar-back hidden" id="btn-back" onclick="goBack()">‹</button>
+  <div class="topbar-center" id="topbar-title">
+    <span class="topbar-logo-small">
+      <span class="blue">iZY'</span><span class="black">lOC</span>
+    </span>
+  </div>
+  <div class="topbar-right">
+    <button class="btn-logout" id="btn-logout" onclick="logout()" title="Sair" style="display:none">⏏</button>
+  </div>
+</div>
+
+<!-- ══════════════ PAGE: AUTH ══════════════ -->
+<div class="page active" id="page-auth">
+  <div class="auth-page">
+    <div class="auth-hero">
+      <div class="auth-hero-logo">
+        <span class="blue-part">iZY'</span><span class="black-part">lOC</span>
+      </div>
+      <div class="auth-hero-tagline">Gestão de Carteira de Locação</div>
+    </div>
+    <div class="auth-body">
+      <div class="auth-tabs">
+        <button class="auth-tab active" onclick="switchAuthTab('login', this)">Entrar</button>
+        <button class="auth-tab" onclick="switchAuthTab('register', this)">Criar conta</button>
+      </div>
+
+      <!-- LOGIN -->
+      <div id="form-login">
+        <div class="form-group">
+          <label class="form-label">E-mail</label>
+          <input type="email" id="login-email" class="form-input" placeholder="seu@email.com" autocomplete="email"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Senha</label>
+          <input type="password" id="login-password" class="form-input" placeholder="••••••••" autocomplete="current-password"/>
+        </div>
+        <button class="btn btn-primary btn-full" style="margin-top:4px" onclick="doLogin()">Entrar</button>
+        <div class="text-center mt-12">
+          <span class="text-small">Não tem conta? </span>
+          <button class="btn-link" onclick="switchAuthTabByName('register')">Cadastrar-se</button>
+        </div>
+      </div>
+
+      <!-- REGISTER -->
+      <div id="form-register" style="display:none">
+        <div class="form-group">
+          <label class="form-label">Nome Completo</label>
+          <input type="text" id="reg-name" class="form-input" placeholder="Seu nome completo" autocomplete="name"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Imobiliária / Empresa</label>
+          <input type="text" id="reg-company" class="form-input" placeholder="Nome da sua empresa"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label">E-mail</label>
+          <input type="email" id="reg-email" class="form-input" placeholder="seu@email.com" autocomplete="email"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label">CRECI <span class="text-muted">(opcional)</span></label>
+          <input type="text" id="reg-creci" class="form-input" placeholder="Número do CRECI"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Senha</label>
+          <input type="password" id="reg-password" class="form-input" placeholder="Mínimo 6 caracteres" autocomplete="new-password"/>
+        </div>
+        <button class="btn btn-primary btn-full" style="margin-top:4px" onclick="doRegister()">Criar Conta</button>
+        <div class="text-center mt-12">
+          <span class="text-small">Já tem conta? </span>
+          <button class="btn-link" onclick="switchAuthTabByName('login')">Entrar</button>
+        </div>
+      </div>
+    </div>
+    <div class="text-center pb-100" style="padding:16px">
+      <span class="text-small">iZY'lOC © 2024 · Todos os direitos reservados</span>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ PAGE: DASHBOARD ══════════════ -->
+<div class="page" id="page-dashboard">
+  <!-- Header -->
+  <div class="dash-header">
+    <div class="flex-between">
+      <div>
+        <div class="dash-logo">
+          <span class="blue">iZY'</span><span class="black">lOC</span>
+        </div>
+        <div class="dash-tagline">Gestão de Carteira de Locação</div>
+      </div>
+      <button class="btn btn-sm btn-black" onclick="showNewInspection()">+ Nova Vistoria</button>
+    </div>
+    <div class="dash-nav-tabs">
+      <button class="dash-nav-tab active" onclick="switchDashTab('vistorias', this)">Vistorias</button>
+      <button class="dash-nav-tab" onclick="switchDashTab('estatisticas', this)">Estatísticas</button>
+      <button class="dash-nav-tab" onclick="switchDashTab('perfil', this)">Perfil</button>
+    </div>
+  </div>
+
+  <!-- TAB: Vistorias -->
+  <div id="dash-tab-vistorias">
+    <div class="section pb-100">
+      <div class="section-header">
+        <div class="section-title">Vistorias recentes</div>
+      </div>
+      <div id="inspections-list">
+        <div class="empty-state">
+          <div class="empty-icon">🏠</div>
+          <div class="empty-title">Nenhuma vistoria</div>
+          <div class="empty-text">Toque em "Nova Vistoria" para registrar sua primeira vistoria de imóvel.</div>
+          <button class="btn btn-primary" onclick="showNewInspection()">Começar agora</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB: Estatísticas -->
+  <div id="dash-tab-estatisticas" style="display:none">
+    <div class="stats-section">
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-number" id="stat-total">0</div>
+          <div class="stat-label">Total de vistorias</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number" id="stat-mes">0</div>
+          <div class="stat-label">Este mês</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number" id="stat-andamento">0</div>
+          <div class="stat-label">Em andamento</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number" id="stat-concluido">0</div>
+          <div class="stat-label">Concluídas</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB: Perfil -->
+  <div id="dash-tab-perfil" style="display:none">
+    <div class="page-content mt-16">
+      <div class="card">
+        <div class="card-title" id="profile-name">—</div>
+        <div class="text-small" id="profile-company">—</div>
+        <div class="text-small mt-4" id="profile-email">—</div>
+      </div>
+      <button class="btn btn-outline btn-full mt-8" onclick="logout()">Sair da conta</button>
+    </div>
+  </div>
+
+  <!-- FAB -->
+  <button class="fab" onclick="showNewInspection()">+</button>
+</div>
+
+<!-- ══════════════ PAGE: WIZARD ══════════════ -->
+<div class="page" id="page-wizard">
+  <div class="page-content page-scroll">
+    <!-- Stepper -->
+    <div class="stepper" id="wizard-stepper" style="margin-bottom:20px">
+      <div class="step-circle active" id="sc-1">1</div>
+      <div class="step-line" id="sl-1"></div>
+      <div class="step-circle" id="sc-2">2</div>
+      <div class="step-line" id="sl-2"></div>
+      <div class="step-circle" id="sc-3">3</div>
+      <div class="step-line" id="sl-3"></div>
+      <div class="step-circle" id="sc-4">4</div>
+    </div>
+
+    <!-- STEP 1: Imóvel -->
+    <div id="wstep-1">
+      <div class="chip-header">🏠 Dados do Imóvel</div>
+      <div class="card">
+        <div class="form-group">
+          <label class="form-label">Tipo de Vistoria *</label>
+          <select id="wi-type" class="form-input">
+            <option value="entrada">Entrada — início da locação</option>
+            <option value="saida">Saída — fim da locação</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Endereço Completo do Imóvel *</label>
+          <input type="text" id="wi-address" class="form-input" placeholder="Rua, nº, bairro, cidade – UF"/>
+        </div>
+        <div class="grid-2">
+          <div class="form-group">
+            <label class="form-label">Tipo</label>
+            <select id="wi-prop-type" class="form-input">
+              <option>Apartamento</option><option>Casa</option>
+              <option>Comercial</option><option>Sala</option>
+              <option>Galpão</option><option>Outro</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Área (m²)</label>
+            <input type="number" id="wi-area" class="form-input" placeholder="65"/>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Data da Vistoria</label>
+          <input type="date" id="wi-date" class="form-input"/>
+        </div>
+      </div>
+
+      <div class="chip-header">🏢 Dados da Imobiliária</div>
+      <div class="card">
+        <div class="form-group">
+          <label class="form-label">Nome da Imobiliária</label>
+          <input type="text" id="wi-imob-name" class="form-input" placeholder="Nome da imobiliária"/>
+        </div>
+        <div class="grid-2">
+          <div class="form-group">
+            <label class="form-label">CNPJ</label>
+            <input type="text" id="wi-imob-cnpj" class="form-input" placeholder="00.000.000/0001-00"/>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Telefone</label>
+            <input type="text" id="wi-imob-phone" class="form-input" placeholder="(00) 00000-0000"/>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Endereço da Imobiliária</label>
+          <input type="text" id="wi-imob-address" class="form-input" placeholder="Endereço"/>
+        </div>
+      </div>
+      <button class="btn btn-primary btn-full" onclick="wizardNext(1)">Próximo →</button>
+    </div>
+
+    <!-- STEP 2: Partes -->
+    <div id="wstep-2" style="display:none">
+      <div class="chip-header">👤 Locador (Proprietário)</div>
+      <div class="card">
+        <div class="form-group">
+          <label class="form-label">Nome Completo</label>
+          <input type="text" id="wi-loc-name" class="form-input" placeholder="Nome do proprietário"/>
+        </div>
+        <div class="grid-2">
+          <div class="form-group"><label class="form-label">CPF</label>
+            <input type="text" id="wi-loc-cpf" class="form-input" placeholder="000.000.000-00"/></div>
+          <div class="form-group"><label class="form-label">RG</label>
+            <input type="text" id="wi-loc-rg" class="form-input" placeholder="0000000"/></div>
+        </div>
+        <div class="grid-2">
+          <div class="form-group"><label class="form-label">Telefone</label>
+            <input type="text" id="wi-loc-phone" class="form-input" placeholder="(00) 00000-0000"/></div>
+          <div class="form-group"><label class="form-label">E-mail</label>
+            <input type="email" id="wi-loc-email" class="form-input" placeholder="email@ex.com"/></div>
+        </div>
+      </div>
+
+      <div class="chip-header">👤 Locatário (Inquilino)</div>
+      <div class="card">
+        <div class="form-group">
+          <label class="form-label">Nome Completo</label>
+          <input type="text" id="wi-locat-name" class="form-input" placeholder="Nome do inquilino"/>
+        </div>
+        <div class="grid-2">
+          <div class="form-group"><label class="form-label">CPF</label>
+            <input type="text" id="wi-locat-cpf" class="form-input" placeholder="000.000.000-00"/></div>
+          <div class="form-group"><label class="form-label">RG</label>
+            <input type="text" id="wi-locat-rg" class="form-input" placeholder="0000000"/></div>
+        </div>
+        <div class="grid-2">
+          <div class="form-group"><label class="form-label">Telefone</label>
+            <input type="text" id="wi-locat-phone" class="form-input" placeholder="(00) 00000-0000"/></div>
+          <div class="form-group"><label class="form-label">E-mail</label>
+            <input type="email" id="wi-locat-email" class="form-input" placeholder="email@ex.com"/></div>
+        </div>
+      </div>
+
+      <div class="chip-header">🏅 Corretor / Vistoriador</div>
+      <div class="card">
+        <div class="form-group"><label class="form-label">Nome Completo</label>
+          <input type="text" id="wi-corr-name" class="form-input" placeholder="Nome do corretor"/></div>
+        <div class="grid-2">
+          <div class="form-group"><label class="form-label">CRECI</label>
+            <input type="text" id="wi-corr-creci" class="form-input" placeholder="CRECI"/></div>
+          <div class="form-group"><label class="form-label">Telefone</label>
+            <input type="text" id="wi-corr-phone" class="form-input" placeholder="(00) 00000-0000"/></div>
+        </div>
+        <div class="form-group"><label class="form-label">E-mail</label>
+          <input type="email" id="wi-corr-email" class="form-input" placeholder="email@ex.com"/></div>
+      </div>
+
+      <div class="flex gap-10">
+        <button class="btn btn-outline" style="flex:0 0 auto" onclick="wizardBack(2)">←</button>
+        <button class="btn btn-primary btn-full" onclick="wizardNext(2)">Próximo →</button>
+      </div>
+    </div>
+
+    <!-- STEP 3: Ambientes -->
+    <div id="wstep-3" style="display:none">
+      <div class="chip-header">🏠 Selecione os Ambientes</div>
+      <div class="card">
+        <p class="text-small mb-12">Selecione os ambientes do imóvel para vistoriar. Você poderá adicionar itens e fotos em cada um.</p>
+        <div class="room-check-list" id="room-check-list">
+          <div class="room-check-item" onclick="toggleRoomCheck(this, 'Sala de Estar')">
+            <div class="check-box"></div><span class="room-check-label">Sala de Estar</span>
+          </div>
+          <div class="room-check-item" onclick="toggleRoomCheck(this, 'Cozinha')">
+            <div class="check-box"></div><span class="room-check-label">Cozinha</span>
+          </div>
+          <div class="room-check-item" onclick="toggleRoomCheck(this, 'Quarto 1')">
+            <div class="check-box"></div><span class="room-check-label">Quarto 1</span>
+          </div>
+          <div class="room-check-item" onclick="toggleRoomCheck(this, 'Quarto 2')">
+            <div class="check-box"></div><span class="room-check-label">Quarto 2</span>
+          </div>
+          <div class="room-check-item" onclick="toggleRoomCheck(this, 'Banheiro')">
+            <div class="check-box"></div><span class="room-check-label">Banheiro</span>
+          </div>
+          <div class="room-check-item" onclick="toggleRoomCheck(this, 'Área de Serviço')">
+            <div class="check-box"></div><span class="room-check-label">Área de Serviço</span>
+          </div>
+          <div class="room-check-item" onclick="toggleRoomCheck(this, 'Garagem')">
+            <div class="check-box"></div><span class="room-check-label">Garagem</span>
+          </div>
+          <div class="room-check-item" onclick="toggleRoomCheck(this, 'Varanda')">
+            <div class="check-box"></div><span class="room-check-label">Varanda</span>
+          </div>
+        </div>
+        <div class="flex gap-8 mt-12">
+          <input type="text" id="custom-room" class="form-input" placeholder="Outro ambiente..."/>
+          <button class="btn btn-outline btn-sm" onclick="addCustomRoom()" style="white-space:nowrap">+ Adicionar</button>
+        </div>
+      </div>
+      <div class="flex gap-10">
+        <button class="btn btn-outline" style="flex:0 0 auto" onclick="wizardBack(3)">←</button>
+        <button class="btn btn-primary btn-full" onclick="wizardNext(3)">Iniciar Vistoria →</button>
+      </div>
+    </div>
+
+    <!-- STEP 4: Vistoria por ambiente -->
+    <div id="wstep-4" style="display:none">
+      <div class="chip-header" id="step4-header">📸 Registre os Itens</div>
+      <p class="text-small mb-12">Adicione fotos de cada item. A IA irá gerar a descrição automaticamente.</p>
+      <div id="rooms-list"></div>
+      <div class="form-group mt-8">
+        <label class="form-label">Observações Gerais</label>
+        <textarea id="wi-obs" class="form-input" placeholder="Observações adicionais sobre a vistoria..."></textarea>
+      </div>
+      <div class="flex gap-10 mt-8">
+        <button class="btn btn-outline" style="flex:0 0 auto" onclick="wizardBack(4)">←</button>
+        <button class="btn btn-primary btn-full" onclick="wizardNext(4)">Ir para Assinaturas →</button>
+      </div>
+    </div>
+
+    <!-- STEP 5: Assinaturas -->
+    <div id="wstep-5" style="display:none">
+      <div class="chip-header">✍️ Assinaturas</div>
+      <p class="text-small mb-12">Cada parte assina na tela do dispositivo para confirmar a vistoria.</p>
+
+      <div class="sig-block">
+        <div class="sig-block-header">
+          <div>
+            <div class="sig-block-title">Locador / Proprietário</div>
+            <div class="sig-block-name" id="signame-locador">—</div>
+          </div>
+          <div class="sig-block-status" id="sigstatus-locador">Pendente</div>
+        </div>
+        <div class="sig-canvas-wrap">
+          <canvas class="sig-canvas" id="canvas-locador"></canvas>
+        </div>
+        <div class="sig-actions">
+          <button class="btn btn-ghost btn-sm" onclick="clearSig('locador')">Limpar</button>
+          <button class="btn btn-primary btn-sm" style="flex:1" onclick="saveSig('locador')">✓ Confirmar</button>
+        </div>
+      </div>
+
+      <div class="sig-block">
+        <div class="sig-block-header">
+          <div>
+            <div class="sig-block-title">Locatário / Inquilino</div>
+            <div class="sig-block-name" id="signame-locatario">—</div>
+          </div>
+          <div class="sig-block-status" id="sigstatus-locatario">Pendente</div>
+        </div>
+        <div class="sig-canvas-wrap">
+          <canvas class="sig-canvas" id="canvas-locatario"></canvas>
+        </div>
+        <div class="sig-actions">
+          <button class="btn btn-ghost btn-sm" onclick="clearSig('locatario')">Limpar</button>
+          <button class="btn btn-primary btn-sm" style="flex:1" onclick="saveSig('locatario')">✓ Confirmar</button>
+        </div>
+      </div>
+
+      <div class="sig-block">
+        <div class="sig-block-header">
+          <div>
+            <div class="sig-block-title">Corretor / Vistoriador</div>
+            <div class="sig-block-name" id="signame-corretor">—</div>
+          </div>
+          <div class="sig-block-status" id="sigstatus-corretor">Pendente</div>
+        </div>
+        <div class="sig-canvas-wrap">
+          <canvas class="sig-canvas" id="canvas-corretor"></canvas>
+        </div>
+        <div class="sig-actions">
+          <button class="btn btn-ghost btn-sm" onclick="clearSig('corretor')">Limpar</button>
+          <button class="btn btn-primary btn-sm" style="flex:1" onclick="saveSig('corretor')">✓ Confirmar</button>
+        </div>
+      </div>
+
+      <button class="btn btn-primary btn-full mt-16" onclick="generatePDF()" id="btn-gen-pdf">
+        📄 Gerar Laudo PDF
+      </button>
+      <button class="btn btn-ghost btn-full mt-8" onclick="wizardBack(5)">← Voltar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ PAGE: DETAIL ══════════════ -->
+<div class="page" id="page-detail">
+  <div class="page-content page-scroll" id="detail-content"></div>
+</div>
+
+<!-- ══════════════ MODAL: ADD ITEM ══════════════ -->
+<div class="modal-overlay" id="modal-add-item" onclick="closeModal('modal-add-item')">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-handle"></div>
+    <div class="modal-title">Adicionar Item</div>
+    <p class="text-small mb-12">Digite ou selecione o que deseja vistoriar:</p>
+    <div class="form-group">
+      <input type="text" id="new-item-name" class="form-input" placeholder="Nome do item (ex: Piso, Janela...)"/>
+    </div>
+    <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px">
+      <button class="btn btn-outline btn-sm" onclick="qi('Piso')">Piso</button>
+      <button class="btn btn-outline btn-sm" onclick="qi('Parede')">Parede</button>
+      <button class="btn btn-outline btn-sm" onclick="qi('Teto')">Teto</button>
+      <button class="btn btn-outline btn-sm" onclick="qi('Janela')">Janela</button>
+      <button class="btn btn-outline btn-sm" onclick="qi('Porta')">Porta</button>
+      <button class="btn btn-outline btn-sm" onclick="qi('Torneira')">Torneira</button>
+      <button class="btn btn-outline btn-sm" onclick="qi('Tomada')">Tomada</button>
+      <button class="btn btn-outline btn-sm" onclick="qi('Armário')">Armário</button>
+      <button class="btn btn-outline btn-sm" onclick="qi('Pia')">Pia</button>
+      <button class="btn btn-outline btn-sm" onclick="qi('Chuveiro')">Chuveiro</button>
+      <button class="btn btn-outline btn-sm" onclick="qi('Vaso Sanitário')">Vaso</button>
+      <button class="btn btn-outline btn-sm" onclick="qi('Rodapé')">Rodapé</button>
+      <button class="btn btn-outline btn-sm" onclick="qi('Interruptor')">Interruptor</button>
+      <button class="btn btn-outline btn-sm" onclick="qi('Vidro')">Vidro</button>
+    </div>
+    <input type="hidden" id="modal-room-id"/>
+    <button class="btn btn-primary btn-full" onclick="addItem()">Adicionar</button>
+  </div>
+</div>
+
+<!-- LOADING -->
+<div class="loading-overlay" id="loading">
+  <div class="loading-box">
+    <div class="spinner"></div>
+    <div class="loading-text" id="loading-text">Aguarde...</div>
+  </div>
+</div>
+
+<script>
+// ─── STATE ────────────────────────────────────────────────────────────────────
+const API = '';
+let currentUser = null, currentToken = null, currentInspection = null;
+let pageHistory = [], signaturePads = {};
+let wizard = { step: 1, inspectionId: null, selectedRooms: [] };
+
+// ─── BOOT ─────────────────────────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', () => {
+  const tok = localStorage.getItem('izylo_token');
+  const usr = localStorage.getItem('izylo_user');
+  if (tok && usr) {
+    currentToken = tok; currentUser = JSON.parse(usr);
+    showPage('page-dashboard'); loadDashboard();
+  } else {
+    showPage('page-auth');
+  }
+  document.getElementById('wi-date').value = new Date().toISOString().split('T')[0];
+});
+
+// ─── NAVIGATION ───────────────────────────────────────────────────────────────
+function showPage(id, title = null, addHistory = true) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+
+  const topbar = document.getElementById('topbar');
+  const btnBack = document.getElementById('btn-back');
+  const btnLogout = document.getElementById('btn-logout');
+  const titleEl = document.getElementById('topbar-title');
+
+  if (id === 'page-auth') {
+    topbar.classList.remove('visible');
+    return;
+  }
+
+  topbar.classList.add('visible');
+  btnLogout.style.display = (id === 'page-dashboard') ? 'flex' : 'none';
+
+  if (id === 'page-dashboard') {
+    btnBack.classList.add('hidden');
+    titleEl.innerHTML = '<span class="topbar-logo-small"><span class="blue">iZY\'</span><span class="black">lOC</span></span>';
+  } else {
+    btnBack.classList.remove('hidden');
+    titleEl.textContent = title || '';
+  }
+
+  if (addHistory && id !== 'page-auth') pageHistory.push(id);
+}
+
+function goBack() {
+  if (pageHistory.length > 1) {
+    pageHistory.pop();
+    const prev = pageHistory[pageHistory.length - 1];
+    const noHistory = !addHistory;
+    showPage(prev, null, false);
+    if (prev === 'page-dashboard') loadDashboard();
+  } else {
+    showPage('page-dashboard', null, false);
+    loadDashboard();
+  }
+}
+
+// ─── API ──────────────────────────────────────────────────────────────────────
+async function api(method, path, body = null, isMultipart = false) {
+  const h = {};
+  if (currentToken) h['Authorization'] = `Bearer ${currentToken}`;
+  if (!isMultipart) h['Content-Type'] = 'application/json';
+  const opts = { method, headers: h };
+  if (body) opts.body = isMultipart ? body : JSON.stringify(body);
+  try {
+    const r = await fetch(API + path, opts);
+    if (r.headers.get('Content-Type')?.includes('pdf'))
+      return { blob: await r.blob(), ok: r.ok };
+    const d = await r.json();
+    return { ...d, ok: r.ok };
+  } catch { return { error: 'Erro de conexão', ok: false }; }
+}
+
+// ─── TOAST & LOADING ──────────────────────────────────────────────────────────
+let toastTO;
+function toast(msg, type = '') {
+  document.getElementById('toast-el')?.remove();
+  const el = document.createElement('div');
+  el.id = 'toast-el'; el.className = `toast ${type}`; el.textContent = msg;
+  document.body.appendChild(el);
+  clearTimeout(toastTO); toastTO = setTimeout(() => el.remove(), 3500);
+}
+function showLoading(t='Aguarde...') {
+  document.getElementById('loading-text').textContent = t;
+  document.getElementById('loading').style.display = 'flex';
+}
+function hideLoading() { document.getElementById('loading').style.display = 'none'; }
+
+// ─── AUTH ─────────────────────────────────────────────────────────────────────
+function switchAuthTab(tab, btn) {
+  document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('form-login').style.display = tab === 'login' ? 'block' : 'none';
+  document.getElementById('form-register').style.display = tab === 'register' ? 'block' : 'none';
+}
+function switchAuthTabByName(tab) {
+  const tabs = document.querySelectorAll('.auth-tab');
+  const idx = tab === 'login' ? 0 : 1;
+  switchAuthTab(tab, tabs[idx]);
+}
+
+async function doLogin() {
+  const email = document.getElementById('login-email').value.trim();
+  const password = document.getElementById('login-password').value;
+  if (!email || !password) return toast('Preencha e-mail e senha', 'error');
+  showLoading('Entrando...');
+  const r = await api('POST', '/api/auth/login', { email, password });
+  hideLoading();
+  if (!r.ok) return toast(r.error || 'E-mail ou senha incorretos', 'error');
+  saveSession(r);
+  showPage('page-dashboard', null, false);
+  loadDashboard();
+}
+
+async function doRegister() {
+  const name = document.getElementById('reg-name').value.trim();
+  const company_name = document.getElementById('reg-company').value.trim();
+  const email = document.getElementById('reg-email').value.trim();
+  const creci = document.getElementById('reg-creci').value.trim();
+  const password = document.getElementById('reg-password').value;
+  if (!name || !company_name || !email || !password)
+    return toast('Preencha todos os campos obrigatórios', 'error');
+  if (password.length < 6) return toast('Senha deve ter no mínimo 6 caracteres', 'error');
+  showLoading('Criando conta...');
+  const r = await api('POST', '/api/auth/register', { name, company_name, email, creci, password });
+  hideLoading();
+  if (!r.ok) return toast(r.error || 'Erro ao cadastrar', 'error');
+  saveSession(r);
+  showPage('page-dashboard', null, false);
+  loadDashboard();
+  toast('Conta criada! Bem-vindo ao iZY\'lOC 🎉', 'success');
+}
+
+function saveSession(r) {
+  currentToken = r.token; currentUser = r.user;
+  localStorage.setItem('izylo_token', r.token);
+  localStorage.setItem('izylo_user', JSON.stringify(r.user));
+}
+
+function logout() {
+  if (!confirm('Deseja sair da sua conta?')) return;
+  currentToken = null; currentUser = null;
+  localStorage.removeItem('izylo_token'); localStorage.removeItem('izylo_user');
+  pageHistory = [];
+  showPage('page-auth');
+}
+
+// ─── DASHBOARD ────────────────────────────────────────────────────────────────
+function switchDashTab(tab, btn) {
+  document.querySelectorAll('.dash-nav-tab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('[id^="dash-tab-"]').forEach(el => el.style.display = 'none');
+  document.getElementById(`dash-tab-${tab}`).style.display = 'block';
+}
+
+async function loadDashboard() {
+  if (!currentUser) return;
+
+  // Perfil
+  document.getElementById('profile-name').textContent = currentUser.name;
+  document.getElementById('profile-company').textContent = currentUser.company_name || '';
+  document.getElementById('profile-email').textContent = currentUser.email;
+
+  const r = await api('GET', '/api/inspections');
+  if (!r.ok) return;
+  const list = r.inspections || [];
+
+  const now = new Date(), m = now.getMonth(), y = now.getFullYear();
+  document.getElementById('stat-total').textContent = list.length;
+  document.getElementById('stat-mes').textContent = list.filter(i => {
+    const d = new Date(i.created_at); return d.getMonth()===m && d.getFullYear()===y;
+  }).length;
+  document.getElementById('stat-andamento').textContent =
+    list.filter(i => i.status==='rascunho' || i.status==='assinado').length;
+  document.getElementById('stat-concluido').textContent =
+    list.filter(i => i.status==='concluido').length;
+
+  const container = document.getElementById('inspections-list');
+  if (!list.length) {
+    container.innerHTML = `<div class="empty-state">
+      <div class="empty-icon">🏠</div>
+      <div class="empty-title">Nenhuma vistoria ainda</div>
+      <div class="empty-text">Registre sua primeira vistoria tocando no botão + abaixo.</div>
+      <button class="btn btn-primary" onclick="showNewInspection()">+ Nova Vistoria</button>
+    </div>`; return;
+  }
+
+  container.innerHTML = list.slice(0,30).map(i => {
+    const tipo = i.type === 'entrada' ? 'Entrada' : 'Saída';
+    const icon = i.type === 'entrada' ? '🔑' : '📦';
+    return `<div class="insp-card" onclick="openInspection('${i.id}')">
+      <div class="insp-card-icon">${icon}</div>
+      <div class="insp-card-body">
+        <div class="insp-card-addr">${i.property_address || 'Endereço não informado'}</div>
+        <div class="insp-card-type">${tipo}</div>
+        <div class="insp-card-date">${i.inspection_date || formatDate(i.created_at)}</div>
+      </div>
+      <div class="insp-card-right">
+        <div class="insp-card-doc">📄</div>
+        <div class="status-dot ${i.status}"></div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function formatDate(str) {
+  try { return new Date(str).toLocaleDateString('pt-BR'); } catch { return str; }
+}
+
+// ─── NEW INSPECTION WIZARD ────────────────────────────────────────────────────
+function showNewInspection() {
+  wizard = { step: 1, inspectionId: null, selectedRooms: [] };
+  // Reset forms
+  ['wi-address','wi-area','wi-imob-name','wi-imob-cnpj','wi-imob-phone','wi-imob-address',
+   'wi-loc-name','wi-loc-cpf','wi-loc-rg','wi-loc-phone','wi-loc-email',
+   'wi-locat-name','wi-locat-cpf','wi-locat-rg','wi-locat-phone','wi-locat-email',
+   'wi-corr-name','wi-corr-creci','wi-corr-phone','wi-corr-email','wi-obs'
+  ].forEach(id => { const el = document.getElementById(id); if(el) el.value=''; });
+
+  // Reset room checkboxes
+  document.querySelectorAll('.room-check-item').forEach(el => {
+    el.classList.remove('checked');
+    const box = el.querySelector('.check-box');
+    if (box) { box.classList.remove('checked'); box.innerHTML = ''; }
+  });
+
+  document.getElementById('wi-date').value = new Date().toISOString().split('T')[0];
+  document.getElementById('rooms-list').innerHTML = '';
+  gotoWStep(1);
+  showPage('page-wizard', 'Nova Vistoria');
+}
+
+function gotoWStep(step) {
+  wizard.step = step;
+  // Stepper visual
+  for (let i=1; i<=4; i++) {
+    const c = document.getElementById(`sc-${i}`);
+    if (!c) continue;
+    c.classList.remove('active','done');
+    if (i < step) c.classList.add('done');
+    else if (i === step) c.classList.add('active');
+    const l = document.getElementById(`sl-${i}`);
+    if (l) { l.classList.toggle('done', i < step); }
+  }
+  // Show/hide steps (steps 4 and 5 map to wstep-4 and wstep-5)
+  [1,2,3,4,5].forEach(n => {
+    const el = document.getElementById(`wstep-${n}`);
+    if (el) el.style.display = (n === step) ? 'block' : 'none';
+  });
+  window.scrollTo(0,0);
+}
+
+async function wizardNext(step) {
+  if (step === 1) {
+    if (!document.getElementById('wi-address').value.trim())
+      return toast('Endereço do imóvel é obrigatório', 'error');
+    const dateVal = document.getElementById('wi-date').value;
+    const fmtDate = dateVal ? new Date(dateVal+'T12:00:00').toLocaleDateString('pt-BR') : '';
+    showLoading('Criando vistoria...');
+    const r = await api('POST', '/api/inspections', {
+      type: document.getElementById('wi-type').value,
+      property_address: document.getElementById('wi-address').value.trim(),
+      property_type: document.getElementById('wi-prop-type').value,
+      property_area: document.getElementById('wi-area').value,
+      inspection_date: fmtDate,
+      imobiliaria_name: document.getElementById('wi-imob-name').value.trim(),
+      imobiliaria_cnpj: document.getElementById('wi-imob-cnpj').value.trim(),
+      imobiliaria_phone: document.getElementById('wi-imob-phone').value.trim(),
+      imobiliaria_address: document.getElementById('wi-imob-address').value.trim(),
+    });
+    hideLoading();
+    if (!r.ok) return toast(r.error || 'Erro ao criar vistoria', 'error');
+    wizard.inspectionId = r.id; currentInspection = r;
+    gotoWStep(2);
+  }
+  else if (step === 2) {
+    showLoading('Salvando...');
+    const r = await api('PUT', `/api/inspections/${wizard.inspectionId}`, {
+      locador_name: v('wi-loc-name'), locador_cpf: v('wi-loc-cpf'),
+      locador_rg: v('wi-loc-rg'), locador_phone: v('wi-loc-phone'), locador_email: v('wi-loc-email'),
+      locatario_name: v('wi-locat-name'), locatario_cpf: v('wi-locat-cpf'),
+      locatario_rg: v('wi-locat-rg'), locatario_phone: v('wi-locat-phone'), locatario_email: v('wi-locat-email'),
+      corretor_name: v('wi-corr-name'), corretor_creci: v('wi-corr-creci'),
+      corretor_phone: v('wi-corr-phone'), corretor_email: v('wi-corr-email'),
+    });
+    hideLoading();
+    if (!r.ok) return toast(r.error || 'Erro ao salvar', 'error');
+    currentInspection = r;
+    gotoWStep(3);
+  }
+  else if (step === 3) {
+    if (!wizard.selectedRooms.length)
+      return toast('Selecione ao menos um ambiente', 'error');
+    gotoWStep(4);
+    document.getElementById('step4-header').textContent =
+      `📸 Registre os Itens (${wizard.selectedRooms.length} ambientes)`;
+    await buildRoomsList();
+  }
+  else if (step === 4) {
+    if (v('wi-obs')) {
+      await api('PUT', `/api/inspections/${wizard.inspectionId}`, { observations: v('wi-obs') });
+    }
+    gotoWStep(5);
+    initSigPads();
+  }
+}
+
+function v(id) {
+  const el = document.getElementById(id);
+  return el ? el.value.trim() : '';
+}
+
+function wizardBack(step) { gotoWStep(step - 1); }
+
+// ─── ROOM SELECTION ───────────────────────────────────────────────────────────
+function toggleRoomCheck(el, name) {
+  const box = el.querySelector('.check-box');
+  const isChecked = el.classList.contains('checked');
+  el.classList.toggle('checked', !isChecked);
+  box.classList.toggle('checked', !isChecked);
+  box.innerHTML = !isChecked ? '✓' : '';
+  if (!isChecked) {
+    if (!wizard.selectedRooms.includes(name)) wizard.selectedRooms.push(name);
+  } else {
+    wizard.selectedRooms = wizard.selectedRooms.filter(r => r !== name);
+  }
+}
+
+function addCustomRoom() {
+  const input = document.getElementById('custom-room');
+  const name = input.value.trim();
+  if (!name) return;
+  if (wizard.selectedRooms.includes(name)) return toast('Ambiente já adicionado', 'warning');
+  wizard.selectedRooms.push(name);
+  // Add to list
+  const list = document.getElementById('room-check-list');
+  const el = document.createElement('div');
+  el.className = 'room-check-item checked';
+  el.onclick = function() { toggleRoomCheck(this, name); };
+  el.innerHTML = `<div class="check-box checked">✓</div><span class="room-check-label">${name}</span>`;
+  list.appendChild(el);
+  input.value = '';
+  toast(`"${name}" adicionado`, 'success');
+}
+
+// ─── BUILD ROOMS IN STEP 4 ────────────────────────────────────────────────────
+async function buildRoomsList() {
+  const container = document.getElementById('rooms-list');
+  container.innerHTML = '';
+  for (const name of wizard.selectedRooms) {
+    showLoading(`Criando ambiente: ${name}...`);
+    const r = await api('POST', `/api/inspections/${wizard.inspectionId}/rooms`, { name });
+    hideLoading();
+    if (!r.ok) continue;
+    renderRoomCard(r);
+  }
+}
+
+function renderRoomCard(room) {
+  const container = document.getElementById('rooms-list');
+  const el = document.createElement('div');
+  el.className = 'room-card'; el.id = `room-${room.id}`;
+
+  const roomIcons = {
+    'Sala de Estar': '🛋', 'Cozinha': '🍳', 'Quarto 1': '🛏', 'Quarto 2': '🛏',
+    'Banheiro': '🚿', 'Área de Serviço': '🧺', 'Garagem': '🚗', 'Varanda': '🌿',
+  };
+  const icon = roomIcons[room.name] || '🏠';
+
+  el.innerHTML = `
+    <div class="room-header" onclick="toggleRoom('${room.id}')">
+      <div class="room-header-left">
+        <div class="room-icon">${icon}</div>
+        <div>
+          <div class="room-name">${room.name}</div>
+          <div class="room-count" id="rc-${room.id}">Nenhum item</div>
+        </div>
+      </div>
+      <span class="room-chevron" id="chevron-${room.id}">▼</span>
+    </div>
+    <div class="room-body" id="rbody-${room.id}">
+      <div id="items-${room.id}" style="margin-top:12px"></div>
+      <button class="btn btn-outline btn-sm btn-full mt-8" onclick="openAddItemModal('${room.id}')">
+        + Adicionar Item
+      </button>
+    </div>`;
+  container.appendChild(el);
+}
+
+function toggleRoom(id) {
+  const body = document.getElementById(`rbody-${id}`);
+  const chev = document.getElementById(`chevron-${id}`);
+  const open = body.style.display !== 'none';
+  body.style.display = open ? 'none' : 'block';
+  chev.classList.toggle('open', !open);
+}
+
+// ─── ITEMS ────────────────────────────────────────────────────────────────────
+function openAddItemModal(roomId) {
+  document.getElementById('modal-room-id').value = roomId;
+  document.getElementById('new-item-name').value = '';
+  document.getElementById('modal-add-item').classList.add('open');
+}
+function closeModal(id) {
+  document.getElementById(id).classList.remove('open');
+}
+function qi(name) { document.getElementById('new-item-name').value = name; }
+
+async function addItem() {
+  const name = document.getElementById('new-item-name').value.trim();
+  const roomId = document.getElementById('modal-room-id').value;
+  if (!name) return toast('Digite o nome do item', 'error');
+  showLoading('Adicionando...');
+  const r = await api('POST', `/api/rooms/${roomId}/items`, { name });
+  hideLoading();
+  if (!r.ok) return toast(r.error || 'Erro', 'error');
+  closeModal('modal-add-item');
+  renderItemCard(r, roomId);
+  updateRoomCount(roomId);
+  toast(`"${name}" adicionado`, 'success');
+}
+
+function renderItemCard(item, roomId) {
+  const container = document.getElementById(`items-${roomId}`);
+  const el = document.createElement('div');
+  el.className = 'item-card'; el.id = `item-${item.id}`;
+  el.innerHTML = `
+    <div class="item-header">
+      <span class="item-name">${item.name}</span>
+      <span class="cond cond-default" id="cond-${item.id}">—</span>
+    </div>
+    <div id="photo-preview-${item.id}"></div>
+    <div id="ai-box-${item.id}" style="display:none">
+      <div class="ai-badge">✦ Descrição gerada pela IA</div>
+      <div class="ai-description" id="ai-desc-${item.id}"></div>
+    </div>
+    <div id="edit-box-${item.id}" style="display:none">
+      <textarea class="form-input mt-8" id="edit-text-${item.id}" rows="3"></textarea>
+      <button class="btn btn-primary btn-sm mt-8" onclick="saveDesc('${item.id}')">Salvar</button>
+    </div>
+    <div class="item-actions">
+      <label class="btn btn-primary btn-sm" style="cursor:pointer;font-size:13px">
+        📷 Adicionar Foto
+        <input type="file" accept="image/*" capture="environment" style="display:none"
+          onchange="uploadPhoto('${item.id}', this)"/>
+      </label>
+      <button class="btn btn-ghost btn-sm" onclick="toggleEdit('${item.id}')">✏️</button>
+      <button class="btn btn-ghost btn-sm" style="color:var(--danger)" onclick="deleteItem('${item.id}','${roomId}')">🗑</button>
+    </div>`;
+  container.appendChild(el);
+}
+
+function updateRoomCount(roomId) {
+  const n = document.getElementById(`items-${roomId}`)?.children.length || 0;
+  const el = document.getElementById(`rc-${roomId}`);
+  if (el) el.textContent = `${n} ${n===1?'item':'itens'}`;
+}
+
+aqync function uploadPhoto(itemId, input) {
+  if (!input.files?.[0]) return;
+  const file = input.files[0];
+  const reader = new FileReader();
+  reader.onload = e => {
+    const prev = document.getElementById(`photo-preview-${itemId}`);
+    if (prev) prev.innerHTML = `<img src="${e.target.result}" class="item-photo" alt="foto"/>`;
+  };
+  reader.readAsDataURL(file);
+
+  showLoading('🤖 A IA está analisando a foto...\nAguarde alguns segundos');
+  const fd = new FormData(); fd.append('photo', file);
+  const r = await api('POST', `/api/items/${itemId}/photo`, fd, true);
+  hideLoading();
+
+  if (!r.ok) { toast(r.error || 'Erro ao enviar foto', 'error'); return; }
+
+  const ai = r.ai_result;
+  const condEl = document.getElementById(`cond-${itemId}`);
+  const aiBox = document.getElementById(`ai-box-${itemId}`);
+  const aiDesc = document.getElementById(`ai-desc-${itemId}`);
+
+  if (ai?.description) {
+    aiBox.style.display = 'block';
+    aiDesc.textContent = ai.description;
+    if (ai.condition && condEl) {
+      condEl.textContent = ai.condition;
+      condEl.className = `cond cond-${ai.condition.replace(/[óô]/g,'o').replace(/[éê]/g,'e')}`;
+    }
+    toast('✅ IA analisou a foto!', 'success');
+  } else if (!ai?.success) {
+    toast(ai?.description || 'Foto salva (configure a chave de IA para análise automática)', 'warning');
+  }
+}
+
+function toggleEdit(itemId) {
+  const box = document.getElementById(`edit-box-${itemId}`);
+  const desc = document.getElementById(`ai-desc-${itemId}`);
+  const textarea = document.getElementById(`edit-text-${itemId}`);
+  const show = box.style.display === 'none';
+  box.style.display = show ? 'block' : 'none';
+  if (show && textarea) textarea.value = desc?.textContent || '';
+}
+
+aqync function saveDesc(itemId) {
+  const text = document.getElementById(`edit-text-${itemId}`)?.value.trim();
+  showLoading('Salvando...');
+  const r = await api('PUT', `/api/items/${itemId}`, { manual_description: text });
+  hideLoading();
+  if (!r.ok) return toast('Erro ao salvar', 'error');
+  const aiDesc = document.getElementById(`ai-desc-${itemId}`);
+  const aiBox = document.getElementById(`ai-box-${itemId}`);
+  if (aiDesc && text) { aiDesc.textContent = text; aiBox.style.display = 'block'; }
+  document.getElementById(`edit-box-${itemId}`).style.display = 'none';
+  toast('Descrição salva!', 'success');
+}
+
+aqync function deleteItem(itemId, roomId) {
+  if (!confirm('Remover este item?')) return;
+  showLoading('Removendo...');
+  const r = await api('DELETE', `/api/items/${itemId}`);
+  hideLoading();
+  if (!r.ok) return toast('Erro ao remover', 'error');
+  document.getElementById(`item-${itemId}`)?.remove();
+  updateRoomCount(roomId);
+}
+
+// ─── SIGNATURES ───────────────────────────────────────────────────────────────
+function initSigPads() {
+  ['locador','locatario','corretor'].forEach(p => {
+    const canvas = document.getElementById(`canvas-${p}`);
+    if (!canvas) return;
+    if (signaturePads[p]) { signaturePads[p].clear(); }
+    else {
+      signaturePads[p] = new SignaturePad(canvas, {
+        backgroundColor: 'rgb(250,250,250)', penColor: '#0A0A0A', minWidth: 1.5, maxWidth: 3
+      });
+    }
+    resizeCanvas(canvas, signaturePads[p]);
+  });
+  const n = currentInspection || {};
+  if(n.locador_name) document.getElementById('signame-locador').textContent = n.locador_name;
+  if(n.locatario_name) document.getElementById('signame-locatario').textContent = n.locatario_name;
+  if(n.corretor_name) document.getElementById('signame-corretor').textContent = n.corretor_name;
+}
+
+function resizeCanvas(canvas, pad) {
+  const r = Math.max(window.devicePixelRatio||1, 1);
+  canvas.width = canvas.offsetWidth * r; canvas.height = canvas.offsetHeight * r;
+  canvas.getContext('2d').scale(r,r); if (pad) pad.clear();
+}
+
+function clearSig(party) { signaturePads[party]?.clear(); }
+
+async function saveSig(party) {
+  const pad = signaturePads[party];
+  if (!pad || pad.isEmpty()) return toast('Por favor, assine antes de confirmar', 'error');
+  const names = {
+    locador: currentInspection?.locador_name||'',
+    locatario: currentInspection?.locatario_name||'',
+    corretor: currentInspection?.corretor_name||''
+  };
+  showLoading('Salvando assinatura...');
+  const r = await api('POST', `/api/inspections/${wizard.inspectionId}/signatures`, {
+    party_type: party, party_name: names[party], signature_data: pad.toDataURL()
+  });
+  hideLoading();
+  if (!r.ok) return toast(r.error||'Erro', 'error');
+  const el = document.getElementById(`sigstatus-${party}`);
+  if (el) { el.textContent = '✓ Assinado'; el.classList.add('done'); }
+  toast(`Assinatura confirmada!`, 'success');
+}
+
+async function generatePDF() {
+  showLoading('📄 Gerando laudo PDF...');
+  const r = await api('GET', `/api/inspections/${wizard.inspectionId}/pdf`);
+  hideLoading();
+  if (r.blob) {
+    const url = URL.createObjectURL(r.blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = `iZYlOC_Laudo_${wizard.inspectionId.substring(0,8).toUpperCase()}.pdf`;
+    document.body.appendChild(a); a.click();
+    document.body.removeChild(a); URL.revokeObjectURL(url);
+    toast('✅ Laudo gerado com sucesso!', 'success');
+    setTimeout(() => { showPage('page-dashboard',null,false); loadDashboard(); }, 2000);
+  } else { toast(r.error||'Erro ao gerar PDF', 'error'); }
+}
+
+// ─── DETAIL PAGE ──────────────────────────────────────────────────────────────
+async function openInspection(id) {
+  showLoading('Carregando...');
+  const r = await api('GET', `/api/inspections/${id}`);
+  hideLoading();
+  if (!r.ok) return toast('Erro ao carregar', 'error');
+  currentInspection = r; renderDetail(r);
+  showPage('page-detail', 'Detalhes da Vistoria');
+}
+
+function renderDetail(insp) {
+  const tipo = insp.type==='entrada' ? 'Entrada' : 'Saída';
+  const rooms = insp.rooms || [];
+  const sigs = insp.signatures || [];
+
+  const roomsHtml = rooms.map(room => {
+    const items = (room.items||[]).map(item => {
+      const desc = item.manual_description || item.ai_description || '';
+      const photo = item.photo_filename
+        ? `<img src="/uploads/${item.photo_filename}" class="item-photo" alt="foto"/>` : '';
+      return `<div class="item-card">
+        <div class="item-header">
+          <span class="item-name">${item.name}</span>
+          <span class="cond cond-${(item.condition||'').replace(/[óô]/g,'o').replace(/[éê]/g,'e')||'default'}">
+            ${item.condition||'—'}
+          </span>
+        </div>
+        ${photo}
+        ${desc ? `<div class="ai-badge">✦ Descrição IA</div><div class="ai-description">${desc}</div>` : ''}
+      </div>`;
+    }).join('');
+    return `<div class="room-card">
+      <div class="room-header"><div class="room-header-left">
+        <div class="room-icon">🏠</div>
+        <div class="room-name">${room.name}</div>
+      </div></div>
+      <div class="room-body">${items||'<p class="text-small mt-8">Nenhum item</p>'}</div>
+    </div>`;
+  }).join('');
+
+  document.getElementById('detail-content').innerHTML = `
+    <div class="card mt-8">
+      <div class="flex gap-8 mb-8">
+        <span class="tag tag-${insp.type}">${tipo}</span>
+        <span class="tag tag-${insp.status}">${insp.status}</span>
+      </div>
+      <div style="font-size:17px;font-weight:800">${insp.property_address||'—'}</div>
+      <div class="text-small mt-4">${insp.property_type||''} ${insp.property_area?'· '+insp.property_area+'m²':''}</div>
+      <div class="text-small mt-2">📅 ${insp.inspection_date||'—'}</div>
+      ${insp.imobiliaria_name?`<div class="text-small mt-2">🏢 ${insp.imobiliaria_name}</div>`:''}
+    </div>
+    <div class="card">
+      <div class="card-title">Partes Envolvidas</div>
+      ${insp.locador_name?`<div class="mb-8"><div class="form-label">Locador</div><div>${insp.locador_name}</div>${insp.locador_cpf?`<div class="text-small">CPF: ${insp.locador_cpf}</div>`:''}</div>`:''}
+      ${insp.locatario_name?`<div class="mb-8"><div class="form-label">Locatário</div><div>${insp.locatario_name}</div>${insp.locatario_cpf?`<div class="text-small">CPF: ${insp.locatario_cpf}</div>`:''}</div>`:''}
+      ${insp.corretor_name?`<div><div class="form-label">Corretor</div><div>${insp.corretor_name} ${insp.corretor_creci?'· CRECI '+insp.corretor_creci:''}</div></div>`:''}
+    </div>
+    ${rooms.length?`<div style="font-size:15px;font-weight:700;margin:12px 0 8px">Ambientes (${rooms.length})</div>${roomsHtml}`:''}
+    ${sigs.length?`<div class="card"><div class="card-title">✍️ Assinaturas</div>
+      ${sigs.map(s=>`<div class="flex gap-8 mb-8"><span class="tag tag-concluido">✓</span>
+        <span class="text-small">${s.party_type} — ${s.party_name||''}</span></div>`).join('')}
+    </div>`:''}
+    <button class="btn btn-primary btn-full mt-8 mb-16" onclick="dlPDF('${insp.id}')">
+      📄 Baixar Laudo PDF
+    </button>`;
+}
+
+async function dlPDF(id) {
+  showLoading('Gerando PDF...');
+  const r = await api('GET', `/api/inspections/${id}/pdf`);
+  hideLoading();
+  if (r.blob) {
+    const url = URL.createObjectURL(r.blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = `iZYlOC_Laudo_${id.substring(0,8).toUpperCase()}.pdf`;
+    document.body.appendChild(a); a.click();
+    document.body.removeChild(a); URL.revokeObjectURL(url);
+    toast('PDF gerado!', 'success');
+  } else { toast(r.error||'Erro', 'error'); }
+}
+
+window.addEventListener('resize', () => {
+  Object.keys(signaturePads).forEach(p => {
+    const c = document.getElementById(`canvas-${p}`);
+    if (c && signaturePads[p]) resizeCanvas(c, signaturePads[p]);
+  });
+});
+</script>
+</body>
+</html>
