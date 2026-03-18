@@ -72,43 +72,48 @@ def analyze_photos(image_paths: list, item_name: str, room_name: str) -> dict:
         n = len(content)
         foto_str = "esta foto" if n == 1 else f"estas {n} fotos"
 
-        prompt = f"""Você é um vistoriador de imóveis experiente. Analise {foto_str} do item "{item_name}" no ambiente "{room_name}".
+        prompt = f"""Você é um vistoriador técnico de imóveis com mais de 15 anos de experiência em laudos imobiliários profissionais. Analise {foto_str} do item "{item_name}" no ambiente "{room_name}" e redija uma descrição técnica completa, como constaria em um laudo oficial de vistoria.
 
-Sua tarefa é identificar APENAS os defeitos e problemas VISÍVEIS na foto. Procure por:
-- Furos, buracos ou perfurações em paredes/tetos/pisos
-- Lâmpadas queimadas, faltando ou danificadas
-- Rachaduras ou trincas (em paredes, pisos, azulejos, vidros)
-- Manchas, sujeira, mofo ou marcas
-- Infiltrações, umidade ou bolhas na pintura
-- Vidros trincados ou quebrados
-- Peças faltando, soltas ou danificadas (maçanetas, fechaduras, dobradiças, etc.)
-- Ferrugem ou corrosão
-- Tinta descascando ou desgastada
-- Qualquer outro dano visível
+INSTRUÇÕES DE ANÁLISE — descreva TUDO que for visível:
 
-REGRAS IMPORTANTES:
-1. Se NÃO houver problemas visíveis → responda: "Em bom estado. Sem defeitos aparentes."
-2. Se houver problemas → descreva APENAS os problemas de forma direta e objetiva, como um laudo real
-3. NÃO descreva o que está em bom estado. Descreva SOMENTE o que está errado.
-4. Use linguagem simples e direta (não técnica demais)
-5. Exemplos de boas descrições:
-   - "Apresenta rachadura horizontal na parte superior da parede e mancha de umidade no canto inferior."
-   - "Lâmpada queimada. Tinta descascando na região do rodapé."
-   - "Vidro da janela com trinca diagonal. Maçaneta solta."
+1. CARACTERÍSTICAS GERAIS
+   - Tipo e cor da pintura (ex: tinta acrílica branca, tinta látex bege, textura grafiato, etc.)
+   - Tipo de revestimento de piso (porcelanato, cerâmica, madeira, vinílico, cimentado, etc.) e sua cor/padrão
+   - Tipo de revestimento de parede/teto quando aplicável (azulejo, gesso, reboco, etc.)
+
+2. ELEMENTOS ESPECÍFICOS DO ITEM
+   - Para esquadrias (portas/janelas): material (madeira, alumínio, PVC), cor, tipo de abertura, estado das dobradiças, fechaduras e maçanetas
+   - Para luminárias: tipo (pendente, embutida, arandela), quantidade de lâmpadas, funcionamento aparente
+   - Para móveis e equipamentos: material, cor, dimensões aproximadas se relevante
+   - Para estruturas: tipo de material, acabamento
+
+3. ESTADO DE CONSERVAÇÃO
+   - Descreva o estado geral com objetividade
+   - Aponte defeitos específicos se existirem: rachaduras, manchas, umidade, ferrugem, descascamentos, furos, peças faltantes/soltas, vidros trincados, etc.
+   - Se não houver defeitos, registre que está em bom estado
+
+4. OBSERVAÇÕES TÉCNICAS
+   - Qualquer detalhe relevante para a vistoria (sinais de uso normal, desgaste natural, etc.)
+
+FORMATO DA DESCRIÇÃO:
+- Escreva em prosa técnica corrida (não lista de itens)
+- Linguagem formal e profissional, como em um laudo real
+- Seja específico e detalhado (mínimo 2-3 frases)
+- Exemplo de qualidade esperada: "Piso em porcelanato retificado de grande formato, cor off-white, sem defeitos aparentes. Rodapé em cerâmica branca, íntegro. Paredes com pintura acrílica branca em bom estado de conservação, sem manchas ou imperfeições visíveis. Janela de correr em alumínio anodizado, vidro liso 4mm, com fechadura e trilhos em bom estado de funcionamento."
 
 Responda SOMENTE com um JSON válido, sem texto adicional:
 {{
   "condition": "ótimo|bom|regular|ruim|péssimo",
-  "description": "descrição objetiva (defeitos encontrados ou 'Em bom estado. Sem defeitos aparentes.')",
-  "problems": ["defeito 1", "defeito 2"]
+  "description": "descrição técnica completa do item conforme laudo profissional",
+  "problems": ["defeito 1 se houver", "defeito 2 se houver"]
 }}
 
 Critério para "condition":
-- ótimo: sem nenhum defeito visível, novo ou como novo
-- bom: pequenos sinais de uso, sem defeitos significativos
-- regular: defeitos leves a moderados, funcional mas com problemas
-- ruim: defeitos sérios, necessita reparos
-- péssimo: danos graves, inutilizável ou perigoso"""
+- ótimo: novo ou como novo, sem qualquer defeito ou sinal de uso
+- bom: pequenos sinais de uso natural, sem defeitos que comprometam a funcionalidade
+- regular: defeitos leves a moderados presentes, funcional mas com problemas visíveis
+- ruim: defeitos sérios que necessitam reparo antes de nova locação
+- péssimo: danos graves, inutilizável ou comprometendo a segurança"""
 
         content.append({'type': 'text', 'text': prompt})
 
@@ -120,7 +125,7 @@ Critério para "condition":
 
         payload = {
             'model': 'claude-opus-4-5',
-            'max_tokens': 400,
+            'max_tokens': 1024,
             'messages': [{'role': 'user', 'content': content}]
         }
 
