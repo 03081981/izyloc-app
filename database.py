@@ -2,7 +2,7 @@ import sqlite3
 import os
 from pathlib import Path
 
-DB_PATH = os.path.join(os.path.dirname(__file__), 'db', 'izylo.db')
+DB_PATH = os.environ.get('DATABASE_PATH', '/data/izylo.db')
 
 def get_conn():
     conn = sqlite3.connect(DB_PATH)
