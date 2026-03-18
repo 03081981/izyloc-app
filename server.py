@@ -1,3 +1,4 @@
+# deploy: 2026-03-18
 #!/usr/bin/env python3
 """
 IZYLO - Sistema de Vistoria de Imóveis
