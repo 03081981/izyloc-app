@@ -12,7 +12,7 @@ import os
 import base64
 from datetime import datetime
 
-# Cores iZY'lOC — Azul e Preto
+# Cores izyLAUDO — Azul e Preto
 PRIMARY = colors.HexColor('#1565E8')      # Azul principal
 SECONDARY = colors.HexColor('#0D4FC4')    # Azul escuro
 ACCENT = colors.HexColor('#3B82F6')       # Azul médio
@@ -113,21 +113,17 @@ def generate_pdf(inspection_data: dict, rooms_data: list, signatures_data: list,
             pagesize=A4,
             rightMargin=2*cm, leftMargin=2*cm,
             topMargin=2.5*cm, bottomMargin=2*cm,
-            title=f"Laudo de Vistoria - iZY'lOC",
-            author="iZY'lOC App"
+            title=f"Laudo de Vistoria - izyLAUDO",
+            author="izyLAUDO"
         )
 
         styles = get_styles()
         story = []
         inspection = inspection_data
 
-        # ─── CABEÇALHO iZY'lOC ──────────────────────────────────────────────
-        logo_blue = ParagraphStyle('LogoBlue', fontName='Helvetica-Bold', fontSize=30,
-                                    textColor=PRIMARY)
-        logo_black = ParagraphStyle('LogoBlack', fontName='Helvetica-Bold', fontSize=30,
-                                     textColor=DARK_TEXT)
+        # ─── CABEÇALHO izyLAUDO ─────────────────────────────────────────────
         header_logo = Paragraph(
-            '<font color="#1565E8">iZY\'</font><font color="#0A0A0A">lOC</font>',
+            '<font color="#1565E8">izy</font><font color="#0A0A0A">LAUDO</font>',
             ParagraphStyle('Logo', fontName='Helvetica-Bold', fontSize=30, textColor=PRIMARY))
 
         tipo_label = 'ENTRADA' if inspection.get('type') == 'entrada' else 'SAÍDA'
@@ -144,7 +140,8 @@ def generate_pdf(inspection_data: dict, rooms_data: list, signatures_data: list,
             ('BOTTOMPADDING', (0,0), (-1,-1), 0),
         ]))
         story.append(header_table)
-        story.append(HRFlowable(width='100%', thickness=2.5, color=PRIMARY, spaceAfter=8))
+        story.append(Spacer(1, 6))
+        story.append(HRFlowable(width='100%', thickness=2.5, color=PRIMARY, spaceBefore=0, spaceAfter=8))
 
         # Data e número do laudo
         story.append(Table([[
@@ -387,7 +384,7 @@ cujas condições foram verificadas, registradas e aceitas por todos."""
         story.append(HRFlowable(width='100%', thickness=1, color=ACCENT))
         story.append(Spacer(1, 4))
         story.append(Paragraph(
-            f"iZY'lOC — Gestao de Carteira de Locacao | www.izyloc.com.br | "
+            f"izyLAUDO — Vistorias Imobiliarias | www.izylaudo.com.br | "
             f'Protocolo: {inspection.get("id", "")[:8].upper()} | '
             f'Gerado em: {datetime.now().strftime("%d/%m/%Y as %H:%M")}',
             styles['Footer']
