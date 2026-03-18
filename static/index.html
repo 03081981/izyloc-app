@@ -335,6 +335,15 @@ textarea.form-input { resize: vertical; min-height: 88px; line-height: 1.5; }
 .item-name { font-size: 14px; font-weight: 600; color: var(--text); }
 .item-photo { width: 100%; border-radius: var(--radius-sm); max-height: 200px;
                object-fit: cover; margin-top: 8px; }
+.photo-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-top: 8px; }
+.photo-thumb { position: relative; aspect-ratio: 1; overflow: hidden; border-radius: var(--radius-sm); }
+.photo-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.photo-thumb-del { position: absolute; top: 3px; right: 3px; background: rgba(0,0,0,0.55);
+  color: #fff; border: none; border-radius: 50%; width: 20px; height: 20px;
+  font-size: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center;
+  padding: 0; line-height: 1; }
+.photo-thumb-del:hover { background: rgba(220,50,50,0.85); }
+.photo-count-badge { font-size: 11px; color: var(--text-muted); margin-top: 4px; }
 .ai-badge {
   display: inline-block; background: var(--blue-light); color: var(--blue);
   font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 20px;
@@ -1327,6 +1336,7 @@ function renderRoomCard(room) {
       </button>
     </div>`;
   container.appendChild(el);
+  loadItemPhotos(item.id);
 }
 
 function toggleRoom(id) {
@@ -1371,7 +1381,8 @@ function renderItemCard(item, roomId) {
       <span class="item-name">${item.name}</span>
       <span class="cond cond-default" id="cond-${item.id}">—</span>
     </div>
-    <div id="photo-preview-${item.id}"></div>
+    <div id="photo-grid-${item.id}" class="photo-grid"></div>
+    <div id="photo-count-${item.id}" class="photo-count-badge" style="display:none"></div>
     <div id="ai-box-${item.id}" style="display:none">
       <div class="ai-badge">✦ Descrição gerada pela IA</div>
       <div class="ai-description" id="ai-desc-${item.id}"></div>
@@ -1401,36 +1412,84 @@ function updateRoomCount(roomId) {
 async function uploadPhoto(itemId, input) {
   if (!input.files?.[0]) return;
   const file = input.files[0];
-  const reader = new FileReader();
-  reader.onload = e => {
-    const prev = document.getElementById(`photo-preview-${itemId}`);
-    if (prev) prev.innerHTML = `<img src="${e.target.result}" class="item-photo" alt="foto"/>`;
-  };
-  reader.readAsDataURL(file);
-
-  showLoading('🤖 A IA está analisando a foto...\nAguarde alguns segundos');
+  const grid = document.getElementById(`photo-grid-${itemId}`);
+  const tempId = 'temp-' + Date.now();
+  if (grid) {
+    const reader = new FileReader();
+    reader.onload = e => {
+      const thumb = document.createElement('div');
+      thumb.className = 'photo-thumb'; thumb.id = tempId;
+      thumb.innerHTML = `<img src="${e.target.result}" alt="foto" style="opacity:0.5"/>`;
+      grid.appendChild(thumb);
+    };
+    reader.readAsDataURL(file);
+  }
+  const totalBefore = grid ? grid.children.length : 0;
+  const loadMsg = totalBefore > 0
+    ? `🤖 A IA está analisando ${totalBefore + 1} fotos...\nAguarde alguns segundos`
+    : '🤖 A IA está analisando a foto...\nAguarde alguns segundos';
+  showLoading(loadMsg);
   const fd = new FormData(); fd.append('photo', file);
   const r = await api('POST', `/api/items/${itemId}/photo`, fd, true);
   hideLoading();
-
+  document.getElementById(tempId)?.remove();
   if (!r.ok) { toast(r.error || 'Erro ao enviar foto', 'error'); return; }
-
+  await loadItemPhotos(itemId);
   const ai = r.ai_result;
   const condEl = document.getElementById(`cond-${itemId}`);
   const aiBox = document.getElementById(`ai-box-${itemId}`);
   const aiDesc = document.getElementById(`ai-desc-${itemId}`);
-
   if (ai?.description) {
-    aiBox.style.display = 'block';
-    aiDesc.textContent = ai.description;
+    if (aiBox) aiBox.style.display = 'block';
+    if (aiDesc) aiDesc.textContent = ai.description;
     if (ai.condition && condEl) {
       condEl.textContent = ai.condition;
       condEl.className = `cond cond-${ai.condition.replace(/[óô]/g,'o').replace(/[éê]/g,'e')}`;
     }
-    toast('✅ IA analisou a foto!', 'success');
+    const n = r.total_photos || 1;
+    toast(n > 1 ? `✅ IA analisou ${n} fotos!` : '✅ IA analisou a foto!', 'success');
   } else if (!ai?.success) {
-    toast(ai?.description || 'Foto salva (configure a chave de IA para análise automática)', 'warning');
+    toast(ai?.description || 'Foto salva (configure ANTHROPIC_API_KEY para análise automática)', 'warning');
   }
+  input.value = '';
+}
+
+async function loadItemPhotos(itemId) {
+  const r = await api('GET', `/api/items/${itemId}/photos`);
+  if (!r.ok) return;
+  const grid = document.getElementById(`photo-grid-${itemId}`);
+  const countBadge = document.getElementById(`photo-count-${itemId}`);
+  if (!grid) return;
+  grid.innerHTML = '';
+  const photos = r.photos || [];
+  photos.forEach(p => {
+    const thumb = document.createElement('div');
+    thumb.className = 'photo-thumb'; thumb.id = `pthumb-${p.id}`;
+    thumb.innerHTML = `<img src="${p.url}" alt="foto" onclick="window.open('${p.url}','_blank')"/>
+      <button class="photo-thumb-del" title="Remover foto" onclick="deletePhoto('${itemId}','${p.id}')">✕</button>`;
+    grid.appendChild(thumb);
+  });
+  if (countBadge) {
+    if (photos.length > 1) { countBadge.style.display='block'; countBadge.textContent=`${photos.length} fotos • toque para ampliar`; }
+    else countBadge.style.display='none';
+  }
+}
+
+async function deletePhoto(itemId, photoId) {
+  if (!confirm('Remover esta foto?')) return;
+  showLoading('Removendo foto...');
+  const r = await api('DELETE', `/api/items/${itemId}/photos/${photoId}`);
+  hideLoading();
+  if (!r.ok) { toast(r.error || 'Erro ao remover foto', 'error'); return; }
+  document.getElementById(`pthumb-${photoId}`)?.remove();
+  const grid = document.getElementById(`photo-grid-${itemId}`);
+  const countBadge = document.getElementById(`photo-count-${itemId}`);
+  const remaining = grid ? grid.children.length : 0;
+  if (countBadge) {
+    if (remaining > 1) countBadge.textContent=`${remaining} fotos • toque para ampliar`;
+    else countBadge.style.display='none';
+  }
+  toast('Foto removida', 'success');
 }
 
 function toggleEdit(itemId) {
@@ -1544,8 +1603,16 @@ function renderDetail(insp) {
   const roomsHtml = rooms.map(room => {
     const items = (room.items||[]).map(item => {
       const desc = item.manual_description || item.ai_description || '';
-      const photo = item.photo_filename
-        ? `<img src="/uploads/${item.photo_filename}" class="item-photo" alt="foto"/>` : '';
+      const photos = item.photos || [];
+      let photosHtml = '';
+      if (photos.length === 1) {
+        photosHtml = `<img src="${photos[0].url}" class="item-photo" alt="foto"/>`;
+      } else if (photos.length > 1) {
+        const thumbs = photos.map(p => `<div class="photo-thumb"><img src="${p.url}" alt="foto" onclick="window.open('${p.url}','_blank')"/></div>`).join('');
+        photosHtml = `<div class="photo-grid">${thumbs}</div><div class="photo-count-badge">${photos.length} fotos • toque para ampliar</div>`;
+      } else if (item.photo_filename) {
+        photosHtml = `<img src="/uploads/${item.photo_filename}" class="item-photo" alt="foto"/>`;
+      }
       return `<div class="item-card">
         <div class="item-header">
           <span class="item-name">${item.name}</span>
@@ -1553,7 +1620,7 @@ function renderDetail(insp) {
             ${item.condition||'—'}
           </span>
         </div>
-        ${photo}
+        ${photosHtml}
         ${desc ? `<div class="ai-badge">✦ Descrição IA</div><div class="ai-description">${desc}</div>` : ''}
       </div>`;
     }).join('');
