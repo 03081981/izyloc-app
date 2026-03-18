@@ -1,4 +1,3 @@
-# iZY'lOC Server v1.1 - cache bust 1773794706937
 #!/usr/bin/env python3
 """
 IZYLO - Sistema de Vistoria de Imóveis
@@ -266,7 +265,7 @@ class InspectionHandler(BaseHandler):
                     photos = conn.execute(
                         'SELECT id, photo_filename FROM item_photos WHERE item_id=? ORDER BY created_at',
                         (it['id'],)).fetchall()
-                    it['photos'] = [{"id": p['id'], "url": f'/uploads/{p["photo_filename"]}'} for p in photos]
+                    it['photos'] = [{'id': p['id'], 'url': f'/uploads/{p["photo_filename"]}'} for p in photos]
                 room_dict['items'] = items_list
                 rooms_list.append(room_dict)
             result['rooms'] = rooms_list
@@ -506,6 +505,8 @@ class RoomItemHandler(BaseHandler):
             conn.close()
 
 
+# ─── FOTO UPLOAD + ANÁLISE IA ──────────────────────────────────────────────────
+
 class PhotoUploadHandler(BaseHandler):
     def set_default_headers(self):
         self.set_header("Access-Control-Allow-Origin", "*")
@@ -517,54 +518,77 @@ class PhotoUploadHandler(BaseHandler):
         user = self.require_auth()
         if not user:
             return
+
         conn = get_conn()
         try:
             item = conn.execute(
-                \'\'\'SELECT ri.*, r.name as room_name FROM room_items ri
+                '''SELECT ri.*, r.name as room_name FROM room_items ri
                    JOIN rooms r ON ri.room_id=r.id
                    JOIN inspections i ON r.inspection_id=i.id
-                   WHERE ri.id=? AND i.user_id=?\'\'\'\',
-                (item_id, user[\'user_id\'])).fetchone()
+                   WHERE ri.id=? AND i.user_id=?''',
+                (item_id, user['user_id'])).fetchone()
             if not item:
-                return self.err(\'Item não encontrado\', 404)
-            if \'photo\' not in self.request.files:
-                return self.err(\'Nenhuma foto enviada\')
-            file_info = self.request.files[\'photo\'][0]
-            ext = os.path.splitext(file_info[\'filename\'])[1].lower() or \'.jpg\'
-            allowed = [\'.jpg\', \'.jpeg\', \'.png\', \'.webp\']
+                return self.err('Item não encontrado', 404)
+
+            if 'photo' not in self.request.files:
+                return self.err('Nenhuma foto enviada')
+
+            file_info = self.request.files['photo'][0]
+            ext = os.path.splitext(file_info['filename'])[1].lower() or '.jpg'
+            allowed = ['.jpg', '.jpeg', '.png', '.webp']
             if ext not in allowed:
-                return self.err(\'Formato de arquivo inválido. Use JPG, PNG ou WebP\')
+                return self.err('Formato de arquivo inválido. Use JPG, PNG ou WebP')
+
+            # Salva com nome único (UUID) para permitir múltiplas fotos por item
             photo_id = str(uuid.uuid4())
-            filename = f\"{photo_id}{ext}\"
+            filename = f"{photo_id}{ext}"
             filepath = os.path.join(UPLOAD_DIR, filename)
-            with open(filepath, \'wb\') as f:
-                f.write(file_info[\'body\'])
-            conn.execute(\'INSERT INTO item_photos (id, item_id, photo_path, photo_filename) VALUES (?,?,?,?)\',
+
+            with open(filepath, 'wb') as f:
+                f.write(file_info['body'])
+
+            # Registra na tabela item_photos
+            conn.execute(
+                'INSERT INTO item_photos (id, item_id, photo_path, photo_filename) VALUES (?,?,?,?)',
                 (photo_id, item_id, filepath, filename))
-            conn.execute(\'UPDATE room_items SET photo_path=?, photo_filename=? WHERE id=?\',
+
+            # Atualiza photo_path principal no item (última foto adicionada)
+            conn.execute('UPDATE room_items SET photo_path=?, photo_filename=? WHERE id=?',
                         (filepath, filename, item_id))
             conn.commit()
+
+            # Busca TODAS as fotos do item para análise conjunta
             all_photos = conn.execute(
-                \'SELECT photo_path FROM item_photos WHERE item_id=? ORDER BY created_at\',
+                'SELECT photo_path FROM item_photos WHERE item_id=? ORDER BY created_at',
                 (item_id,)).fetchall()
-            all_paths = [p[\'photo_path\'] for p in all_photos if os.path.exists(p[\'photo_path\'])]
-            ai_result = analyze_photos(all_paths, item[\'name\'], item[\'room_name\'])
-            if ai_result.get(\'success\') and ai_result.get(\'description\'):
-                conn.execute(\'\'\'UPDATE room_items SET ai_description=?, condition=? WHERE id=?\'\'\'\',
-                            (ai_result.get(\'description\', \'\'), ai_result.get(\'condition\', \'\'), item_id))
+            all_paths = [p['photo_path'] for p in all_photos if os.path.exists(p['photo_path'])]
+
+            # Analisa com IA usando todas as fotos disponíveis
+            ai_result = analyze_photos(all_paths, item['name'], item['room_name'])
+
+            # Atualiza descrição da IA no banco
+            if ai_result.get('success') and ai_result.get('description'):
+                conn.execute('''UPDATE room_items
+                               SET ai_description=?, condition=?
+                               WHERE id=?''',
+                            (ai_result.get('description', ''),
+                             ai_result.get('condition', ''),
+                             item_id))
                 conn.commit()
-            row = conn.execute(\'SELECT * FROM room_items WHERE id=?\', (item_id,)).fetchone()
+
+            row = conn.execute('SELECT * FROM room_items WHERE id=?', (item_id,)).fetchone()
             result = self.row_to_dict(row)
-            result[\'ai_result\'] = ai_result
-            result[\'photo_id\'] = photo_id
-            result[\'photo_url\'] = f\'/uploads/{filename}\'
-            result[\'total_photos\'] = len(all_paths)
+            result['ai_result'] = ai_result
+            result['photo_id'] = photo_id
+            result['photo_url'] = f'/uploads/{filename}'
+            result['total_photos'] = len(all_paths)
             self.ok(result)
         finally:
             conn.close()
 
 
 class ItemPhotosHandler(BaseHandler):
+    """Lista todas as fotos de um item."""
     def set_default_headers(self):
         self.set_header("Access-Control-Allow-Origin", "*")
         self.set_header("Access-Control-Allow-Headers", "Content-Type, Authorization")
@@ -577,24 +601,32 @@ class ItemPhotosHandler(BaseHandler):
             return
         conn = get_conn()
         try:
+            # Verifica que o item pertence ao usuário
             item = conn.execute(
-                \'\'\'SELECT ri.id FROM room_items ri
+                '''SELECT ri.id FROM room_items ri
                    JOIN rooms r ON ri.room_id=r.id
                    JOIN inspections i ON r.inspection_id=i.id
-                   WHERE ri.id=? AND i.user_id=?\'\'\'\',
-                (item_id, user[\'user_id\'])).fetchone()
+                   WHERE ri.id=? AND i.user_id=?''',
+                (item_id, user['user_id'])).fetchone()
             if not item:
-                return self.err(\'Item não encontrado\', 404)
+                return self.err('Item não encontrado', 404)
+
             photos = conn.execute(
-                \'SELECT id, photo_filename, created_at FROM item_photos WHERE item_id=? ORDER BY created_at\',
+                'SELECT id, photo_filename, created_at FROM item_photos WHERE item_id=? ORDER BY created_at',
                 (item_id,)).fetchall()
-            result = [{\'id\': p[\'id\'], \'url\': f\'/uploads/{p["photo_filename"]}\', \'created_at\': p[\'created_at\']} for p in photos]
-            self.ok({\'photos\': result})
+
+            result = [{
+                'id': p['id'],
+                'url': f'/uploads/{p["photo_filename"]}',
+                'created_at': p['created_at']
+            } for p in photos]
+            self.ok({'photos': result})
         finally:
             conn.close()
 
 
 class PhotoDeleteHandler(BaseHandler):
+    """Exclui uma foto específica de um item."""
     def set_default_headers(self):
         self.set_header("Access-Control-Allow-Origin", "*")
         self.set_header("Access-Control-Allow-Headers", "Content-Type, Authorization")
@@ -611,35 +643,47 @@ class PhotoDeleteHandler(BaseHandler):
             return
         conn = get_conn()
         try:
+            # Verifica pertencimento
             item = conn.execute(
-                \'\'\'SELECT ri.* FROM room_items ri
+                '''SELECT ri.* FROM room_items ri
                    JOIN rooms r ON ri.room_id=r.id
                    JOIN inspections i ON r.inspection_id=i.id
-                   WHERE ri.id=? AND i.user_id=?\'\'\'\',
-                (item_id, user[\'user_id\'])).fetchone()
+                   WHERE ri.id=? AND i.user_id=?''',
+                (item_id, user['user_id'])).fetchone()
             if not item:
-                return self.err(\'Item não encontrado\', 404)
-            photo = conn.execute(\'SELECT * FROM item_photos WHERE id=? AND item_id=?\', (photo_id, item_id)).fetchone()
+                return self.err('Item não encontrado', 404)
+
+            photo = conn.execute(
+                'SELECT * FROM item_photos WHERE id=? AND item_id=?',
+                (photo_id, item_id)).fetchone()
             if not photo:
-                return self.err(\'Foto não encontrada\', 404)
+                return self.err('Foto não encontrada', 404)
+
+            # Remove o arquivo físico
             try:
-                if os.path.exists(photo[\'photo_path\']):
-                    os.remove(photo[\'photo_path\'])
+                if os.path.exists(photo['photo_path']):
+                    os.remove(photo['photo_path'])
             except Exception:
                 pass
-            conn.execute(\'DELETE FROM item_photos WHERE id=?\', (photo_id,))
+
+            conn.execute('DELETE FROM item_photos WHERE id=?', (photo_id,))
+
+            # Atualiza photo_path principal para a foto mais recente restante
             remaining = conn.execute(
-                \'SELECT photo_path, photo_filename FROM item_photos WHERE item_id=? ORDER BY created_at DESC LIMIT 1\',
+                'SELECT photo_path, photo_filename FROM item_photos WHERE item_id=? ORDER BY created_at DESC LIMIT 1',
                 (item_id,)).fetchone()
             if remaining:
-                conn.execute(\'UPDATE room_items SET photo_path=?, photo_filename=? WHERE id=?\',
-                            (remaining[\'photo_path\'], remaining[\'photo_filename\'], item_id))
+                conn.execute('UPDATE room_items SET photo_path=?, photo_filename=? WHERE id=?',
+                            (remaining['photo_path'], remaining['photo_filename'], item_id))
             else:
-                conn.execute(\'UPDATE room_items SET photo_path=NULL, photo_filename=NULL WHERE id=?\', (item_id,))
+                conn.execute('UPDATE room_items SET photo_path=NULL, photo_filename=NULL WHERE id=?',
+                            (item_id,))
+
             conn.commit()
-            self.ok({\'deleted\': True, \'photo_id\': photo_id})
+            self.ok({'deleted': True, 'photo_id': photo_id})
         finally:
             conn.close()
+
 
 # ─── ASSINATURAS ───────────────────────────────────────────────────────────────
 
@@ -796,14 +840,6 @@ def make_app():
 
 if __name__ == '__main__':
     init_db()
-
-    # Auto-patch: fix JS typos in static files
-    import glob as _glob
-    for _f in _glob.glob(os.path.join(os.path.dirname(__file__), 'static', '*.html')):
-        _html = open(_f, encoding='utf-8').read()
-        if 'aqync' in _html:
-            open(_f, 'w', encoding='utf-8').write(_html.replace('aqync', 'async'))
-            print(f'Patched {_f}: replaced aqync -> async')
     port = int(os.environ.get('PORT', 8888))
     app = make_app()
     app.listen(port)
