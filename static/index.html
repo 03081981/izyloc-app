@@ -487,11 +487,11 @@ textarea.form-input { resize: vertical; min-height: 88px; line-height: 1.5; }
     </span>
   </div>
   <div class="topbar-right">
-    <button class="btn-logout" id="btn-logout" onclick="logout()" title="Sair" style="display:none">â</button>
+    <button class="btn-logout" id="btn-logout" onclick="logout()" title="Sair" style="display:none">⏏</button>
   </div>
 </div>
 
-<!-- ââââââââââââââ PAGE: AUTH ââââââââââââââ -->
+<!-- ══════════════ PAGE: AUTH ══════════════ -->
 <div class="page active" id="page-auth">
   <div class="auth-page">
     <div class="auth-hero">
@@ -514,7 +514,7 @@ textarea.form-input { resize: vertical; min-height: 88px; line-height: 1.5; }
         </div>
         <div class="form-group">
           <label class="form-label">Senha</label>
-          <input type="password" id="login-password" class="form-input" placeholder="â¢â¢â¢â¢â¢â¢â¢â¢" autocomplete="current-password"/>
+          <input type="password" id="login-password" class="form-input" placeholder="••••••••" autocomplete="current-password"/>
         </div>
         <button class="btn btn-primary btn-full" style="margin-top:4px" onclick="doLogin()">Entrar</button>
         <div class="text-center mt-12">
@@ -558,7 +558,7 @@ textarea.form-input { resize: vertical; min-height: 88px; line-height: 1.5; }
   </div>
 </div>
 
-<!-- ââââââââââââââ PAGE: DASHBOARD ââââââââââââââ -->
+<!-- ══════════════ PAGE: DASHBOARD ══════════════ -->
 <div class="page" id="page-dashboard">
   <!-- Header -->
   <div class="dash-header">
@@ -635,7 +635,7 @@ textarea.form-input { resize: vertical; min-height: 88px; line-height: 1.5; }
   <button class="fab" onclick="showNewInspection()">+</button>
 </div>
 
-<!-- ââââââââââââââ PAGE: WIZARD ââââââââââââââ -->
+<!-- ══════════════ PAGE: WIZARD ══════════════ -->
 <div class="page" id="page-wizard">
   <div class="page-content page-scroll">
     <!-- Stepper -->
@@ -891,12 +891,12 @@ textarea.form-input { resize: vertical; min-height: 88px; line-height: 1.5; }
   </div>
 </div>
 
-<!-- ââââââââââââââ PAGE: DETAIL ââââââââââââââ -->
+<!-- ══════════════ PAGE: DETAIL ══════════════ -->
 <div class="page" id="page-detail">
   <div class="page-content page-scroll" id="detail-content"></div>
 </div>
 
-<!-- ââââââââââââââ MODAL: ADD ITEM ââââââââââââââ -->
+<!-- ══════════════ MODAL: ADD ITEM ══════════════ -->
 <div class="modal-overlay" id="modal-add-item" onclick="closeModal('modal-add-item')">
   <div class="modal" onclick="event.stopPropagation()">
     <div class="modal-handle"></div>
@@ -1304,8 +1304,8 @@ function renderRoomCard(room) {
   el.className = 'room-card'; el.id = `room-${room.id}`;
 
   const roomIcons = {
-    'Sala de Estar': 'ð', 'Cozinha': 'ð³', 'Quarto 1': 'ð', 'Quarto 2': 'ð',
-    'Banheiro': 'ð¿', 'Área de Serviço': 'ð§º', 'Garagem': 'ð', 'Varanda': 'ð¿',
+    'Sala de Estar': '🛋', 'Cozinha': '🍳', 'Quarto 1': '🛏', 'Quarto 2': '🛏',
+    'Banheiro': '🚿', 'Área de Serviço': '🧺', 'Garagem': '🚗', 'Varanda': '🌿',
   };
   const icon = roomIcons[room.name] || '🏠';
 
@@ -1318,7 +1318,7 @@ function renderRoomCard(room) {
           <div class="room-count" id="rc-${room.id}">Nenhum item</div>
         </div>
       </div>
-      <span class="room-chevron" id="chevron-${room.id}">â¼</span>
+      <span class="room-chevron" id="chevron-${room.id}">▼</span>
     </div>
     <div class="room-body" id="rbody-${room.id}">
       <div id="items-${room.id}" style="margin-top:12px"></div>
@@ -1373,7 +1373,7 @@ function renderItemCard(item, roomId) {
     </div>
     <div id="photo-preview-${item.id}"></div>
     <div id="ai-box-${item.id}" style="display:none">
-      <div class="ai-badge">â¦ Descrição gerada pela IA</div>
+      <div class="ai-badge">✦ Descrição gerada pela IA</div>
       <div class="ai-description" id="ai-desc-${item.id}"></div>
     </div>
     <div id="edit-box-${item.id}" style="display:none">
@@ -1386,8 +1386,8 @@ function renderItemCard(item, roomId) {
         <input type="file" accept="image/*" capture="environment" style="display:none"
           onchange="uploadPhoto('${item.id}', this)"/>
       </label>
-      <button class="btn btn-ghost btn-sm" onclick="toggleEdit('${item.id}')">â️</button>
-      <button class="btn btn-ghost btn-sm" style="color:var(--danger)" onclick="deleteItem('${item.id}','${roomId}')">ð</button>
+      <button class="btn btn-ghost btn-sm" onclick="toggleEdit('${item.id}')">✏️</button>
+      <button class="btn btn-ghost btn-sm" style="color:var(--danger)" onclick="deleteItem('${item.id}','${roomId}')">🗑</button>
     </div>`;
   container.appendChild(el);
 }
@@ -1408,7 +1408,7 @@ async function uploadPhoto(itemId, input) {
   };
   reader.readAsDataURL(file);
 
-  showLoading('ð¤ A IA está analisando a foto...\nAguarde alguns segundos');
+  showLoading('🤖 A IA está analisando a foto...\nAguarde alguns segundos');
   const fd = new FormData(); fd.append('photo', file);
   const r = await api('POST', `/api/items/${itemId}/photo`, fd, true);
   hideLoading();
@@ -1427,7 +1427,7 @@ async function uploadPhoto(itemId, input) {
       condEl.textContent = ai.condition;
       condEl.className = `cond cond-${ai.condition.replace(/[óô]/g,'o').replace(/[éê]/g,'e')}`;
     }
-    toast('â IA analisou a foto!', 'success');
+    toast('✅ IA analisou a foto!', 'success');
   } else if (!ai?.success) {
     toast(ai?.description || 'Foto salva (configure a chave de IA para análise automática)', 'warning');
   }
@@ -1521,7 +1521,7 @@ async function generatePDF() {
     a.href = url; a.download = `iZYlOC_Laudo_${wizard.inspectionId.substring(0,8).toUpperCase()}.pdf`;
     document.body.appendChild(a); a.click();
     document.body.removeChild(a); URL.revokeObjectURL(url);
-    toast('â Laudo gerado com sucesso!', 'success');
+    toast('✅ Laudo gerado com sucesso!', 'success');
     setTimeout(() => { showPage('page-dashboard',null,false); loadDashboard(); }, 2000);
   } else { toast(r.error||'Erro ao gerar PDF', 'error'); }
 }
@@ -1554,7 +1554,7 @@ function renderDetail(insp) {
           </span>
         </div>
         ${photo}
-        ${desc ? `<div class="ai-badge">â¦ Descrição IA</div><div class="ai-description">${desc}</div>` : ''}
+        ${desc ? `<div class="ai-badge">✦ Descrição IA</div><div class="ai-description">${desc}</div>` : ''}
       </div>`;
     }).join('');
     return `<div class="room-card">
@@ -1574,7 +1574,7 @@ function renderDetail(insp) {
       </div>
       <div style="font-size:17px;font-weight:800">${insp.property_address||'—'}</div>
       <div class="text-small mt-4">${insp.property_type||''} ${insp.property_area?'Â· '+insp.property_area+'mÂ²':''}</div>
-      <div class="text-small mt-2">ð ${insp.inspection_date||'—'}</div>
+      <div class="text-small mt-2">📅 ${insp.inspection_date||'—'}</div>
       ${insp.imobiliaria_name?`<div class="text-small mt-2">🏢 ${insp.imobiliaria_name}</div>`:''}
     </div>
     <div class="card">
