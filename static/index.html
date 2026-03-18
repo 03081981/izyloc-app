@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#1565E8"/>
 <meta name="apple-mobile-web-app-capable" content="yes"/>
 <meta name="apple-mobile-web-app-status-bar-style" content="default"/>
-<title>izyLaudo — Vistorias Imobiliárias</title>
+<title>izyLAUDO — Vistorias Imobiliárias</title>
 <link rel="manifest" href="/static/manifest.json"/>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/signature_pad/4.1.7/signature_pad.umd.min.js"></script>
 
@@ -492,7 +492,7 @@ textarea.form-input { resize: vertical; min-height: 88px; line-height: 1.5; }
   <button class="topbar-back hidden" id="btn-back" onclick="goBack()">‹</button>
   <div class="topbar-center" id="topbar-title">
     <span class="topbar-logo-small">
-      <span class="blue">izyLaudo</span>
+      <span class="blue">izyLAUDO</span>
     </span>
   </div>
   <div class="topbar-right">
@@ -505,7 +505,7 @@ textarea.form-input { resize: vertical; min-height: 88px; line-height: 1.5; }
   <div class="auth-page">
     <div class="auth-hero">
       <div class="auth-hero-logo">
-        <span class="blue-part">izyLaudo</span><span class="black-part">lOC</span>
+        <span class="blue-part">izyLAUDO</span><span class="black-part">lOC</span>
       </div>
       <div class="auth-hero-tagline">Vistorias Imobiliárias</div>
     </div>
@@ -562,7 +562,7 @@ textarea.form-input { resize: vertical; min-height: 88px; line-height: 1.5; }
       </div>
     </div>
     <div class="text-center pb-100" style="padding:16px">
-      <span class="text-small">izyLaudo Â© 2024 Â· Todos os direitos reservados</span>
+      <span class="text-small">izyLAUDO Â© 2024 Â· Todos os direitos reservados</span>
     </div>
   </div>
 </div>
@@ -574,7 +574,7 @@ textarea.form-input { resize: vertical; min-height: 88px; line-height: 1.5; }
     <div class="flex-between">
       <div>
         <div class="dash-logo">
-          <span class="blue">izyLaudo</span>
+          <span class="blue">izyLAUDO</span>
         </div>
         <div class="dash-tagline">Vistorias Imobiliárias</div>
       </div>
@@ -984,7 +984,7 @@ function showPage(id, title = null, addHistory = true) {
 
   if (id === 'page-dashboard') {
     btnBack.classList.add('hidden');
-    titleEl.innerHTML = '<span class="topbar-logo-small"><span class="blue">izyLaudo</span></span>';
+    titleEl.innerHTML = '<span class="topbar-logo-small"><span class="blue">izyLAUDO</span></span>';
   } else {
     btnBack.classList.remove('hidden');
     titleEl.textContent = title || '';
@@ -1577,7 +1577,7 @@ async function generatePDF() {
   if (r.blob) {
     const url = URL.createObjectURL(r.blob);
     const a = document.createElement('a');
-    a.href = url; a.download = `iZYlOC_Laudo_${wizard.inspectionId.substring(0,8).toUpperCase()}.pdf`;
+    a.href = url; a.download = `izyLAUDO_Laudo_${wizard.inspectionId.substring(0,8).toUpperCase()}.pdf`;
     document.body.appendChild(a); a.click();
     document.body.removeChild(a); URL.revokeObjectURL(url);
     toast('✅ Laudo gerado com sucesso!', 'success');
@@ -1667,7 +1667,7 @@ async function dlPDF(id) {
   if (r.blob) {
     const url = URL.createObjectURL(r.blob);
     const a = document.createElement('a');
-    a.href = url; a.download = `iZYlOC_Laudo_${id.substring(0,8).toUpperCase()}.pdf`;
+    a.href = url; a.download = `izyLAUDO_Laudo_${id.substring(0,8).toUpperCase()}.pdf`;
     document.body.appendChild(a); a.click();
     document.body.removeChild(a); URL.revokeObjectURL(url);
     toast('PDF gerado!', 'success');
