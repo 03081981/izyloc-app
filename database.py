@@ -2,7 +2,7 @@ import sqlite3
 import os
 from pathlib import Path
 
-DB_PATH = os.environ.get('DATABASE_PATH', '/data/izylo.db')
+DB_PATH = os.path.join(os.path.dirname(__file__), 'db', 'izylo.db')
 
 def get_conn():
     conn = sqlite3.connect(DB_PATH)
@@ -39,24 +39,29 @@ def init_db():
         property_type TEXT,
         property_area TEXT,
         inspection_date TEXT,
+        -- Locador
         locador_name TEXT,
         locador_cpf TEXT,
         locador_rg TEXT,
         locador_phone TEXT,
         locador_email TEXT,
+        -- Locatario
         locatario_name TEXT,
         locatario_cpf TEXT,
         locatario_rg TEXT,
         locatario_phone TEXT,
         locatario_email TEXT,
+        -- Corretor / Avaliador
         corretor_name TEXT,
         corretor_creci TEXT,
         corretor_phone TEXT,
         corretor_email TEXT,
+        -- Imobiliaria
         imobiliaria_name TEXT,
         imobiliaria_cnpj TEXT,
         imobiliaria_phone TEXT,
         imobiliaria_address TEXT,
+        -- Geral
         observations TEXT,
         created_at TEXT DEFAULT (datetime('now')),
         updated_at TEXT DEFAULT (datetime('now')),
@@ -87,6 +92,15 @@ def init_db():
         FOREIGN KEY(room_id) REFERENCES rooms(id)
     );
 
+    CREATE TABLE IF NOT EXISTS item_photos (
+        id TEXT PRIMARY KEY,
+        item_id TEXT NOT NULL,
+        photo_path TEXT NOT NULL,
+        photo_filename TEXT NOT NULL,
+        created_at TEXT DEFAULT (datetime('now')),
+        FOREIGN KEY(item_id) REFERENCES room_items(id)
+    );
+
     CREATE TABLE IF NOT EXISTS signatures (
         id TEXT PRIMARY KEY,
         inspection_id TEXT NOT NULL,
@@ -99,6 +113,7 @@ def init_db():
     """)
     conn.commit()
     conn.close()
+    print("✅ Banco de dados inicializado")
 
 if __name__ == '__main__':
     init_db()
