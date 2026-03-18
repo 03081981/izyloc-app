@@ -518,7 +518,7 @@ textarea.form-input { resize: vertical; min-height: 88px; line-height: 1.5; }
         </div>
         <button class="btn btn-primary btn-full" style="margin-top:4px" onclick="doLogin()">Entrar</button>
         <div class="text-center mt-12">
-          <span class="text-small">NÃ£o tem conta? </span>
+          <span class="text-small">Não tem conta? </span>
           <button class="btn-link" onclick="switchAuthTabByName('register')">Cadastrar-se</button>
         </div>
       </div>
@@ -530,7 +530,7 @@ textarea.form-input { resize: vertical; min-height: 88px; line-height: 1.5; }
           <input type="text" id="reg-name" class="form-input" placeholder="Seu nome completo" autocomplete="name"/>
         </div>
         <div class="form-group">
-          <label class="form-label">ImobiliÃ¡ria / Empresa</label>
+          <label class="form-label">Imobiliária / Empresa</label>
           <input type="text" id="reg-company" class="form-input" placeholder="Nome da sua empresa"/>
         </div>
         <div class="form-group">
@@ -539,15 +539,15 @@ textarea.form-input { resize: vertical; min-height: 88px; line-height: 1.5; }
         </div>
         <div class="form-group">
           <label class="form-label">CRECI <span class="text-muted">(opcional)</span></label>
-          <input type="text" id="reg-creci" class="form-input" placeholder="NÃºmero do CRECI"/>
+          <input type="text" id="reg-creci" class="form-input" placeholder="Número do CRECI"/>
         </div>
         <div class="form-group">
           <label class="form-label">Senha</label>
-          <input type="password" id="reg-password" class="form-input" placeholder="MÃ­nimo 6 caracteres" autocomplete="new-password"/>
+          <input type="password" id="reg-password" class="form-input" placeholder="Mínimo 6 caracteres" autocomplete="new-password"/>
         </div>
         <button class="btn btn-primary btn-full" style="margin-top:4px" onclick="doRegister()">Criar Conta</button>
         <div class="text-center mt-12">
-          <span class="text-small">JÃ¡ tem conta? </span>
+          <span class="text-small">Já tem conta? </span>
           <button class="btn-link" onclick="switchAuthTabByName('login')">Entrar</button>
         </div>
       </div>
@@ -573,7 +573,7 @@ textarea.form-input { resize: vertical; min-height: 88px; line-height: 1.5; }
     </div>
     <div class="dash-nav-tabs">
       <button class="dash-nav-tab active" onclick="switchDashTab('vistorias', this)">Vistorias</button>
-      <button class="dash-nav-tab" onclick="switchDashTab('estatisticas', this)">EstatÃ­sticas</button>
+      <button class="dash-nav-tab" onclick="switchDashTab('estatisticas', this)">Estatísticas</button>
       <button class="dash-nav-tab" onclick="switchDashTab('perfil', this)">Perfil</button>
     </div>
   </div>
@@ -586,16 +586,16 @@ textarea.form-input { resize: vertical; min-height: 88px; line-height: 1.5; }
       </div>
       <div id="inspections-list">
         <div class="empty-state">
-          <div class="empty-icon">ð </div>
+          <div class="empty-icon">🏠</div>
           <div class="empty-title">Nenhuma vistoria</div>
-          <div class="empty-text">Toque em "Nova Vistoria" para registrar sua primeira vistoria de imÃ³vel.</div>
-          <button class="btn btn-primary" onclick="showNewInspection()">ComeÃ§ar agora</button>
+          <div class="empty-text">Toque em "Nova Vistoria" para registrar sua primeira vistoria de imóvel.</div>
+          <button class="btn btn-primary" onclick="showNewInspection()">Começar agora</button>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- TAB: EstatÃ­sticas -->
+  <!-- TAB: Estatísticas -->
   <div id="dash-tab-estatisticas" style="display:none">
     <div class="stats-section">
       <div class="stats-grid">
@@ -605,7 +605,7 @@ textarea.form-input { resize: vertical; min-height: 88px; line-height: 1.5; }
         </div>
         <div class="stat-card">
           <div class="stat-number" id="stat-mes">0</div>
-          <div class="stat-label">Este mÃªs</div>
+          <div class="stat-label">Este mês</div>
         </div>
         <div class="stat-card">
           <div class="stat-number" id="stat-andamento">0</div>
@@ -613,7 +613,7 @@ textarea.form-input { resize: vertical; min-height: 88px; line-height: 1.5; }
         </div>
         <div class="stat-card">
           <div class="stat-number" id="stat-concluido">0</div>
-          <div class="stat-label">ConcluÃ­das</div>
+          <div class="stat-label">Concluídas</div>
         </div>
       </div>
     </div>
@@ -623,9 +623,9 @@ textarea.form-input { resize: vertical; min-height: 88px; line-height: 1.5; }
   <div id="dash-tab-perfil" style="display:none">
     <div class="page-content mt-16">
       <div class="card">
-        <div class="card-title" id="profile-name">â</div>
-        <div class="text-small" id="profile-company">â</div>
-        <div class="text-small mt-4" id="profile-email">â</div>
+        <div class="card-title" id="profile-name">—</div>
+        <div class="text-small" id="profile-company">—</div>
+        <div class="text-small mt-4" id="profile-email">—</div>
       </div>
       <button class="btn btn-outline btn-full mt-8" onclick="logout()">Sair da conta</button>
     </div>
@@ -649,20 +649,20 @@ textarea.form-input { resize: vertical; min-height: 88px; line-height: 1.5; }
       <div class="step-circle" id="sc-4">4</div>
     </div>
 
-    <!-- STEP 1: ImÃ³vel -->
+    <!-- STEP 1: Imóvel -->
     <div id="wstep-1">
-      <div class="chip-header">ð  Dados do ImÃ³vel</div>
+      <div class="chip-header">🏠 Dados do Imóvel</div>
       <div class="card">
         <div class="form-group">
           <label class="form-label">Tipo de Vistoria *</label>
           <select id="wi-type" class="form-input">
-            <option value="entrada">Entrada â inÃ­cio da locaÃ§Ã£o</option>
-            <option value="saida">SaÃ­da â fim da locaÃ§Ã£o</option>
+            <option value="entrada">Entrada — início da locação</option>
+            <option value="saida">Saída — fim da locação</option>
           </select>
         </div>
         <div class="form-group">
-          <label class="form-label">EndereÃ§o Completo do ImÃ³vel *</label>
-          <input type="text" id="wi-address" class="form-input" placeholder="Rua, nÂº, bairro, cidade â UF"/>
+          <label class="form-label">Endereço Completo do Imóvel *</label>
+          <input type="text" id="wi-address" class="form-input" placeholder="Rua, nÂº, bairro, cidade – UF"/>
         </div>
         <div class="grid-2">
           <div class="form-group">
@@ -670,11 +670,11 @@ textarea.form-input { resize: vertical; min-height: 88px; line-height: 1.5; }
             <select id="wi-prop-type" class="form-input">
               <option>Apartamento</option><option>Casa</option>
               <option>Comercial</option><option>Sala</option>
-              <option>GalpÃ£o</option><option>Outro</option>
+              <option>Galpão</option><option>Outro</option>
             </select>
           </div>
           <div class="form-group">
-            <label class="form-label">Ãrea (mÂ²)</label>
+            <label class="form-label">Área (mÂ²)</label>
             <input type="number" id="wi-area" class="form-input" placeholder="65"/>
           </div>
         </div>
@@ -684,11 +684,11 @@ textarea.form-input { resize: vertical; min-height: 88px; line-height: 1.5; }
         </div>
       </div>
 
-      <div class="chip-header">ð¢ Dados da ImobiliÃ¡ria</div>
+      <div class="chip-header">🏢 Dados da Imobiliária</div>
       <div class="card">
         <div class="form-group">
-          <label class="form-label">Nome da ImobiliÃ¡ria</label>
-          <input type="text" id="wi-imob-name" class="form-input" placeholder="Nome da imobiliÃ¡ria"/>
+          <label class="form-label">Nome da Imobiliária</label>
+          <input type="text" id="wi-imob-name" class="form-input" placeholder="Nome da imobiliária"/>
         </div>
         <div class="grid-2">
           <div class="form-group">
@@ -701,20 +701,20 @@ textarea.form-input { resize: vertical; min-height: 88px; line-height: 1.5; }
           </div>
         </div>
         <div class="form-group">
-          <label class="form-label">EndereÃ§o da ImobiliÃ¡ria</label>
-          <input type="text" id="wi-imob-address" class="form-input" placeholder="EndereÃ§o"/>
+          <label class="form-label">Endereço da Imobiliária</label>
+          <input type="text" id="wi-imob-address" class="form-input" placeholder="Endereço"/>
         </div>
       </div>
-      <button class="btn btn-primary btn-full" onclick="wizardNext(1)">PrÃ³ximo â</button>
+      <button class="btn btn-primary btn-full" onclick="wizardNext(1)">Próximo â</button>
     </div>
 
     <!-- STEP 2: Partes -->
     <div id="wstep-2" style="display:none">
-      <div class="chip-header">ð¤ Locador (ProprietÃ¡rio)</div>
+      <div class="chip-header">👤 Locador (Proprietário)</div>
       <div class="card">
         <div class="form-group">
           <label class="form-label">Nome Completo</label>
-          <input type="text" id="wi-loc-name" class="form-input" placeholder="Nome do proprietÃ¡rio"/>
+          <input type="text" id="wi-loc-name" class="form-input" placeholder="Nome do proprietário"/>
         </div>
         <div class="grid-2">
           <div class="form-group"><label class="form-label">CPF</label>
@@ -730,7 +730,7 @@ textarea.form-input { resize: vertical; min-height: 88px; line-height: 1.5; }
         </div>
       </div>
 
-      <div class="chip-header">ð¤ LocatÃ¡rio (Inquilino)</div>
+      <div class="chip-header">👤 Locatário (Inquilino)</div>
       <div class="card">
         <div class="form-group">
           <label class="form-label">Nome Completo</label>
@@ -766,15 +766,15 @@ textarea.form-input { resize: vertical; min-height: 88px; line-height: 1.5; }
 
       <div class="flex gap-10">
         <button class="btn btn-outline" style="flex:0 0 auto" onclick="wizardBack(2)">â</button>
-        <button class="btn btn-primary btn-full" onclick="wizardNext(2)">PrÃ³ximo â</button>
+        <button class="btn btn-primary btn-full" onclick="wizardNext(2)">Próximo â</button>
       </div>
     </div>
 
     <!-- STEP 3: Ambientes -->
     <div id="wstep-3" style="display:none">
-      <div class="chip-header">ð  Selecione os Ambientes</div>
+      <div class="chip-header">🏠 Selecione os Ambientes</div>
       <div class="card">
-        <p class="text-small mb-12">Selecione os ambientes do imÃ³vel para vistoriar. VocÃª poderÃ¡ adicionar itens e fotos em cada um.</p>
+        <p class="text-small mb-12">Selecione os ambientes do imóvel para vistoriar. Você poderá adicionar itens e fotos em cada um.</p>
         <div class="room-check-list" id="room-check-list">
           <div class="room-check-item" onclick="toggleRoomCheck(this, 'Sala de Estar')">
             <div class="check-box"></div><span class="room-check-label">Sala de Estar</span>
@@ -791,8 +791,8 @@ textarea.form-input { resize: vertical; min-height: 88px; line-height: 1.5; }
           <div class="room-check-item" onclick="toggleRoomCheck(this, 'Banheiro')">
             <div class="check-box"></div><span class="room-check-label">Banheiro</span>
           </div>
-          <div class="room-check-item" onclick="toggleRoomCheck(this, 'Ãrea de ServiÃ§o')">
-            <div class="check-box"></div><span class="room-check-label">Ãrea de ServiÃ§o</span>
+          <div class="room-check-item" onclick="toggleRoomCheck(this, 'Área de Serviço')">
+            <div class="check-box"></div><span class="room-check-label">Área de Serviço</span>
           </div>
           <div class="room-check-item" onclick="toggleRoomCheck(this, 'Garagem')">
             <div class="check-box"></div><span class="room-check-label">Garagem</span>
@@ -814,12 +814,12 @@ textarea.form-input { resize: vertical; min-height: 88px; line-height: 1.5; }
 
     <!-- STEP 4: Vistoria por ambiente -->
     <div id="wstep-4" style="display:none">
-      <div class="chip-header" id="step4-header">ð¸ Registre os Itens</div>
-      <p class="text-small mb-12">Adicione fotos de cada item. A IA irÃ¡ gerar a descriÃ§Ã£o automaticamente.</p>
+      <div class="chip-header" id="step4-header">📸 Registre os Itens</div>
+      <p class="text-small mb-12">Adicione fotos de cada item. A IA irá gerar a descrição automaticamente.</p>
       <div id="rooms-list"></div>
       <div class="form-group mt-8">
-        <label class="form-label">ObservaÃ§Ãµes Gerais</label>
-        <textarea id="wi-obs" class="form-input" placeholder="ObservaÃ§Ãµes adicionais sobre a vistoria..."></textarea>
+        <label class="form-label">Observações Gerais</label>
+        <textarea id="wi-obs" class="form-input" placeholder="Observações adicionais sobre a vistoria..."></textarea>
       </div>
       <div class="flex gap-10 mt-8">
         <button class="btn btn-outline" style="flex:0 0 auto" onclick="wizardBack(4)">â</button>
@@ -835,8 +835,8 @@ textarea.form-input { resize: vertical; min-height: 88px; line-height: 1.5; }
       <div class="sig-block">
         <div class="sig-block-header">
           <div>
-            <div class="sig-block-title">Locador / ProprietÃ¡rio</div>
-            <div class="sig-block-name" id="signame-locador">â</div>
+            <div class="sig-block-title">Locador / Proprietário</div>
+            <div class="sig-block-name" id="signame-locador">—</div>
           </div>
           <div class="sig-block-status" id="sigstatus-locador">Pendente</div>
         </div>
@@ -852,8 +852,8 @@ textarea.form-input { resize: vertical; min-height: 88px; line-height: 1.5; }
       <div class="sig-block">
         <div class="sig-block-header">
           <div>
-            <div class="sig-block-title">LocatÃ¡rio / Inquilino</div>
-            <div class="sig-block-name" id="signame-locatario">â</div>
+            <div class="sig-block-title">Locatário / Inquilino</div>
+            <div class="sig-block-name" id="signame-locatario">—</div>
           </div>
           <div class="sig-block-status" id="sigstatus-locatario">Pendente</div>
         </div>
@@ -870,7 +870,7 @@ textarea.form-input { resize: vertical; min-height: 88px; line-height: 1.5; }
         <div class="sig-block-header">
           <div>
             <div class="sig-block-title">Corretor / Vistoriador</div>
-            <div class="sig-block-name" id="signame-corretor">â</div>
+            <div class="sig-block-name" id="signame-corretor">—</div>
           </div>
           <div class="sig-block-status" id="sigstatus-corretor">Pendente</div>
         </div>
@@ -913,11 +913,11 @@ textarea.form-input { resize: vertical; min-height: 88px; line-height: 1.5; }
       <button class="btn btn-outline btn-sm" onclick="qi('Porta')">Porta</button>
       <button class="btn btn-outline btn-sm" onclick="qi('Torneira')">Torneira</button>
       <button class="btn btn-outline btn-sm" onclick="qi('Tomada')">Tomada</button>
-      <button class="btn btn-outline btn-sm" onclick="qi('ArmÃ¡rio')">ArmÃ¡rio</button>
+      <button class="btn btn-outline btn-sm" onclick="qi('Armário')">Armário</button>
       <button class="btn btn-outline btn-sm" onclick="qi('Pia')">Pia</button>
       <button class="btn btn-outline btn-sm" onclick="qi('Chuveiro')">Chuveiro</button>
-      <button class="btn btn-outline btn-sm" onclick="qi('Vaso SanitÃ¡rio')">Vaso</button>
-      <button class="btn btn-outline btn-sm" onclick="qi('RodapÃ©')">RodapÃ©</button>
+      <button class="btn btn-outline btn-sm" onclick="qi('Vaso Sanitário')">Vaso</button>
+      <button class="btn btn-outline btn-sm" onclick="qi('Rodapé')">Rodapé</button>
       <button class="btn btn-outline btn-sm" onclick="qi('Interruptor')">Interruptor</button>
       <button class="btn btn-outline btn-sm" onclick="qi('Vidro')">Vidro</button>
     </div>
@@ -1010,7 +1010,7 @@ async function api(method, path, body = null, isMultipart = false) {
       return { blob: await r.blob(), ok: r.ok };
     const d = await r.json();
     return { ...d, ok: r.ok };
-  } catch { return { error: 'Erro de conexÃ£o', ok: false }; }
+  } catch { return { error: 'Erro de conexão', ok: false }; }
 }
 
 // âââ TOAST & LOADING ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
@@ -1061,8 +1061,8 @@ async function doRegister() {
   const creci = document.getElementById('reg-creci').value.trim();
   const password = document.getElementById('reg-password').value;
   if (!name || !company_name || !email || !password)
-    return toast('Preencha todos os campos obrigatÃ³rios', 'error');
-  if (password.length < 6) return toast('Senha deve ter no mÃ­nimo 6 caracteres', 'error');
+    return toast('Preencha todos os campos obrigatórios', 'error');
+  if (password.length < 6) return toast('Senha deve ter no mínimo 6 caracteres', 'error');
   showLoading('Criando conta...');
   const r = await api('POST', '/api/auth/register', { name, company_name, email, creci, password });
   hideLoading();
@@ -1120,20 +1120,20 @@ async function loadDashboard() {
   const container = document.getElementById('inspections-list');
   if (!list.length) {
     container.innerHTML = `<div class="empty-state">
-      <div class="empty-icon">ð </div>
+      <div class="empty-icon">🏠</div>
       <div class="empty-title">Nenhuma vistoria ainda</div>
-      <div class="empty-text">Registre sua primeira vistoria tocando no botÃ£o + abaixo.</div>
+      <div class="empty-text">Registre sua primeira vistoria tocando no botão + abaixo.</div>
       <button class="btn btn-primary" onclick="showNewInspection()">+ Nova Vistoria</button>
     </div>`; return;
   }
 
   container.innerHTML = list.slice(0,30).map(i => {
-    const tipo = i.type === 'entrada' ? 'Entrada' : 'SaÃ­da';
+    const tipo = i.type === 'entrada' ? 'Entrada' : 'Saída';
     const icon = i.type === 'entrada' ? 'ð' : 'ð¦';
     return `<div class="insp-card" onclick="openInspection('${i.id}')">
       <div class="insp-card-icon">${icon}</div>
       <div class="insp-card-body">
-        <div class="insp-card-addr">${i.property_address || 'EndereÃ§o nÃ£o informado'}</div>
+        <div class="insp-card-addr">${i.property_address || 'Endereço não informado'}</div>
         <div class="insp-card-type">${tipo}</div>
         <div class="insp-card-date">${i.inspection_date || formatDate(i.created_at)}</div>
       </div>
@@ -1195,7 +1195,7 @@ function gotoWStep(step) {
 async function wizardNext(step) {
   if (step === 1) {
     if (!document.getElementById('wi-address').value.trim())
-      return toast('EndereÃ§o do imÃ³vel Ã© obrigatÃ³rio', 'error');
+      return toast('Endereço do imóvel é obrigatório', 'error');
     const dateVal = document.getElementById('wi-date').value;
     const fmtDate = dateVal ? new Date(dateVal+'T12:00:00').toLocaleDateString('pt-BR') : '';
     showLoading('Criando vistoria...');
@@ -1235,7 +1235,7 @@ async function wizardNext(step) {
       return toast('Selecione ao menos um ambiente', 'error');
     gotoWStep(4);
     document.getElementById('step4-header').textContent =
-      `ð¸ Registre os Itens (${wizard.selectedRooms.length} ambientes)`;
+      `📸 Registre os Itens (${wizard.selectedRooms.length} ambientes)`;
     await buildRoomsList();
   }
   else if (step === 4) {
@@ -1272,7 +1272,7 @@ function addCustomRoom() {
   const input = document.getElementById('custom-room');
   const name = input.value.trim();
   if (!name) return;
-  if (wizard.selectedRooms.includes(name)) return toast('Ambiente jÃ¡ adicionado', 'warning');
+  if (wizard.selectedRooms.includes(name)) return toast('Ambiente já adicionado', 'warning');
   wizard.selectedRooms.push(name);
   // Add to list
   const list = document.getElementById('room-check-list');
@@ -1305,9 +1305,9 @@ function renderRoomCard(room) {
 
   const roomIcons = {
     'Sala de Estar': 'ð', 'Cozinha': 'ð³', 'Quarto 1': 'ð', 'Quarto 2': 'ð',
-    'Banheiro': 'ð¿', 'Ãrea de ServiÃ§o': 'ð§º', 'Garagem': 'ð', 'Varanda': 'ð¿',
+    'Banheiro': 'ð¿', 'Área de Serviço': 'ð§º', 'Garagem': 'ð', 'Varanda': 'ð¿',
   };
-  const icon = roomIcons[room.name] || 'ð ';
+  const icon = roomIcons[room.name] || '🏠';
 
   el.innerHTML = `
     <div class="room-header" onclick="toggleRoom('${room.id}')">
@@ -1369,11 +1369,11 @@ function renderItemCard(item, roomId) {
   el.innerHTML = `
     <div class="item-header">
       <span class="item-name">${item.name}</span>
-      <span class="cond cond-default" id="cond-${item.id}">â</span>
+      <span class="cond cond-default" id="cond-${item.id}">—</span>
     </div>
     <div id="photo-preview-${item.id}"></div>
     <div id="ai-box-${item.id}" style="display:none">
-      <div class="ai-badge">â¦ DescriÃ§Ã£o gerada pela IA</div>
+      <div class="ai-badge">â¦ Descrição gerada pela IA</div>
       <div class="ai-description" id="ai-desc-${item.id}"></div>
     </div>
     <div id="edit-box-${item.id}" style="display:none">
@@ -1382,7 +1382,7 @@ function renderItemCard(item, roomId) {
     </div>
     <div class="item-actions">
       <label class="btn btn-primary btn-sm" style="cursor:pointer;font-size:13px">
-        ð· Adicionar Foto
+        📷 Adicionar Foto
         <input type="file" accept="image/*" capture="environment" style="display:none"
           onchange="uploadPhoto('${item.id}', this)"/>
       </label>
@@ -1408,7 +1408,7 @@ async function uploadPhoto(itemId, input) {
   };
   reader.readAsDataURL(file);
 
-  showLoading('ð¤ A IA estÃ¡ analisando a foto...\nAguarde alguns segundos');
+  showLoading('ð¤ A IA está analisando a foto...\nAguarde alguns segundos');
   const fd = new FormData(); fd.append('photo', file);
   const r = await api('POST', `/api/items/${itemId}/photo`, fd, true);
   hideLoading();
@@ -1425,11 +1425,11 @@ async function uploadPhoto(itemId, input) {
     aiDesc.textContent = ai.description;
     if (ai.condition && condEl) {
       condEl.textContent = ai.condition;
-      condEl.className = `cond cond-${ai.condition.replace(/[Ã³Ã´]/g,'o').replace(/[Ã©Ãª]/g,'e')}`;
+      condEl.className = `cond cond-${ai.condition.replace(/[óô]/g,'o').replace(/[éê]/g,'e')}`;
     }
     toast('â IA analisou a foto!', 'success');
   } else if (!ai?.success) {
-    toast(ai?.description || 'Foto salva (configure a chave de IA para anÃ¡lise automÃ¡tica)', 'warning');
+    toast(ai?.description || 'Foto salva (configure a chave de IA para análise automática)', 'warning');
   }
 }
 
@@ -1452,7 +1452,7 @@ async function saveDesc(itemId) {
   const aiBox = document.getElementById(`ai-box-${itemId}`);
   if (aiDesc && text) { aiDesc.textContent = text; aiBox.style.display = 'block'; }
   document.getElementById(`edit-box-${itemId}`).style.display = 'none';
-  toast('DescriÃ§Ã£o salva!', 'success');
+  toast('Descrição salva!', 'success');
 }
 
 async function deleteItem(itemId, roomId) {
@@ -1537,7 +1537,7 @@ async function openInspection(id) {
 }
 
 function renderDetail(insp) {
-  const tipo = insp.type==='entrada' ? 'Entrada' : 'SaÃ­da';
+  const tipo = insp.type==='entrada' ? 'Entrada' : 'Saída';
   const rooms = insp.rooms || [];
   const sigs = insp.signatures || [];
 
@@ -1549,17 +1549,17 @@ function renderDetail(insp) {
       return `<div class="item-card">
         <div class="item-header">
           <span class="item-name">${item.name}</span>
-          <span class="cond cond-${(item.condition||'').replace(/[Ã³Ã´]/g,'o').replace(/[Ã©Ãª]/g,'e')||'default'}">
-            ${item.condition||'â'}
+          <span class="cond cond-${(item.condition||'').replace(/[óô]/g,'o').replace(/[éê]/g,'e')||'default'}">
+            ${item.condition||'—'}
           </span>
         </div>
         ${photo}
-        ${desc ? `<div class="ai-badge">â¦ DescriÃ§Ã£o IA</div><div class="ai-description">${desc}</div>` : ''}
+        ${desc ? `<div class="ai-badge">â¦ Descrição IA</div><div class="ai-description">${desc}</div>` : ''}
       </div>`;
     }).join('');
     return `<div class="room-card">
       <div class="room-header"><div class="room-header-left">
-        <div class="room-icon">ð </div>
+        <div class="room-icon">🏠</div>
         <div class="room-name">${room.name}</div>
       </div></div>
       <div class="room-body">${items||'<p class="text-small mt-8">Nenhum item</p>'}</div>
@@ -1572,21 +1572,21 @@ function renderDetail(insp) {
         <span class="tag tag-${insp.type}">${tipo}</span>
         <span class="tag tag-${insp.status}">${insp.status}</span>
       </div>
-      <div style="font-size:17px;font-weight:800">${insp.property_address||'â'}</div>
+      <div style="font-size:17px;font-weight:800">${insp.property_address||'—'}</div>
       <div class="text-small mt-4">${insp.property_type||''} ${insp.property_area?'Â· '+insp.property_area+'mÂ²':''}</div>
-      <div class="text-small mt-2">ð ${insp.inspection_date||'â'}</div>
-      ${insp.imobiliaria_name?`<div class="text-small mt-2">ð¢ ${insp.imobiliaria_name}</div>`:''}
+      <div class="text-small mt-2">ð ${insp.inspection_date||'—'}</div>
+      ${insp.imobiliaria_name?`<div class="text-small mt-2">🏢 ${insp.imobiliaria_name}</div>`:''}
     </div>
     <div class="card">
       <div class="card-title">Partes Envolvidas</div>
       ${insp.locador_name?`<div class="mb-8"><div class="form-label">Locador</div><div>${insp.locador_name}</div>${insp.locador_cpf?`<div class="text-small">CPF: ${insp.locador_cpf}</div>`:''}</div>`:''}
-      ${insp.locatario_name?`<div class="mb-8"><div class="form-label">LocatÃ¡rio</div><div>${insp.locatario_name}</div>${insp.locatario_cpf?`<div class="text-small">CPF: ${insp.locatario_cpf}</div>`:''}</div>`:''}
+      ${insp.locatario_name?`<div class="mb-8"><div class="form-label">Locatário</div><div>${insp.locatario_name}</div>${insp.locatario_cpf?`<div class="text-small">CPF: ${insp.locatario_cpf}</div>`:''}</div>`:''}
       ${insp.corretor_name?`<div><div class="form-label">Corretor</div><div>${insp.corretor_name} ${insp.corretor_creci?'Â· CRECI '+insp.corretor_creci:''}</div></div>`:''}
     </div>
     ${rooms.length?`<div style="font-size:15px;font-weight:700;margin:12px 0 8px">Ambientes (${rooms.length})</div>${roomsHtml}`:''}
     ${sigs.length?`<div class="card"><div class="card-title">âï¸ Assinaturas</div>
       ${sigs.map(s=>`<div class="flex gap-8 mb-8"><span class="tag tag-concluido">â</span>
-        <span class="text-small">${s.party_type} â ${s.party_name||''}</span></div>`).join('')}
+        <span class="text-small">${s.party_type} — ${s.party_name||''}</span></div>`).join('')}
     </div>`:''}
     <button class="btn btn-primary btn-full mt-8 mb-16" onclick="dlPDF('${insp.id}')">
       ð Baixar Laudo PDF
