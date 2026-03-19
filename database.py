@@ -1,135 +1,172 @@
-import sqlite3
 import os
-from pathlib import Path
+import psycopg2
+import psycopg2.extras
 
-DB_PATH = os.path.join(os.path.dirname(__file__), 'db', 'izylo.db')
+DATABASE_URL = os.environ.get('DATABASE_URL', '')
+
+# Fix Railway's postgres:// scheme to postgresql://
+if DATABASE_URL.startswith('postgres://'):
+    DATABASE_URL = DATABASE_URL.replace('postgres://', 'postgresql://', 1)
+
+
+class CompatCursor:
+    """Wraps a psycopg2 RealDictCursor to behave like sqlite3's cursor."""
+    def __init__(self, cursor):
+        self._cursor = cursor
+
+    def fetchone(self):
+        return self._cursor.fetchone()
+
+    def fetchall(self):
+        return self._cursor.fetchall()
+
+    @property
+    def lastrowid(self):
+        # psycopg2 doesn't set lastrowid; callers that need it should use RETURNING
+        return None
+
+    @property
+    def rowcount(self):
+        return self._cursor.rowcount
+
+    def __iter__(self):
+        return iter(self._cursor.fetchall())
+
+
+class CompatConnection:
+    """Thin wrapper making psycopg2 behave like sqlite3 for this codebase.
+
+    Key behaviours:
+    - Converts '?' placeholders to '%s' automatically
+    - Uses RealDictCursor so rows support dict(row) and named-column access
+    - Exposes .execute(), .commit(), .rollback(), .close()
+    """
+
+    def __init__(self, conn):
+        self._conn = conn
+
+    def execute(self, sql, params=None):
+        sql = sql.replace('?', '%s')
+        cursor = self._conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+        if params is not None:
+            params = list(params) if not isinstance(params, (list, tuple)) else params
+            cursor.execute(sql, params)
+        else:
+            cursor.execute(sql)
+        return CompatCursor(cursor)
+
+    def commit(self):
+        self._conn.commit()
+
+    def rollback(self):
+        self._conn.rollback()
+
+    def close(self):
+        self._conn.close()
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        if exc_type:
+            self.rollback()
+        else:
+            self.commit()
+        self.close()
+        return False
+
 
 def get_conn():
-    conn = sqlite3.connect(DB_PATH)
-    conn.row_factory = sqlite3.Row
-    conn.execute("PRAGMA foreign_keys = ON")
-    return conn
+    """Return a CompatConnection wrapping a fresh psycopg2 connection."""
+    conn = psycopg2.connect(DATABASE_URL)
+    conn.autocommit = False
+    return CompatConnection(conn)
+
 
 def init_db():
-    Path(os.path.dirname(DB_PATH)).mkdir(parents=True, exist_ok=True)
-    conn = get_conn()
-    c = conn.cursor()
+    """Create all tables if they do not already exist."""
+    raw = psycopg2.connect(DATABASE_URL)
+    c = raw.cursor()
 
-    c.executescript("""
-    CREATE TABLE IF NOT EXISTS users (
-        id TEXT PRIMARY KEY,
-        name TEXT NOT NULL,
-        email TEXT UNIQUE NOT NULL,
-        password_hash TEXT NOT NULL,
-        company_name TEXT,
-        creci TEXT,
-        phone TEXT,
-        plan TEXT DEFAULT 'basic',
-        inspections_used INTEGER DEFAULT 0,
-        active INTEGER DEFAULT 1,
-        created_at TEXT DEFAULT (datetime('now'))
-    );
-
-    CREATE TABLE IF NOT EXISTS inspections (
-        id TEXT PRIMARY KEY,
-        user_id TEXT NOT NULL,
-        type TEXT NOT NULL CHECK(type IN ('entrada','saida')),
-        status TEXT DEFAULT 'rascunho',
-        property_address TEXT,
-        property_type TEXT,
-        property_area TEXT,
-        inspection_date TEXT,
-        -- Locador
-        locador_name TEXT,
-        locador_cpf TEXT,
-        locador_rg TEXT,
-        locador_phone TEXT,
-        locador_email TEXT,
-        -- Locatario
-        locatario_name TEXT,
-        locatario_cpf TEXT,
-        locatario_rg TEXT,
-        locatario_phone TEXT,
-        locatario_email TEXT,
-        -- Múltiplos locadores/locatários (JSON arrays)
-        locadores_json TEXT,
-        locatarios_json TEXT,
-        -- Corretor / Avaliador
-        corretor_name TEXT,
-        corretor_creci TEXT,
-        corretor_phone TEXT,
-        corretor_email TEXT,
-        -- Imobiliaria
-        imobiliaria_name TEXT,
-        imobiliaria_cnpj TEXT,
-        imobiliaria_phone TEXT,
-        imobiliaria_address TEXT,
-        -- Geral
-        observations TEXT,
-        created_at TEXT DEFAULT (datetime('now')),
-        updated_at TEXT DEFAULT (datetime('now')),
-        FOREIGN KEY(user_id) REFERENCES users(id)
-    );
-
-    CREATE TABLE IF NOT EXISTS rooms (
-        id TEXT PRIMARY KEY,
-        inspection_id TEXT NOT NULL,
-        name TEXT NOT NULL,
-        order_num INTEGER DEFAULT 0,
-        general_condition TEXT,
-        observations TEXT,
-        created_at TEXT DEFAULT (datetime('now')),
-        FOREIGN KEY(inspection_id) REFERENCES inspections(id)
-    );
-
-    CREATE TABLE IF NOT EXISTS room_items (
-        id TEXT PRIMARY KEY,
-        room_id TEXT NOT NULL,
-        name TEXT NOT NULL,
-        condition TEXT,
-        ai_description TEXT,
-        manual_description TEXT,
-        photo_path TEXT,
-        photo_filename TEXT,
-        created_at TEXT DEFAULT (datetime('now')),
-        FOREIGN KEY(room_id) REFERENCES rooms(id)
-    );
-
-    CREATE TABLE IF NOT EXISTS item_photos (
-        id TEXT PRIMARY KEY,
-        item_id TEXT NOT NULL,
-        photo_path TEXT NOT NULL,
-        photo_filename TEXT NOT NULL,
-        created_at TEXT DEFAULT (datetime('now')),
-        FOREIGN KEY(item_id) REFERENCES room_items(id)
-    );
-
-    CREATE TABLE IF NOT EXISTS signatures (
-        id TEXT PRIMARY KEY,
-        inspection_id TEXT NOT NULL,
-        party_type TEXT NOT NULL,
-        party_name TEXT,
-        signature_data TEXT,
-        signed_at TEXT DEFAULT (datetime('now')),
-        FOREIGN KEY(inspection_id) REFERENCES inspections(id)
-    );
+    c.execute("""
+        CREATE TABLE IF NOT EXISTS users (
+            id TEXT PRIMARY KEY,
+            email TEXT UNIQUE NOT NULL,
+            password_hash TEXT NOT NULL,
+            name TEXT,
+            created_at TEXT DEFAULT (to_char(NOW(), 'YYYY-MM-DD"T"HH24:MI:SS'))
+        )
     """)
-    conn.commit()
 
-    # Migration: add JSON columns if they don't exist yet
-    try:
-        conn.execute("ALTER TABLE inspections ADD COLUMN locadores_json TEXT")
-        conn.commit()
-    except Exception:
-        pass
-    try:
-        conn.execute("ALTER TABLE inspections ADD COLUMN locatarios_json TEXT")
-        conn.commit()
-    except Exception:
-        pass
+    c.execute("""
+        CREATE TABLE IF NOT EXISTS inspections (
+            id TEXT PRIMARY KEY,
+            user_id TEXT NOT NULL REFERENCES users(id),
+            address TEXT,
+            city TEXT,
+            state TEXT,
+            property_type TEXT,
+            inspection_date TEXT,
+            locador_name TEXT,
+            locador_cpf TEXT,
+            locador_rg TEXT,
+            locador_phone TEXT,
+            locador_email TEXT,
+            locatario_name TEXT,
+            locatario_cpf TEXT,
+            locatario_rg TEXT,
+            locatario_phone TEXT,
+            locatario_email TEXT,
+            locadores_json TEXT,
+            locatarios_json TEXT,
+            status TEXT DEFAULT 'em_andamento',
+            created_at TEXT DEFAULT (to_char(NOW(), 'YYYY-MM-DD"T"HH24:MI:SS')),
+            updated_at TEXT DEFAULT (to_char(NOW(), 'YYYY-MM-DD"T"HH24:MI:SS'))
+        )
+    """)
 
-    conn.close()
-    print("✅ Banco de dados inicializado")
+    c.execute("""
+        CREATE TABLE IF NOT EXISTS rooms (
+            id TEXT PRIMARY KEY,
+            inspection_id TEXT NOT NULL REFERENCES inspections(id) ON DELETE CASCADE,
+            name TEXT NOT NULL,
+            order_num INTEGER DEFAULT 0,
+            created_at TEXT DEFAULT (to_char(NOW(), 'YYYY-MM-DD"T"HH24:MI:SS'))
+        )
+    """)
 
-if __name__ == '__main__':
-    init_db()
+    c.execute("""
+        CREATE TABLE IF NOT EXISTS room_items (
+            id TEXT PRIMARY KEY,
+            room_id TEXT NOT NULL REFERENCES rooms(id) ON DELETE CASCADE,
+            name TEXT NOT NULL,
+            condition TEXT,
+            notes TEXT,
+            order_num INTEGER DEFAULT 0,
+            created_at TEXT DEFAULT (to_char(NOW(), 'YYYY-MM-DD"T"HH24:MI:SS'))
+        )
+    """)
+
+    c.execute("""
+        CREATE TABLE IF NOT EXISTS item_photos (
+            id TEXT PRIMARY KEY,
+            item_id TEXT NOT NULL REFERENCES room_items(id) ON DELETE CASCADE,
+            filename TEXT,
+            data BYTEA,
+            created_at TEXT DEFAULT (to_char(NOW(), 'YYYY-MM-DD"T"HH24:MI:SS'))
+        )
+    """)
+
+    c.execute("""
+        CREATE TABLE IF NOT EXISTS signatures (
+            id TEXT PRIMARY KEY,
+            inspection_id TEXT NOT NULL REFERENCES inspections(id) ON DELETE CASCADE,
+            party TEXT,
+            signature_data TEXT,
+            signed_at TEXT DEFAULT (to_char(NOW(), 'YYYY-MM-DD"T"HH24:MI:SS'))
+        )
+    """)
+
+    raw.commit()
+    raw.close()
+    print("\u2705 Banco de dados PostgreSQL inicializado com sucesso")
