@@ -1612,18 +1612,17 @@ async function saveSig(party) {
   toast(`Assinatura confirmada!`, 'success');
 }
 
-function generatePDF() {
- ync function generatePDF() {
-  
- const a = document.createElement('a');
- a.href = `/api/inspections/${wizard.inspectionId}/pdf?token=${currentToken}`;
- a.download = `izyLAUDO_Laudo_${wizard.inspectionId.substring(0,8).toUpperCase()}.pdf`;
- a.style.display = 'none';
- document.body.appendChild(a);
- a.click();
- document.body.removeChild(a);
- hideLoading();
- toast('â Laudo gerado com sucesso!', 'success');
+async function generatePDF() {
+  showLoading('<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg> Gerando laudo PDF...');
+  const r = await api('GET', `/api/inspections/${wizard.inspectionId}/pdf`);
+  hideLoading();
+  if (r.blob) {
+    const url = URL.createObjectURL(r.blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = `izyLAUDO_Laudo_${wizard.inspectionId.substring(0,8).toUpperCase()}.pdf`;
+    document.body.appendChild(a); a.click();
+    document.body.removeChild(a); setTimeout(() => URL.revokeObjectURL(url), 10000);
+    toast('â Laudo gerado com sucesso!', 'success');
     setTimeout(() => { showPage('page-dashboard',null,false); loadDashboard(); }, 2000);
   } else { toast(r.error||'Erro ao gerar PDF', 'error'); }
 }
@@ -1703,15 +1702,18 @@ function renderDetail(insp) {
     </button>`;
 }
 
-function dlPDF(id) {
- const a = document.createElement('a');
- a.href = `/api/inspections/${id}/pdf?token=${currentToken}`;
- a.download = `izyLAUDO_Laudo_${id.substring(0,8).toUpperCase()}.pdf`;
- a.style.display = 'none';
- document.body.appendChild(a);
- a.click();
- document.body.removeChild(a);
- toast('PDF gerado!', 'success');
+async function dlPDF(id) {
+  showLoading('Gerando PDF...');
+  const r = await api('GET', `/api/inspections/${id}/pdf`);
+  hideLoading();
+  if (r.blob) {
+    const url = URL.createObjectURL(r.blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = `izyLAUDO_Laudo_${id.substring(0,8).toUpperCase()}.pdf`;
+    document.body.appendChild(a); a.click();
+    document.body.removeChild(a); setTimeout(() => URL.revokeObjectURL(url), 10000);
+    toast('PDF gerado!', 'success');
+  } else { toast(r.error||'Erro', 'error'); }
 }
 
 window.addEventListener('resize', () => {
