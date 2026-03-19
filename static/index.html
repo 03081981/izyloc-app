@@ -481,6 +481,23 @@ textarea.form-input { resize: vertical; min-height: 88px; line-height: 1.5; }
   .stats-grid { grid-template-columns: repeat(4, 1fr); }
   .fab { right: calc(50% - 280px + 24px); }
 }
+
+/* ─── MULTI-PARTY BLOCKS ─── */
+.btn-add-party {
+  width: 100%; margin-top: 6px; margin-bottom: 4px;
+  border: 2px dashed var(--blue); color: var(--blue);
+  background: var(--blue-light); border-radius: var(--radius);
+  padding: 10px 16px; font-weight: 600; font-size: 14px; cursor: pointer;
+  transition: background 0.15s;
+}
+.btn-add-party:hover { background: #dbeafe; }
+.party-block { position: relative; margin-bottom: 10px; }
+.party-block-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+.party-block-title { font-size: 12px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+.btn-remove-party { background: none; border: 1px solid var(--danger); cursor: pointer;
+  color: var(--danger); font-size: 12px; font-weight: 600; padding: 3px 10px;
+  border-radius: 6px; transition: all 0.15s; }
+.btn-remove-party:hover { background: #fee2e2; }
 </style>
 </head>
 <body>
@@ -717,45 +734,13 @@ textarea.form-input { resize: vertical; min-height: 88px; line-height: 1.5; }
 
     <!-- STEP 2: Partes -->
     <div id="wstep-2" style="display:none">
-      <div class="chip-header">👤 Locador (Proprietário)</div>
-      <div class="card">
-        <div class="form-group">
-          <label class="form-label">Nome Completo</label>
-          <input type="text" id="wi-loc-name" class="form-input" placeholder="Nome do proprietário"/>
-        </div>
-        <div class="grid-2">
-          <div class="form-group"><label class="form-label">CPF</label>
-            <input type="text" id="wi-loc-cpf" class="form-input" placeholder="000.000.000-00"/></div>
-          <div class="form-group"><label class="form-label">RG</label>
-            <input type="text" id="wi-loc-rg" class="form-input" placeholder="0000000"/></div>
-        </div>
-        <div class="grid-2">
-          <div class="form-group"><label class="form-label">Telefone</label>
-            <input type="text" id="wi-loc-phone" class="form-input" placeholder="(00) 00000-0000"/></div>
-          <div class="form-group"><label class="form-label">E-mail</label>
-            <input type="email" id="wi-loc-email" class="form-input" placeholder="email@ex.com"/></div>
-        </div>
-      </div>
+      <div class="chip-header">👤 Locadores (Proprietários)</div>
+      <div id="locadores-container"></div>
+      <button type="button" class="btn btn-outline btn-add-party" onclick="addLocador()">+ Adicionar locador</button>
 
-      <div class="chip-header">👤 Locatário (Inquilino)</div>
-      <div class="card">
-        <div class="form-group">
-          <label class="form-label">Nome Completo</label>
-          <input type="text" id="wi-locat-name" class="form-input" placeholder="Nome do inquilino"/>
-        </div>
-        <div class="grid-2">
-          <div class="form-group"><label class="form-label">CPF</label>
-            <input type="text" id="wi-locat-cpf" class="form-input" placeholder="000.000.000-00"/></div>
-          <div class="form-group"><label class="form-label">RG</label>
-            <input type="text" id="wi-locat-rg" class="form-input" placeholder="0000000"/></div>
-        </div>
-        <div class="grid-2">
-          <div class="form-group"><label class="form-label">Telefone</label>
-            <input type="text" id="wi-locat-phone" class="form-input" placeholder="(00) 00000-0000"/></div>
-          <div class="form-group"><label class="form-label">E-mail</label>
-            <input type="email" id="wi-locat-email" class="form-input" placeholder="email@ex.com"/></div>
-        </div>
-      </div>
+      <div class="chip-header" style="margin-top:16px">👤 Locatários (Inquilinos)</div>
+      <div id="locatarios-container"></div>
+      <button type="button" class="btn btn-outline btn-add-party" onclick="addLocatario()">+ Adicionar locatário</button>
 
       <div class="chip-header">🏅 Corretor / Vistoriador</div>
       <div class="card">
@@ -942,6 +927,66 @@ textarea.form-input { resize: vertical; min-height: 88px; line-height: 1.5; }
 </div>
 
 <script>
+// ─── MULTI-PARTY STATE ───────────────────────────────────────────────────────
+let locadores = [{name:'',cpf:'',rg:'',phone:'',email:''}];
+let locatarios = [{name:'',cpf:'',rg:'',phone:'',email:''}];
+
+function renderPartyBlock(type, idx, data, total) {
+  const isLoc = type === 'locador';
+  const p = isLoc ? 'loc' : 'locat';
+  const removeFn = isLoc ? 'removeLocador' : 'removeLocatario';
+  const headerHtml = (total > 1)
+    ? `<div class="party-block-header"><span class="party-block-title">${isLoc ? 'Locador' : 'Locatário'} ${idx+1}</span>${idx > 0 ? `<button class="btn-remove-party" onclick="${removeFn}(${idx})">✕ Remover</button>` : ''}</div>`
+    : '';
+  return `<div class="card party-block" id="${p}-block-${idx}">
+    ${headerHtml}
+    <div class="form-group"><label class="form-label">Nome Completo</label>
+      <input type="text" id="${p}-name-${idx}" class="form-input" placeholder="${isLoc ? 'Nome do proprietário' : 'Nome do inquilino'}" value="${(data.name||'').replace(/"/g,'&quot;')}"/></div>
+    <div class="grid-2">
+      <div class="form-group"><label class="form-label">CPF</label>
+        <input type="text" id="${p}-cpf-${idx}" class="form-input" placeholder="000.000.000-00" value="${(data.cpf||'').replace(/"/g,'&quot;')}"/></div>
+      <div class="form-group"><label class="form-label">RG</label>
+        <input type="text" id="${p}-rg-${idx}" class="form-input" placeholder="0000000" value="${(data.rg||'').replace(/"/g,'&quot;')}"/></div>
+    </div>
+    <div class="grid-2">
+      <div class="form-group"><label class="form-label">Telefone</label>
+        <input type="text" id="${p}-phone-${idx}" class="form-input" placeholder="(00) 00000-0000" value="${(data.phone||'').replace(/"/g,'&quot;')}"/></div>
+      <div class="form-group"><label class="form-label">E-mail</label>
+        <input type="email" id="${p}-email-${idx}" class="form-input" placeholder="email@ex.com" value="${(data.email||'').replace(/"/g,'&quot;')}"/></div>
+    </div>
+  </div>`;
+}
+function renderLocadores() {
+  const c = document.getElementById('locadores-container');
+  if (c) c.innerHTML = locadores.map((d,i) => renderPartyBlock('locador',i,d,locadores.length)).join('');
+}
+function renderLocatarios() {
+  const c = document.getElementById('locatarios-container');
+  if (c) c.innerHTML = locatarios.map((d,i) => renderPartyBlock('locatario',i,d,locatarios.length)).join('');
+}
+function addLocador() { locadores.push({name:'',cpf:'',rg:'',phone:'',email:''}); renderLocadores(); }
+function removeLocador(idx) { locadores.splice(idx,1); renderLocadores(); }
+function addLocatario() { locatarios.push({name:'',cpf:'',rg:'',phone:'',email:''}); renderLocatarios(); }
+function removeLocatario(idx) { locatarios.splice(idx,1); renderLocatarios(); }
+function collectLocadores() {
+  return locadores.map((_,i) => ({
+    name: document.getElementById(`loc-name-${i}`)?.value||'',
+    cpf:  document.getElementById(`loc-cpf-${i}`)?.value||'',
+    rg:   document.getElementById(`loc-rg-${i}`)?.value||'',
+    phone:document.getElementById(`loc-phone-${i}`)?.value||'',
+    email:document.getElementById(`loc-email-${i}`)?.value||'',
+  }));
+}
+function collectLocatarios() {
+  return locatarios.map((_,i) => ({
+    name: document.getElementById(`locat-name-${i}`)?.value||'',
+    cpf:  document.getElementById(`locat-cpf-${i}`)?.value||'',
+    rg:   document.getElementById(`locat-rg-${i}`)?.value||'',
+    phone:document.getElementById(`locat-phone-${i}`)?.value||'',
+    email:document.getElementById(`locat-email-${i}`)?.value||'',
+  }));
+}
+// ─────────────────────────────────────────────────────────────────────────────
 // ─── STATE ────────────────────────────────────────────────────────────────────
 const API = '';
 let currentUser = null, currentToken = null, currentInspection = null;
@@ -1161,10 +1206,10 @@ function showNewInspection() {
   wizard = { step: 1, inspectionId: null, selectedRooms: [] };
   // Reset forms
   ['wi-address','wi-area','wi-imob-name','wi-imob-cnpj','wi-imob-phone','wi-imob-address',
-   'wi-loc-name','wi-loc-cpf','wi-loc-rg','wi-loc-phone','wi-loc-email',
-   'wi-locat-name','wi-locat-cpf','wi-locat-rg','wi-locat-phone','wi-locat-email',
    'wi-corr-name','wi-corr-creci','wi-corr-phone','wi-corr-email','wi-obs'
   ].forEach(id => { const el = document.getElementById(id); if(el) el.value=''; });
+  locadores = [{name:'',cpf:'',rg:'',phone:'',email:''}];
+  locatarios = [{name:'',cpf:'',rg:'',phone:'',email:''}];
 
   // Reset room checkboxes
   document.querySelectorAll('.room-check-item').forEach(el => {
@@ -1197,6 +1242,7 @@ function gotoWStep(step) {
     if (el) el.style.display = (n === step) ? 'block' : 'none';
   });
   window.scrollTo(0,0);
+  if (step === 2) { renderLocadores(); renderLocatarios(); }
 }
 
 async function wizardNext(step) {
@@ -1225,10 +1271,8 @@ async function wizardNext(step) {
   else if (step === 2) {
     showLoading('Salvando...');
     const r = await api('PUT', `/api/inspections/${wizard.inspectionId}`, {
-      locador_name: v('wi-loc-name'), locador_cpf: v('wi-loc-cpf'),
-      locador_rg: v('wi-loc-rg'), locador_phone: v('wi-loc-phone'), locador_email: v('wi-loc-email'),
-      locatario_name: v('wi-locat-name'), locatario_cpf: v('wi-locat-cpf'),
-      locatario_rg: v('wi-locat-rg'), locatario_phone: v('wi-locat-phone'), locatario_email: v('wi-locat-email'),
+      locadores: collectLocadores(),
+      locatarios: collectLocatarios(),
       corretor_name: v('wi-corr-name'), corretor_creci: v('wi-corr-creci'),
       corretor_phone: v('wi-corr-phone'), corretor_email: v('wi-corr-email'),
     });
