@@ -22,7 +22,6 @@ class CompatCursor:
 
     @property
     def lastrowid(self):
-        # psycopg2 doesn't set lastrowid; callers that need it should use RETURNING
         return None
 
     @property
@@ -91,9 +90,13 @@ def init_db():
     c.execute("""
         CREATE TABLE IF NOT EXISTS users (
             id TEXT PRIMARY KEY,
+            name TEXT,
             email TEXT UNIQUE NOT NULL,
             password_hash TEXT NOT NULL,
-            name TEXT,
+            company_name TEXT,
+            creci TEXT,
+            phone TEXT,
+            active INTEGER DEFAULT 1,
             created_at TEXT DEFAULT (to_char(NOW(), 'YYYY-MM-DD"T"HH24:MI:SS'))
         )
     """)
