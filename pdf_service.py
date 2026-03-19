@@ -9,6 +9,7 @@ from reportlab.pdfgen import canvas as rl_canvas
 from PIL import Image as PILImage
 import io
 import os
+import json
 import base64
 from datetime import datetime
 
@@ -185,32 +186,54 @@ def generate_pdf(inspection_data: dict, rooms_data: list, signatures_data: list,
         story.append(section_header('PARTES ENVOLVIDAS', styles))
         story.append(Spacer(1, 4))
 
-        # Locador
-        if inspection.get('locador_name'):
-            story.append(Paragraph('LOCADOR (Proprietário)', ParagraphStyle(
-                'SubSec', fontName='Helvetica-Bold', fontSize=9, textColor=SECONDARY, spaceBefore=4, spaceAfter=2)))
+        # Locadores (suporte a múltiplos)
+        locadores_raw = inspection.get('locadores_json') or ''
+        try:
+            locadores_list = json.loads(locadores_raw) if locadores_raw else []
+        except Exception:
+            locadores_list = []
+        # Fallback para campo único legado
+        if not locadores_list and inspection.get('locador_name'):
+            locadores_list = [{'name': inspection.get('locador_name',''), 'cpf': inspection.get('locador_cpf',''),
+                                'rg': inspection.get('locador_rg',''), 'phone': inspection.get('locador_phone',''),
+                                'email': inspection.get('locador_email','')}]
+        for i, loc in enumerate(locadores_list):
+            label = 'LOCADOR (Proprietário)' if len(locadores_list) == 1 else f'LOCADOR {i+1} (Proprietário)'
+            story.append(Paragraph(label, ParagraphStyle(
+                f'SubSecLoc{i}', fontName='Helvetica-Bold', fontSize=9, textColor=SECONDARY, spaceBefore=4 if i==0 else 6, spaceAfter=2)))
             story.append(field_row([
-                ('Nome Completo', inspection.get('locador_name', '')),
-                ('CPF', inspection.get('locador_cpf', '')),
-                ('RG', inspection.get('locador_rg', '')),
+                ('Nome Completo', loc.get('name', '')),
+                ('CPF', loc.get('cpf', '')),
+                ('RG', loc.get('rg', '')),
             ], styles, [7*cm, 5*cm, 5*cm]))
             story.append(field_row([
-                ('Telefone', inspection.get('locador_phone', '')),
-                ('E-mail', inspection.get('locador_email', '')),
+                ('Telefone', loc.get('phone', '')),
+                ('E-mail', loc.get('email', '')),
             ], styles, [5*cm, 12*cm]))
 
-        # Locatário
-        if inspection.get('locatario_name'):
-            story.append(Paragraph('LOCATÁRIO (Inquilino)', ParagraphStyle(
-                'SubSec2', fontName='Helvetica-Bold', fontSize=9, textColor=SECONDARY, spaceBefore=6, spaceAfter=2)))
+        # Locatários (suporte a múltiplos)
+        locatarios_raw = inspection.get('locatarios_json') or ''
+        try:
+            locatarios_list = json.loads(locatarios_raw) if locatarios_raw else []
+        except Exception:
+            locatarios_list = []
+        # Fallback para campo único legado
+        if not locatarios_list and inspection.get('locatario_name'):
+            locatarios_list = [{'name': inspection.get('locatario_name',''), 'cpf': inspection.get('locatario_cpf',''),
+                                 'rg': inspection.get('locatario_rg',''), 'phone': inspection.get('locatario_phone',''),
+                                 'email': inspection.get('locatario_email','')}]
+        for i, locat in enumerate(locatarios_list):
+            label = 'LOCATÁRIO (Inquilino)' if len(locatarios_list) == 1 else f'LOCATÁRIO {i+1} (Inquilino)'
+            story.append(Paragraph(label, ParagraphStyle(
+                f'SubSecLocat{i}', fontName='Helvetica-Bold', fontSize=9, textColor=SECONDARY, spaceBefore=6, spaceAfter=2)))
             story.append(field_row([
-                ('Nome Completo', inspection.get('locatario_name', '')),
-                ('CPF', inspection.get('locatario_cpf', '')),
-                ('RG', inspection.get('locatario_rg', '')),
+                ('Nome Completo', locat.get('name', '')),
+                ('CPF', locat.get('cpf', '')),
+                ('RG', locat.get('rg', '')),
             ], styles, [7*cm, 5*cm, 5*cm]))
             story.append(field_row([
-                ('Telefone', inspection.get('locatario_phone', '')),
-                ('E-mail', inspection.get('locatario_email', '')),
+                ('Telefone', locat.get('phone', '')),
+                ('E-mail', locat.get('email', '')),
             ], styles, [5*cm, 12*cm]))
 
         # Corretor
