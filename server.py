@@ -210,6 +210,7 @@ class InspectionsHandler(BaseHandler):
                 'property_area', 'inspection_date',
                 'locador_name', 'locador_cpf', 'locador_rg', 'locador_phone', 'locador_email',
                 'locatario_name', 'locatario_cpf', 'locatario_rg', 'locatario_phone', 'locatario_email',
+                'locadores_json', 'locatarios_json',
                 'corretor_name', 'corretor_creci', 'corretor_phone', 'corretor_email',
                 'imobiliaria_name', 'imobiliaria_cnpj', 'imobiliaria_phone', 'imobiliaria_address',
                 'observations', 'created_at', 'updated_at'
@@ -222,6 +223,7 @@ class InspectionsHandler(BaseHandler):
                 data.get('locador_rg', ''), data.get('locador_phone', ''), data.get('locador_email', ''),
                 data.get('locatario_name', ''), data.get('locatario_cpf', ''),
                 data.get('locatario_rg', ''), data.get('locatario_phone', ''), data.get('locatario_email', ''),
+                json.dumps(data.get('locadores', [])), json.dumps(data.get('locatarios', [])),
                 data.get('corretor_name', ''), data.get('corretor_creci', ''),
                 data.get('corretor_phone', ''), data.get('corretor_email', ''),
                 data.get('imobiliaria_name', ''), data.get('imobiliaria_cnpj', ''),
@@ -302,6 +304,13 @@ class InspectionHandler(BaseHandler):
             ]
             sets = []
             vals = []
+            # Handle JSON array fields for multiple parties
+            if 'locadores' in data:
+                sets.append('locadores_json=?')
+                vals.append(json.dumps(data['locadores']))
+            if 'locatarios' in data:
+                sets.append('locatarios_json=?')
+                vals.append(json.dumps(data['locatarios']))
             for f in updatable:
                 if f in data:
                     sets.append(f'{f}=?')
