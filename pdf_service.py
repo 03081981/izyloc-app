@@ -137,12 +137,12 @@ def generate_pdf(inspection_data: dict, rooms_data: list, signatures_data: list,
         header_table = Table([[header_logo, header_right]], colWidths=[8.5*cm, 8.5*cm])
         header_table.setStyle(TableStyle([
             ('VALIGN', (0,0), (-1,-1), 'MIDDLE'),
-            ('TOPPADDING', (0,0), (-1,-1), 0),
-            ('BOTTOMPADDING', (0,0), (-1,-1), 0),
+            ('TOPPADDING', (0,0), (-1,-1), 2),
+            ('BOTTOMPADDING', (0,0), (-1,-1), 10),
         ]))
         story.append(header_table)
-        story.append(Spacer(1, 6))
-        story.append(HRFlowable(width='100%', thickness=2.5, color=PRIMARY, spaceBefore=0, spaceAfter=8))
+        story.append(Spacer(1, 4))
+        story.append(HRFlowable(width='100%', thickness=2.5, color=PRIMARY, spaceBefore=6, spaceAfter=8))
 
         # Data e número do laudo
         story.append(Table([[
@@ -361,13 +361,21 @@ cujas condições foram verificadas, registradas e aceitas por todos."""
 
         # Campos de assinatura
         # Nomes dos signatários: usa locadores_json/locatarios_json (suporte a múltiplos)
-        _sig_loc = ' / '.join(l.get('name', '') for l in locadores_list) if locadores_list else inspection.get('locador_name', '')
-        _sig_locat = ' / '.join(l.get('name', '') for l in locatarios_list) if locatarios_list else inspection.get('locatario_name', '')
-        sig_parties = [
-            ('locador', 'LOCADOR / PROPRIETÁRIO', _sig_loc),
-            ('locatario', 'LOCATÁRIO / INQUILINO', _sig_locat),
-            ('corretor', 'CORRETOR / VISTORIADOR', inspection.get('corretor_name', '')),
-        ]
+        sig_parties = []
+        # Locadores individuais
+        if locadores_list:
+            for _loc in locadores_list:
+                sig_parties.append(('locador', 'LOCADOR / PROPRIETÁRIO', _loc.get('name', '')))
+        elif inspection.get('locador_name'):
+            sig_parties.append(('locador', 'LOCADOR / PROPRIETÁRIO', inspection.get('locador_name', '')))
+        # Locatários individuais
+        if locatarios_list:
+            for _locat in locatarios_list:
+                sig_parties.append(('locatario', 'LOCATÁRIO / INQUILINO', _locat.get('name', '')))
+        elif inspection.get('locatario_name'):
+            sig_parties.append(('locatario', 'LOCATÁRIO / INQUILINO', inspection.get('locatario_name', '')))
+        # Corretor
+        sig_parties.append(('corretor', 'CORRETOR / VISTORIADOR', inspection.get('corretor_name', '')))
 
         # Mapeia assinaturas coletadas
         sig_map = {s.get('party_type'): s for s in signatures_data}
