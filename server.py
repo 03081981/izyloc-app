@@ -13,6 +13,7 @@ import os
 import uuid
 import jwt
 import hashlib
+import secrets
 from datetime import datetime, timedelta
 from pathlib import Path
 from dotenv import load_dotenv
@@ -183,6 +184,99 @@ class MeHandler(BaseHandler):
 
 
 # âââ INSPECTIONS âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+
+
+# -- PASSWORD RESET ----------------------------------------------------------
+
+class PasswordResetRequestHandler(BaseHandler):
+    """POST /api/auth/forgot-password  { email }"""
+    def post(self):
+        data = self.json_body()
+        email = (data.get('email') or '').strip().lower()
+        if not email:
+            return self.err('E-mail obrigatorio')
+        conn = get_conn()
+        try:
+            user = conn.execute('SELECT id, email FROM users WHERE email=? AND active=1',
+                                (email,)).fetchone()
+            if not user:
+                return self.ok({'ok': True})
+            user = dict(user)
+            token = secrets.token_urlsafe(48)
+            expires_at = datetime.utcnow() + timedelta(minutes=30)
+            conn.execute(
+                'INSERT INTO password_reset_tokens (token, user_id, email, expires_at) VALUES (?,?,?,?)',
+                (token, user['id'], user['email'], expires_at.isoformat())
+            )
+            conn.commit()
+            base_url = self.request.full_url().split('/api/')[0]
+            reset_link = base_url + '/?reset_token=' + token
+            self.ok({'ok': True, 'reset_link': reset_link})
+        finally:
+            conn.close()
+
+
+class PasswordResetVerifyHandler(BaseHandler):
+    """GET /api/auth/verify-reset-token?token=XXX"""
+    def get(self):
+        token = self.get_argument('token', '')
+        if not token:
+            return self.err('Token obrigatorio', 400)
+        conn = get_conn()
+        try:
+            row = conn.execute(
+                'SELECT * FROM password_reset_tokens WHERE token=?', (token,)
+            ).fetchone()
+            if not row:
+                return self.err('Token invalido', 400)
+            row = dict(row)
+            if row['used']:
+                return self.err('Token ja utilizado', 400)
+            expires_str = str(row['expires_at']).split('+')[0].split('.')[0]
+            expires_at = datetime.strptime(expires_str, '%Y-%m-%dT%H:%M:%S') if 'T' in expires_str else datetime.strptime(expires_str, '%Y-%m-%d %H:%M:%S')
+            if datetime.utcnow() > expires_at:
+                return self.err('Token expirado', 400)
+            self.ok({'ok': True, 'email': row['email']})
+        finally:
+            conn.close()
+
+
+class PasswordResetConfirmHandler(BaseHandler):
+    """POST /api/auth/reset-password  { token, new_password }"""
+    def post(self):
+        data = self.json_body()
+        token = (data.get('token') or '').strip()
+        new_password = data.get('new_password') or ''
+        if not token:
+            return self.err('Token obrigatorio')
+        if not new_password or len(new_password) < 6:
+            return self.err('Senha deve ter no minimo 6 caracteres')
+        conn = get_conn()
+        try:
+            row = conn.execute(
+                'SELECT * FROM password_reset_tokens WHERE token=?', (token,)
+            ).fetchone()
+            if not row:
+                return self.err('Token invalido')
+            row = dict(row)
+            if row['used']:
+                return self.err('Token ja utilizado')
+            expires_str = str(row['expires_at']).split('+')[0].split('.')[0]
+            expires_at = datetime.strptime(expires_str, '%Y-%m-%dT%H:%M:%S') if 'T' in expires_str else datetime.strptime(expires_str, '%Y-%m-%d %H:%M:%S')
+            if datetime.utcnow() > expires_at:
+                return self.err('Token expirado')
+            conn.execute(
+                'UPDATE users SET password_hash=? WHERE id=?',
+                (hash_password(new_password), row['user_id'])
+            )
+            conn.execute(
+                'UPDATE password_reset_tokens SET used=1 WHERE token=?', (token,)
+            )
+            conn.commit()
+            self.ok({'ok': True})
+        finally:
+            conn.close()
+
 
 class InspectionsHandler(BaseHandler):
     def get(self):
@@ -829,6 +923,9 @@ def make_app():
         (r'/api/auth/register', RegisterHandler),
         (r'/api/auth/login', LoginHandler),
         (r'/api/auth/me', MeHandler),
+        (r'/api/auth/forgot-password', PasswordResetRequestHandler),
+        (r'/api/auth/verify-reset-token', PasswordResetVerifyHandler),
+        (r'/api/auth/reset-password', PasswordResetConfirmHandler),
         # Inspections
         (r'/api/inspections', InspectionsHandler),
         (r'/api/inspections/([^/]+)', InspectionHandler),
