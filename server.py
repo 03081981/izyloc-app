@@ -808,7 +808,7 @@ class PhotoHandler(tornado.web.StaticFileHandler):
 class MainHandler(tornado.web.RequestHandler):
     def get(self, path=None):
         static_dir = os.path.join(os.path.dirname(__file__), 'static')
-        self.set_header("Content-Type", "text/html")
+        self.set_header("Content-Type", "text/html; charset=utf-8")
         with open(os.path.join(static_dir, 'index.html'), 'r', encoding='utf-8') as f:
             self.write(f.read())
 
