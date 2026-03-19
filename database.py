@@ -33,13 +33,7 @@ class CompatCursor:
 
 
 class CompatConnection:
-    """Thin wrapper making psycopg2 behave like sqlite3 for this codebase.
-
-    Key behaviours:
-    - Converts '?' placeholders to '%s' automatically
-    - Uses RealDictCursor so rows support dict(row) and named-column access
-    - Exposes .execute(), .commit(), .rollback(), .close()
-    """
+    """Thin wrapper making psycopg2 behave like sqlite3 for this codebase."""
 
     def __init__(self, conn):
         self._conn = conn
@@ -76,14 +70,13 @@ class CompatConnection:
 
 
 def get_conn():
-    """Return a CompatConnection wrapping a fresh psycopg2 connection."""
     conn = psycopg2.connect(DATABASE_URL)
     conn.autocommit = False
     return CompatConnection(conn)
 
 
 def init_db():
-    """Create all tables if they do not already exist."""
+    """Create all tables if they do not already exist, and run safe migrations."""
     raw = psycopg2.connect(DATABASE_URL)
     c = raw.cursor()
 
@@ -100,6 +93,19 @@ def init_db():
             created_at TEXT DEFAULT (to_char(NOW(), 'YYYY-MM-DD"T"HH24:MI:SS'))
         )
     """)
+
+    # Safe migrations: add columns that may be missing from existing tables
+    migrations = [
+        "ALTER TABLE users ADD COLUMN IF NOT EXISTS active INTEGER DEFAULT 1",
+        "ALTER TABLE users ADD COLUMN IF NOT EXISTS company_name TEXT",
+        "ALTER TABLE users ADD COLUMN IF NOT EXISTS creci TEXT",
+        "ALTER TABLE users ADD COLUMN IF NOT EXISTS phone TEXT",
+    ]
+    for sql in migrations:
+        try:
+            c.execute(sql)
+        except Exception:
+            raw.rollback()
 
     c.execute("""
         CREATE TABLE IF NOT EXISTS inspections (
