@@ -89,6 +89,7 @@ def init_db():
             company_name TEXT,
             creci TEXT,
             phone TEXT,
+            plan TEXT DEFAULT 'free',
             active INTEGER DEFAULT 1,
             created_at TEXT DEFAULT (to_char(NOW(), 'YYYY-MM-DD"T"HH24:MI:SS'))
         )
@@ -100,12 +101,15 @@ def init_db():
         "ALTER TABLE users ADD COLUMN IF NOT EXISTS company_name TEXT",
         "ALTER TABLE users ADD COLUMN IF NOT EXISTS creci TEXT",
         "ALTER TABLE users ADD COLUMN IF NOT EXISTS phone TEXT",
+        "ALTER TABLE users ADD COLUMN IF NOT EXISTS plan TEXT DEFAULT 'free'",
     ]
     for sql in migrations:
         try:
             c.execute(sql)
-        except Exception:
+            raw.commit()
+        except Exception as e:
             raw.rollback()
+            print(f"Migration skipped ({e})")
 
     c.execute("""
         CREATE TABLE IF NOT EXISTS inspections (
