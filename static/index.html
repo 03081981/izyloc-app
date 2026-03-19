@@ -96,27 +96,23 @@ body {
   display: flex; flex-direction: column;
 }
 .auth-hero {
-  background: var(--blue);
+  background: linear-gradient(160deg, #eef2ff 0%, #ffffff 100%);
   padding: 60px 24px 48px;
   text-align: center;
   position: relative;
   overflow: hidden;
 }
 .auth-hero::before {
-  content: '';
-  position: absolute; bottom: -40px; left: -40px; right: -40px;
-  height: 80px;
-  background: var(--white);
-  border-radius: 50%;
+  display: none;
 }
 .auth-hero-logo {
   font-size: 52px; font-weight: 900; letter-spacing: -2px;
   line-height: 1; margin-bottom: 8px;
 }
-.auth-hero-logo .blue-part { color: var(--white); }
-.auth-hero-logo .black-part { color: rgba(0,0,0,0.75); }
+.auth-hero-logo .blue-part { color: var(--blue); }
+.auth-hero-logo .dark-part { color: #111827; font-weight: 900; }
 .auth-hero-tagline {
-  font-size: 13px; color: rgba(255,255,255,0.85); margin-top: 6px; font-weight: 500;
+  font-size: 13px; color: #4b5563; margin-top: 6px; font-weight: 500;
 }
 .auth-body {
   flex: 1; padding: 32px 24px; max-width: 420px; margin: 0 auto; width: 100%;
@@ -505,7 +501,7 @@ textarea.form-input { resize: vertical; min-height: 88px; line-height: 1.5; }
   <div class="auth-page">
     <div class="auth-hero">
       <div class="auth-hero-logo">
-        <span class="blue-part">izyLAUDO</span>
+        <span class="blue-part">izy</span><span class="dark-part">LAUDO</span>
       </div>
       <div class="auth-hero-tagline">Vistorias Imobiliárias</div>
     </div>
