@@ -233,5 +233,19 @@ def init_db():
         )
     """)
     raw.commit()
+
+    # -- password_reset_tokens ------------------------------------------
+    c.execute("""
+        CREATE TABLE IF NOT EXISTS password_reset_tokens (
+            token TEXT PRIMARY KEY,
+            user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+            email TEXT NOT NULL,
+            expires_at TIMESTAMP NOT NULL,
+            used INTEGER DEFAULT 0,
+            created_at TIMESTAMP DEFAULT NOW()
+        )
+    """)
+    raw.commit()
+
     raw.close()
     print("\u2705 Banco de dados PostgreSQL inicializado com sucesso")
