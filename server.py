@@ -13,7 +13,6 @@ import os
 import uuid
 import jwt
 import hashlib
-import sqlite3
 from datetime import datetime, timedelta
 from pathlib import Path
 from dotenv import load_dotenv
@@ -350,7 +349,7 @@ class RoomsHandler(BaseHandler):
 
             # Conta ambientes existentes para order_num
             count = conn.execute('SELECT COUNT(*) FROM rooms WHERE inspection_id=?',
-                                  (insp_id,)).fetchone()[0]
+                                  (insp_id,)).fetchone()['count']
             room_id = str(uuid.uuid4())
             conn.execute(
                 'INSERT INTO rooms (id, inspection_id, name, order_num, general_condition, observations) VALUES (?,?,?,?,?,?)',
