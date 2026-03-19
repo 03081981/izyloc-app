@@ -577,7 +577,7 @@ textarea.form-input { resize: vertical; min-height: 88px; line-height: 1.5; }
       </div>
     </div>
     <div class="text-center pb-100" style="padding:16px">
-      <span class="text-small">izyLAUDO Â© 2024 Â· Todos os direitos reservados</span>
+      <span class="text-small">izyLAUDO Â© 2024 · Todos os direitos reservados</span>
     </div>
   </div>
 </div>
@@ -686,7 +686,7 @@ textarea.form-input { resize: vertical; min-height: 88px; line-height: 1.5; }
         </div>
         <div class="form-group">
           <label class="form-label">Endereço Completo do Imóvel *</label>
-          <input type="text" id="wi-address" class="form-input" placeholder="Rua, nÂº, bairro, cidade – UF"/>
+          <input type="text" id="wi-address" class="form-input" placeholder="Rua, nº, bairro, cidade – UF"/>
         </div>
         <div class="grid-2">
           <div class="form-group">
@@ -698,7 +698,7 @@ textarea.form-input { resize: vertical; min-height: 88px; line-height: 1.5; }
             </select>
           </div>
           <div class="form-group">
-            <label class="form-label">Área (mÂ²)</label>
+            <label class="form-label">Área (m²)</label>
             <input type="number" id="wi-area" class="form-input" placeholder="65"/>
           </div>
         </div>
@@ -1682,7 +1682,7 @@ function renderDetail(insp) {
         <span class="tag tag-${insp.status}">${insp.status}</span>
       </div>
       <div style="font-size:17px;font-weight:800">${insp.property_address||'—'}</div>
-      <div class="text-small mt-4">${insp.property_type||''} ${insp.property_area?'Â· '+insp.property_area+'mÂ²':''}</div>
+      <div class="text-small mt-4">${insp.property_type||''} ${insp.property_area?'· '+insp.property_area+'m²':''}</div>
       <div class="text-small mt-2">📅 ${insp.inspection_date||'—'}</div>
       ${insp.imobiliaria_name?`<div class="text-small mt-2">🏢 ${insp.imobiliaria_name}</div>`:''}
     </div>
@@ -1690,7 +1690,7 @@ function renderDetail(insp) {
       <div class="card-title">Partes Envolvidas</div>
       ${insp.locador_name?`<div class="mb-8"><div class="form-label">Locador</div><div>${insp.locador_name}</div>${insp.locador_cpf?`<div class="text-small">CPF: ${insp.locador_cpf}</div>`:''}</div>`:''}
       ${insp.locatario_name?`<div class="mb-8"><div class="form-label">Locatário</div><div>${insp.locatario_name}</div>${insp.locatario_cpf?`<div class="text-small">CPF: ${insp.locatario_cpf}</div>`:''}</div>`:''}
-      ${insp.corretor_name?`<div><div class="form-label">Corretor</div><div>${insp.corretor_name} ${insp.corretor_creci?'Â· CRECI '+insp.corretor_creci:''}</div></div>`:''}
+      ${insp.corretor_name?`<div><div class="form-label">Corretor</div><div>${insp.corretor_name} ${insp.corretor_creci?'· CRECI '+insp.corretor_creci:''}</div></div>`:''}
     </div>
     ${rooms.length?`<div style="font-size:15px;font-weight:700;margin:12px 0 8px">Ambientes (${rooms.length})</div>${roomsHtml}`:''}
     ${sigs.length?`<div class="card"><div class="card-title">✍️ Assinaturas</div>
