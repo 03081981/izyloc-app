@@ -265,9 +265,9 @@ class InspectionHandler(BaseHandler):
                 # Inclui lista de fotos de cada item
                 for it in items_list:
                     photos = conn.execute(
-                        'SELECT id, photo_filename FROM item_photos WHERE item_id=? ORDER BY created_at',
+                        'SELECT id, filename FROM item_photos WHERE item_id=? ORDER BY created_at',
                         (it['id'],)).fetchall()
-                    it['photos'] = [{'id': p['id'], 'url': f'/uploads/{p["photo_filename"]}'} for p in photos]
+                    it['photos'] = [{'id': p['id'], 'url': f'/uploads/{p["filename"]}'} for p in photos]
                 room_dict['items'] = items_list
                 rooms_list.append(room_dict)
             result['rooms'] = rooms_list
@@ -558,8 +558,8 @@ class PhotoUploadHandler(BaseHandler):
 
             # Registra na tabela item_photos
             conn.execute(
-                'INSERT INTO item_photos (id, item_id, photo_path, photo_filename) VALUES (?,?,?,?)',
-                (photo_id, item_id, filepath, filename))
+                'INSERT INTO item_photos (id, item_id, filename) VALUES (?,?,?)',
+                (photo_id, item_id, filename))
 
             # Atualiza photo_path principal no item (última foto adicionada)
             conn.execute('UPDATE room_items SET photo_path=?, photo_filename=? WHERE id=?',
@@ -568,9 +568,9 @@ class PhotoUploadHandler(BaseHandler):
 
             # Busca TODAS as fotos do item para análise conjunta
             all_photos = conn.execute(
-                'SELECT photo_path FROM item_photos WHERE item_id=? ORDER BY created_at',
+                'SELECT filename FROM item_photos WHERE item_id=? ORDER BY created_at',
                 (item_id,)).fetchall()
-            all_paths = [p['photo_path'] for p in all_photos if os.path.exists(p['photo_path'])]
+            all_paths = [os.path.join(UPLOAD_DIR, p['filename']) for p in all_photos if os.path.exists(os.path.join(UPLOAD_DIR, p['filename']))]
 
             # Analisa com IA usando todas as fotos disponíveis
             ai_result = analyze_photos(all_paths, item['name'], item['room_name'])
@@ -621,12 +621,12 @@ class ItemPhotosHandler(BaseHandler):
                 return self.err('Item não encontrado', 404)
 
             photos = conn.execute(
-                'SELECT id, photo_filename, created_at FROM item_photos WHERE item_id=? ORDER BY created_at',
+                'SELECT id, filename, created_at FROM item_photos WHERE item_id=? ORDER BY created_at',
                 (item_id,)).fetchall()
 
             result = [{
                 'id': p['id'],
-                'url': f'/uploads/{p["photo_filename"]}',
+                'url': f'/uploads/{p["filename"]}',
                 'created_at': p['created_at']
             } for p in photos]
             self.ok({'photos': result})
@@ -670,8 +670,8 @@ class PhotoDeleteHandler(BaseHandler):
 
             # Remove o arquivo físico
             try:
-                if os.path.exists(photo['photo_path']):
-                    os.remove(photo['photo_path'])
+                if os.path.exists(os.path.join(UPLOAD_DIR, photo['filename'])):
+                    os.remove(os.path.join(UPLOAD_DIR, photo['filename']))
             except Exception:
                 pass
 
@@ -679,11 +679,11 @@ class PhotoDeleteHandler(BaseHandler):
 
             # Atualiza photo_path principal para a foto mais recente restante
             remaining = conn.execute(
-                'SELECT photo_path, photo_filename FROM item_photos WHERE item_id=? ORDER BY created_at DESC LIMIT 1',
+                'SELECT filename FROM item_photos WHERE item_id=? ORDER BY created_at DESC LIMIT 1',
                 (item_id,)).fetchone()
             if remaining:
                 conn.execute('UPDATE room_items SET photo_path=?, photo_filename=? WHERE id=?',
-                            (remaining['photo_path'], remaining['photo_filename'], item_id))
+                            (os.path.join(UPLOAD_DIR, remaining['filename']), remaining['filename'], item_id))
             else:
                 conn.execute('UPDATE room_items SET photo_path=NULL, photo_filename=NULL WHERE id=?',
                             (item_id,))
