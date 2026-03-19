@@ -1621,7 +1621,7 @@ async function generatePDF() {
     const a = document.createElement('a');
     a.href = url; a.download = `izyLAUDO_Laudo_${wizard.inspectionId.substring(0,8).toUpperCase()}.pdf`;
     document.body.appendChild(a); a.click();
-    document.body.removeChild(a); URL.revokeObjectURL(url);
+    document.body.removeChild(a); setTimeout(() => URL.revokeObjectURL(url), 10000);
     toast('✅ Laudo gerado com sucesso!', 'success');
     setTimeout(() => { showPage('page-dashboard',null,false); loadDashboard(); }, 2000);
   } else { toast(r.error||'Erro ao gerar PDF', 'error'); }
@@ -1711,7 +1711,7 @@ async function dlPDF(id) {
     const a = document.createElement('a');
     a.href = url; a.download = `izyLAUDO_Laudo_${id.substring(0,8).toUpperCase()}.pdf`;
     document.body.appendChild(a); a.click();
-    document.body.removeChild(a); URL.revokeObjectURL(url);
+    document.body.removeChild(a); setTimeout(() => URL.revokeObjectURL(url), 10000);
     toast('PDF gerado!', 'success');
   } else { toast(r.error||'Erro', 'error'); }
 }
