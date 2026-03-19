@@ -51,6 +51,9 @@ def init_db():
         locatario_rg TEXT,
         locatario_phone TEXT,
         locatario_email TEXT,
+        -- Múltiplos locadores/locatários (JSON arrays)
+        locadores_json TEXT,
+        locatarios_json TEXT,
         -- Corretor / Avaliador
         corretor_name TEXT,
         corretor_creci TEXT,
@@ -112,6 +115,19 @@ def init_db():
     );
     """)
     conn.commit()
+
+    # Migration: add JSON columns if they don't exist yet
+    try:
+        conn.execute("ALTER TABLE inspections ADD COLUMN locadores_json TEXT")
+        conn.commit()
+    except Exception:
+        pass
+    try:
+        conn.execute("ALTER TABLE inspections ADD COLUMN locatarios_json TEXT")
+        conn.commit()
+    except Exception:
+        pass
+
     conn.close()
     print("✅ Banco de dados inicializado")
 
