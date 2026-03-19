@@ -964,10 +964,10 @@ function renderLocatarios() {
   const c = document.getElementById('locatarios-container');
   if (c) c.innerHTML = locatarios.map((d,i) => renderPartyBlock('locatario',i,d,locatarios.length)).join('');
 }
-function addLocador() { locadores.push({name:'',cpf:'',rg:'',phone:'',email:''}); renderLocadores(); }
-function removeLocador(idx) { locadores.splice(idx,1); renderLocadores(); }
-function addLocatario() { locatarios.push({name:'',cpf:'',rg:'',phone:'',email:''}); renderLocatarios(); }
-function removeLocatario(idx) { locatarios.splice(idx,1); renderLocatarios(); }
+function addLocador() { locadores = collectLocadores(); locadores.push({name:'',cpf:'',rg:'',phone:'',email:''}); renderLocadores(); }
+function removeLocador(idx) { locadores = collectLocadores(); locadores.splice(idx,1); renderLocadores(); }
+function addLocatario() { locatarios = collectLocatarios(); locatarios.push({name:'',cpf:'',rg:'',phone:'',email:''}); renderLocatarios(); }
+function removeLocatario(idx) { locatarios = collectLocatarios(); locatarios.splice(idx,1); renderLocatarios(); }
 function collectLocadores() {
   return locadores.map((_,i) => ({
     name: document.getElementById(`loc-name-${i}`)?.value||'',
