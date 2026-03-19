@@ -360,9 +360,12 @@ cujas condições foram verificadas, registradas e aceitas por todos."""
         story.append(Spacer(1, 16))
 
         # Campos de assinatura
+        # Nomes dos signatários: usa locadores_json/locatarios_json (suporte a múltiplos)
+        _sig_loc = ' / '.join(l.get('name', '') for l in locadores_list) if locadores_list else inspection.get('locador_name', '')
+        _sig_locat = ' / '.join(l.get('name', '') for l in locatarios_list) if locatarios_list else inspection.get('locatario_name', '')
         sig_parties = [
-            ('locador', 'LOCADOR / PROPRIETÁRIO', inspection.get('locador_name', '')),
-            ('locatario', 'LOCATÁRIO / INQUILINO', inspection.get('locatario_name', '')),
+            ('locador', 'LOCADOR / PROPRIETÁRIO', _sig_loc),
+            ('locatario', 'LOCATÁRIO / INQUILINO', _sig_locat),
             ('corretor', 'CORRETOR / VISTORIADOR', inspection.get('corretor_name', '')),
         ]
 
