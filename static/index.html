@@ -498,6 +498,18 @@ textarea.form-input { resize: vertical; min-height: 88px; line-height: 1.5; }
   color: var(--danger); font-size: 12px; font-weight: 600; padding: 3px 10px;
   border-radius: 6px; transition: all 0.15s; }
 .btn-remove-party:hover { background: #fee2e2; }
+
+/* ── FORGOT / RESET PASSWORD ─────────────────────────────────────────── */
+.reset-link-box {
+  word-break:break-all;background:#eff6ff;border:1px solid #bfdbfe;
+  border-radius:8px;padding:10px 12px;font-size:11px;color:#1d4ed8;
+  text-align:left;margin-top:8px;cursor:pointer;user-select:all; }
+.alert-success-box {
+  background:#f0fdf4;border:1px solid #bbf7d0;border-radius:10px;
+  padding:14px;color:#166534;text-align:center; }
+.alert-error-box {
+  background:#fef2f2;border:1px solid #fecaca;border-radius:10px;
+  padding:14px;color:#991b1b;text-align:center; }
 </style>
 </head>
 <body>
@@ -541,6 +553,9 @@ textarea.form-input { resize: vertical; min-height: 88px; line-height: 1.5; }
           <input type="password" id="login-password" class="form-input" placeholder="••••••••" autocomplete="current-password"/>
         </div>
         <button class="btn btn-primary btn-full" style="margin-top:4px" onclick="doLogin()">Entrar</button>
+        <div class="text-center" style="margin-top:10px">
+          <button class="btn-link" style="font-size:12px;color:#6b7280" onclick="showForgotForm()">Esqueci minha senha</button>
+        </div>
         <div class="text-center mt-12">
           <span class="text-small">Não tem conta? </span>
           <button class="btn-link" onclick="switchAuthTabByName('register')">Cadastrar-se</button>
@@ -575,8 +590,71 @@ textarea.form-input { resize: vertical; min-height: 88px; line-height: 1.5; }
           <button class="btn-link" onclick="switchAuthTabByName('login')">Entrar</button>
         </div>
       </div>
+
+      <!-- FORGOT PASSWORD -->
+      <div id="form-forgot" style="display:none">
+        <div class="text-center" style="margin-bottom:16px">
+          <p style="font-weight:600;font-size:15px">Recuperar senha</p>
+          <p class="text-small text-muted" style="margin-top:4px">Informe seu e-mail cadastrado</p>
+        </div>
+        <div class="form-group">
+          <label class="form-label">E-mail</label>
+          <input type="email" id="forgot-email" class="form-input" placeholder="seu@email.com"/>
+        </div>
+        <button class="btn btn-primary btn-full" style="margin-top:4px" onclick="requestPasswordReset()">Enviar link de recuperação</button>
+        <div id="forgot-success" style="display:none;margin-top:16px" class="alert-success-box">
+          <p style="font-weight:600">✓ Link gerado com sucesso!</p>
+          <p class="text-small" style="margin-top:6px">Copie o link abaixo para redefinir sua senha:</p>
+          <div id="reset-link-box" class="reset-link-box"></div>
+        </div>
+        <div class="text-center mt-12">
+          <button class="btn-link" style="font-size:12px" onclick="backToLogin()">← Voltar ao login</button>
+        </div>
+      </div>
     </div>
     <div class="text-center pb-100" style="padding:16px">
+      <span class="text-small">izyLAUDO © 2024 · Todos os direitos reservados</span>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ PAGE: RESET PASSWORD ══════════════ -->
+<div class="page" id="page-reset">
+  <div class="auth-page">
+    <div class="auth-hero">
+      <div class="auth-hero-logo">
+        <span class="blue-part">izy</span><span class="dark-part">LAUDO</span>
+      </div>
+      <div class="auth-hero-tagline">Redefinir Senha</div>
+    </div>
+    <div class="auth-body">
+      <div id="reset-checking" class="text-center" style="padding:20px 0">
+        <p class="text-muted">Verificando link...</p>
+      </div>
+      <div id="reset-invalid" style="display:none" class="alert-error-box">
+        <p style="font-weight:600">&#10060; Link inválido ou expirado</p>
+        <p class="text-small" style="margin-top:6px">Solicite um novo link de recuperação.</p>
+        <button class="btn btn-primary btn-full" style="margin-top:14px" onclick="showPage('page-auth');switchAuthTabByName('login')">Voltar ao login</button>
+      </div>
+      <div id="reset-form" style="display:none">
+        <p id="reset-email-display" class="text-small text-muted text-center" style="margin-bottom:16px"></p>
+        <div class="form-group">
+          <label class="form-label">Nova senha</label>
+          <input type="password" id="reset-new-password" class="form-input" placeholder="Mínimo 6 caracteres"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Confirmar nova senha</label>
+          <input type="password" id="reset-confirm-password" class="form-input" placeholder="Repita a nova senha"/>
+        </div>
+        <button class="btn btn-primary btn-full" style="margin-top:4px" onclick="confirmPasswordReset()">Redefinir senha</button>
+      </div>
+      <div id="reset-success" style="display:none" class="alert-success-box">
+        <p style="font-weight:600;font-size:16px">&#10003; Senha redefinida!</p>
+        <p class="text-small" style="margin-top:6px">Sua senha foi atualizada com sucesso.</p>
+        <button class="btn btn-primary btn-full" style="margin-top:14px" onclick="showPage('page-auth');switchAuthTabByName('login')">Fazer login</button>
+      </div>
+    </div>
+    <div class="text-center" style="padding:16px">
       <span class="text-small">izyLAUDO © 2024 · Todos os direitos reservados</span>
     </div>
   </div>
@@ -995,6 +1073,9 @@ let wizard = { step: 1, inspectionId: null, selectedRooms: [] };
 
 // ─── BOOT ─────────────────────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
+  const _urlP = new URLSearchParams(window.location.search);
+  const _resetTok = _urlP.get('reset_token');
+  if (_resetTok) { showPage('page-reset'); loadResetPage(_resetTok); return; }
   const tok = localStorage.getItem('izylo_token');
   const usr = localStorage.getItem('izylo_user');
   if (tok && usr) {
@@ -1087,10 +1168,63 @@ function switchAuthTab(tab, btn) {
   document.getElementById('form-login').style.display = tab === 'login' ? 'block' : 'none';
   document.getElementById('form-register').style.display = tab === 'register' ? 'block' : 'none';
 }
+
 function switchAuthTabByName(tab) {
   const tabs = document.querySelectorAll('.auth-tab');
   const idx = tab === 'login' ? 0 : 1;
   switchAuthTab(tab, tabs[idx]);
+}
+
+// ── FORGOT / RESET PASSWORD ──────────────────────────────────────────────────
+function showForgotForm() {
+  document.getElementById('form-login').style.display = 'none';
+  document.getElementById('form-register').style.display = 'none';
+  document.getElementById('form-forgot').style.display = 'block';
+  document.getElementById('forgot-success').style.display = 'none';
+  document.getElementById('forgot-email').value = '';
+  document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
+}
+function backToLogin() {
+  document.getElementById('form-forgot').style.display = 'none';
+  switchAuthTabByName('login');
+}
+async function requestPasswordReset() {
+  const email = document.getElementById('forgot-email').value.trim();
+  if (!email) return toast('Informe o e-mail', 'error');
+  showLoading('Enviando...');
+  const r = await api('POST', '/api/auth/forgot-password', { email });
+  hideLoading();
+  if (!r.ok) return toast(r.error || 'Erro ao solicitar recuperação', 'error');
+  document.getElementById('forgot-success').style.display = 'block';
+  if (r.reset_link) document.getElementById('reset-link-box').textContent = r.reset_link;
+}
+async function loadResetPage(token) {
+  window._resetToken = token;
+  ['reset-checking','reset-invalid','reset-form','reset-success'].forEach(
+    id => { const el=document.getElementById(id); if(el) el.style.display='none'; }
+  );
+  document.getElementById('reset-checking').style.display = 'block';
+  const r = await api('GET', '/api/auth/verify-reset-token?token=' + encodeURIComponent(token));
+  document.getElementById('reset-checking').style.display = 'none';
+  if (!r.ok) {
+    document.getElementById('reset-invalid').style.display = 'block';
+  } else {
+    document.getElementById('reset-email-display').textContent = 'Redefinindo senha para: ' + r.email;
+    document.getElementById('reset-form').style.display = 'block';
+  }
+}
+async function confirmPasswordReset() {
+  const newPwd = document.getElementById('reset-new-password').value;
+  const confirmPwd = document.getElementById('reset-confirm-password').value;
+  if (!newPwd || newPwd.length < 6) return toast('Senha deve ter no mínimo 6 caracteres', 'error');
+  if (newPwd !== confirmPwd) return toast('Senhas não coincidem', 'error');
+  showLoading('Redefinindo...');
+  const r = await api('POST', '/api/auth/reset-password', { token: window._resetToken, new_password: newPwd });
+  hideLoading();
+  if (!r.ok) return toast(r.error || 'Erro ao redefinir senha', 'error');
+  document.getElementById('reset-form').style.display = 'none';
+  document.getElementById('reset-success').style.display = 'block';
+  toast('Senha redefinida com sucesso!', 'success');
 }
 
 async function doLogin() {
