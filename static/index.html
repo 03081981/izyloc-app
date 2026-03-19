@@ -610,7 +610,7 @@ textarea.form-input { resize: vertical; min-height: 88px; line-height: 1.5; }
       </div>
       <div id="inspections-list">
         <div class="empty-state">
-          <div class="empty-icon">🏠</div>
+          <div class="empty-icon"><svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div>
           <div class="empty-title">Nenhuma vistoria</div>
           <div class="empty-text">Toque em "Nova Vistoria" para registrar sua primeira vistoria de imóvel.</div>
           <button class="btn btn-primary" onclick="showNewInspection()">Começar agora</button>
@@ -675,7 +675,7 @@ textarea.form-input { resize: vertical; min-height: 88px; line-height: 1.5; }
 
     <!-- STEP 1: Imóvel -->
     <div id="wstep-1">
-      <div class="chip-header">🏠 Dados do Imóvel</div>
+      <div class="chip-header"><svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg> Dados do Imóvel</div>
       <div class="card">
         <div class="form-group">
           <label class="form-label">Tipo de Vistoria *</label>
@@ -764,7 +764,7 @@ textarea.form-input { resize: vertical; min-height: 88px; line-height: 1.5; }
 
     <!-- STEP 3: Ambientes -->
     <div id="wstep-3" style="display:none">
-      <div class="chip-header">🏠 Selecione os Ambientes</div>
+      <div class="chip-header"><svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg> Selecione os Ambientes</div>
       <div class="card">
         <p class="text-small mb-12">Selecione os ambientes do imóvel para vistoriar. Você poderá adicionar itens e fotos em cada um.</p>
         <div class="room-check-list" id="room-check-list">
@@ -876,7 +876,7 @@ textarea.form-input { resize: vertical; min-height: 88px; line-height: 1.5; }
       </div>
 
       <button class="btn btn-primary btn-full mt-16" onclick="generatePDF()" id="btn-gen-pdf">
-        📄 Gerar Laudo PDF
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg> Gerar Laudo PDF
       </button>
       <button class="btn btn-ghost btn-full mt-8" onclick="wizardBack(5)">← Voltar</button>
     </div>
@@ -1172,7 +1172,7 @@ async function loadDashboard() {
   const container = document.getElementById('inspections-list');
   if (!list.length) {
     container.innerHTML = `<div class="empty-state">
-      <div class="empty-icon">🏠</div>
+      <div class="empty-icon"><svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div>
       <div class="empty-title">Nenhuma vistoria ainda</div>
       <div class="empty-text">Registre sua primeira vistoria tocando no botão + abaixo.</div>
       <button class="btn btn-primary" onclick="showNewInspection()">+ Nova Vistoria</button>
@@ -1181,7 +1181,7 @@ async function loadDashboard() {
 
   container.innerHTML = list.slice(0,30).map(i => {
     const tipo = i.type === 'entrada' ? 'Entrada' : 'Saída';
-    const icon = i.type === 'entrada' ? '🔑' : '📦';
+    const icon = i.type === 'entrada' ? '<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="7.5" cy="15.5" r="5.5"/><path d="M21 2l-9.6 9.6"/><path d="M15.5 7.5l3 3L22 7l-3-3"/></svg>' : '<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>';
     return `<div class="insp-card" onclick="openInspection('${i.id}')">
       <div class="insp-card-icon">${icon}</div>
       <div class="insp-card-body">
@@ -1190,7 +1190,7 @@ async function loadDashboard() {
         <div class="insp-card-date">${i.inspection_date || formatDate(i.created_at)}</div>
       </div>
       <div class="insp-card-right">
-        <div class="insp-card-doc">📄</div>
+        <div class="insp-card-doc"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
         <div class="status-dot ${i.status}"></div>
       </div>
     </div>`;
@@ -1358,7 +1358,7 @@ function renderRoomCard(room) {
     'Sala de Estar': '🛋', 'Cozinha': '🍳', 'Quarto 1': '🛏', 'Quarto 2': '🛏',
     'Banheiro': '🚿', 'Área de Serviço': '🧺', 'Garagem': '🚗', 'Varanda': '🌿',
   };
-  const icon = roomIcons[room.name] || '🏠';
+  const icon = roomIcons[room.name] || '<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>';
 
   el.innerHTML = `
     <div class="room-header" onclick="toggleRoom('${room.id}')">
@@ -1613,7 +1613,7 @@ async function saveSig(party) {
 }
 
 async function generatePDF() {
-  showLoading('📄 Gerando laudo PDF...');
+  showLoading('<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg> Gerando laudo PDF...');
   const r = await api('GET', `/api/inspections/${wizard.inspectionId}/pdf`);
   hideLoading();
   if (r.blob) {
@@ -1668,7 +1668,7 @@ function renderDetail(insp) {
     }).join('');
     return `<div class="room-card">
       <div class="room-header"><div class="room-header-left">
-        <div class="room-icon">🏠</div>
+        <div class="room-icon"><svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div>
         <div class="room-name">${room.name}</div>
       </div></div>
       <div class="room-body">${items||'<p class="text-small mt-8">Nenhum item</p>'}</div>
@@ -1698,7 +1698,7 @@ function renderDetail(insp) {
         <span class="text-small">${s.party_type} — ${s.party_name||''}</span></div>`).join('')}
     </div>`:''}
     <button class="btn btn-primary btn-full mt-8 mb-16" onclick="dlPDF('${insp.id}')">
-      📄 Baixar Laudo PDF
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg> Baixar Laudo PDF
     </button>`;
 }
 
