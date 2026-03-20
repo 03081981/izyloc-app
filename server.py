@@ -1,7 +1,7 @@
 # deploy: 2026-03-18
 #!/usr/bin/env python3
 """
-IZYLO - Sistema de Vistoria de ImÃ³veis
+IZYLO - Sistema de Vistoria de ImÃÂ³veis
 Backend: Python + Tornado
 """
 
@@ -78,7 +78,7 @@ class BaseHandler(tornado.web.RequestHandler):
         user = self.get_current_user()
         if not user:
             self.set_status(401)
-            self.write({'error': 'NÃ£o autenticado'})
+            self.write({'error': 'NÃÂ£o autenticado'})
             self.finish()
             return None
         return user
@@ -106,7 +106,7 @@ class BaseHandler(tornado.web.RequestHandler):
         return [dict(r) for r in rows]
 
 
-# âââ AUTH ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+# Ã¢ÂÂÃ¢ÂÂÃ¢ÂÂ AUTH Ã¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂ
 
 class RegisterHandler(BaseHandler):
     def post(self):
@@ -114,13 +114,13 @@ class RegisterHandler(BaseHandler):
         required = ['name', 'email', 'password', 'company_name']
         for f in required:
             if not data.get(f):
-                return self.err(f'Campo obrigatÃ³rio: {f}')
+                return self.err(f'Campo obrigatÃÂ³rio: {f}')
 
         conn = get_conn()
         try:
             existing = conn.execute('SELECT id FROM users WHERE email=?', (data['email'],)).fetchone()
             if existing:
-                return self.err('E-mail jÃ¡ cadastrado')
+                return self.err('E-mail jÃÂ¡ cadastrado')
 
             user_id = str(uuid.uuid4())
             conn.execute('''INSERT INTO users (id, name, email, password_hash, company_name, creci, phone)
@@ -144,7 +144,7 @@ class LoginHandler(BaseHandler):
     def post(self):
         data = self.json_body()
         if not data.get('email') or not data.get('password'):
-            return self.err('E-mail e senha obrigatÃ³rios')
+            return self.err('E-mail e senha obrigatÃÂ³rios')
 
         conn = get_conn()
         try:
@@ -179,7 +179,7 @@ class MeHandler(BaseHandler):
         try:
             row = conn.execute('SELECT * FROM users WHERE id=?', (user['user_id'],)).fetchone()
             if not row:
-                return self.err('UsuÃ¡rio nÃ£o encontrado', 404)
+                return self.err('UsuÃÂ¡rio nÃÂ£o encontrado', 404)
             u = self.row_to_dict(row)
             u.pop('password_hash', None)
             self.ok(u)
@@ -187,7 +187,7 @@ class MeHandler(BaseHandler):
             conn.close()
 
 
-# âââ INSPECTIONS âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+# Ã¢ÂÂÃ¢ÂÂÃ¢ÂÂ INSPECTIONS Ã¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂ
 
 
 # -- PASSWORD RESET ----------------------------------------------------------
@@ -355,7 +355,7 @@ class AdminStatsHandler(AdminBase):
                 FROM users WHERE COALESCE(is_admin, 0) = 0
             """).fetchone()
             ins = db.execute("SELECT COUNT(*) as total FROM inspections").fetchone()
-            pho = db.execute("SELECT COUNT(*) as total FROM photos").fetchone()
+            pho = db.execute("SELECT COUNT(*) as total FROM item_photos").fetchone()
             self.finish(json.dumps({
                 'ok': True,
                 'total_clients': row['total_clients'] or 0,
@@ -588,7 +588,7 @@ class AdminUsageHandler(AdminBase):
                 LEFT JOIN inspections i ON i.user_id = u.id
                 LEFT JOIN rooms r ON r.inspection_id = i.id
                 LEFT JOIN room_items ri ON ri.room_id = r.id
-                LEFT JOIN photos ph ON ph.item_id = ri.id
+                LEFT JOIN item_photos ph ON ph.item_id = ri.id
                 WHERE COALESCE(u.is_admin, 0) = 0
                 GROUP BY u.id, u.name, u.email, u.status, p.name
                 ORDER BY inspections DESC
@@ -619,7 +619,7 @@ class InspectionsHandler(BaseHandler):
             return
         data = self.json_body()
         if not data.get('type') or data['type'] not in ('entrada', 'saida'):
-            return self.err('Tipo de vistoria invÃ¡lido (entrada ou saida)')
+            return self.err('Tipo de vistoria invÃÂ¡lido (entrada ou saida)')
 
         conn = get_conn()
         try:
@@ -671,7 +671,7 @@ class InspectionHandler(BaseHandler):
                 'SELECT * FROM inspections WHERE id=? AND user_id=?',
                 (insp_id, user['user_id'])).fetchone()
             if not insp:
-                return self.err('Vistoria nÃ£o encontrada', 404)
+                return self.err('Vistoria nÃÂ£o encontrada', 404)
             result = self.row_to_dict(insp)
 
             # Inclui ambientes + itens
@@ -712,7 +712,7 @@ class InspectionHandler(BaseHandler):
                 'SELECT id FROM inspections WHERE id=? AND user_id=?',
                 (insp_id, user['user_id'])).fetchone()
             if not insp:
-                return self.err('Vistoria nÃ£o encontrada', 404)
+                return self.err('Vistoria nÃÂ£o encontrada', 404)
 
             updatable = [
                 'property_address', 'property_type', 'property_area', 'inspection_date', 'status',
@@ -749,7 +749,7 @@ class InspectionHandler(BaseHandler):
             conn.close()
 
 
-# âââ ROOMS âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+# Ã¢ÂÂÃ¢ÂÂÃ¢ÂÂ ROOMS Ã¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂ
 
 class RoomsHandler(BaseHandler):
     def post(self, insp_id):
@@ -758,7 +758,7 @@ class RoomsHandler(BaseHandler):
             return
         data = self.json_body()
         if not data.get('name'):
-            return self.err('Nome do ambiente obrigatÃ³rio')
+            return self.err('Nome do ambiente obrigatÃÂ³rio')
 
         conn = get_conn()
         try:
@@ -766,7 +766,7 @@ class RoomsHandler(BaseHandler):
                 'SELECT id FROM inspections WHERE id=? AND user_id=?',
                 (insp_id, user['user_id'])).fetchone()
             if not insp:
-                return self.err('Vistoria nÃ£o encontrada', 404)
+                return self.err('Vistoria nÃÂ£o encontrada', 404)
 
             # Conta ambientes existentes para order_num
             count = conn.execute('SELECT COUNT(*) FROM rooms WHERE inspection_id=?',
@@ -799,7 +799,7 @@ class RoomHandler(BaseHandler):
                    WHERE r.id=? AND i.user_id=?''',
                 (room_id, user['user_id'])).fetchone()
             if not room:
-                return self.err('Ambiente nÃ£o encontrado', 404)
+                return self.err('Ambiente nÃÂ£o encontrado', 404)
 
             conn.execute('''UPDATE rooms SET name=?, general_condition=?, observations=?
                            WHERE id=?''',
@@ -825,7 +825,7 @@ class RoomHandler(BaseHandler):
                    WHERE r.id=? AND i.user_id=?''',
                 (room_id, user['user_id'])).fetchone()
             if not room:
-                return self.err('Ambiente nÃ£o encontrado', 404)
+                return self.err('Ambiente nÃÂ£o encontrado', 404)
             conn.execute('DELETE FROM room_items WHERE room_id=?', (room_id,))
             conn.execute('DELETE FROM rooms WHERE id=?', (room_id,))
             conn.commit()
@@ -834,7 +834,7 @@ class RoomHandler(BaseHandler):
             conn.close()
 
 
-# âââ ROOM ITEMS ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+# Ã¢ÂÂÃ¢ÂÂÃ¢ÂÂ ROOM ITEMS Ã¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂ
 
 class RoomItemsHandler(BaseHandler):
     def post(self, room_id):
@@ -843,7 +843,7 @@ class RoomItemsHandler(BaseHandler):
             return
         data = self.json_body()
         if not data.get('name'):
-            return self.err('Nome do item obrigatÃ³rio')
+            return self.err('Nome do item obrigatÃÂ³rio')
 
         conn = get_conn()
         try:
@@ -853,7 +853,7 @@ class RoomItemsHandler(BaseHandler):
                    WHERE r.id=? AND i.user_id=?''',
                 (room_id, user['user_id'])).fetchone()
             if not room:
-                return self.err('Ambiente nÃ£o encontrado', 404)
+                return self.err('Ambiente nÃÂ£o encontrado', 404)
 
             item_id = str(uuid.uuid4())
             conn.execute(
@@ -888,7 +888,7 @@ class RoomItemHandler(BaseHandler):
                    WHERE ri.id=? AND i.user_id=?''',
                 (item_id, user['user_id'])).fetchone()
             if not item:
-                return self.err('Item nÃ£o encontrado', 404)
+                return self.err('Item nÃÂ£o encontrado', 404)
 
             updatable = ['name', 'condition', 'ai_description', 'manual_description']
             sets = []
@@ -919,7 +919,7 @@ class RoomItemHandler(BaseHandler):
                    WHERE ri.id=? AND i.user_id=?''',
                 (item_id, user['user_id'])).fetchone()
             if not item:
-                return self.err('Item nÃ£o encontrado', 404)
+                return self.err('Item nÃÂ£o encontrado', 404)
 
             # Remove arquivo de foto se existir
             if item['photo_path'] and os.path.exists(item['photo_path']):
@@ -935,7 +935,7 @@ class RoomItemHandler(BaseHandler):
             conn.close()
 
 
-# âââ FOTO UPLOAD + ANÃLISE IA ââââââââââââââââââââââââââââââââââââââââââââââââââ
+# Ã¢ÂÂÃ¢ÂÂÃ¢ÂÂ FOTO UPLOAD + ANÃÂLISE IA Ã¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂ
 
 class PhotoUploadHandler(BaseHandler):
     def set_default_headers(self):
@@ -958,7 +958,7 @@ class PhotoUploadHandler(BaseHandler):
                    WHERE ri.id=? AND i.user_id=?''',
                 (item_id, user['user_id'])).fetchone()
             if not item:
-                return self.err('Item nÃ£o encontrado', 404)
+                return self.err('Item nÃÂ£o encontrado', 404)
 
             if 'photo' not in self.request.files:
                 return self.err('Nenhuma foto enviada')
@@ -967,9 +967,9 @@ class PhotoUploadHandler(BaseHandler):
             ext = os.path.splitext(file_info['filename'])[1].lower() or '.jpg'
             allowed = ['.jpg', '.jpeg', '.png', '.webp']
             if ext not in allowed:
-                return self.err('Formato de arquivo invÃ¡lido. Use JPG, PNG ou WebP')
+                return self.err('Formato de arquivo invÃÂ¡lido. Use JPG, PNG ou WebP')
 
-            # Salva com nome Ãºnico (UUID) para permitir mÃºltiplas fotos por item
+            # Salva com nome ÃÂºnico (UUID) para permitir mÃÂºltiplas fotos por item
             photo_id = str(uuid.uuid4())
             filename = f"{photo_id}{ext}"
             filepath = os.path.join(UPLOAD_DIR, filename)
@@ -982,21 +982,21 @@ class PhotoUploadHandler(BaseHandler):
                 'INSERT INTO item_photos (id, item_id, filename) VALUES (?,?,?)',
                 (photo_id, item_id, filename))
 
-            # Atualiza photo_path principal no item (Ãºltima foto adicionada)
+            # Atualiza photo_path principal no item (ÃÂºltima foto adicionada)
             conn.execute('UPDATE room_items SET photo_path=?, photo_filename=? WHERE id=?',
                         (filepath, filename, item_id))
             conn.commit()
 
-            # Busca TODAS as fotos do item para anÃ¡lise conjunta
+            # Busca TODAS as fotos do item para anÃÂ¡lise conjunta
             all_photos = conn.execute(
                 'SELECT filename FROM item_photos WHERE item_id=? ORDER BY created_at',
                 (item_id,)).fetchall()
             all_paths = [os.path.join(UPLOAD_DIR, p['filename']) for p in all_photos if os.path.exists(os.path.join(UPLOAD_DIR, p['filename']))]
 
-            # Analisa com IA usando todas as fotos disponÃ­veis
+            # Analisa com IA usando todas as fotos disponÃÂ­veis
             ai_result = analyze_photos(all_paths, item['name'], item['room_name'])
 
-            # Atualiza descriÃ§Ã£o da IA no banco
+            # Atualiza descriÃÂ§ÃÂ£o da IA no banco
             if ai_result.get('success') and ai_result.get('description'):
                 conn.execute('''UPDATE room_items
                                SET ai_description=?, condition=?
@@ -1031,7 +1031,7 @@ class ItemPhotosHandler(BaseHandler):
             return
         conn = get_conn()
         try:
-            # Verifica que o item pertence ao usuÃ¡rio
+            # Verifica que o item pertence ao usuÃÂ¡rio
             item = conn.execute(
                 '''SELECT ri.id FROM room_items ri
                    JOIN rooms r ON ri.room_id=r.id
@@ -1039,7 +1039,7 @@ class ItemPhotosHandler(BaseHandler):
                    WHERE ri.id=? AND i.user_id=?''',
                 (item_id, user['user_id'])).fetchone()
             if not item:
-                return self.err('Item nÃ£o encontrado', 404)
+                return self.err('Item nÃÂ£o encontrado', 404)
 
             photos = conn.execute(
                 'SELECT id, filename, created_at FROM item_photos WHERE item_id=? ORDER BY created_at',
@@ -1056,7 +1056,7 @@ class ItemPhotosHandler(BaseHandler):
 
 
 class PhotoDeleteHandler(BaseHandler):
-    """Exclui uma foto especÃ­fica de um item."""
+    """Exclui uma foto especÃÂ­fica de um item."""
     def set_default_headers(self):
         self.set_header("Access-Control-Allow-Origin", "*")
         self.set_header("Access-Control-Allow-Headers", "Content-Type, Authorization")
@@ -1081,15 +1081,15 @@ class PhotoDeleteHandler(BaseHandler):
                    WHERE ri.id=? AND i.user_id=?''',
                 (item_id, user['user_id'])).fetchone()
             if not item:
-                return self.err('Item nÃ£o encontrado', 404)
+                return self.err('Item nÃÂ£o encontrado', 404)
 
             photo = conn.execute(
                 'SELECT * FROM item_photos WHERE id=? AND item_id=?',
                 (photo_id, item_id)).fetchone()
             if not photo:
-                return self.err('Foto nÃ£o encontrada', 404)
+                return self.err('Foto nÃÂ£o encontrada', 404)
 
-            # Remove o arquivo fÃ­sico
+            # Remove o arquivo fÃÂ­sico
             try:
                 if os.path.exists(os.path.join(UPLOAD_DIR, photo['filename'])):
                     os.remove(os.path.join(UPLOAD_DIR, photo['filename']))
@@ -1115,7 +1115,7 @@ class PhotoDeleteHandler(BaseHandler):
             conn.close()
 
 
-# âââ ASSINATURAS âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+# Ã¢ÂÂÃ¢ÂÂÃ¢ÂÂ ASSINATURAS Ã¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂ
 
 class SignaturesHandler(BaseHandler):
     def post(self, insp_id):
@@ -1124,11 +1124,11 @@ class SignaturesHandler(BaseHandler):
             return
         data = self.json_body()
         if not data.get('party_type'):
-            return self.err('Tipo de parte obrigatÃ³rio')
+            return self.err('Tipo de parte obrigatÃÂ³rio')
 
         valid_parties = ['locador', 'locatario', 'corretor', 'testemunha1', 'testemunha2']
         if data['party_type'] not in valid_parties:
-            return self.err(f'Tipo de parte invÃ¡lido. Use: {", ".join(valid_parties)}')
+            return self.err(f'Tipo de parte invÃÂ¡lido. Use: {", ".join(valid_parties)}')
 
         conn = get_conn()
         try:
@@ -1136,7 +1136,7 @@ class SignaturesHandler(BaseHandler):
                 'SELECT id FROM inspections WHERE id=? AND user_id=?',
                 (insp_id, user['user_id'])).fetchone()
             if not insp:
-                return self.err('Vistoria nÃ£o encontrada', 404)
+                return self.err('Vistoria nÃÂ£o encontrada', 404)
 
             # Remove assinatura anterior desta parte (se houver)
             conn.execute('DELETE FROM signatures WHERE inspection_id=? AND party_type=?',
@@ -1158,7 +1158,7 @@ class SignaturesHandler(BaseHandler):
             conn.close()
 
 
-# âââ GERAR PDF âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+# Ã¢ÂÂÃ¢ÂÂÃ¢ÂÂ GERAR PDF Ã¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂ
 
 class GeneratePDFHandler(BaseHandler):
     def get(self, insp_id):
@@ -1172,7 +1172,7 @@ class GeneratePDFHandler(BaseHandler):
                 'SELECT * FROM inspections WHERE id=? AND user_id=?',
                 (insp_id, user['user_id'])).fetchone()
             if not insp:
-                return self.err('Vistoria nÃ£o encontrada', 404)
+                return self.err('Vistoria nÃÂ£o encontrada', 404)
 
             inspection_data = self.row_to_dict(insp)
 
@@ -1203,7 +1203,7 @@ class GeneratePDFHandler(BaseHandler):
             if not success:
                 return self.err('Erro ao gerar PDF', 500)
 
-            # Marca como concluÃ­do
+            # Marca como concluÃÂ­do
             conn.execute("UPDATE inspections SET status='concluido', updated_at=? WHERE id=?",
                         (datetime.now().strftime('%Y-%m-%d %H:%M:%S'), insp_id))
             conn.commit()
@@ -1217,14 +1217,14 @@ class GeneratePDFHandler(BaseHandler):
             conn.close()
 
 
-# âââ SERVE FOTOS âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+# Ã¢ÂÂÃ¢ÂÂÃ¢ÂÂ SERVE FOTOS Ã¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂ
 
 class PhotoHandler(tornado.web.StaticFileHandler):
     def set_default_headers(self):
         self.set_header("Access-Control-Allow-Origin", "*")
 
 
-# âââ SERVIR FRONTEND âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+# Ã¢ÂÂÃ¢ÂÂÃ¢ÂÂ SERVIR FRONTEND Ã¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂ
 
 class MainHandler(tornado.web.RequestHandler):
     def get(self, path=None):
@@ -1234,7 +1234,7 @@ class MainHandler(tornado.web.RequestHandler):
             self.write(f.read())
 
 
-# âââ APP âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+# Ã¢ÂÂÃ¢ÂÂÃ¢ÂÂ APP Ã¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂ
 
 def make_app():
     static_dir = os.path.join(os.path.dirname(__file__), 'static')
@@ -1286,9 +1286,9 @@ if __name__ == '__main__':
     app = make_app()
     app.listen(port)
     print(f"""
-âââââââââââââââââââââââââââââââââââââââââ
-â          IZYLO - Iniciado!            â
-â  Acesse: http://localhost:{port}        â
-âââââââââââââââââââââââââââââââââââââââââ
+Ã¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂ
+Ã¢ÂÂ          IZYLO - Iniciado!            Ã¢ÂÂ
+Ã¢ÂÂ  Acesse: http://localhost:{port}        Ã¢ÂÂ
+Ã¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂ
     """)
     tornado.ioloop.IOLoop.current().start()
