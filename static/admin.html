@@ -3,12 +3,12 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>izyLAUDO â Painel Admin</title>
+<title>izyLAUDO Ã¢ÂÂ Painel Admin</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f1f5f9;color:#1e293b;min-height:100vh}
 
-/* ââ LOGIN ââ */
+/* Ã¢ÂÂÃ¢ÂÂ LOGIN Ã¢ÂÂÃ¢ÂÂ */
 .login-page{display:flex;align-items:center;justify-content:center;min-height:100vh;background:linear-gradient(135deg,#1e3a5f 0%,#2563eb 100%)}
 .login-card{background:#fff;border-radius:16px;padding:40px 36px;width:100%;max-width:380px;box-shadow:0 20px 60px rgba(0,0,0,.25)}
 .login-logo{text-align:center;margin-bottom:28px}
@@ -22,7 +22,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .login-btn:hover{background:#1d4ed8}
 .login-err{color:#dc2626;font-size:13px;margin-top:10px;text-align:center;display:none}
 
-/* ââ LAYOUT ââ */
+/* Ã¢ÂÂÃ¢ÂÂ LAYOUT Ã¢ÂÂÃ¢ÂÂ */
 .app{display:flex;min-height:100vh}
 .sidebar{width:220px;background:#1e3a5f;flex-shrink:0;display:flex;flex-direction:column}
 .sidebar-logo{padding:24px 20px 20px;border-bottom:1px solid rgba(255,255,255,.08)}
@@ -43,7 +43,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .topbar-sub{font-size:12px;color:#94a3b8;margin-top:2px}
 .content{padding:28px}
 
-/* ââ CARDS ââ */
+/* Ã¢ÂÂÃ¢ÂÂ CARDS Ã¢ÂÂÃ¢ÂÂ */
 .stats-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:16px;margin-bottom:28px}
 .stat-card{background:#fff;border-radius:12px;padding:20px;box-shadow:0 1px 3px rgba(0,0,0,.06);border-left:4px solid #e2e8f0;transition:.2s}
 .stat-card.blue{border-left-color:#2563eb}
@@ -55,7 +55,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .stat-value{font-size:32px;font-weight:800;color:#1e293b;margin-top:6px;line-height:1}
 .stat-desc{font-size:11px;color:#94a3b8;margin-top:4px}
 
-/* ââ TABLE ââ */
+/* Ã¢ÂÂÃ¢ÂÂ TABLE Ã¢ÂÂÃ¢ÂÂ */
 .section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
 .section-title{font-size:15px;font-weight:700;color:#1e293b}
 .btn{padding:8px 16px;border-radius:7px;font-size:13px;font-weight:600;cursor:pointer;border:none;transition:.2s}
@@ -83,7 +83,7 @@ tr:hover td{background:#fafbfc}
 .badge-blue{background:#dbeafe;color:#2563eb}
 .actions{display:flex;gap:6px;align-items:center}
 
-/* ââ MODAL ââ */
+/* Ã¢ÂÂÃ¢ÂÂ MODAL Ã¢ÂÂÃ¢ÂÂ */
 .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;z-index:1000;backdrop-filter:blur(2px)}
 .modal{background:#fff;border-radius:14px;padding:28px;width:100%;max-width:460px;box-shadow:0 20px 60px rgba(0,0,0,.2)}
 .modal-title{font-size:16px;font-weight:700;margin-bottom:20px;color:#1e293b}
@@ -95,23 +95,23 @@ tr:hover td{background:#fafbfc}
 .modal-footer{display:flex;gap:10px;justify-content:flex-end;margin-top:20px}
 .modal-close{position:absolute;top:16px;right:16px;background:none;border:none;font-size:20px;cursor:pointer;color:#94a3b8}
 
-/* ââ TOAST ââ */
+/* Ã¢ÂÂÃ¢ÂÂ TOAST Ã¢ÂÂÃ¢ÂÂ */
 .toast-wrap{position:fixed;bottom:24px;right:24px;z-index:9999;display:flex;flex-direction:column;gap:8px}
 .toast{padding:12px 18px;border-radius:10px;font-size:13px;font-weight:500;box-shadow:0 4px 20px rgba(0,0,0,.15);animation:slideIn .3s ease}
 .toast-success{background:#166534;color:#dcfce7}
 .toast-error{background:#991b1b;color:#fee2e2}
 @keyframes slideIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
 
-/* ââ EMPTY ââ */
+/* Ã¢ÂÂÃ¢ÂÂ EMPTY Ã¢ÂÂÃ¢ÂÂ */
 .empty{text-align:center;padding:48px 24px;color:#94a3b8}
 .empty p{margin-top:8px;font-size:13px}
 
-/* ââ LOADING ââ */
+/* Ã¢ÂÂÃ¢ÂÂ LOADING Ã¢ÂÂÃ¢ÂÂ */
 .loading-spinner{display:inline-block;width:18px;height:18px;border:2px solid #e2e8f0;border-top-color:#2563eb;border-radius:50%;animation:spin .6s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
 .page-loading{display:flex;align-items:center;justify-content:center;padding:60px;gap:12px;color:#94a3b8;font-size:14px}
 
-/* ââ SEARCH ââ */
+/* Ã¢ÂÂÃ¢ÂÂ SEARCH Ã¢ÂÂÃ¢ÂÂ */
 .search-bar{display:flex;gap:12px;margin-bottom:16px}
 .search-input{padding:9px 14px;border:1.5px solid #e2e8f0;border-radius:7px;font-size:13px;outline:none;flex:1;min-width:0}
 .search-input:focus{border-color:#2563eb}
@@ -260,7 +260,7 @@ tr:hover td{background:#fafbfc}
   </div>
 </div>
 
-<!-- ââ MODALS ââ -->
+<!-- Ã¢ÂÂÃ¢ÂÂ MODALS Ã¢ÂÂÃ¢ÂÂ -->
 
 <!-- Edit Client Modal -->
 <div id="modal-client" class="modal-overlay" style="display:none">
@@ -320,12 +320,12 @@ tr:hover td{background:#fafbfc}
 <div class="toast-wrap" id="toast-wrap"></div>
 
 <script>
-// ─── HELPERS ───────────────────────────────────────────────────────────────
+// âââ HELPERS âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
-function formatDate(s){ if(!s) return '–'; const d=new Date(s); return isNaN(d)?s:d.toLocaleDateString('pt-BR'); }
+function formatDate(s){ if(!s) return 'â'; const d=new Date(s); return isNaN(d)?s:d.toLocaleDateString('pt-BR'); }
 function statusBadge(s){
   const m={active:'badge-green',blocked:'badge-red',inactive:'badge-gray'};
-  return '<span class="badge '+(m[s]||'badge-gray')+'">'+esc(s||'–')+'</span>';
+  return '<span class="badge '+(m[s]||'badge-gray')+'">'+esc(s||'â')+'</span>';
 }
 function showToast(msg,type){
   const w=document.getElementById('toast-wrap');
@@ -337,17 +337,17 @@ function showToast(msg,type){
 function openModal(id){document.getElementById(id).style.display='flex';}
 function closeModal(id){document.getElementById(id).style.display='none';}
 
-// ─── API ───────────────────────────────────────────────────────────────────
+// âââ API âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 async function adminApi(method,path,body){
   const tok=localStorage.getItem('admin_token');
   const opts={method,headers:{'Content-Type':'application/json',...(tok?{'Authorization':'Bearer '+tok}:{})}};
   if(body) opts.body=JSON.stringify(body);
   const r=await fetch(path,opts);
-  const data=await r.json().catch(()=>({ok:false,error:'Resposta inválida'}));
+  const data=await r.json().catch(()=>({ok:false,error:'Resposta invÃ¡lida'}));
   return {status:r.status,...data};
 }
 
-// ─── AUTH ──────────────────────────────────────────────────────────────────
+// âââ AUTH ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 async function doAdminLogin(){
   const pwd=document.getElementById('admin-password').value.trim();
   const err=document.getElementById('login-err');
@@ -370,7 +370,7 @@ function doLogout(){
   document.getElementById('admin-password').value='';
 }
 
-// ─── INIT / NAV ────────────────────────────────────────────────────────────
+// âââ INIT / NAV ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 function initApp(){
   if(localStorage.getItem('admin_token')){
     document.getElementById('login-page').style.display='none';
@@ -389,7 +389,7 @@ function showPage(name){
   if(name==='usage')     loadUsage();
 }
 
-// ─── DASHBOARD ─────────────────────────────────────────────────────────────
+// âââ DASHBOARD âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 async function loadDashboard(){
   const res=await adminApi('GET','/api/admin/stats');
   if(!res.ok) return showToast('Erro ao carregar dashboard','error');
@@ -410,7 +410,7 @@ function renderRecentClients(clients){
     '</tbody></table>';
 }
 
-// ─── CLIENTS ───────────────────────────────────────────────────────────────
+// âââ CLIENTS âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 let _allClients=[];
 async function loadClients(){
   const res=await adminApi('GET','/api/admin/clients');
@@ -427,13 +427,13 @@ function renderClientsTable(list){
     '<tr>'+
     '<td>'+esc(c.name)+'</td>'+
     '<td>'+esc(c.email)+'</td>'+
-    '<td>'+esc(c.company_name||'–')+'</td>'+
-    '<td>'+esc(c.plan_name||'–')+'</td>'+
+    '<td>'+esc(c.company_name||'â')+'</td>'+
+    '<td>'+esc(c.plan_name||'â')+'</td>'+
     '<td>'+(c.inspection_count||0)+'</td>'+
     '<td>'+statusBadge(c.status)+'</td>'+
     '<td>'+
-      '<button class="btn btn-sm" onclick="openEditClientModal(''+esc(c.id)+'')">Editar</button> '+
-      '<button class="btn btn-sm '+(c.status==='blocked'?'btn-success':'btn-danger')+'" onclick="toggleClientStatus(''+esc(c.id)+'',''+(c.status==='blocked'?'activate':'block')+'')">'+
+      '<button class="btn btn-sm" data-id="'+esc(c.id)+'" onclick="openEditClientModal(this.dataset.id)">Editar</button> '+
+      '<button class="btn btn-sm '+(c.status==='blocked'?'btn-success':'btn-danger')+'" data-id="'+esc(c.id)+'" data-act="'+(c.status==='blocked'?'activate':'block')+'" onclick="toggleClientStatus(this.dataset.id,this.dataset.act)">'+
         (c.status==='blocked'?'Ativar':'Bloquear')+
       '</button>'+
     '</td>'+
@@ -453,7 +453,7 @@ async function populatePlanSelect(){
   if(!sel) return;
   const res=await adminApi('GET','/api/admin/plans');
   if(!res.ok) return;
-  sel.innerHTML='<option value="">— Sem plano —</option>'+
+  sel.innerHTML='<option value="">â Sem plano â</option>'+
     (res.plans||[]).map(p=>'<option value="'+esc(p.id)+'">'+esc(p.name)+'</option>').join('');
 }
 function openAddClientModal(){
@@ -486,7 +486,7 @@ async function saveClient(){
   const phone=document.getElementById('edit-client-phone').value.trim();
   const company=document.getElementById('edit-client-company').value.trim();
   const plan_id=(document.getElementById('edit-client-plan')?.value||'').trim();
-  if(!name||!email){showToast('Nome e e-mail são obrigatórios','error');return;}
+  if(!name||!email){showToast('Nome e e-mail sÃ£o obrigatÃ³rios','error');return;}
   let res;
   if(id){
     res=await adminApi('PUT','/api/admin/clients/'+id,{action:'update',name,email,phone,company_name:company});
@@ -498,7 +498,7 @@ async function saveClient(){
   }
   if(res.ok){
     closeModal('modal-client');
-    const msg=id?'Cliente atualizado!':'Cliente criado! Senha temporária: '+(res.temp_password||'(ver e-mail)');
+    const msg=id?'Cliente atualizado!':'Cliente criado! Senha temporÃ¡ria: '+(res.temp_password||'(ver e-mail)');
     showToast(msg);
     loadClients();
   } else {
@@ -515,7 +515,7 @@ async function toggleClientStatus(id,action){
   }
 }
 
-// ─── PLANS ─────────────────────────────────────────────────────────────────
+// âââ PLANS âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 let _allPlans=[];
 async function loadPlans(){
   const res=await adminApi('GET','/api/admin/plans');
@@ -533,13 +533,13 @@ function renderPlansGrid(list){
   g.innerHTML=list.map(p=>
     '<div class="plan-card'+(p.active?'':' plan-inactive')+'">'+
     '<div class="plan-name">'+esc(p.name)+'</div>'+
-    '<div class="plan-price">R$ '+Number(p.price||0).toFixed(2)+'/mês</div>'+
+    '<div class="plan-price">R$ '+Number(p.price||0).toFixed(2)+'/mÃªs</div>'+
     '<div class="plan-detail">Limite: '+(p.inspection_limit||'Ilimitado')+'</div>'+
     '<div class="plan-detail">Foto extra: R$ '+Number(p.extra_photo_price||0).toFixed(2)+'</div>'+
     '<div class="plan-detail">Clientes: '+(p.client_count||0)+'</div>'+
     '<div class="plan-actions">'+
-      '<button class="btn btn-sm" onclick="openEditPlanModal(''+esc(p.id)+'')">Editar</button> '+
-      '<button class="btn btn-sm '+(p.active?'btn-danger':'btn-success')+'" onclick="togglePlan(''+esc(p.id)+'','+(!p.active)+')">'+
+      '<button class="btn btn-sm" data-id="'+esc(p.id)+'" onclick="openEditPlanModal(this.dataset.id)">Editar</button> '+
+      '<button class="btn btn-sm '+(p.active?'btn-danger':'btn-success')+'" data-id="'+esc(p.id)+'" data-val="'+(p.active?0:1)+'" onclick="togglePlan(this.dataset.id,!!+this.dataset.val)">'+
         (p.active?'Desativar':'Ativar')+
       '</button>'+
     '</div>'+
@@ -570,7 +570,7 @@ async function savePlan(){
   const price =document.getElementById('edit-plan-price').value.trim();
   const limit =document.getElementById('edit-plan-limit').value.trim();
   const eprice=document.getElementById('edit-plan-photo-price').value.trim();
-  if(!name){showToast('Nome do plano é obrigatório','error');return;}
+  if(!name){showToast('Nome do plano Ã© obrigatÃ³rio','error');return;}
   const body={name,price:parseFloat(price)||0,inspection_limit:parseInt(limit)||null,extra_photo_price:parseFloat(eprice)||0};
   const res=id
     ? await adminApi('PUT','/api/admin/plans/'+id,body)
@@ -593,7 +593,7 @@ async function togglePlan(id,active){
   }
 }
 
-// ─── USAGE ─────────────────────────────────────────────────────────────────
+// âââ USAGE âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 async function loadUsage(){
   const res=await adminApi('GET','/api/admin/usage');
   if(!res.ok) return showToast('Erro ao carregar uso','error');
@@ -603,16 +603,16 @@ async function loadUsage(){
   if(!rows.length){tb.innerHTML='<tr><td colspan="5">Nenhum dado de uso.</td></tr>';return;}
   tb.innerHTML=rows.map(r=>
     '<tr>'+
-    '<td>'+esc(r.client_name||r.name||'–')+'</td>'+
+    '<td>'+esc(r.client_name||r.name||'â')+'</td>'+
     '<td>'+(r.inspection_count||0)+'</td>'+
     '<td>'+(r.photo_count||0)+'</td>'+
-    '<td>'+esc(r.plan_name||'–')+'</td>'+
+    '<td>'+esc(r.plan_name||'â')+'</td>'+
     '<td>'+formatDate(r.last_activity||r.created_at)+'</td>'+
     '</tr>'
   ).join('');
 }
 
-// ─── CONFIRM ───────────────────────────────────────────────────────────────
+// âââ CONFIRM âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 let _confirmCb=null;
 function confirmDelete(msg,cb){
   document.getElementById('confirm-text').textContent=msg;
@@ -620,7 +620,7 @@ function confirmDelete(msg,cb){
   openModal('modal-confirm');
 }
 
-// ─── BOOT ──────────────────────────────────────────────────────────────────
+// âââ BOOT ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 document.addEventListener('DOMContentLoaded',()=>{
   const cb=document.getElementById('confirm-btn');
   if(cb) cb.addEventListener('click',()=>{
