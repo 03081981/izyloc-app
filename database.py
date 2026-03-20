@@ -86,7 +86,7 @@ def init_db():
     raw = psycopg2.connect(DATABASE_URL)
     c = raw.cursor()
 
-    # ── users ────────────────────────────────────────────────
+    # ââ users ââââââââââââââââââââââââââââââââââââââââââââââââ
     c.execute("""
         CREATE TABLE IF NOT EXISTS users (
             id TEXT PRIMARY KEY,
@@ -111,7 +111,7 @@ def init_db():
     ]:
         _run_migration(c, raw, sql)
 
-    # ── inspections ──────────────────────────────────────────
+    # ââ inspections ââââââââââââââââââââââââââââââââââââââââââ
     c.execute("""
         CREATE TABLE IF NOT EXISTS inspections (
             id TEXT PRIMARY KEY,
@@ -168,7 +168,7 @@ def init_db():
     ]:
         _run_migration(c, raw, sql)
 
-    # ── rooms ────────────────────────────────────────────────
+    # ââ rooms ââââââââââââââââââââââââââââââââââââââââââââââââ
     c.execute("""
         CREATE TABLE IF NOT EXISTS rooms (
             id TEXT PRIMARY KEY,
@@ -187,7 +187,7 @@ def init_db():
     ]:
         _run_migration(c, raw, sql)
 
-    # ── room_items ───────────────────────────────────────────
+    # ââ room_items âââââââââââââââââââââââââââââââââââââââââââ
     c.execute("""
         CREATE TABLE IF NOT EXISTS room_items (
             id TEXT PRIMARY KEY,
@@ -210,7 +210,7 @@ def init_db():
     ]:
         _run_migration(c, raw, sql)
 
-    # ── item_photos ──────────────────────────────────────────
+    # ââ item_photos ââââââââââââââââââââââââââââââââââââââââââ
     c.execute("""
         CREATE TABLE IF NOT EXISTS item_photos (
             id TEXT PRIMARY KEY,
@@ -222,7 +222,7 @@ def init_db():
     """)
     raw.commit()
 
-    # ── signatures ───────────────────────────────────────────
+    # ââ signatures âââââââââââââââââââââââââââââââââââââââââââ
     c.execute("""
         CREATE TABLE IF NOT EXISTS signatures (
             id TEXT PRIMARY KEY,
@@ -247,8 +247,6 @@ def init_db():
     """)
     raw.commit()
 
-    raw.close()
-    print("\u2705 Banco de dados PostgreSQL inicializado com sucesso")
 
     # -- admin: users extra columns ------------------------------------------
     for _sql in [
@@ -299,3 +297,5 @@ def init_db():
         )
     """)
     raw.commit()
+    raw.close()
+    print("✅ Banco de dados PostgreSQL inicializado com sucesso")
