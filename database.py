@@ -249,3 +249,53 @@ def init_db():
 
     raw.close()
     print("\u2705 Banco de dados PostgreSQL inicializado com sucesso")
+
+    # -- admin: users extra columns ------------------------------------------
+    for _sql in [
+        "ALTER TABLE users ADD COLUMN IF NOT EXISTS status TEXT DEFAULT 'active'",
+        "ALTER TABLE users ADD COLUMN IF NOT EXISTS is_admin INTEGER DEFAULT 0",
+        "ALTER TABLE users ADD COLUMN IF NOT EXISTS blocked_reason TEXT",
+    ]:
+        try:
+            c.execute(_sql)
+            raw.commit()
+        except Exception:
+            raw.rollback()
+
+    # -- admin: plans ---------------------------------------------------------
+    c.execute("""
+        CREATE TABLE IF NOT EXISTS plans (
+            id TEXT PRIMARY KEY,
+            name TEXT NOT NULL,
+            monthly_price REAL DEFAULT 0,
+            usage_limit INTEGER,
+            price_per_photo REAL DEFAULT 0,
+            active INTEGER DEFAULT 1,
+            created_at TIMESTAMP DEFAULT NOW()
+        )
+    """)
+    raw.commit()
+
+    # -- admin: user_plans ----------------------------------------------------
+    c.execute("""
+        CREATE TABLE IF NOT EXISTS user_plans (
+            id TEXT PRIMARY KEY,
+            user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+            plan_id TEXT NOT NULL REFERENCES plans(id) ON DELETE CASCADE,
+            assigned_at TIMESTAMP DEFAULT NOW(),
+            UNIQUE(user_id)
+        )
+    """)
+    raw.commit()
+
+    # -- admin: usage_logs ----------------------------------------------------
+    c.execute("""
+        CREATE TABLE IF NOT EXISTS usage_logs (
+            id TEXT PRIMARY KEY,
+            user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+            action TEXT NOT NULL,
+            quantity INTEGER DEFAULT 1,
+            created_at TIMESTAMP DEFAULT NOW()
+        )
+    """)
+    raw.commit()
