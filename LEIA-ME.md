@@ -135,3 +135,37 @@ izylo/
 - **Cobrança** — integração com gateway de pagamento (Stripe ou Pagar.me)
 - **Assinatura digital** — assinatura eletrônica de laudos pelas partes
 - **Login com Google** — autenticação OAuth via conta Google
+
+
+---
+
+## FASE 2 CONCLUÍDA — PAINEL ADMINISTRATIVO FUNCIONAL (20/03/2026)
+
+### Problema resolvido
+O painel admin existia visualmente mas não executava nenhuma ação real no backend. Formulários não salvavam, bloqueio não persistia, criação de clientes não tinha rota.
+
+### Correções aplicadas
+
+| Item | Problema | Solução | Commit |
+|------|----------|---------|--------|
+| JS admin.html | saveClient/savePlan sem chamada real à API | Reescrita completa do `<script>` com 29 funções reais | cba8cd7e |
+| toggleClientStatus | Função inexistente no JS | Implementada com PUT /api/admin/clients/:id action=block/activate | cba8cd7e |
+| POST /api/admin/clients | Rota inexistente no backend | Adicionado post() em AdminClientsHandler | 3087c11c |
+| GET /api/admin/plans | datetime not JSON serializable | Adicionado _jser helper + default=_jser | 667e1112 |
+| Onclick quoting | SyntaxError linha 434 por escape de aspas | Substituição por data-attributes | f213816a |
+| UTF-8 encoding | Caracteres especiais corrompidos (mÃª, ã–) | Rebuild com TextEncoder/TextDecoder + blob API | a2d4e613 |
+
+### Commits desta sessão
+- `3087c11c` — feat(admin): add POST /api/admin/clients endpoint
+- `667e1112` — fix(admin): add _jser datetime serializer
+- `f213816a` — fix(admin): fix onclick quoting via data-attributes
+- `a2d4e613` — fix(admin): restore proper UTF-8 encoding
+
+### Testes realizados e aprovados
+- ✅ Criar plano via modal → persiste no banco (confirmado via GET /api/admin/plans)
+- ✅ Criar cliente via modal → persiste com senha temporária gerada automaticamente
+- ✅ Bloquear cliente → status muda para blocked, botão muda para "Ativar"
+- ✅ Cliente bloqueado persiste após reload da página
+- ✅ Dashboard carrega stats (clientes, vistorias, fotos, planos)
+- ✅ Encoding UTF-8 correto (mês, –, —)
+- ✅ Sistema principal intacto (login, registro, vistorias, PDF não afetados)
