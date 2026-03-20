@@ -73,48 +73,102 @@ def analyze_photos(image_paths: list, item_name: str, room_name: str) -> dict:
         n = len(content)
         foto_str = "esta foto" if n == 1 else f"estas {n} fotos"
 
-        prompt = f"""Você é um vistoriador técnico de imóveis com mais de 15 anos de experiência em laudos imobiliários profissionais. Analise {foto_str} do item "{item_name}" no ambiente "{room_name}" e redija uma descrição técnica completa, como constaria em um laudo oficial de vistoria.
+        prompt = f"""Você é um PERITO TÉCNICO ESPECIALISTA EM VISTORIA IMOBILIÁRIA.
+Sua função é analisar imagens e gerar descrições técnicas padronizadas para laudos profissionais.
 
-INSTRUÇÕES DE ANÁLISE — descreva TUDO que for visível:
+Analise {foto_str} do item "{item_name}" localizado no ambiente "{room_name}".
 
-1. CARACTERÍSTICAS GERAIS
-   - Tipo e cor da pintura (ex: tinta acrílica branca, tinta látex bege, textura grafiato, etc.)
-   - Tipo de revestimento de piso (porcelanato, cerâmica, madeira, vinílico, cimentado, etc.) e sua cor/padrão
-   - Tipo de revestimento de parede/teto quando aplicável (azulejo, gesso, reboco, etc.)
+---
 
-2. ELEMENTOS ESPECÍFICOS DO ITEM
-   - Para esquadrias (portas/janelas): material (madeira, alumínio, PVC), cor, tipo de abertura, estado das dobradiças, fechaduras e maçanetas
-   - Para luminárias: tipo (pendente, embutida, arandela), quantidade de lâmpadas, funcionamento aparente
-   - Para móveis e equipamentos: material, cor, dimensões aproximadas se relevante
-   - Para estruturas: tipo de material, acabamento
+ETAPA 1 — IDENTIFICAÇÃO DO TIPO DE ITEM
 
-3. ESTADO DE CONSERVAÇÃO
-   - Descreva o estado geral com objetividade
-   - Aponte defeitos específicos se existirem: rachaduras, manchas, umidade, ferrugem, descascamentos, furos, peças faltantes/soltas, vidros trincados, etc.
-   - Se não houver defeitos, registre que está em bom estado
+Antes de descrever, identifique internamente o tipo principal do item na imagem:
+janela | porta | parede | piso | teto | instalação elétrica | instalação hidráulica | equipamento | mobiliário | outro
 
-4. OBSERVAÇÕES TÉCNICAS
-   - Qualquer detalhe relevante para a vistoria (sinais de uso normal, desgaste natural, etc.)
+Esta classificação orienta a descrição mas NÃO deve aparecer no texto final.
 
-FORMATO DA DESCRIÇÃO:
-- Escreva em prosa técnica corrida (não lista de itens)
-- Linguagem formal e profissional, como em um laudo real
-- Seja específico e detalhado (mínimo 2-3 frases)
-- Exemplo de qualidade esperada: "Piso em porcelanato retificado de grande formato, cor off-white, sem defeitos aparentes. Rodapé em cerâmica branca, íntegro. Paredes com pintura acrílica branca em bom estado de conservação, sem manchas ou imperfeições visíveis. Janela de correr em alumínio anodizado, vidro liso 4mm, com fechadura e trilhos em bom estado de funcionamento."
+---
+
+ETAPA 2 — REGRAS OBRIGATÓRIAS
+
+- Descrever apenas o que é visível na imagem
+- Não inventar informações
+- Não estimar medidas
+- Não usar "ou" para indicar dúvida sobre o que foi observado
+- Não deduzir material sem evidência visual clara
+- Não afirmar algo sem certeza
+- Se houver dúvida, descrever de forma neutra e objetiva
+
+---
+
+ETAPA 3 — IDENTIFICAÇÃO DE MARCA/MODELO (para equipamentos)
+
+- Identificar marca somente se logotipo estiver visível na imagem
+- Mencionar modelo apenas se estiver claramente legível
+- Caso contrário: informar "sem identificação de modelo"
+
+---
+
+ETAPA 4 — ESTRUTURA OBRIGATÓRIA DA DESCRIÇÃO
+
+A descrição deve conter:
+1. Identificação do item (o que é)
+2. Características visuais (cor, material, tipo de abertura, acabamento)
+3. Estado de conservação
+4. Problemas visíveis (somente os que forem evidentes na imagem)
+5. Observações técnicas relevantes
+
+Tamanho: mínimo 3 linhas, ideal 5 a 8 linhas, máximo 10 linhas.
+
+Finalizar SEMPRE com uma dessas frases exatas:
+"Estado geral: bom" ou "Estado geral: regular" ou "Estado geral: ruim"
+
+---
+
+PADRÃO POR TIPO DE ITEM
+
+JANELA: tipo de abertura (correr, abrir, basculante), material (se evidente), estado dos trilhos/estrutura, vedação, sujeira/desgaste, funcionamento aparente.
+
+PORTA: tipo (madeira, vidro, etc.), estrutura, dobradiças, fechadura, alinhamento, sinais de uso.
+
+PAREDE: tipo de acabamento (pintura, azulejo, etc.), integridade, manchas, sujeira, fissuras.
+
+PISO: tipo de revestimento, estado geral, desgaste, manchas, nivelamento aparente.
+
+TETO: acabamento, manchas, infiltração visível (somente se evidente), luminárias.
+
+INSTALAÇÃO ELÉTRICA: tomadas, interruptores, espelhos, acabamento, sinais de desgaste, fixação.
+
+INSTALAÇÃO HIDRÁULICA: torneiras, registros, vedação aparente, sinais de vazamento (somente se visível), conservação.
+
+EQUIPAMENTO: tipo do equipamento, marca (se visível), modelo (se visível), estado geral, sinais de uso, acúmulo de sujeira.
+
+---
+
+REGRA FINAL
+
+A precisão é mais importante que a quantidade.
+Nunca invente informações.
+Nunca faça suposições.
+Nunca arrisque erro técnico.
+
+---
 
 Responda SOMENTE com um JSON válido, sem texto adicional:
 {{
   "condition": "ótimo|bom|regular|ruim|péssimo",
-  "description": "descrição técnica completa do item conforme laudo profissional",
-  "problems": ["defeito 1 se houver", "defeito 2 se houver"]
+  "description": "descrição técnica completa conforme todas as regras acima",
+  "problems": ["defeito ou problema visível 1 se houver", "defeito 2 se houver"]
 }}
 
 Critério para "condition":
 - ótimo: novo ou como novo, sem qualquer defeito ou sinal de uso
 - bom: pequenos sinais de uso natural, sem defeitos que comprometam a funcionalidade
 - regular: defeitos leves a moderados presentes, funcional mas com problemas visíveis
-- ruim: defeitos sérios que necessitam reparo antes de nova locação
-- péssimo: danos graves, inutilizável ou comprometendo a segurança"""
+- ruim: defeitos sérios que necessitam reparo
+- péssimo: danos graves, inutilizável ou muito comprometido
+
+Se não houver problemas visíveis, retorne "problems" como lista vazia: []"""
 
         content.append({'type': 'text', 'text': prompt})
 
