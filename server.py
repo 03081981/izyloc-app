@@ -153,6 +153,10 @@ class LoginHandler(BaseHandler):
             if not user or user['password_hash'] != hash_password(data['password']):
                 return self.err('E-mail ou senha incorretos', 401)
 
+            # Verificar se conta esta bloqueada
+            if user.get('status') == 'blocked':
+                return self.err('Conta bloqueada. Entre em contato com o suporte.', 403)
+
             token = create_token(user['id'], user['email'])
             self.ok({'token': token, 'user': {
                 'id': user['id'], 'name': user['name'],
@@ -276,6 +280,323 @@ class PasswordResetConfirmHandler(BaseHandler):
             self.ok({'ok': True})
         finally:
             conn.close()
+
+
+
+# ===========================================================================
+# ADMIN PANEL - Modulo separado, nao altera funcionalidades existentes
+# ===========================================================================
+
+ADMIN_SECRET = os.environ.get('ADMIN_SECRET', 'izylaudo-admin-2024')
+ADMIN_EMAIL = os.environ.get('ADMIN_EMAIL', 'admin@izylaudo.com')
+
+
+def create_admin_token():
+    payload = {
+        'admin': True,
+        'email': ADMIN_EMAIL,
+        'exp': datetime.utcnow() + timedelta(hours=12)
+    }
+    return jwt.encode(payload, SECRET_KEY, algorithm='HS256')
+
+
+class AdminBase(BaseHandler):
+    def require_admin(self):
+        auth = self.request.headers.get('Authorization', '')
+        if auth.startswith('Bearer '):
+            data = verify_token(auth[7:])
+            if data and data.get('admin'):
+                return data
+        self.set_status(401)
+        self.finish(json.dumps({'ok': False, 'error': 'Acesso restrito ao administrador'}))
+        return None
+
+
+class AdminPageHandler(tornado.web.RequestHandler):
+    def get(self):
+        static_dir = os.path.join(os.path.dirname(__file__), 'static')
+        admin_path = os.path.join(static_dir, 'admin.html')
+        if os.path.exists(admin_path):
+            with open(admin_path, 'r', encoding='utf-8') as f:
+                self.set_header('Content-Type', 'text/html; charset=utf-8')
+                self.write(f.read())
+        else:
+            self.set_status(404)
+            self.write('Admin panel not found')
+
+
+class AdminLoginHandler(BaseHandler):
+    def post(self):
+        try:
+            data = json.loads(self.request.body)
+        except Exception:
+            self.finish(json.dumps({'ok': False, 'error': 'JSON invalido'}))
+            return
+        password = data.get('password', '')
+        if password == ADMIN_SECRET:
+            token = create_admin_token()
+            self.finish(json.dumps({'ok': True, 'token': token, 'email': ADMIN_EMAIL}))
+        else:
+            self.set_status(401)
+            self.finish(json.dumps({'ok': False, 'error': 'Senha incorreta'}))
+
+
+class AdminStatsHandler(AdminBase):
+    def get(self):
+        if not self.require_admin():
+            return
+        try:
+            db = get_conn()
+            row = db.execute("""
+                SELECT
+                    COUNT(*) as total_clients,
+                    SUM(CASE WHEN COALESCE(status,'active') = 'active' THEN 1 ELSE 0 END) as active_clients,
+                    SUM(CASE WHEN status = 'blocked' THEN 1 ELSE 0 END) as blocked_clients
+                FROM users WHERE COALESCE(is_admin, 0) = 0
+            """).fetchone()
+            ins = db.execute("SELECT COUNT(*) as total FROM inspections").fetchone()
+            pho = db.execute("SELECT COUNT(*) as total FROM photos").fetchone()
+            self.finish(json.dumps({
+                'ok': True,
+                'total_clients': row['total_clients'] or 0,
+                'active_clients': row['active_clients'] or 0,
+                'blocked_clients': row['blocked_clients'] or 0,
+                'total_inspections': ins['total'] or 0,
+                'total_photos': pho['total'] or 0,
+            }))
+        except Exception as e:
+            self.set_status(500)
+            self.finish(json.dumps({'ok': False, 'error': str(e)}))
+
+
+class AdminClientsHandler(AdminBase):
+    def get(self):
+        if not self.require_admin():
+            return
+        try:
+            db = get_conn()
+            rows = db.execute("""
+                SELECT u.id, u.name, u.email, u.phone, u.company_name,
+                       COALESCE(u.status,'active') as status,
+                       u.created_at,
+                       p.name as plan_name, p.id as plan_id,
+                       COUNT(DISTINCT i.id) as inspection_count
+                FROM users u
+                LEFT JOIN user_plans up2 ON up2.user_id = u.id
+                LEFT JOIN plans p ON p.id = up2.plan_id
+                LEFT JOIN inspections i ON i.user_id = u.id
+                WHERE COALESCE(u.is_admin, 0) = 0
+                GROUP BY u.id, u.name, u.email, u.phone, u.company_name,
+                         u.status, u.created_at, p.name, p.id
+                ORDER BY u.created_at DESC
+            """).fetchall()
+            self.finish(json.dumps({'ok': True, 'clients': [dict(r) for r in rows]}))
+        except Exception as e:
+            self.set_status(500)
+            self.finish(json.dumps({'ok': False, 'error': str(e)}))
+
+
+class AdminClientHandler(AdminBase):
+    def get(self, client_id):
+        if not self.require_admin():
+            return
+        try:
+            db = get_conn()
+            client = db.execute("SELECT * FROM users WHERE id = ?", (client_id,)).fetchone()
+            if not client:
+                self.set_status(404)
+                self.finish(json.dumps({'ok': False, 'error': 'Cliente nao encontrado'}))
+                return
+            plan = db.execute("""
+                SELECT p.* FROM plans p
+                JOIN user_plans up2 ON up2.plan_id = p.id
+                WHERE up2.user_id = ?
+            """, (client_id,)).fetchone()
+            ins = db.execute(
+                "SELECT COUNT(*) as total FROM inspections WHERE user_id = ?",
+                (client_id,)
+            ).fetchone()
+            self.finish(json.dumps({
+                'ok': True,
+                'client': dict(client),
+                'plan': dict(plan) if plan else None,
+                'inspection_count': ins['total'] if ins else 0,
+            }))
+        except Exception as e:
+            self.set_status(500)
+            self.finish(json.dumps({'ok': False, 'error': str(e)}))
+
+    def put(self, client_id):
+        if not self.require_admin():
+            return
+        try:
+            data = json.loads(self.request.body)
+        except Exception:
+            self.finish(json.dumps({'ok': False, 'error': 'JSON invalido'}))
+            return
+        try:
+            db = get_conn()
+            action = data.get('action')
+            if action == 'block':
+                db.execute("UPDATE users SET status = 'blocked' WHERE id = ?", (client_id,))
+            elif action == 'activate':
+                db.execute("UPDATE users SET status = 'active' WHERE id = ?", (client_id,))
+            elif action == 'update':
+                db.execute(
+                    "UPDATE users SET name=?, email=?, phone=?, company_name=? WHERE id=?",
+                    (data.get('name'), data.get('email'),
+                     data.get('phone'), data.get('company_name'), client_id)
+                )
+            elif action == 'assign_plan':
+                plan_id = data.get('plan_id')
+                existing = db.execute(
+                    "SELECT id FROM user_plans WHERE user_id = ?", (client_id,)
+                ).fetchone()
+                if existing:
+                    db.execute(
+                        "UPDATE user_plans SET plan_id = ? WHERE user_id = ?",
+                        (plan_id, client_id)
+                    )
+                else:
+                    db.execute(
+                        "INSERT INTO user_plans (id, user_id, plan_id) VALUES (?, ?, ?)",
+                        (str(uuid.uuid4()), client_id, plan_id)
+                    )
+            db.commit()
+            self.finish(json.dumps({'ok': True}))
+        except Exception as e:
+            self.set_status(500)
+            self.finish(json.dumps({'ok': False, 'error': str(e)}))
+
+    def delete(self, client_id):
+        if not self.require_admin():
+            return
+        try:
+            db = get_conn()
+            db.execute("DELETE FROM users WHERE id = ?", (client_id,))
+            db.commit()
+            self.finish(json.dumps({'ok': True}))
+        except Exception as e:
+            self.set_status(500)
+            self.finish(json.dumps({'ok': False, 'error': str(e)}))
+
+
+class AdminPlansHandler(AdminBase):
+    def get(self):
+        if not self.require_admin():
+            return
+        try:
+            db = get_conn()
+            plans = db.execute(
+                "SELECT * FROM plans ORDER BY created_at DESC"
+            ).fetchall()
+            result = []
+            for p in plans:
+                pd = dict(p)
+                cnt = db.execute(
+                    "SELECT COUNT(*) as c FROM user_plans WHERE plan_id = ?", (pd['id'],)
+                ).fetchone()
+                pd['client_count'] = cnt['c'] if cnt else 0
+                result.append(pd)
+            self.finish(json.dumps({'ok': True, 'plans': result}))
+        except Exception as e:
+            self.set_status(500)
+            self.finish(json.dumps({'ok': False, 'error': str(e)}))
+
+    def post(self):
+        if not self.require_admin():
+            return
+        try:
+            data = json.loads(self.request.body)
+        except Exception:
+            self.finish(json.dumps({'ok': False, 'error': 'JSON invalido'}))
+            return
+        try:
+            db = get_conn()
+            plan_id = str(uuid.uuid4())
+            db.execute(
+                "INSERT INTO plans (id, name, monthly_price, usage_limit, price_per_photo, active) VALUES (?, ?, ?, ?, ?, 1)",
+                (plan_id, data.get('name'), data.get('monthly_price', 0),
+                 data.get('usage_limit') or None, data.get('price_per_photo', 0))
+            )
+            db.commit()
+            self.finish(json.dumps({'ok': True, 'id': plan_id}))
+        except Exception as e:
+            self.set_status(500)
+            self.finish(json.dumps({'ok': False, 'error': str(e)}))
+
+
+class AdminPlanHandler(AdminBase):
+    def put(self, plan_id):
+        if not self.require_admin():
+            return
+        try:
+            data = json.loads(self.request.body)
+        except Exception:
+            self.finish(json.dumps({'ok': False, 'error': 'JSON invalido'}))
+            return
+        try:
+            db = get_conn()
+            action = data.get('action')
+            if action == 'toggle':
+                p = db.execute(
+                    "SELECT active FROM plans WHERE id = ?", (plan_id,)
+                ).fetchone()
+                new_status = 0 if (p and p['active']) else 1
+                db.execute(
+                    "UPDATE plans SET active = ? WHERE id = ?", (new_status, plan_id)
+                )
+            else:
+                db.execute(
+                    "UPDATE plans SET name=?, monthly_price=?, usage_limit=?, price_per_photo=? WHERE id=?",
+                    (data.get('name'), data.get('monthly_price', 0),
+                     data.get('usage_limit') or None, data.get('price_per_photo', 0), plan_id)
+                )
+            db.commit()
+            self.finish(json.dumps({'ok': True}))
+        except Exception as e:
+            self.set_status(500)
+            self.finish(json.dumps({'ok': False, 'error': str(e)}))
+
+    def delete(self, plan_id):
+        if not self.require_admin():
+            return
+        try:
+            db = get_conn()
+            db.execute("DELETE FROM plans WHERE id = ?", (plan_id,))
+            db.commit()
+            self.finish(json.dumps({'ok': True}))
+        except Exception as e:
+            self.set_status(500)
+            self.finish(json.dumps({'ok': False, 'error': str(e)}))
+
+
+class AdminUsageHandler(AdminBase):
+    def get(self):
+        if not self.require_admin():
+            return
+        try:
+            db = get_conn()
+            rows = db.execute("""
+                SELECT u.id, u.name, u.email, COALESCE(u.status,'active') as status,
+                       p.name as plan_name,
+                       COUNT(DISTINCT i.id) as inspections,
+                       COUNT(DISTINCT ph.id) as photos
+                FROM users u
+                LEFT JOIN user_plans up2 ON up2.user_id = u.id
+                LEFT JOIN plans p ON p.id = up2.plan_id
+                LEFT JOIN inspections i ON i.user_id = u.id
+                LEFT JOIN rooms r ON r.inspection_id = i.id
+                LEFT JOIN room_items ri ON ri.room_id = r.id
+                LEFT JOIN photos ph ON ph.item_id = ri.id
+                WHERE COALESCE(u.is_admin, 0) = 0
+                GROUP BY u.id, u.name, u.email, u.status, p.name
+                ORDER BY inspections DESC
+            """).fetchall()
+            self.finish(json.dumps({'ok': True, 'usage': [dict(r) for r in rows]}))
+        except Exception as e:
+            self.set_status(500)
+            self.finish(json.dumps({'ok': False, 'error': str(e)}))
 
 
 class InspectionsHandler(BaseHandler):
@@ -926,6 +1247,15 @@ def make_app():
         (r'/api/auth/forgot-password', PasswordResetRequestHandler),
         (r'/api/auth/verify-reset-token', PasswordResetVerifyHandler),
         (r'/api/auth/reset-password', PasswordResetConfirmHandler),
+        # Admin panel
+        (r'/admin', AdminPageHandler),
+        (r'/api/admin/login', AdminLoginHandler),
+        (r'/api/admin/stats', AdminStatsHandler),
+        (r'/api/admin/clients', AdminClientsHandler),
+        (r'/api/admin/clients/([^/]+)', AdminClientHandler),
+        (r'/api/admin/plans', AdminPlansHandler),
+        (r'/api/admin/plans/([^/]+)', AdminPlanHandler),
+        (r'/api/admin/usage', AdminUsageHandler),
         # Inspections
         (r'/api/inspections', InspectionsHandler),
         (r'/api/inspections/([^/]+)', InspectionHandler),
