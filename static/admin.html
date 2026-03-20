@@ -3,12 +3,12 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>izyLAUDO — Painel Admin</title>
+<title>izyLAUDO â Painel Admin</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f1f5f9;color:#1e293b;min-height:100vh}
 
-/* ── LOGIN ── */
+/* ââ LOGIN ââ */
 .login-page{display:flex;align-items:center;justify-content:center;min-height:100vh;background:linear-gradient(135deg,#1e3a5f 0%,#2563eb 100%)}
 .login-card{background:#fff;border-radius:16px;padding:40px 36px;width:100%;max-width:380px;box-shadow:0 20px 60px rgba(0,0,0,.25)}
 .login-logo{text-align:center;margin-bottom:28px}
@@ -22,7 +22,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .login-btn:hover{background:#1d4ed8}
 .login-err{color:#dc2626;font-size:13px;margin-top:10px;text-align:center;display:none}
 
-/* ── LAYOUT ── */
+/* ââ LAYOUT ââ */
 .app{display:flex;min-height:100vh}
 .sidebar{width:220px;background:#1e3a5f;flex-shrink:0;display:flex;flex-direction:column}
 .sidebar-logo{padding:24px 20px 20px;border-bottom:1px solid rgba(255,255,255,.08)}
@@ -43,7 +43,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .topbar-sub{font-size:12px;color:#94a3b8;margin-top:2px}
 .content{padding:28px}
 
-/* ── CARDS ── */
+/* ââ CARDS ââ */
 .stats-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:16px;margin-bottom:28px}
 .stat-card{background:#fff;border-radius:12px;padding:20px;box-shadow:0 1px 3px rgba(0,0,0,.06);border-left:4px solid #e2e8f0;transition:.2s}
 .stat-card.blue{border-left-color:#2563eb}
@@ -55,7 +55,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .stat-value{font-size:32px;font-weight:800;color:#1e293b;margin-top:6px;line-height:1}
 .stat-desc{font-size:11px;color:#94a3b8;margin-top:4px}
 
-/* ── TABLE ── */
+/* ââ TABLE ââ */
 .section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
 .section-title{font-size:15px;font-weight:700;color:#1e293b}
 .btn{padding:8px 16px;border-radius:7px;font-size:13px;font-weight:600;cursor:pointer;border:none;transition:.2s}
@@ -83,7 +83,7 @@ tr:hover td{background:#fafbfc}
 .badge-blue{background:#dbeafe;color:#2563eb}
 .actions{display:flex;gap:6px;align-items:center}
 
-/* ── MODAL ── */
+/* ââ MODAL ââ */
 .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;z-index:1000;backdrop-filter:blur(2px)}
 .modal{background:#fff;border-radius:14px;padding:28px;width:100%;max-width:460px;box-shadow:0 20px 60px rgba(0,0,0,.2)}
 .modal-title{font-size:16px;font-weight:700;margin-bottom:20px;color:#1e293b}
@@ -95,23 +95,23 @@ tr:hover td{background:#fafbfc}
 .modal-footer{display:flex;gap:10px;justify-content:flex-end;margin-top:20px}
 .modal-close{position:absolute;top:16px;right:16px;background:none;border:none;font-size:20px;cursor:pointer;color:#94a3b8}
 
-/* ── TOAST ── */
+/* ââ TOAST ââ */
 .toast-wrap{position:fixed;bottom:24px;right:24px;z-index:9999;display:flex;flex-direction:column;gap:8px}
 .toast{padding:12px 18px;border-radius:10px;font-size:13px;font-weight:500;box-shadow:0 4px 20px rgba(0,0,0,.15);animation:slideIn .3s ease}
 .toast-success{background:#166534;color:#dcfce7}
 .toast-error{background:#991b1b;color:#fee2e2}
 @keyframes slideIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
 
-/* ── EMPTY ── */
+/* ââ EMPTY ââ */
 .empty{text-align:center;padding:48px 24px;color:#94a3b8}
 .empty p{margin-top:8px;font-size:13px}
 
-/* ── LOADING ── */
+/* ââ LOADING ââ */
 .loading-spinner{display:inline-block;width:18px;height:18px;border:2px solid #e2e8f0;border-top-color:#2563eb;border-radius:50%;animation:spin .6s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
 .page-loading{display:flex;align-items:center;justify-content:center;padding:60px;gap:12px;color:#94a3b8;font-size:14px}
 
-/* ── SEARCH ── */
+/* ââ SEARCH ââ */
 .search-bar{display:flex;gap:12px;margin-bottom:16px}
 .search-input{padding:9px 14px;border:1.5px solid #e2e8f0;border-radius:7px;font-size:13px;outline:none;flex:1;min-width:0}
 .search-input:focus{border-color:#2563eb}
@@ -260,7 +260,7 @@ tr:hover td{background:#fafbfc}
   </div>
 </div>
 
-<!-- ── MODALS ── -->
+<!-- ââ MODALS ââ -->
 
 <!-- Edit Client Modal -->
 <div id="modal-client" class="modal-overlay" style="display:none">
@@ -320,411 +320,316 @@ tr:hover td{background:#fafbfc}
 <div class="toast-wrap" id="toast-wrap"></div>
 
 <script>
-// ── CONFIG ──────────────────────────────────────────────────────────────────
-const API = '';  // same origin
-let _adminToken = localStorage.getItem('izy_admin_token') || null;
-let _allClients = [];
-let _allPlans = [];
+// ─── HELPERS ───────────────────────────────────────────────────────────────
+function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function formatDate(s){ if(!s) return '–'; const d=new Date(s); return isNaN(d)?s:d.toLocaleDateString('pt-BR'); }
+function statusBadge(s){
+  const m={active:'badge-green',blocked:'badge-red',inactive:'badge-gray'};
+  return '<span class="badge '+(m[s]||'badge-gray')+'">'+esc(s||'–')+'</span>';
+}
+function showToast(msg,type){
+  const w=document.getElementById('toast-wrap');
+  const t=document.createElement('div');
+  t.className='toast'+(type==='error'?' toast-error':'');
+  t.textContent=msg; w.appendChild(t);
+  setTimeout(()=>t.remove(),3500);
+}
+function openModal(id){document.getElementById(id).style.display='flex';}
+function closeModal(id){document.getElementById(id).style.display='none';}
 
-// ── API ──────────────────────────────────────────────────────────────────────
-async function adminApi(method, path, body) {
-  const opts = {
-    method,
-    headers: { 'Content-Type': 'application/json' }
-  };
-  if (_adminToken) opts.headers['Authorization'] = 'Bearer ' + _adminToken;
-  if (body) opts.body = JSON.stringify(body);
-  try {
-    const r = await fetch(API + path, opts);
-    return await r.json();
-  } catch(e) {
-    return { ok: false, error: e.message };
-  }
+// ─── API ───────────────────────────────────────────────────────────────────
+async function adminApi(method,path,body){
+  const tok=localStorage.getItem('admin_token');
+  const opts={method,headers:{'Content-Type':'application/json',...(tok?{'Authorization':'Bearer '+tok}:{})}};
+  if(body) opts.body=JSON.stringify(body);
+  const r=await fetch(path,opts);
+  const data=await r.json().catch(()=>({ok:false,error:'Resposta inválida'}));
+  return {status:r.status,...data};
 }
 
-// ── AUTH ─────────────────────────────────────────────────────────────────────
-async function doAdminLogin() {
-  const pwd = document.getElementById('admin-password').value;
-  const err = document.getElementById('login-err');
-  err.style.display = 'none';
-  if (!pwd) return;
-  const r = await adminApi('POST', '/api/admin/login', { password: pwd });
-  if (r.ok) {
-    _adminToken = r.token;
-    localStorage.setItem('izy_admin_token', r.token);
-    document.getElementById('login-page').style.display = 'none';
-    document.getElementById('app').style.display = 'flex';
+// ─── AUTH ──────────────────────────────────────────────────────────────────
+async function doAdminLogin(){
+  const pwd=document.getElementById('admin-password').value.trim();
+  const err=document.getElementById('login-err');
+  if(!pwd){err.textContent='Informe a senha.';return;}
+  const res=await adminApi('POST','/api/admin/login',{password:pwd});
+  if(res.ok&&res.token){
+    localStorage.setItem('admin_token',res.token);
+    err.textContent='';
+    document.getElementById('login-page').style.display='none';
+    document.getElementById('app').style.display='block';
     initApp();
   } else {
-    err.style.display = 'block';
-    err.textContent = r.error || 'Senha incorreta';
+    err.textContent=res.error||'Senha incorreta';
+  }
+}
+function doLogout(){
+  localStorage.removeItem('admin_token');
+  document.getElementById('app').style.display='none';
+  document.getElementById('login-page').style.display='flex';
+  document.getElementById('admin-password').value='';
+}
+
+// ─── INIT / NAV ────────────────────────────────────────────────────────────
+function initApp(){
+  if(localStorage.getItem('admin_token')){
+    document.getElementById('login-page').style.display='none';
+    document.getElementById('app').style.display='block';
+    showPage('dashboard');
+  }
+}
+function showPage(name){
+  ['dashboard','clients','plans','usage'].forEach(p=>{
+    const el=document.getElementById('page-'+p);
+    if(el) el.style.display=(p===name?'block':'none');
+  });
+  if(name==='dashboard') loadDashboard();
+  if(name==='clients')   loadClients();
+  if(name==='plans')     loadPlans();
+  if(name==='usage')     loadUsage();
+}
+
+// ─── DASHBOARD ─────────────────────────────────────────────────────────────
+async function loadDashboard(){
+  const res=await adminApi('GET','/api/admin/stats');
+  if(!res.ok) return showToast('Erro ao carregar dashboard','error');
+  const g=document.getElementById('stats-grid');
+  if(g) g.innerHTML=
+    '<div class="stat-card"><div class="stat-num">'+(res.total_clients||0)+'</div><div class="stat-label">Clientes</div></div>'+
+    '<div class="stat-card"><div class="stat-num">'+(res.total_inspections||0)+'</div><div class="stat-label">Vistorias</div></div>'+
+    '<div class="stat-card"><div class="stat-num">'+(res.total_photos||0)+'</div><div class="stat-label">Fotos</div></div>'+
+    '<div class="stat-card"><div class="stat-num">'+(res.active_plans||0)+'</div><div class="stat-label">Planos ativos</div></div>';
+  if(res.recent_clients) renderRecentClients(res.recent_clients);
+}
+function renderRecentClients(clients){
+  const w=document.getElementById('recent-clients-wrap');
+  if(!w) return;
+  if(!clients.length){w.innerHTML='<p>Nenhum cliente recente.</p>';return;}
+  w.innerHTML='<table class="data-table"><thead><tr><th>Nome</th><th>E-mail</th><th>Status</th><th>Cadastro</th></tr></thead><tbody>'+
+    clients.map(c=>'<tr><td>'+esc(c.name)+'</td><td>'+esc(c.email)+'</td><td>'+statusBadge(c.status)+'</td><td>'+formatDate(c.created_at)+'</td></tr>').join('')+
+    '</tbody></table>';
+}
+
+// ─── CLIENTS ───────────────────────────────────────────────────────────────
+let _allClients=[];
+async function loadClients(){
+  const res=await adminApi('GET','/api/admin/clients');
+  if(!res.ok) return showToast('Erro ao carregar clientes','error');
+  _allClients=res.clients||[];
+  await populatePlanSelect();
+  renderClientsTable(_allClients);
+}
+function renderClientsTable(list){
+  const tb=document.getElementById('clients-tbody');
+  if(!tb) return;
+  if(!list.length){tb.innerHTML='<tr><td colspan="7">Nenhum cliente encontrado.</td></tr>';return;}
+  tb.innerHTML=list.map(c=>
+    '<tr>'+
+    '<td>'+esc(c.name)+'</td>'+
+    '<td>'+esc(c.email)+'</td>'+
+    '<td>'+esc(c.company_name||'–')+'</td>'+
+    '<td>'+esc(c.plan_name||'–')+'</td>'+
+    '<td>'+(c.inspection_count||0)+'</td>'+
+    '<td>'+statusBadge(c.status)+'</td>'+
+    '<td>'+
+      '<button class="btn btn-sm" onclick="openEditClientModal(''+esc(c.id)+'')">Editar</button> '+
+      '<button class="btn btn-sm '+(c.status==='blocked'?'btn-success':'btn-danger')+'" onclick="toggleClientStatus(''+esc(c.id)+'',''+(c.status==='blocked'?'activate':'block')+'')">'+
+        (c.status==='blocked'?'Ativar':'Bloquear')+
+      '</button>'+
+    '</td>'+
+    '</tr>'
+  ).join('');
+}
+function filterClients(){
+  const q=(document.getElementById('client-search')?.value||'').toLowerCase();
+  const f=document.getElementById('client-filter')?.value||'all';
+  let list=_allClients;
+  if(q) list=list.filter(c=>(c.name||'').toLowerCase().includes(q)||(c.email||'').toLowerCase().includes(q));
+  if(f!=='all') list=list.filter(c=>(c.status||'active')===f);
+  renderClientsTable(list);
+}
+async function populatePlanSelect(){
+  const sel=document.getElementById('edit-client-plan');
+  if(!sel) return;
+  const res=await adminApi('GET','/api/admin/plans');
+  if(!res.ok) return;
+  sel.innerHTML='<option value="">— Sem plano —</option>'+
+    (res.plans||[]).map(p=>'<option value="'+esc(p.id)+'">'+esc(p.name)+'</option>').join('');
+}
+function openAddClientModal(){
+  document.getElementById('modal-client-title').textContent='Novo Cliente';
+  ['edit-client-id','edit-client-name','edit-client-company','edit-client-email','edit-client-phone'].forEach(id=>{
+    document.getElementById(id).value='';
+  });
+  const sp=document.getElementById('edit-client-plan');
+  if(sp) sp.value='';
+  openModal('modal-client');
+}
+function openEditClientModal(id){
+  const c=_allClients.find(x=>x.id===id);
+  if(!c) return;
+  document.getElementById('modal-client-title').textContent='Editar Cliente';
+  document.getElementById('edit-client-id').value=c.id;
+  document.getElementById('edit-client-name').value=c.name||'';
+  document.getElementById('edit-client-company').value=c.company_name||'';
+  document.getElementById('edit-client-email').value=c.email||'';
+  document.getElementById('edit-client-phone').value=c.phone||'';
+  const sp=document.getElementById('edit-client-plan');
+  if(sp) sp.value=c.plan_id||'';
+  openModal('modal-client');
+}
+
+async function saveClient(){
+  const id   =document.getElementById('edit-client-id').value.trim();
+  const name =document.getElementById('edit-client-name').value.trim();
+  const email=document.getElementById('edit-client-email').value.trim();
+  const phone=document.getElementById('edit-client-phone').value.trim();
+  const company=document.getElementById('edit-client-company').value.trim();
+  const plan_id=(document.getElementById('edit-client-plan')?.value||'').trim();
+  if(!name||!email){showToast('Nome e e-mail são obrigatórios','error');return;}
+  let res;
+  if(id){
+    res=await adminApi('PUT','/api/admin/clients/'+id,{action:'update',name,email,phone,company_name:company});
+    if(res.ok&&plan_id){
+      await adminApi('PUT','/api/admin/clients/'+id,{action:'assign_plan',plan_id});
+    }
+  } else {
+    res=await adminApi('POST','/api/admin/clients',{name,email,phone,company_name:company,plan_id:plan_id||null});
+  }
+  if(res.ok){
+    closeModal('modal-client');
+    const msg=id?'Cliente atualizado!':'Cliente criado! Senha temporária: '+(res.temp_password||'(ver e-mail)');
+    showToast(msg);
+    loadClients();
+  } else {
+    showToast(res.error||'Erro ao salvar cliente','error');
+  }
+}
+async function toggleClientStatus(id,action){
+  const res=await adminApi('PUT','/api/admin/clients/'+id,{action});
+  if(res.ok){
+    showToast(action==='block'?'Cliente bloqueado!':'Cliente ativado!');
+    loadClients();
+  } else {
+    showToast(res.error||'Erro ao alterar status','error');
   }
 }
 
-function doLogout() {
-  _adminToken = null;
-  localStorage.removeItem('izy_admin_token');
-  location.reload();
+// ─── PLANS ─────────────────────────────────────────────────────────────────
+let _allPlans=[];
+async function loadPlans(){
+  const res=await adminApi('GET','/api/admin/plans');
+  if(!res.ok) return showToast('Erro ao carregar planos','error');
+  _allPlans=res.plans||[];
+  renderPlansGrid(_allPlans);
 }
-
-// ── INIT ─────────────────────────────────────────────────────────────────────
-async function initApp() {
-  await loadDashboard();
-  await loadClients();
-  await loadPlans();
-  await loadUsage();
-}
-
-// ── NAVIGATION ───────────────────────────────────────────────────────────────
-function showPage(name) {
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-  document.getElementById('page-' + name).classList.add('active');
-  document.querySelector('[data-page="' + name + '"]').classList.add('active');
-}
-
-// ── DASHBOARD ────────────────────────────────────────────────────────────────
-async function loadDashboard() {
-  const r = await adminApi('GET', '/api/admin/stats');
-  if (!r.ok) return;
-
-  document.getElementById('stats-grid').innerHTML = `
-    <div class="stat-card blue">
-      <div class="stat-label">Total de Clientes</div>
-      <div class="stat-value">${r.total_clients}</div>
-      <div class="stat-desc">usuarios cadastrados</div>
-    </div>
-    <div class="stat-card green">
-      <div class="stat-label">Clientes Ativos</div>
-      <div class="stat-value">${r.active_clients}</div>
-      <div class="stat-desc">com acesso liberado</div>
-    </div>
-    <div class="stat-card red">
-      <div class="stat-label">Bloqueados</div>
-      <div class="stat-value">${r.blocked_clients}</div>
-      <div class="stat-desc">sem acesso ao sistema</div>
-    </div>
-    <div class="stat-card purple">
-      <div class="stat-label">Laudos Gerados</div>
-      <div class="stat-value">${r.total_inspections}</div>
-      <div class="stat-desc">total de vistorias</div>
-    </div>
-    <div class="stat-card orange">
-      <div class="stat-label">Fotos Processadas</div>
-      <div class="stat-value">${r.total_photos}</div>
-      <div class="stat-desc">imagens no sistema</div>
-    </div>
-  `;
-
-  // Recent clients table
-  if (_allClients.length > 0) renderRecentClients();
-}
-
-function renderRecentClients() {
-  const recent = [..._allClients].slice(0, 8);
-  document.getElementById('recent-clients-wrap').innerHTML = `
-    <table>
-      <thead><tr><th>Nome</th><th>E-mail</th><th>Plano</th><th>Laudos</th><th>Status</th></tr></thead>
-      <tbody>
-        ${recent.map(c => `
-          <tr>
-            <td><strong>${esc(c.name)}</strong><br><span style="font-size:11px;color:#94a3b8">${esc(c.company_name||'')}</span></td>
-            <td>${esc(c.email)}</td>
-            <td>${c.plan_name ? `<span class="badge badge-blue">${esc(c.plan_name)}</span>` : '<span class="badge badge-gray">Sem plano</span>'}</td>
-            <td>${c.inspection_count || 0}</td>
-            <td>${statusBadge(c.status)}</td>
-          </tr>`).join('')}
-      </tbody>
-    </table>`;
-}
-
-// ── CLIENTS ──────────────────────────────────────────────────────────────────
-async function loadClients() {
-  const r = await adminApi('GET', '/api/admin/clients');
-  if (!r.ok) { showToast('Erro ao carregar clientes: ' + r.error, 'error'); return; }
-  _allClients = r.clients;
-  renderClientsTable(_allClients);
-  renderRecentClients();
-}
-
-function renderClientsTable(clients) {
-  const tbody = document.getElementById('clients-tbody');
-  if (!clients.length) {
-    tbody.innerHTML = '<tr><td colspan="8"><div class="empty"><p>Nenhum cliente encontrado</p></div></td></tr>';
+function renderPlansGrid(list){
+  const g=document.getElementById('plans-grid');
+  if(!g) return;
+  if(!list.length){
+    g.innerHTML='<p>Nenhum plano cadastrado. <button class="btn" onclick="openAddPlanModal()">Criar primeiro plano</button></p>';
     return;
   }
-  tbody.innerHTML = clients.map(c => `
-    <tr>
-      <td><strong>${esc(c.name)}</strong><br><span style="font-size:11px;color:#94a3b8">${esc(c.company_name||'')}</span></td>
-      <td>${esc(c.email)}</td>
-      <td>${esc(c.phone||'-')}</td>
-      <td>${c.plan_name ? `<span class="badge badge-blue">${esc(c.plan_name)}</span>` : '<span class="badge badge-gray">Sem plano</span>'}</td>
-      <td style="text-align:center">${c.inspection_count || 0}</td>
-      <td style="font-size:11px;color:#94a3b8">${formatDate(c.created_at)}</td>
-      <td>${statusBadge(c.status)}</td>
-      <td>
-        <div class="actions">
-          <button class="btn btn-sm btn-secondary" onclick="openEditClientModal('${c.id}')">Editar</button>
-          ${(c.status||'active') === 'active'
-            ? `<button class="btn btn-sm btn-danger" onclick="toggleClientStatus('${c.id}','block')">Bloquear</button>`
-            : `<button class="btn btn-sm btn-success" onclick="toggleClientStatus('${c.id}','activate')">Ativar</button>`}
-          <button class="btn btn-sm btn-danger" onclick="confirmDelete('cliente','${c.id}','${esc(c.name)}')">&#128465;</button>
-        </div>
-      </td>
-    </tr>`).join('');
+  g.innerHTML=list.map(p=>
+    '<div class="plan-card'+(p.active?'':' plan-inactive')+'">'+
+    '<div class="plan-name">'+esc(p.name)+'</div>'+
+    '<div class="plan-price">R$ '+Number(p.price||0).toFixed(2)+'/mês</div>'+
+    '<div class="plan-detail">Limite: '+(p.inspection_limit||'Ilimitado')+'</div>'+
+    '<div class="plan-detail">Foto extra: R$ '+Number(p.extra_photo_price||0).toFixed(2)+'</div>'+
+    '<div class="plan-detail">Clientes: '+(p.client_count||0)+'</div>'+
+    '<div class="plan-actions">'+
+      '<button class="btn btn-sm" onclick="openEditPlanModal(''+esc(p.id)+'')">Editar</button> '+
+      '<button class="btn btn-sm '+(p.active?'btn-danger':'btn-success')+'" onclick="togglePlan(''+esc(p.id)+'','+(!p.active)+')">'+
+        (p.active?'Desativar':'Ativar')+
+      '</button>'+
+    '</div>'+
+    '</div>'
+  ).join('');
 }
-
-function filterClients() {
-  const q = document.getElementById('client-search').value.toLowerCase();
-  const st = document.getElementById('client-filter').value;
-  const filtered = _allClients.filter(c => {
-    const matchQ = !q || c.name.toLowerCase().includes(q) || c.email.toLowerCase().includes(q);
-    const matchSt = !st || (c.status || 'active') === st;
-    return matchQ && matchSt;
+function openAddPlanModal(){
+  document.getElementById('modal-plan-title').textContent='Novo Plano';
+  ['edit-plan-id','edit-plan-name','edit-plan-price','edit-plan-limit','edit-plan-photo-price'].forEach(id=>{
+    document.getElementById(id).value='';
   });
-  renderClientsTable(filtered);
+  openModal('modal-plan');
+}
+function openEditPlanModal(id){
+  const p=_allPlans.find(x=>x.id===id);
+  if(!p) return;
+  document.getElementById('modal-plan-title').textContent='Editar Plano';
+  document.getElementById('edit-plan-id').value=p.id;
+  document.getElementById('edit-plan-name').value=p.name||'';
+  document.getElementById('edit-plan-price').value=p.price||'';
+  document.getElementById('edit-plan-limit').value=p.inspection_limit||'';
+  document.getElementById('edit-plan-photo-price').value=p.extra_photo_price||'';
+  openModal('modal-plan');
+}
+async function savePlan(){
+  const id    =document.getElementById('edit-plan-id').value.trim();
+  const name  =document.getElementById('edit-plan-name').value.trim();
+  const price =document.getElementById('edit-plan-price').value.trim();
+  const limit =document.getElementById('edit-plan-limit').value.trim();
+  const eprice=document.getElementById('edit-plan-photo-price').value.trim();
+  if(!name){showToast('Nome do plano é obrigatório','error');return;}
+  const body={name,price:parseFloat(price)||0,inspection_limit:parseInt(limit)||null,extra_photo_price:parseFloat(eprice)||0};
+  const res=id
+    ? await adminApi('PUT','/api/admin/plans/'+id,body)
+    : await adminApi('POST','/api/admin/plans',body);
+  if(res.ok){
+    closeModal('modal-plan');
+    showToast(id?'Plano atualizado!':'Plano criado!');
+    loadPlans();
+  } else {
+    showToast(res.error||'Erro ao salvar plano','error');
+  }
+}
+async function togglePlan(id,active){
+  const res=await adminApi('PUT','/api/admin/plans/'+id,{active});
+  if(res.ok){
+    showToast(active?'Plano ativado!':'Plano desativado!');
+    loadPlans();
+  } else {
+    showToast(res.error||'Erro ao alterar plano','error');
+  }
 }
 
-function openAddClientModal() {
-  document.getElementById('modal-client-title').textContent = 'Novo Cliente';
-  document.getElementById('edit-client-id').value = '';
-  ['edit-client-name','edit-client-email','edit-client-company','edit-client-phone'].forEach(id => document.getElementById(id).value = '');
-  populatePlanSelect(null);
-  openModal('modal-client');
-}
-
-function openEditClientModal(id) {
-  const c = _allClients.find(x => x.id === id);
-  if (!c) return;
-  document.getElementById('modal-client-title').textContent = 'Editar Cliente';
-  document.getElementById('edit-client-id').value = c.id;
-  document.getElementById('edit-client-name').value = c.name || '';
-  document.getElementById('edit-client-email').value = c.email || '';
-  document.getElementById('edit-client-company').value = c.company_name || '';
-  document.getElementById('edit-client-phone').value = c.phone || '';
-  populatePlanSelect(c.plan_id || null);
-  openModal('modal-client');
-}
-
-function populatePlanSelect(selectedId) {
-  const sel = document.getElementById('edit-client-plan');
-  sel.innerHTML = '<option value="">Sem plano</option>' + _allPlans.map(p =>
-    `<option value="${p.id}" ${p.id === selectedId ? 'selected' : ''}>${esc(p.name)} - R$ ${(p.monthly_price||0).toFixed(2)}/mes</option>`
+// ─── USAGE ─────────────────────────────────────────────────────────────────
+async function loadUsage(){
+  const res=await adminApi('GET','/api/admin/usage');
+  if(!res.ok) return showToast('Erro ao carregar uso','error');
+  const tb=document.getElementById('usage-tbody');
+  if(!tb) return;
+  const rows=res.usage||[];
+  if(!rows.length){tb.innerHTML='<tr><td colspan="5">Nenhum dado de uso.</td></tr>';return;}
+  tb.innerHTML=rows.map(r=>
+    '<tr>'+
+    '<td>'+esc(r.client_name||r.name||'–')+'</td>'+
+    '<td>'+(r.inspection_count||0)+'</td>'+
+    '<td>'+(r.photo_count||0)+'</td>'+
+    '<td>'+esc(r.plan_name||'–')+'</td>'+
+    '<td>'+formatDate(r.last_activity||r.created_at)+'</td>'+
+    '</tr>'
   ).join('');
 }
 
-async function saveClient() {
-  const id = document.getElementById('edit-client-id').value;
-  const data = {
-    action: 'update',
-    name: document.getElementById('edit-client-name').value,
-    email: document.getElementById('edit-client-email').value,
-    company_name: document.getElementById('edit-client-company').value,
-    phone: document.getElementById('edit-client-phone').value,
-  };
-  const planId = document.getElementById('edit-client-plan').value;
-
-  if (!data.name || !data.email) return showToast('Nome e e-mail sao obrigatorios', 'error');
-
-  if (id) {
-    // Update existing
-    const r = await adminApi('PUT', '/api/admin/clients/' + id, data);
-    if (!r.ok) return showToast('Erro: ' + r.error, 'error');
-    // Assign plan if changed
-    if (planId !== undefined) {
-      await adminApi('PUT', '/api/admin/clients/' + id, { action: 'assign_plan', plan_id: planId || null });
-    }
-    showToast('Cliente atualizado!', 'success');
-  } else {
-    showToast('Criacao de clientes ainda nao implementada via painel', 'error');
-    closeModal('modal-client');
-    return;
-  }
-  closeModal('modal-client');
-  await loadClients();
-}
-
-async function toggleClientStatus(id, action) {
-  const r = await adminApi('PUT', '/api/admin/clients/' + id, { action });
-  if (r.ok) {
-    showToast(action === 'block' ? 'Cliente bloqueado' : 'Cliente ativado', 'success');
-    await loadClients();
-    await loadDashboard();
-  } else {
-    showToast('Erro: ' + r.error, 'error');
-  }
-}
-
-// ── PLANS ────────────────────────────────────────────────────────────────────
-async function loadPlans() {
-  const r = await adminApi('GET', '/api/admin/plans');
-  if (!r.ok) { showToast('Erro ao carregar planos', 'error'); return; }
-  _allPlans = r.plans;
-  renderPlansGrid();
-}
-
-function renderPlansGrid() {
-  const grid = document.getElementById('plans-grid');
-  if (!_allPlans.length) {
-    grid.innerHTML = '<div class="empty"><p>Nenhum plano criado ainda</p></div>';
-    return;
-  }
-  grid.innerHTML = _allPlans.map(p => `
-    <div style="background:#fff;border-radius:12px;padding:22px;box-shadow:0 1px 3px rgba(0,0,0,.06);border-top:4px solid ${p.active ? '#2563eb' : '#e2e8f0'}">
-      <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px">
-        <div>
-          <p style="font-weight:700;font-size:15px;color:#1e293b">${esc(p.name)}</p>
-          <span class="badge ${p.active ? 'badge-green' : 'badge-gray'}" style="margin-top:4px">${p.active ? 'Ativo' : 'Inativo'}</span>
-        </div>
-        <div style="text-align:right">
-          <p style="font-size:22px;font-weight:800;color:#2563eb">R$ ${(p.monthly_price||0).toFixed(2)}</p>
-          <p style="font-size:11px;color:#94a3b8">por mes</p>
-        </div>
-      </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0;padding:12px;background:#f8fafc;border-radius:8px">
-        <div><p style="font-size:10px;color:#94a3b8;font-weight:600">LIMITE LAUDOS</p><p style="font-weight:700;font-size:13px">${p.usage_limit || 'Ilimitado'}</p></div>
-        <div><p style="font-size:10px;color:#94a3b8;font-weight:600">PRECO POR FOTO</p><p style="font-weight:700;font-size:13px">R$ ${(p.price_per_photo||0).toFixed(2)}</p></div>
-        <div style="grid-column:1/-1"><p style="font-size:10px;color:#94a3b8;font-weight:600">CLIENTES NESTE PLANO</p><p style="font-weight:700;font-size:13px">${p.client_count || 0}</p></div>
-      </div>
-      <div style="display:flex;gap:8px">
-        <button class="btn btn-sm btn-secondary" style="flex:1" onclick="openEditPlanModal('${p.id}')">Editar</button>
-        <button class="btn btn-sm ${p.active ? 'btn-danger' : 'btn-success'}" style="flex:1" onclick="togglePlan('${p.id}')">${p.active ? 'Desativar' : 'Ativar'}</button>
-        <button class="btn btn-sm btn-danger" onclick="confirmDelete('plano','${p.id}','${esc(p.name)}')">&#128465;</button>
-      </div>
-    </div>`).join('');
-}
-
-function openAddPlanModal() {
-  document.getElementById('modal-plan-title').textContent = 'Novo Plano';
-  document.getElementById('edit-plan-id').value = '';
-  ['edit-plan-name','edit-plan-price','edit-plan-limit','edit-plan-photo-price'].forEach(id => document.getElementById(id).value = '');
-  openModal('modal-plan');
-}
-
-function openEditPlanModal(id) {
-  const p = _allPlans.find(x => x.id === id);
-  if (!p) return;
-  document.getElementById('modal-plan-title').textContent = 'Editar Plano';
-  document.getElementById('edit-plan-id').value = p.id;
-  document.getElementById('edit-plan-name').value = p.name || '';
-  document.getElementById('edit-plan-price').value = p.monthly_price || '';
-  document.getElementById('edit-plan-limit').value = p.usage_limit || '';
-  document.getElementById('edit-plan-photo-price').value = p.price_per_photo || '';
-  openModal('modal-plan');
-}
-
-async function savePlan() {
-  const id = document.getElementById('edit-plan-id').value;
-  const data = {
-    name: document.getElementById('edit-plan-name').value.trim(),
-    monthly_price: parseFloat(document.getElementById('edit-plan-price').value) || 0,
-    usage_limit: parseInt(document.getElementById('edit-plan-limit').value) || null,
-    price_per_photo: parseFloat(document.getElementById('edit-plan-photo-price').value) || 0,
-  };
-  if (!data.name) return showToast('Nome do plano e obrigatorio', 'error');
-  const r = id
-    ? await adminApi('PUT', '/api/admin/plans/' + id, data)
-    : await adminApi('POST', '/api/admin/plans', data);
-  if (r.ok) {
-    showToast(id ? 'Plano atualizado!' : 'Plano criado!', 'success');
-    closeModal('modal-plan');
-    await loadPlans();
-  } else {
-    showToast('Erro: ' + r.error, 'error');
-  }
-}
-
-async function togglePlan(id) {
-  const r = await adminApi('PUT', '/api/admin/plans/' + id, { action: 'toggle' });
-  if (r.ok) { showToast('Status do plano atualizado', 'success'); await loadPlans(); }
-  else showToast('Erro: ' + r.error, 'error');
-}
-
-// ── USAGE ────────────────────────────────────────────────────────────────────
-async function loadUsage() {
-  const r = await adminApi('GET', '/api/admin/usage');
-  if (!r.ok) { showToast('Erro ao carregar uso', 'error'); return; }
-  const tbody = document.getElementById('usage-tbody');
-  if (!r.usage.length) {
-    tbody.innerHTML = '<tr><td colspan="6"><div class="empty"><p>Nenhum dado de uso encontrado</p></div></td></tr>';
-    return;
-  }
-  tbody.innerHTML = r.usage.map(u => `
-    <tr>
-      <td><strong>${esc(u.name)}</strong></td>
-      <td>${esc(u.email)}</td>
-      <td>${u.plan_name ? `<span class="badge badge-blue">${esc(u.plan_name)}</span>` : '<span class="badge badge-gray">Sem plano</span>'}</td>
-      <td style="text-align:center;font-weight:700">${u.inspections || 0}</td>
-      <td style="text-align:center;font-weight:700">${u.photos || 0}</td>
-      <td>${statusBadge(u.status)}</td>
-    </tr>`).join('');
-}
-
-// ── DELETE ───────────────────────────────────────────────────────────────────
-function confirmDelete(type, id, name) {
-  document.getElementById('confirm-text').textContent = `Deseja realmente excluir o ${type} "${name}"? Esta acao nao pode ser desfeita.`;
-  document.getElementById('confirm-btn').onclick = async () => {
-    const endpoint = type === 'cliente' ? '/api/admin/clients/' : '/api/admin/plans/';
-    const r = await adminApi('DELETE', endpoint + id);
-    if (r.ok) {
-      showToast(type === 'cliente' ? 'Cliente excluido!' : 'Plano excluido!', 'success');
-      closeModal('modal-confirm');
-      if (type === 'cliente') await loadClients();
-      else await loadPlans();
-    } else {
-      showToast('Erro: ' + r.error, 'error');
-    }
-  };
+// ─── CONFIRM ───────────────────────────────────────────────────────────────
+let _confirmCb=null;
+function confirmDelete(msg,cb){
+  document.getElementById('confirm-text').textContent=msg;
+  _confirmCb=cb;
   openModal('modal-confirm');
 }
 
-// ── MODAL HELPERS ────────────────────────────────────────────────────────────
-function openModal(id) { document.getElementById(id).style.display = 'flex'; }
-function closeModal(id) { document.getElementById(id).style.display = 'none'; }
-document.querySelectorAll('.modal-overlay').forEach(m => {
-  m.addEventListener('click', e => { if (e.target === m) m.style.display = 'none'; });
+// ─── BOOT ──────────────────────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded',()=>{
+  const cb=document.getElementById('confirm-btn');
+  if(cb) cb.addEventListener('click',()=>{
+    closeModal('modal-confirm');
+    if(_confirmCb){_confirmCb();_confirmCb=null;}
+  });
+  initApp();
 });
 
-// ── TOAST ────────────────────────────────────────────────────────────────────
-function showToast(msg, type = 'success') {
-  const wrap = document.getElementById('toast-wrap');
-  const t = document.createElement('div');
-  t.className = `toast toast-${type}`;
-  t.textContent = msg;
-  wrap.appendChild(t);
-  setTimeout(() => t.remove(), 3500);
-}
-
-// ── HELPERS ──────────────────────────────────────────────────────────────────
-function esc(s) {
-  if (!s) return '';
-  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-}
-function statusBadge(s) {
-  if (!s || s === 'active') return '<span class="badge badge-green">Ativo</span>';
-  if (s === 'blocked') return '<span class="badge badge-red">Bloqueado</span>';
-  return `<span class="badge badge-gray">${esc(s)}</span>`;
-}
-function formatDate(d) {
-  if (!d) return '-';
-  try { return new Date(d).toLocaleDateString('pt-BR'); } catch { return d; }
-}
-
-// ── BOOT ─────────────────────────────────────────────────────────────────────
-window.addEventListener('DOMContentLoaded', async () => {
-  if (_adminToken) {
-    // Verify token still valid
-    const r = await adminApi('GET', '/api/admin/stats');
-    if (r.ok) {
-      document.getElementById('login-page').style.display = 'none';
-      document.getElementById('app').style.display = 'flex';
-      initApp();
-    } else {
-      _adminToken = null;
-      localStorage.removeItem('izy_admin_token');
-    }
-  }
-});
 </script>
 </body>
 </html>
