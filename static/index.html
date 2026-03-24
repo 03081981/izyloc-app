@@ -510,6 +510,20 @@ textarea.form-input { resize: vertical; min-height: 88px; line-height: 1.5; }
 .alert-error-box {
   background:#fef2f2;border:1px solid #fecaca;border-radius:10px;
   padding:14px;color:#991b1b;text-align:center; }
+
+    /* === IZYLAUDO ENHANCEMENTS === */
+    .step-wrap{display:flex;flex-direction:column;align-items:center;}
+    .step-label{font-size:10px;color:#94a3b8;margin-top:3px;text-align:center;white-space:nowrap;font-weight:500;transition:color .3s;}
+    .step-wrap .step-circle.active+.step-label{color:var(--primary,#1976D2);font-weight:700;}
+    .step-wrap .step-circle.done+.step-label{color:var(--primary,#1976D2);}
+    .izy-toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(60px);background:#1e293b;color:#fff;padding:12px 20px;border-radius:20px;font-size:14px;z-index:99999;opacity:0;transition:all .35s cubic-bezier(.22,1,.36,1);pointer-events:none;max-width:88vw;text-align:center;box-shadow:0 4px 20px rgba(0,0,0,.25);}
+    .izy-toast.izy-toast-show{opacity:1;transform:translateX(-50%) translateY(0);}
+    .izy-toast-warn{background:#d97706;}
+    .izy-toast-success{background:#16a34a;}
+    .izy-toast-error{background:#dc2626;}
+    .ai-retry-hint{font-size:12px;color:#d97706;margin-top:4px;padding:4px 8px;background:#fff8e1;border-radius:6px;border-left:3px solid #d97706;}
+    .party-email-req{border-color:#e74c3c !important;animation:shake .3s;}
+    @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
 </style>
 </head>
 <body>
@@ -741,14 +755,14 @@ textarea.form-input { resize: vertical; min-height: 88px; line-height: 1.5; }
 <div class="page" id="page-wizard">
   <div class="page-content page-scroll">
     <!-- Stepper -->
-    <div class="stepper" id="wizard-stepper" style="margin-bottom:20px">
-      <div class="step-circle active" id="sc-1">1</div>
+    <div class="stepper" id="wizard-stepper" style="margin-bottom:8px">
+      <div class="step-wrap"><div class="step-circle active" id="sc-1">1</div><div class="step-label" id="sl-lbl-1">Imóvel</div></div>
       <div class="step-line" id="sl-1"></div>
-      <div class="step-circle" id="sc-2">2</div>
+      <div class="step-wrap"><div class="step-circle" id="sc-2">2</div><div class="step-label" id="sl-lbl-2">Partes</div></div>
       <div class="step-line" id="sl-2"></div>
-      <div class="step-circle" id="sc-3">3</div>
+      <div class="step-wrap"><div class="step-circle" id="sc-3">3</div><div class="step-label" id="sl-lbl-3">Ambientes</div></div>
       <div class="step-line" id="sl-3"></div>
-      <div class="step-circle" id="sc-4">4</div>
+      <div class="step-wrap"><div class="step-circle" id="sc-4">4</div><div class="step-label" id="sl-lbl-4">Vistoria</div></div>
     </div>
 
     <!-- STEP 1: Imóvel -->
@@ -760,6 +774,7 @@ textarea.form-input { resize: vertical; min-height: 88px; line-height: 1.5; }
           <select id="wi-type" class="form-input">
             <option value="entrada">Entrada — início da locação</option>
             <option value="saida">Saída — fim da locação</option>
+            <option value="temporada">Temporada / Airbnb</option>
           </select>
         </div>
         <div class="form-group">
@@ -1856,6 +1871,148 @@ window.addEventListener('resize', () => {
     if (c && signaturePads[p]) resizeCanvas(c, signaturePads[p]);
   });
 });
+</script>
+
+<script>
+/* ===== IZYLAUDO ENHANCEMENTS v2 ===== */
+(function() {
+  // ── Toast utility ──────────────────────────────────────────────────────────
+  function showToast(msg, type) {
+    var ex = document.getElementById('izy-toast');
+    if (ex) ex.remove();
+    var t = document.createElement('div');
+    t.id = 'izy-toast';
+    t.textContent = msg;
+    t.className = 'izy-toast izy-toast-' + (type || 'info');
+    document.body.appendChild(t);
+    setTimeout(function(){ t.classList.add('izy-toast-show'); }, 10);
+    setTimeout(function(){
+      t.classList.remove('izy-toast-show');
+      setTimeout(function(){ if(t.parentNode) t.remove(); }, 400);
+    }, 3500);
+  }
+  window.showToast = showToast;
+
+  window.addEventListener('load', function() {
+
+    // ── 1. Auto-fill Corretor from logged-in user ─────────────────────────
+    var _origGotoWStep = window.gotoWStep;
+    window.gotoWStep = function(n) {
+      _origGotoWStep(n);
+      if (n === 2) {
+        try {
+          var u = JSON.parse(localStorage.getItem('izylo_user') || '{}');
+          var ne = document.getElementById('wi-corr-name');
+          var ee = document.getElementById('wi-corr-email');
+          var pe = document.getElementById('wi-corr-phone');
+          var ce = document.getElementById('wi-corr-creci');
+          if (ne && !ne.value && u.name)   ne.value = u.name;
+          if (ee && !ee.value && u.email)  ee.value = u.email;
+          if (pe && !pe.value && u.phone)  pe.value = u.phone;
+          if (ce && !ce.value && u.creci)  ce.value = u.creci;
+        } catch(e) {}
+      }
+    };
+
+    // ── 2. Snapshot fields for corretor when saving inspection ────────────
+    var _origWizardNext = window.wizardNext;
+    window.wizardNext = function(step) {
+      // Email validation on step 2
+      if (step === 2) {
+        var emailInputs = document.querySelectorAll(
+          '#locadores-container input[type="email"], #locatarios-container input[type="email"]'
+        );
+        var hasMissing = false;
+        emailInputs.forEach(function(inp) {
+          inp.classList.remove('party-email-req');
+          if (!inp.value.trim()) {
+            inp.classList.add('party-email-req');
+            hasMissing = true;
+          }
+        });
+        if (hasMissing) {
+          showToast('⚠️ Preencha o e-mail de todas as partes para continuar.', 'warn');
+          var first = document.querySelector(
+            '#locadores-container input[type="email"].party-email-req, #locatarios-container input[type="email"].party-email-req'
+          );
+          if (first) { first.scrollIntoView({behavior:'smooth', block:'center'}); first.focus(); }
+          return;
+        }
+      }
+      _origWizardNext(step);
+    };
+
+    // ── 3. AI UX Messages via MutationObserver ─────────────────────────────
+    var _aiCheckDebounce = null;
+    var observer = new MutationObserver(function(mutations) {
+      mutations.forEach(function(m) {
+        var el = m.target;
+        // Look for elements whose id starts with 'ai-desc-' being updated
+        if (el && el.id && el.id.indexOf('ai-desc') === 0) {
+          clearTimeout(_aiCheckDebounce);
+          _aiCheckDebounce = setTimeout(function() {
+            var txt = (el.textContent || '').trim();
+            if (txt.length < 5) return;
+            var tl = txt.toLowerCase();
+            var isBad = tl.indexOf('não identific') !== -1 ||
+                        tl.indexOf('não corresponde') !== -1 ||
+                        tl.indexOf('não atende') !== -1 ||
+                        tl.indexOf('could not process') !== -1 ||
+                        tl.indexOf('unable to process') !== -1;
+            if (isBad) {
+              showToast('📸 IA não reconheceu a foto. Tente uma imagem mais clara e próxima do item.', 'warn');
+              // Add retry hint below element
+              var hint = el.nextElementSibling;
+              if (!hint || !hint.classList.contains('ai-retry-hint')) {
+                hint = document.createElement('div');
+                hint.className = 'ai-retry-hint';
+                hint.textContent = '↩ Envie uma nova foto com boa iluminação e foco no item.';
+                el.parentNode.insertBefore(hint, el.nextSibling);
+              }
+            } else {
+              // Remove any existing retry hint
+              var hint = el.nextElementSibling;
+              if (hint && hint.classList.contains('ai-retry-hint')) hint.remove();
+              if (txt.length > 20) {
+                showToast('✅ Foto analisada com sucesso pela IA!', 'success');
+              }
+            }
+          }, 200);
+        }
+      });
+    });
+    observer.observe(document.body, { subtree: true, childList: true, characterData: true, subtree: true });
+
+    // ── 4. Pre-upload validation (enhance silent return) ──────────────────
+    var _origUploadPhoto = window.uploadPhoto;
+    window.uploadPhoto = async function(itemId, input) {
+      if (!input || !input.files || !input.files.length || !input.files[0]) {
+        showToast('⚠️ Selecione uma foto antes de enviar.', 'warn');
+        return;
+      }
+      // Show loading hint on the file input label
+      var lbl = input.previousElementSibling || input.parentElement;
+      var loadMsg = null;
+      if (lbl) {
+        loadMsg = document.createElement('div');
+        loadMsg.className = 'ai-retry-hint';
+        loadMsg.style.color = '#1976D2';
+        loadMsg.style.borderColor = '#1976D2';
+        loadMsg.style.background = '#e3f2fd';
+        loadMsg.textContent = '🔄 Analisando com IA…';
+        lbl.parentNode.insertBefore(loadMsg, lbl.nextSibling);
+      }
+      try {
+        var result = await _origUploadPhoto(itemId, input);
+        return result;
+      } finally {
+        if (loadMsg && loadMsg.parentNode) loadMsg.remove();
+      }
+    };
+
+  }); // end load
+
+})();
 </script>
 </body>
 </html>
