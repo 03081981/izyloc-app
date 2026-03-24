@@ -73,114 +73,44 @@ def analyze_photos(image_paths: list, item_name: str, room_name: str) -> dict:
         n = len(content)
         foto_str = "esta foto" if n == 1 else f"estas {n} fotos"
 
-        prompt = f"""Você é um PERITO TÉCNICO ESPECIALISTA EM VISTORIA IMOBILIÁRIA.
-Sua função é analisar imagens e gerar descrições técnicas padronizadas para laudos profissionais.
+        system_msg = """Você é um PERITO TÉCNICO ESPECIALISTA EM VISTORIA IMOBILIÁRIA com 20 anos de experiência. Analisa imagens e gera descrições técnicas para laudos profissionais.
 
-Analise {foto_str} do item "{item_name}" localizado no ambiente "{room_name}".
+REGRAS ABSOLUTAS — nunca viole:
+1. NUNCA use "ou" para indicar incerteza de material/tipo/acabamento. Use termos neutros: "metal", "revestimento cerâmico", "material não identificado".
+2. NUNCA invente ou estime medidas numéricas. Sem "90 cm", "1,20m" ou "aproximadamente X".
+3. NUNCA descreva itens adjacentes fora do foco principal do laudo.
+4. NUNCA afirme o que não está claramente visível na imagem.
+5. A descrição deve ter 4 a 7 linhas."""
 
----
+        foto_label = "esta foto" if n == 1 else f"estas {n} fotos"
 
-ETAPA 1 — IDENTIFICAÇÃO DO TIPO DE ITEM
+        prompt = f"""Analise {foto_str} do item "{item_name}" no ambiente "{room_name}".
 
-Antes de descrever, identifique internamente o tipo principal do item na imagem:
-janela | porta | parede | piso | teto | instalação elétrica | instalação hidráulica | equipamento | mobiliário | outro
+PADRÃO POR TIPO:
+- JANELA: abertura (correr/abrir/basculante), material visível, trilhos, vedação, sujidade
+- PORTA: tipo de folha, material, ferragens, estrutura, alinhamento, fechadura
+- PAREDE/PISO/TETO: revestimento, cor, patologias visíveis (umidade, trinca, mancha)
+- EQUIPAMENTO: marca se logotipo visível, componentes, estado, anomalias
+- MOBILIÁRIO: material aparente, estado das superfícies, funcionamento visível
 
-Esta classificação orienta a descrição mas NÃO deve aparecer no texto final.
+EXEMPLOS — NÃO fazer vs FAZER:
+✗ "alumínio ou ferro" → ✓ "metal de acabamento claro"
+✗ "cerâmica ou porcelanato" → ✓ "revestimento cerâmico"
+✗ "vidro temperado ou laminado" → ✓ "vidro liso"
+✗ "90 cm de largura" → ✓ não mencionar medidas
+✗ "vista para área externa" → ✓ descrever apenas o item "{item_name}"
 
----
-
-ETAPA 2 — REGRAS OBRIGATÓRIAS
-
-- Descrever apenas o que é visível na imagem
-- Não inventar informações
-- Não estimar medidas
-- Não usar "ou" para indicar dúvida sobre o que foi observado
-- Não deduzir material sem evidência visual clara
-- Não afirmar algo sem certeza
-- Se houver dúvida, descrever de forma neutra e objetiva
-
----
-
-ETAPA 3 — IDENTIFICAÇÃO DE MARCA/MODELO (para equipamentos)
-
-- Identificar marca somente se logotipo estiver visível na imagem
-- Mencionar modelo apenas se estiver claramente legível
-- Caso contrário: informar "sem identificação de modelo"
-
----
-
-ETAPA 4 — ESTRUTURA OBRIGATÓRIA DA DESCRIÇÃO
-
-A descrição deve conter:
-1. Identificação do item (o que é)
-2. Características visuais (cor, material, tipo de abertura, acabamento)
-3. Estado de conservação
-4. Problemas visíveis (somente os que forem evidentes na imagem)
-5. Observações técnicas relevantes
-
-Tamanho: mínimo 3 linhas, ideal 5 a 8 linhas, máximo 10 linhas.
-
-Finalizar SEMPRE com uma dessas frases exatas:
-"Estado geral: bom" ou "Estado geral: regular" ou "Estado geral: ruim"
-
----
-
-PADRÃO POR TIPO DE ITEM
-
-JANELA: tipo de abertura (correr, abrir, basculante), material (se evidente), estado dos trilhos/estrutura, vedação, sujeira/desgaste, funcionamento aparente.
-
-PORTA: tipo (madeira, vidro, etc.), estrutura, dobradiças, fechadura, alinhamento, sinais de uso.
-
-PAREDE: tipo de acabamento (pintura, azulejo, etc.), integridade, manchas, sujeira, fissuras.
-
-PISO: tipo de revestimento, estado geral, desgaste, manchas, nivelamento aparente.
-
-TETO: acabamento, manchas, infiltração visível (somente se evidente), luminárias.
-
-INSTALAÇÃO ELÉTRICA: tomadas, interruptores, espelhos, acabamento, sinais de desgaste, fixação.
-
-INSTALAÇÃO HIDRÁULICA: torneiras, registros, vedação aparente, sinais de vazamento (somente se visível), conservação.
-
-EQUIPAMENTO: tipo do equipamento, marca (se visível), modelo (se visível), estado geral, sinais de uso, acúmulo de sujeira.
-
----
-
-REGRA FINAL
-
-A precisão é mais importante que a quantidade.
-Nunca invente informações.
-Nunca faça suposições.
-Nunca arrisque erro técnico.
-
----
-
-Responda SOMENTE com um JSON válido, sem texto adicional:
-{{
+Responda SOMENTE com JSON válido, sem texto adicional:
+{{{{
   "condition": "ótimo|bom|regular|ruim|péssimo",
-  "description": "descrição técnica completa conforme todas as regras acima",
-  "problems": ["defeito ou problema visível 1 se houver", "defeito 2 se houver"]
-}}
-
-Critério para "condition":
-- ótimo: novo ou como novo, sem qualquer defeito ou sinal de uso
-- bom: pequenos sinais de uso natural, sem defeitos que comprometam a funcionalidade
-- regular: defeitos leves a moderados presentes, funcional mas com problemas visíveis
-- ruim: defeitos sérios que necessitam reparo
-- péssimo: danos graves, inutilizável ou muito comprometido
-
-Se não houver problemas visíveis, retorne "problems" como lista vazia: []"""
-
-        content.append({'type': 'text', 'text': prompt})
-
-        headers = {
-            'x-api-key': ANTHROPIC_API_KEY,
-            'anthropic-version': '2023-06-01',
-            'content-type': 'application/json'
-        }
-
+  "description": "descrição técnica de 4 a 7 linhas do item visível",
+  "estado_geral": "bom|regular|ruim",
+  "problems": ["defeito visível 1", "defeito visível 2"]
+}}}}"""
         payload = {
             'model': 'claude-sonnet-4-6',
-            'max_tokens': 1024,
+            'max_tokens': 2048,
+            'system': system_msg,
             'messages': [{'role': 'user', 'content': content}]
         }
 
@@ -206,10 +136,14 @@ Se não houver problemas visíveis, retorne "problems" como lista vazia: []"""
 
             try:
                 analysis = json.loads(text)
+                estado = analysis.get("estado_geral", "")
+                desc = analysis.get("description", "")
+                if estado and "Estado geral:" not in desc:
+                    desc = desc.rstrip() + "\n\nEstado geral: " + estado
                 return {
                     "success": True,
                     "condition": analysis.get("condition", "avaliado"),
-                    "description": analysis.get("description", ""),
+                    "description": desc,
                     "problems": analysis.get("problems", [])
                 }
             except json.JSONDecodeError:
