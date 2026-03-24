@@ -105,7 +105,7 @@ Responda SOMENTE com JSON valido, sem texto adicional:
   "problems": ["defeito visivel 1 se houver"]
 }}"""
 
-                content.append({'type': 'text', 'text': prompt})
+        content.append({'type': 'text', 'text': prompt})
 
         headers = {
             'x-api-key': ANTHROPIC_API_KEY,
