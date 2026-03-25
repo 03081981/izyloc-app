@@ -6,20 +6,20 @@
 <meta name="theme-color" content="#1565E8"/>
 <meta name="apple-mobile-web-app-capable" content="yes"/>
 <meta name="apple-mobile-web-app-status-bar-style" content="default"/>
-<title>izyLAUDO — Vistorias Imobiliárias</title>
+<title>izyLAUDO â Vistorias ImobiliÃ¡rias</title>
 <link rel="manifest" href="/static/manifest.json"/>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/signature_pad/4.1.7/signature_pad.umd.min.js"></script>
 
 <style>
 /* =====================================================
-   IZYLAUDO — Design System Premium v7
+   IZYLAUDO â Design System Premium v7
    Paleta, Tipografia, Componentes
    ===================================================== */
 
 /* Import */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
 
-/* ─── Tokens ─────────────────────────────────────── */
+/* âââ Tokens âââââââââââââââââââââââââââââââââââââââ */
 :root {
   --blue:        #1565D8;
   --blue-dark:   #0E3A75;
@@ -48,7 +48,7 @@
   --sidebar-w:   240px;
 }
 
-/* ─── Reset ──────────────────────────────────────── */
+/* âââ Reset ââââââââââââââââââââââââââââââââââââââââ */
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html{font-size:16px;-webkit-text-size-adjust:100%}
 body{
@@ -64,10 +64,10 @@ input,select,textarea{font-family:inherit}
 a{color:inherit;text-decoration:none}
 img{max-width:100%;display:block}
 
-/* ─── App Shell ──────────────────────────────────── */
+/* âââ App Shell ââââââââââââââââââââââââââââââââââââ */
 #app{display:flex;flex-direction:column;min-height:100vh}
 
-/* ─── Topbar (global, kept for JS hooks) ─────────── */
+/* âââ Topbar (global, kept for JS hooks) âââââââââââ */
 .topbar{
   position:fixed;top:0;left:0;right:0;z-index:200;
   height:56px;
@@ -100,7 +100,7 @@ img{max-width:100%;display:block}
 }
 .btn-logout:hover{background:var(--error-bg);color:var(--error)}
 
-/* ─── Page System ────────────────────────────────── */
+/* âââ Page System ââââââââââââââââââââââââââââââââââ */
 .page{
   display:none;
   flex-direction:column;
@@ -117,7 +117,7 @@ img{max-width:100%;display:block}
 .page-scroll{overflow-y:auto}
 .pb-100{padding-bottom:100px}
 
-/* ─── Auth Page ──────────────────────────────────── */
+/* âââ Auth Page ââââââââââââââââââââââââââââââââââââ */
 .auth-page{
   min-height:100vh;
   display:flex;flex-direction:column;
@@ -167,7 +167,7 @@ img{max-width:100%;display:block}
 }
 .auth-tab.active{color:var(--blue);border-color:var(--blue)}
 
-/* ─── Forms ──────────────────────────────────────── */
+/* âââ Forms ââââââââââââââââââââââââââââââââââââââââ */
 .form-group{margin-bottom:18px}
 .form-label{
   display:block;margin-bottom:6px;
@@ -192,7 +192,7 @@ img{max-width:100%;display:block}
 select.form-input{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%235C6B7A' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;padding-right:36px;cursor:pointer}
 textarea.form-input{min-height:96px;resize:vertical}
 
-/* ─── Buttons ────────────────────────────────────── */
+/* âââ Buttons ââââââââââââââââââââââââââââââââââââââ */
 .btn{
   display:inline-flex;align-items:center;justify-content:center;gap:8px;
   padding:12px 20px;border-radius:var(--r-sm);
@@ -224,7 +224,7 @@ textarea.form-input{min-height:96px;resize:vertical}
 .btn-lg{padding:15px 28px;font-size:16px;border-radius:var(--r)}
 .btn-icon{padding:8px;border-radius:var(--r-sm);width:36px;height:36px}
 
-/* ─── Cards ──────────────────────────────────────── */
+/* âââ Cards ââââââââââââââââââââââââââââââââââââââââ */
 .card{
   background:var(--white);
   border:1px solid var(--border);
@@ -243,7 +243,7 @@ textarea.form-input{min-height:96px;resize:vertical}
 }
 .card-header-title{font-size:14px;font-weight:700;color:var(--text);text-transform:uppercase;letter-spacing:.5px}
 
-/* ─── Dashboard Header ───────────────────────────── */
+/* âââ Dashboard Header âââââââââââââââââââââââââââââ */
 .dash-header{
   background:var(--white);
   border-bottom:1px solid var(--border);
@@ -272,7 +272,7 @@ textarea.form-input{min-height:96px;resize:vertical}
 }
 .dash-nav-tab.active{color:var(--blue);border-color:var(--blue)}
 
-/* ─── Stats Grid ─────────────────────────────────── */
+/* âââ Stats Grid âââââââââââââââââââââââââââââââââââ */
 .stats-section{padding:20px 16px}
 .stats-grid{
   display:grid;grid-template-columns:1fr 1fr;gap:12px;
@@ -301,7 +301,7 @@ textarea.form-input{min-height:96px;resize:vertical}
 }
 .stat-label{font-size:12px;color:var(--text-2);font-weight:500}
 
-/* ─── Inspection List ────────────────────────────── */
+/* âââ Inspection List ââââââââââââââââââââââââââââââ */
 .section{padding:16px}
 .section-header{
   display:flex;align-items:center;justify-content:space-between;
@@ -338,7 +338,7 @@ textarea.form-input{min-height:96px;resize:vertical}
 .badge-em_andamento{background:#FEF3C7;color:#92400E}
 .badge-concluido{background:#D1FAE5;color:#065F46}
 
-/* ─── Empty State ────────────────────────────────── */
+/* âââ Empty State ââââââââââââââââââââââââââââââââââ */
 .empty-state{
   text-align:center;padding:48px 24px;
 }
@@ -351,7 +351,7 @@ textarea.form-input{min-height:96px;resize:vertical}
 .empty-title{font-size:16px;font-weight:700;color:var(--text);margin-bottom:8px}
 .empty-text{font-size:14px;color:var(--text-2);margin-bottom:20px;max-width:280px;margin-left:auto;margin-right:auto}
 
-/* ─── Wizard ─────────────────────────────────────── */
+/* âââ Wizard âââââââââââââââââââââââââââââââââââââââ */
 .wizard-header{
   background:var(--white);
   border-bottom:1px solid var(--border);
@@ -417,7 +417,7 @@ textarea.form-input{min-height:96px;resize:vertical}
 .chip-header-gradient .ch-title{font-size:17px;font-weight:700}
 .chip-header-gradient .ch-sub{font-size:12px;opacity:.8;margin-top:3px}
 
-/* ─── Tipo Cards ─────────────────────────────────── */
+/* âââ Tipo Cards âââââââââââââââââââââââââââââââââââ */
 .tipo-cards{display:flex;flex-direction:column;gap:12px;margin-bottom:8px}
 .tipo-card{
   background:var(--white);
@@ -477,7 +477,7 @@ textarea.form-input{min-height:96px;resize:vertical}
 }
 .tmp-sub-btn.selected,.tmp-sub-btn:hover{background:var(--blue);color:var(--white);border-color:var(--blue)}
 
-/* ─── Room Check List ────────────────────────────── */
+/* âââ Room Check List ââââââââââââââââââââââââââââââ */
 .room-check-list{display:flex;flex-direction:column;gap:2px}
 .room-check-item{
   display:flex;align-items:center;gap:12px;
@@ -494,10 +494,10 @@ textarea.form-input{min-height:96px;resize:vertical}
   flex-shrink:0;transition:all var(--t);
 }
 .room-check-item.checked .check-box{background:var(--blue);border-color:var(--blue)}
-.room-check-item.checked .check-box::after{content:'✓';color:white;font-size:12px;font-weight:700}
+.room-check-item.checked .check-box::after{content:'â';color:white;font-size:12px;font-weight:700}
 .room-check-label{font-size:14px;font-weight:500;color:var(--text)}
 
-/* ─── Room Cards (Vistoria) ──────────────────────── */
+/* âââ Room Cards (Vistoria) ââââââââââââââââââââââââ */
 .room-card{
   background:var(--white);
   border:1px solid var(--border);
@@ -537,7 +537,7 @@ textarea.form-input{min-height:96px;resize:vertical}
 }
 .room-add-btn:hover{background:var(--blue-light);border-color:var(--blue)}
 
-/* ─── Photo Grid ─────────────────────────────────── */
+/* âââ Photo Grid âââââââââââââââââââââââââââââââââââ */
 .photo-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:8px}
 .photo-thumb-wrap{
   aspect-ratio:1;position:relative;border-radius:var(--r-sm);overflow:hidden;
@@ -551,7 +551,7 @@ textarea.form-input{min-height:96px;resize:vertical}
   display:flex;align-items:center;justify-content:center;
 }
 
-/* ─── Signature Blocks ───────────────────────────── */
+/* âââ Signature Blocks âââââââââââââââââââââââââââââ */
 .sig-block{
   background:var(--white);
   border:1px solid var(--border);
@@ -585,7 +585,7 @@ textarea.form-input{min-height:96px;resize:vertical}
   display:flex;gap:8px;padding:12px 14px;
 }
 
-/* ─── Profile Card ───────────────────────────────── */
+/* âââ Profile Card âââââââââââââââââââââââââââââââââ */
 .profile-card{
   background:var(--white);
   border:1px solid var(--border);
@@ -604,7 +604,7 @@ textarea.form-input{min-height:96px;resize:vertical}
 .profile-name{font-size:16px;font-weight:700;color:var(--text)}
 .profile-detail{font-size:13px;color:var(--text-2);margin-top:2px}
 
-/* ─── Modal ──────────────────────────────────────── */
+/* âââ Modal ââââââââââââââââââââââââââââââââââââââââ */
 .modal-overlay{
   display:none;position:fixed;inset:0;z-index:500;
   background:rgba(15,30,50,.55);
@@ -629,7 +629,7 @@ textarea.form-input{min-height:96px;resize:vertical}
 }
 .modal-title{font-size:17px;font-weight:700;color:var(--text);margin-bottom:16px}
 
-/* ─── Toast ──────────────────────────────────────── */
+/* âââ Toast ââââââââââââââââââââââââââââââââââââââââ */
 .toast{
   position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);
   background:var(--text);color:white;
@@ -644,7 +644,7 @@ textarea.form-input{min-height:96px;resize:vertical}
 .toast.success{background:var(--success)}
 .toast.error{background:var(--error)}
 
-/* ─── Loading ────────────────────────────────────── */
+/* âââ Loading ââââââââââââââââââââââââââââââââââââââ */
 .loading-overlay{
   position:fixed;inset:0;z-index:800;
   background:rgba(255,255,255,.85);
@@ -662,7 +662,7 @@ textarea.form-input{min-height:96px;resize:vertical}
 @keyframes spin{to{transform:rotate(360deg)}}
 .loading-text{font-size:14px;font-weight:600;color:var(--text-2)}
 
-/* ─── FAB ────────────────────────────────────────── */
+/* âââ FAB ââââââââââââââââââââââââââââââââââââââââââ */
 .fab{
   position:fixed;right:20px;bottom:24px;z-index:150;
   width:56px;height:56px;border-radius:50%;
@@ -674,7 +674,7 @@ textarea.form-input{min-height:96px;resize:vertical}
 }
 .fab:hover{background:var(--blue-mid);box-shadow:0 6px 28px rgba(21,101,216,.55);transform:translateY(-2px)}
 
-/* ─── Revision ───────────────────────────────────── */
+/* âââ Revision âââââââââââââââââââââââââââââââââââââ */
 .rev-section{
   background:var(--white);
   border:1px solid var(--border);
@@ -698,7 +698,7 @@ textarea.form-input{min-height:96px;resize:vertical}
 .rev-key{font-size:12px;font-weight:600;color:var(--text-2);width:120px;flex-shrink:0}
 .rev-val{font-size:13px;color:var(--text);font-weight:500;flex:1}
 
-/* ─── Alert / Info ───────────────────────────────── */
+/* âââ Alert / Info âââââââââââââââââââââââââââââââââ */
 .info-alert{
   display:flex;align-items:flex-start;gap:10px;
   padding:12px 14px;border-radius:var(--r-sm);
@@ -708,7 +708,7 @@ textarea.form-input{min-height:96px;resize:vertical}
 .info-alert.warn{background:var(--warn-bg);color:#92400E;border:1px solid #FCD34D}
 .info-alert.success{background:var(--success-bg);color:#065F46;border:1px solid #A7F3D0}
 
-/* ─── Utilities ──────────────────────────────────── */
+/* âââ Utilities ââââââââââââââââââââââââââââââââââââ */
 .flex{display:flex}
 .flex-center{display:flex;align-items:center;justify-content:center}
 .flex-between{display:flex;align-items:center;justify-content:space-between}
@@ -727,7 +727,7 @@ textarea.form-input{min-height:96px;resize:vertical}
 .w-full{width:100%}
 .bold{font-weight:700}
 
-/* ─── Suggestions chips ──────────────────────────── */
+/* âââ Suggestions chips ââââââââââââââââââââââââââââ */
 .suggestions-panel{
   padding:10px 14px;background:var(--blue-light);
   border-top:1px solid var(--blue-border);
@@ -742,7 +742,7 @@ textarea.form-input{min-height:96px;resize:vertical}
 }
 .suggestion-chip:hover{background:var(--blue);color:white;border-color:var(--blue)}
 
-/* ─── Party Form Rows ────────────────────────────── */
+/* âââ Party Form Rows ââââââââââââââââââââââââââââââ */
 .party-row{
   background:var(--white);
   border:1px solid var(--border);
@@ -772,7 +772,7 @@ textarea.form-input{min-height:96px;resize:vertical}
 }
 .btn-add-party:hover{border-color:var(--blue);color:var(--blue);background:var(--blue-light)}
 
-/* ─── Nav actions row ────────────────────────────── */
+/* âââ Nav actions row ââââââââââââââââââââââââââââââ */
 .wiz-nav{
   display:flex;gap:10px;margin-top:24px;padding-bottom:24px;
 }
@@ -783,10 +783,10 @@ textarea.form-input{min-height:96px;resize:vertical}
 }
 .wiz-nav .btn-back-wiz:hover{background:var(--border)}
 
-/* ─── Detail Page ────────────────────────────────── */
+/* âââ Detail Page ââââââââââââââââââââââââââââââââââ */
 #detail-content{padding:16px}
 
-/* ─── Desktop ────────────────────────────────────── */
+/* âââ Desktop ââââââââââââââââââââââââââââââââââââââ */
 @media(min-width:768px){
   .stats-grid{grid-template-columns:repeat(4,1fr)}
   .tipo-cards{flex-direction:row}
@@ -820,26 +820,26 @@ textarea.form-input{min-height:96px;resize:vertical}
 
 <!-- TOP BAR -->
 <div class="topbar" id="topbar">
-  <button class="topbar-back hidden" id="btn-back" onclick="goBack()">‹</button>
+  <button class="topbar-back hidden" id="btn-back" onclick="goBack()">â¹</button>
   <div class="topbar-center" id="topbar-title">
     <span class="topbar-logo-small">
       <span class="blue">izy</span><span class="dark-part">LAUDO</span>
     </span>
   </div>
   <div class="topbar-right">
-    <button class="btn-logout" id="btn-logout" onclick="logout()" title="Sair" style="display:none">⏏</button>
+    <button class="btn-logout" id="btn-logout" onclick="logout()" title="Sair" style="display:none">â</button>
   </div>
 </div>
 
 
-<!-- ══════════════ PAGE: AUTH ══════════════ -->
+<!-- ââââââââââââââ PAGE: AUTH ââââââââââââââ -->
 <div class="page" id="page-auth">
   <div class="auth-page">
     <div class="auth-hero">
       <div class="auth-hero-logo">
         <span class="blue-part">izy</span><span class="dark-part">LAUDO</span>
       </div>
-      <div class="auth-hero-tagline">Vistorias Imobiliárias Digitais</div>
+      <div class="auth-hero-tagline">Vistorias ImobiliÃ¡rias Digitais</div>
     </div>
     <div class="auth-body">
       <div class="auth-tabs">
@@ -848,14 +848,14 @@ textarea.form-input{min-height:96px;resize:vertical}
       </div>
 
       <!-- Login -->
-      <div id="auth-login">
+      <div id="form-login">
         <div class="form-group">
           <label class="form-label">E-mail</label>
           <input type="email" id="login-email" class="form-input" placeholder="seu@email.com" autocomplete="email"/>
         </div>
         <div class="form-group">
           <label class="form-label">Senha</label>
-          <input type="password" id="login-pass" class="form-input" placeholder="Sua senha" autocomplete="current-password"/>
+          <input type="password" id="login-password" class="form-input" placeholder="Sua senha" autocomplete="current-password"/>
         </div>
         <button class="btn btn-primary btn-full btn-lg" onclick="doLogin()">Entrar</button>
         <div class="text-center mt-16">
@@ -864,7 +864,7 @@ textarea.form-input{min-height:96px;resize:vertical}
       </div>
 
       <!-- Register -->
-      <div id="auth-register" style="display:none">
+      <div id="form-register" style="display:none">
         <div class="form-group">
           <label class="form-label">Nome completo</label>
           <input type="text" id="reg-name" class="form-input" placeholder="Seu nome"/>
@@ -874,20 +874,34 @@ textarea.form-input{min-height:96px;resize:vertical}
           <input type="email" id="reg-email" class="form-input" placeholder="seu@email.com"/>
         </div>
         <div class="form-group">
-          <label class="form-label">Imobiliária / Empresa (opcional)</label>
+          <label class="form-label">ImobiliÃ¡ria / Empresa (opcional)</label>
           <input type="text" id="reg-company" class="form-input" placeholder="Nome da empresa"/>
         </div>
         <div class="form-group">
+          <label class="form-label">CRECI (opcional)</label>
+          <input type="text" id="reg-creci" class="form-input" placeholder="Número do CRECI"/>
+        </div>
+        <div class="form-group">
           <label class="form-label">Senha</label>
-          <input type="password" id="reg-pass" class="form-input" placeholder="Mínimo 6 caracteres"/>
+          <input type="password" id="reg-password" class="form-input" placeholder="MÃ­nimo 6 caracteres"/>
         </div>
         <button class="btn btn-primary btn-full btn-lg" onclick="doRegister()">Criar conta</button>
+      </div>
+
+      <div id="form-forgot" style="display:none">
+        <div class="form-group"><label class="form-label">E-mail da conta</label><input type="email" id="forgot-email" class="form-input" placeholder="seu@email.com"/></div>
+        <button class="btn btn-primary btn-full btn-lg" onclick="sendPasswordReset()">Enviar link de redefinição</button>
+        <div class="text-center mt-16"><button class="btn btn-ghost btn-sm" onclick="switchAuthTab('login',this)">Voltar ao login</button></div>
+      </div>
+      <div id="forgot-success" style="display:none">
+        <div class="info-alert success"><span>✅</span><span>Link enviado! Verifique seu e-mail.</span></div>
+        <button class="btn btn-outline btn-full mt-16" onclick="switchAuthTab('login',this)">Voltar ao login</button>
       </div>
     </div>
   </div>
 </div>
 
-<!-- ══════════════ PAGE: RESET PASSWORD ══════════════ -->
+<!-- ââââââââââââââ PAGE: RESET PASSWORD ââââââââââââââ -->
 <div class="page" id="page-reset">
   <div class="auth-page">
     <div class="auth-hero">
@@ -900,31 +914,34 @@ textarea.form-input{min-height:96px;resize:vertical}
       <div id="reset-checking" class="text-center" style="padding:20px 0">
         <p class="text-muted">Verificando link...</p>
       </div>
+      <div id="reset-link-box">
+      <div class="info-alert blue mb-12"><span id="reset-email-display"></span></div>
       <div id="reset-form" style="display:none">
         <div class="info-alert blue" style="margin-bottom:20px">
-          <span>🔒</span>
-          <span>Defina sua nova senha. Mínimo de 6 caracteres.</span>
+          <span>ð</span>
+          <span>Defina sua nova senha. MÃ­nimo de 6 caracteres.</span>
         </div>
         <div class="form-group">
           <label class="form-label">Nova Senha</label>
-          <input type="password" id="new-password" class="form-input" placeholder="Nova senha"/>
+          <input type="password" id="reset-new-password" class="form-input" placeholder="Nova senha"/>
         </div>
         <div class="form-group">
           <label class="form-label">Confirmar Senha</label>
-          <input type="password" id="confirm-password" class="form-input" placeholder="Repita a senha"/>
+          <input type="password" id="reset-confirm-password" class="form-input" placeholder="Repita a senha"/>
         </div>
         <button class="btn btn-primary btn-full btn-lg" onclick="doResetPassword()">Redefinir Senha</button>
       </div>
-      <div id="reset-error" style="display:none">
+      </div>
+      <div id="reset-invalid" style="display:none">
         <div class="info-alert" style="background:var(--error-bg);color:var(--error);border:1px solid #FECACA">
-          <span>⚠️</span>
-          <span id="reset-error-msg">Link inválido ou expirado.</span>
+          <span>â ï¸</span>
+          <span id="reset-error-msg">Link invÃ¡lido ou expirado.</span>
         </div>
         <button class="btn btn-outline btn-full mt-16" onclick="showPage('page-auth')">Voltar ao login</button>
       </div>
       <div id="reset-success" style="display:none">
         <div class="info-alert success">
-          <span>✅</span>
+          <span>â</span>
           <span>Senha redefinida com sucesso!</span>
         </div>
         <button class="btn btn-primary btn-full mt-16" onclick="showPage('page-auth')">Ir para o login</button>
@@ -933,7 +950,7 @@ textarea.form-input{min-height:96px;resize:vertical}
   </div>
 </div>
 
-<!-- ══════════════ PAGE: DASHBOARD ══════════════ -->
+<!-- ââââââââââââââ PAGE: DASHBOARD ââââââââââââââ -->
 <div class="page" id="page-dashboard">
   <!-- Header fixo do dash -->
   <div class="dash-header">
@@ -942,7 +959,7 @@ textarea.form-input{min-height:96px;resize:vertical}
         <div class="dash-logo">
           <span class="blue">izy</span><span class="dark-part">LAUDO</span>
         </div>
-        <div class="dash-tagline">Vistorias Imobiliárias</div>
+        <div class="dash-tagline">Vistorias ImobiliÃ¡rias</div>
       </div>
       <button class="btn btn-primary btn-sm" onclick="showNewInspection()">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
@@ -951,7 +968,7 @@ textarea.form-input{min-height:96px;resize:vertical}
     </div>
     <div class="dash-nav-tabs">
       <button class="dash-nav-tab active" onclick="switchDashTab('vistorias', this)">Vistorias</button>
-      <button class="dash-nav-tab" onclick="switchDashTab('estatisticas', this)">Estatísticas</button>
+      <button class="dash-nav-tab" onclick="switchDashTab('estatisticas', this)">EstatÃ­sticas</button>
       <button class="dash-nav-tab" onclick="switchDashTab('perfil', this)">Perfil</button>
     </div>
   </div>
@@ -968,39 +985,39 @@ textarea.form-input{min-height:96px;resize:vertical}
             <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
           </div>
           <div class="empty-title">Nenhuma vistoria ainda</div>
-          <div class="empty-text">Registre sua primeira vistoria de imóvel com fotos e laudo automático.</div>
+          <div class="empty-text">Registre sua primeira vistoria de imÃ³vel com fotos e laudo automÃ¡tico.</div>
           <button class="btn btn-primary" onclick="showNewInspection()">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-            Começar agora
+            ComeÃ§ar agora
           </button>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- TAB: Estatísticas -->
+  <!-- TAB: EstatÃ­sticas -->
   <div id="dash-tab-estatisticas" style="display:none">
     <div class="stats-section">
       <div class="stats-grid">
         <div class="stat-card">
-          <div class="stat-card-icon">📋</div>
+          <div class="stat-card-icon">ð</div>
           <div class="stat-number" id="stat-total">0</div>
           <div class="stat-label">Total de vistorias</div>
         </div>
         <div class="stat-card">
-          <div class="stat-card-icon">📅</div>
+          <div class="stat-card-icon">ð</div>
           <div class="stat-number" id="stat-mes">0</div>
-          <div class="stat-label">Este mês</div>
+          <div class="stat-label">Este mÃªs</div>
         </div>
         <div class="stat-card">
-          <div class="stat-card-icon">⏳</div>
+          <div class="stat-card-icon">â³</div>
           <div class="stat-number" id="stat-andamento">0</div>
           <div class="stat-label">Em andamento</div>
         </div>
         <div class="stat-card">
-          <div class="stat-card-icon">✅</div>
+          <div class="stat-card-icon">â</div>
           <div class="stat-number" id="stat-concluido">0</div>
-          <div class="stat-label">Concluídas</div>
+          <div class="stat-label">ConcluÃ­das</div>
         </div>
       </div>
     </div>
@@ -1012,9 +1029,9 @@ textarea.form-input{min-height:96px;resize:vertical}
       <div class="profile-card">
         <div class="profile-avatar" id="profile-avatar-letter">U</div>
         <div class="profile-info">
-          <div class="profile-name" id="profile-name">—</div>
-          <div class="profile-detail" id="profile-company">—</div>
-          <div class="profile-detail" id="profile-email">—</div>
+          <div class="profile-name" id="profile-name">â</div>
+          <div class="profile-detail" id="profile-company">â</div>
+          <div class="profile-detail" id="profile-email">â</div>
         </div>
       </div>
       <button class="btn btn-outline btn-full mt-16" onclick="logout()">
@@ -1028,7 +1045,7 @@ textarea.form-input{min-height:96px;resize:vertical}
   <button class="fab" onclick="showNewInspection()">+</button>
 </div>
 
-<!-- ══════════════ PAGE: WIZARD ══════════════ -->
+<!-- ââââââââââââââ PAGE: WIZARD ââââââââââââââ -->
 <div class="page" id="page-wizard">
   <div class="wizard-header">
     <div class="wizard-title">Nova Vistoria</div>
@@ -1036,7 +1053,7 @@ textarea.form-input{min-height:96px;resize:vertical}
     <div class="stepper" id="wizard-stepper">
       <div class="step-wrap"><div class="step-circle active" id="sc-0">1</div><div class="step-label active" id="sl-lbl-0">Tipo</div></div>
       <div class="step-line" id="sl-0"></div>
-      <div class="step-wrap"><div class="step-circle" id="sc-1">2</div><div class="step-label" id="sl-lbl-1">Imóvel</div></div>
+      <div class="step-wrap"><div class="step-circle" id="sc-1">2</div><div class="step-label" id="sl-lbl-1">ImÃ³vel</div></div>
       <div class="step-line" id="sl-1"></div>
       <div class="step-wrap"><div class="step-circle" id="sc-2">3</div><div class="step-label" id="sl-lbl-2">Partes</div></div>
       <div class="step-line" id="sl-2"></div>
@@ -1044,7 +1061,7 @@ textarea.form-input{min-height:96px;resize:vertical}
       <div class="step-line" id="sl-3"></div>
       <div class="step-wrap"><div class="step-circle" id="sc-4">5</div><div class="step-label" id="sl-lbl-4">Vistoria</div></div>
       <div class="step-line" id="sl-4"></div>
-      <div class="step-wrap"><div class="step-circle" id="sc-5">6</div><div class="step-label" id="sl-lbl-5">Revisão</div></div>
+      <div class="step-wrap"><div class="step-circle" id="sc-5">6</div><div class="step-label" id="sl-lbl-5">RevisÃ£o</div></div>
     </div>
   </div>
 
@@ -1053,29 +1070,29 @@ textarea.form-input{min-height:96px;resize:vertical}
     <!-- STEP 0: Tipo de Vistoria -->
     <div id="wstep-0">
       <div class="chip-header-gradient">
-        <div class="ch-icon">🏠</div>
+        <div class="ch-icon">ð </div>
         <div class="ch-title">Tipo de Vistoria</div>
         <div class="ch-sub">Selecione o tipo para iniciar o laudo</div>
       </div>
       <div class="tipo-cards">
         <div class="tipo-card" data-tipo="entrada" onclick="selectTipoCard(this)">
-          <div class="tc-icon-wrap"><span class="tc-icon">🔑</span></div>
+          <div class="tc-icon-wrap"><span class="tc-icon">ð</span></div>
           <div class="tc-body">
             <div class="tc-title">Entrada</div>
-            <div class="tc-sub">Início da locação</div>
+            <div class="tc-sub">InÃ­cio da locaÃ§Ã£o</div>
           </div>
           <div class="tc-check"><div class="tc-check-dot"></div></div>
         </div>
         <div class="tipo-card" data-tipo="saida" onclick="selectTipoCard(this)">
-          <div class="tc-icon-wrap"><span class="tc-icon">🚪</span></div>
+          <div class="tc-icon-wrap"><span class="tc-icon">ðª</span></div>
           <div class="tc-body">
-            <div class="tc-title">Saída</div>
-            <div class="tc-sub">Fim da locação</div>
+            <div class="tc-title">SaÃ­da</div>
+            <div class="tc-sub">Fim da locaÃ§Ã£o</div>
           </div>
           <div class="tc-check"><div class="tc-check-dot"></div></div>
         </div>
         <div class="tipo-card" data-tipo="temporada" onclick="selectTipoCard(this)">
-          <div class="tc-icon-wrap"><span class="tc-icon">🏖️</span></div>
+          <div class="tc-icon-wrap"><span class="tc-icon">ðï¸</span></div>
           <div class="tc-body">
             <div class="tc-title">Temporada</div>
             <div class="tc-sub">Airbnb / Curta estadia</div>
@@ -1085,7 +1102,7 @@ textarea.form-input{min-height:96px;resize:vertical}
       </div>
       <div class="wiz-nav" style="justify-content:flex-end">
         <button class="btn btn-primary" id="btn-tipo-next" onclick="tipoCardNext()" disabled style="opacity:.45;cursor:not-allowed">
-          Próximo
+          PrÃ³ximo
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
         </button>
       </div>
@@ -1094,23 +1111,23 @@ textarea.form-input{min-height:96px;resize:vertical}
     <!-- STEP RESP: Quem realiza a vistoria? -->
     <div id="wstep-resp" style="display:none">
       <div class="chip-header-gradient">
-        <div class="ch-icon">👤</div>
+        <div class="ch-icon">ð¤</div>
         <div class="ch-title">Quem realiza a vistoria?</div>
         <div class="ch-sub">Isso define os dados solicitados</div>
       </div>
       <div class="tipo-cards">
         <div class="tipo-card" data-resp="imobiliaria" onclick="selectRespCard(this)">
-          <div class="tc-icon-wrap"><span class="tc-icon">🏢</span></div>
+          <div class="tc-icon-wrap"><span class="tc-icon">ð¢</span></div>
           <div class="tc-body">
-            <div class="tc-title">Imobiliária / Corretor</div>
+            <div class="tc-title">ImobiliÃ¡ria / Corretor</div>
             <div class="tc-sub">Vistoria profissional</div>
           </div>
           <div class="tc-check"><div class="tc-check-dot"></div></div>
         </div>
         <div class="tipo-card" data-resp="proprietario" onclick="selectRespCard(this)">
-          <div class="tc-icon-wrap"><span class="tc-icon">🏠</span></div>
+          <div class="tc-icon-wrap"><span class="tc-icon">ð </span></div>
           <div class="tc-body">
-            <div class="tc-title">Proprietário</div>
+            <div class="tc-title">ProprietÃ¡rio</div>
             <div class="tc-sub">Vistoria direta</div>
           </div>
           <div class="tc-check"><div class="tc-check-dot"></div></div>
@@ -1122,30 +1139,30 @@ textarea.form-input{min-height:96px;resize:vertical}
           Voltar
         </button>
         <button class="btn btn-primary btn-full" id="btn-resp-next" onclick="respNext()" disabled style="opacity:.45;cursor:not-allowed">
-          Próximo
+          PrÃ³ximo
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
         </button>
       </div>
     </div>
 
-    <!-- STEP 1: Imóvel -->
+    <!-- STEP 1: ImÃ³vel -->
     <div id="wstep-1">
       <div class="chip-header">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-        Dados do Imóvel
+        Dados do ImÃ³vel
       </div>
       <div class="card">
         <div class="form-group">
           <label class="form-label">Tipo de Vistoria *</label>
           <select id="wi-type" class="form-input">
-            <option value="entrada">Entrada — início da locação</option>
-            <option value="saida">Saída — fim da locação</option>
+            <option value="entrada">Entrada â inÃ­cio da locaÃ§Ã£o</option>
+            <option value="saida">SaÃ­da â fim da locaÃ§Ã£o</option>
             <option value="temporada">Temporada / Airbnb</option>
           </select>
         </div>
         <div class="form-group">
-          <label class="form-label">Endereço Completo do Imóvel *</label>
-          <input type="text" id="wi-address" class="form-input" placeholder="Rua, nº, bairro, cidade – UF"/>
+          <label class="form-label">EndereÃ§o Completo do ImÃ³vel *</label>
+          <input type="text" id="wi-address" class="form-input" placeholder="Rua, nÂº, bairro, cidade â UF"/>
         </div>
         <div class="grid-2">
           <div class="form-group">
@@ -1153,11 +1170,11 @@ textarea.form-input{min-height:96px;resize:vertical}
             <select id="wi-prop-type" class="form-input">
               <option>Apartamento</option><option>Casa</option>
               <option>Comercial</option><option>Sala</option>
-              <option>Galpão</option><option>Outro</option>
+              <option>GalpÃ£o</option><option>Outro</option>
             </select>
           </div>
           <div class="form-group">
-            <label class="form-label">Área (m²)</label>
+            <label class="form-label">Ãrea (mÂ²)</label>
             <input type="number" id="wi-area" class="form-input" placeholder="65"/>
           </div>
         </div>
@@ -1168,11 +1185,11 @@ textarea.form-input{min-height:96px;resize:vertical}
       </div>
 
       <div id="imob-block">
-        <div class="chip-header">🏢 Imobiliária / Corretor</div>
+        <div class="chip-header">ð¢ ImobiliÃ¡ria / Corretor</div>
         <div class="card">
           <div class="form-group">
-            <label class="form-label">Nome da Imobiliária / Corretor</label>
-            <input type="text" id="wi-imob-name" class="form-input" placeholder="Nome da imobiliária ou corretor"/>
+            <label class="form-label">Nome da ImobiliÃ¡ria / Corretor</label>
+            <input type="text" id="wi-imob-name" class="form-input" placeholder="Nome da imobiliÃ¡ria ou corretor"/>
           </div>
           <div class="grid-2">
             <div class="form-group">
@@ -1195,30 +1212,30 @@ textarea.form-input{min-height:96px;resize:vertical}
             </div>
           </div>
           <div class="form-group">
-            <label class="form-label">Endereço</label>
-            <input type="text" id="wi-imob-address" class="form-input" placeholder="Endereço"/>
+            <label class="form-label">EndereÃ§o</label>
+            <input type="text" id="wi-imob-address" class="form-input" placeholder="EndereÃ§o"/>
           </div>
         </div>
       </div>
 
       <button class="btn btn-primary btn-full btn-lg" onclick="wizardNext(1)">
-        Próximo
+        PrÃ³ximo
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
       </button>
     </div>
 
     <!-- STEP 2: Partes -->
     <div id="wstep-2" style="display:none">
-      <div class="chip-header">👤 Locadores (Proprietários)</div>
+      <div class="chip-header">ð¤ Locadores (ProprietÃ¡rios)</div>
       <div id="locadores-container"></div>
       <button type="button" class="btn-add-party" onclick="addLocador()">+ Adicionar locador</button>
 
-      <div class="chip-header" style="margin-top:4px">👤 Locatários (Inquilinos)</div>
+      <div class="chip-header" style="margin-top:4px">ð¤ LocatÃ¡rios (Inquilinos)</div>
       <div id="locatarios-container"></div>
-      <button type="button" class="btn-add-party" onclick="addLocatario()">+ Adicionar locatário</button>
+      <button type="button" class="btn-add-party" onclick="addLocatario()">+ Adicionar locatÃ¡rio</button>
 
       <div id="corretor-block">
-        <div class="chip-header">🏅 Corretor / Vistoriador</div>
+        <div class="chip-header">ð Corretor / Vistoriador</div>
         <div class="card">
           <div class="form-group">
             <label class="form-label">Nome Completo</label>
@@ -1247,7 +1264,7 @@ textarea.form-input{min-height:96px;resize:vertical}
           Voltar
         </button>
         <button class="btn btn-primary btn-full" onclick="wizardNext(2)">
-          Próximo
+          PrÃ³ximo
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
         </button>
       </div>
@@ -1260,7 +1277,7 @@ textarea.form-input{min-height:96px;resize:vertical}
         Selecione os Ambientes
       </div>
       <div class="card">
-        <p class="text-small mb-12">Selecione os ambientes que serão vistoriados. Você poderá adicionar itens e fotos em cada um.</p>
+        <p class="text-small mb-12">Selecione os ambientes que serÃ£o vistoriados. VocÃª poderÃ¡ adicionar itens e fotos em cada um.</p>
         <div class="room-check-list" id="room-check-list">
           <div class="room-check-item" onclick="toggleRoomCheck(this, 'Sala de Estar')">
             <div class="check-box"></div><span class="room-check-label">Sala de Estar</span>
@@ -1277,8 +1294,8 @@ textarea.form-input{min-height:96px;resize:vertical}
           <div class="room-check-item" onclick="toggleRoomCheck(this, 'Banheiro')">
             <div class="check-box"></div><span class="room-check-label">Banheiro</span>
           </div>
-          <div class="room-check-item" onclick="toggleRoomCheck(this, 'Área de Serviço')">
-            <div class="check-box"></div><span class="room-check-label">Área de Serviço</span>
+          <div class="room-check-item" onclick="toggleRoomCheck(this, 'Ãrea de ServiÃ§o')">
+            <div class="check-box"></div><span class="room-check-label">Ãrea de ServiÃ§o</span>
           </div>
           <div class="room-check-item" onclick="toggleRoomCheck(this, 'Garagem')">
             <div class="check-box"></div><span class="room-check-label">Garagem</span>
@@ -1307,16 +1324,16 @@ textarea.form-input{min-height:96px;resize:vertical}
     <!-- STEP 4: Vistoria por ambiente -->
     <div id="wstep-4" style="display:none">
       <div class="chip-header" id="step4-header">
-        📸 Registre os Itens e Fotos
+        ð¸ Registre os Itens e Fotos
       </div>
       <div class="info-alert blue mb-12">
-        <span>💡</span>
-        <span>Adicione fotos de cada item. A IA irá gerar a descrição automaticamente.</span>
+        <span>ð¡</span>
+        <span>Adicione fotos de cada item. A IA irÃ¡ gerar a descriÃ§Ã£o automaticamente.</span>
       </div>
       <div id="rooms-list"></div>
       <div class="form-group mt-8">
-        <label class="form-label">Observações Gerais</label>
-        <textarea id="wi-obs" class="form-input" placeholder="Observações adicionais sobre a vistoria..."></textarea>
+        <label class="form-label">ObservaÃ§Ãµes Gerais</label>
+        <textarea id="wi-obs" class="form-input" placeholder="ObservaÃ§Ãµes adicionais sobre a vistoria..."></textarea>
       </div>
       <div class="wiz-nav">
         <button class="btn btn-back-wiz" onclick="wizardBack(4)">
@@ -1330,11 +1347,11 @@ textarea.form-input{min-height:96px;resize:vertical}
       </div>
     </div>
 
-    <!-- STEP REV: Revisão Final -->
+    <!-- STEP REV: RevisÃ£o Final -->
     <div id="wstep-rev" style="display:none">
       <div class="chip-header-gradient">
-        <div class="ch-icon">✅</div>
-        <div class="ch-title">Revisão Final</div>
+        <div class="ch-icon">â</div>
+        <div class="ch-title">RevisÃ£o Final</div>
         <div class="ch-sub">Confirme todos os dados antes de assinar</div>
       </div>
       <div id="rev-content" style="font-size:13px;color:#334155;"></div>
@@ -1352,17 +1369,17 @@ textarea.form-input{min-height:96px;resize:vertical}
 
     <!-- STEP 5: Assinaturas -->
     <div id="wstep-5" style="display:none">
-      <div class="chip-header">✍️ Assinaturas</div>
+      <div class="chip-header">âï¸ Assinaturas</div>
       <div class="info-alert blue mb-12">
-        <span>ℹ️</span>
+        <span>â¹ï¸</span>
         <span>Cada parte assina na tela para confirmar a vistoria.</span>
       </div>
 
       <div class="sig-block">
         <div class="sig-block-header">
           <div>
-            <div class="sig-block-title">Locador / Proprietário</div>
-            <div class="sig-block-name" id="signame-locador">—</div>
+            <div class="sig-block-title">Locador / ProprietÃ¡rio</div>
+            <div class="sig-block-name" id="signame-locador">â</div>
           </div>
           <div class="sig-block-status" id="sigstatus-locador">Pendente</div>
         </div>
@@ -1371,15 +1388,15 @@ textarea.form-input{min-height:96px;resize:vertical}
         </div>
         <div class="sig-actions">
           <button class="btn btn-ghost btn-sm" onclick="clearSig('locador')">Limpar</button>
-          <button class="btn btn-primary btn-sm" style="flex:1" onclick="saveSig('locador')">✓ Confirmar</button>
+          <button class="btn btn-primary btn-sm" style="flex:1" onclick="saveSig('locador')">â Confirmar</button>
         </div>
       </div>
 
       <div class="sig-block">
         <div class="sig-block-header">
           <div>
-            <div class="sig-block-title">Locatário / Inquilino</div>
-            <div class="sig-block-name" id="signame-locatario">—</div>
+            <div class="sig-block-title">LocatÃ¡rio / Inquilino</div>
+            <div class="sig-block-name" id="signame-locatario">â</div>
           </div>
           <div class="sig-block-status" id="sigstatus-locatario">Pendente</div>
         </div>
@@ -1388,7 +1405,7 @@ textarea.form-input{min-height:96px;resize:vertical}
         </div>
         <div class="sig-actions">
           <button class="btn btn-ghost btn-sm" onclick="clearSig('locatario')">Limpar</button>
-          <button class="btn btn-primary btn-sm" style="flex:1" onclick="saveSig('locatario')">✓ Confirmar</button>
+          <button class="btn btn-primary btn-sm" style="flex:1" onclick="saveSig('locatario')">â Confirmar</button>
         </div>
       </div>
 
@@ -1397,7 +1414,7 @@ textarea.form-input{min-height:96px;resize:vertical}
           <div class="sig-block-header">
             <div>
               <div class="sig-block-title">Corretor / Vistoriador</div>
-              <div class="sig-block-name" id="signame-corretor">—</div>
+              <div class="sig-block-name" id="signame-corretor">â</div>
             </div>
             <div class="sig-block-status" id="sigstatus-corretor">Pendente</div>
           </div>
@@ -1406,7 +1423,7 @@ textarea.form-input{min-height:96px;resize:vertical}
           </div>
           <div class="sig-actions">
             <button class="btn btn-ghost btn-sm" onclick="clearSig('corretor')">Limpar</button>
-            <button class="btn btn-primary btn-sm" style="flex:1" onclick="saveSig('corretor')">✓ Confirmar</button>
+            <button class="btn btn-primary btn-sm" style="flex:1" onclick="saveSig('corretor')">â Confirmar</button>
           </div>
         </div>
       </div>
@@ -1415,19 +1432,19 @@ textarea.form-input{min-height:96px;resize:vertical}
         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
         Gerar Laudo PDF
       </button>
-      <button class="btn btn-ghost btn-full mt-8" onclick="wizardBack(5)">← Voltar</button>
+      <button class="btn btn-ghost btn-full mt-8" onclick="wizardBack(5)">â Voltar</button>
     </div>
 
   </div><!-- /page-content -->
 </div>
 
-<!-- ══════════════ PAGE: DETAIL ══════════════ -->
+<!-- ââââââââââââââ PAGE: DETAIL ââââââââââââââ -->
 <div class="page" id="page-detail">
   <div class="page-content page-scroll" id="detail-content"></div>
 </div>
 
 
-<!-- ══════════════ MODAL: ADD ITEM ══════════════ -->
+<!-- ââââââââââââââ MODAL: ADD ITEM ââââââââââââââ -->
 <div class="modal-overlay" id="modal-add-item" onclick="closeModal('modal-add-item')">
   <div class="modal" onclick="event.stopPropagation()">
     <div class="modal-handle"></div>
@@ -1444,11 +1461,11 @@ textarea.form-input{min-height:96px;resize:vertical}
       <button class="btn btn-outline btn-sm" onclick="qi('Porta')">Porta</button>
       <button class="btn btn-outline btn-sm" onclick="qi('Torneira')">Torneira</button>
       <button class="btn btn-outline btn-sm" onclick="qi('Tomada')">Tomada</button>
-      <button class="btn btn-outline btn-sm" onclick="qi('Armário')">Armário</button>
+      <button class="btn btn-outline btn-sm" onclick="qi('ArmÃ¡rio')">ArmÃ¡rio</button>
       <button class="btn btn-outline btn-sm" onclick="qi('Pia')">Pia</button>
       <button class="btn btn-outline btn-sm" onclick="qi('Chuveiro')">Chuveiro</button>
-      <button class="btn btn-outline btn-sm" onclick="qi('Vaso Sanitário')">Vaso</button>
-      <button class="btn btn-outline btn-sm" onclick="qi('Rodapé')">Rodapé</button>
+      <button class="btn btn-outline btn-sm" onclick="qi('Vaso SanitÃ¡rio')">Vaso</button>
+      <button class="btn btn-outline btn-sm" onclick="qi('RodapÃ©')">RodapÃ©</button>
       <button class="btn btn-outline btn-sm" onclick="qi('Interruptor')">Interruptor</button>
       <button class="btn btn-outline btn-sm" onclick="qi('Vidro')">Vidro</button>
     </div>
@@ -1466,7 +1483,7 @@ textarea.form-input{min-height:96px;resize:vertical}
 </div>
 
 <script>
-// ─── MULTI-PARTY STATE ───────────────────────────────────────────────────────
+// âââ MULTI-PARTY STATE âââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 let locadores = [{name:'',cpf:'',rg:'',phone:'',email:''}];
 let locatarios = [{name:'',cpf:'',rg:'',phone:'',email:''}];
 
@@ -1475,12 +1492,12 @@ function renderPartyBlock(type, idx, data, total) {
   const p = isLoc ? 'loc' : 'locat';
   const removeFn = isLoc ? 'removeLocador' : 'removeLocatario';
   const headerHtml = (total > 1)
-    ? `<div class="party-block-header"><span class="party-block-title">${isLoc ? 'Locador' : 'Locatário'} ${idx+1}</span>${idx > 0 ? `<button class="btn-remove-party" onclick="${removeFn}(${idx})">✕ Remover</button>` : ''}</div>`
+    ? `<div class="party-block-header"><span class="party-block-title">${isLoc ? 'Locador' : 'LocatÃ¡rio'} ${idx+1}</span>${idx > 0 ? `<button class="btn-remove-party" onclick="${removeFn}(${idx})">â Remover</button>` : ''}</div>`
     : '';
   return `<div class="card party-block" id="${p}-block-${idx}">
     ${headerHtml}
     <div class="form-group"><label class="form-label">Nome Completo</label>
-      <input type="text" id="${p}-name-${idx}" class="form-input" placeholder="${isLoc ? 'Nome do proprietário' : 'Nome do inquilino'}" value="${(data.name||'').replace(/"/g,'&quot;')}"/></div>
+      <input type="text" id="${p}-name-${idx}" class="form-input" placeholder="${isLoc ? 'Nome do proprietÃ¡rio' : 'Nome do inquilino'}" value="${(data.name||'').replace(/"/g,'&quot;')}"/></div>
     <div class="grid-2">
       <div class="form-group"><label class="form-label">CPF</label>
         <input type="text" id="${p}-cpf-${idx}" class="form-input" placeholder="000.000.000-00" value="${(data.cpf||'').replace(/"/g,'&quot;')}"/></div>
@@ -1525,14 +1542,14 @@ function collectLocatarios() {
     email:document.getElementById(`locat-email-${i}`)?.value||'',
   }));
 }
-// ─────────────────────────────────────────────────────────────────────────────
-// ─── STATE ────────────────────────────────────────────────────────────────────
+// âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// âââ STATE ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 const API = '';
 let currentUser = null, currentToken = null, currentInspection = null;
 let pageHistory = [], signaturePads = {};
 let wizard = { step: 1, inspectionId: null, selectedRooms: [] };
 
-// ─── BOOT ─────────────────────────────────────────────────────────────────────
+// âââ BOOT âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 document.addEventListener('DOMContentLoaded', () => {
   const _urlP = new URLSearchParams(window.location.search);
   const _resetTok = _urlP.get('reset_token');
@@ -1548,7 +1565,7 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('wi-date').value = new Date().toISOString().split('T')[0];
 });
 
-// ─── NAVIGATION ───────────────────────────────────────────────────────────────
+// âââ NAVIGATION âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 function showPage(id, title = null, addHistory = true) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.getElementById(id).classList.add('active');
@@ -1591,7 +1608,7 @@ function goBack() {
   }
 }
 
-// ─── API ──────────────────────────────────────────────────────────────────────
+// âââ API ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 async function api(method, path, body = null, isMultipart = false) {
   const h = {};
   if (currentToken) h['Authorization'] = `Bearer ${currentToken}`;
@@ -1604,10 +1621,10 @@ async function api(method, path, body = null, isMultipart = false) {
       return { blob: await r.blob(), ok: r.ok };
     const d = await r.json();
     return { ...d, ok: r.ok };
-  } catch { return { error: 'Erro de conexão', ok: false }; }
+  } catch { return { error: 'Erro de conexÃ£o', ok: false }; }
 }
 
-// ─── TOAST & LOADING ──────────────────────────────────────────────────────────
+// âââ TOAST & LOADING ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 let toastTO;
 function toast(msg, type = '') {
   document.getElementById('toast-el')?.remove();
@@ -1622,7 +1639,7 @@ function showLoading(t='Aguarde...') {
 }
 function hideLoading() { document.getElementById('loading').style.display = 'none'; }
 
-// ─── AUTH ─────────────────────────────────────────────────────────────────────
+// âââ AUTH âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 function switchAuthTab(tab, btn) {
   document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
   btn.classList.add('active');
@@ -1636,7 +1653,7 @@ function switchAuthTabByName(tab) {
   switchAuthTab(tab, tabs[idx]);
 }
 
-// ── FORGOT / RESET PASSWORD ──────────────────────────────────────────────────
+// ââ FORGOT / RESET PASSWORD ââââââââââââââââââââââââââââââââââââââââââââââââââ
 function showForgotForm() {
   document.getElementById('form-login').style.display = 'none';
   document.getElementById('form-register').style.display = 'none';
@@ -1655,7 +1672,7 @@ async function requestPasswordReset() {
   showLoading('Enviando...');
   const r = await api('POST', '/api/auth/forgot-password', { email });
   hideLoading();
-  if (!r.ok) return toast(r.error || 'Erro ao solicitar recuperação', 'error');
+  if (!r.ok) return toast(r.error || 'Erro ao solicitar recuperaÃ§Ã£o', 'error');
   document.getElementById('forgot-success').style.display = 'block';
   if (r.reset_link) document.getElementById('reset-link-box').textContent = r.reset_link;
 }
@@ -1677,8 +1694,8 @@ async function loadResetPage(token) {
 async function confirmPasswordReset() {
   const newPwd = document.getElementById('reset-new-password').value;
   const confirmPwd = document.getElementById('reset-confirm-password').value;
-  if (!newPwd || newPwd.length < 6) return toast('Senha deve ter no mínimo 6 caracteres', 'error');
-  if (newPwd !== confirmPwd) return toast('Senhas não coincidem', 'error');
+  if (!newPwd || newPwd.length < 6) return toast('Senha deve ter no mÃ­nimo 6 caracteres', 'error');
+  if (newPwd !== confirmPwd) return toast('Senhas nÃ£o coincidem', 'error');
   showLoading('Redefinindo...');
   const r = await api('POST', '/api/auth/reset-password', { token: window._resetToken, new_password: newPwd });
   hideLoading();
@@ -1708,8 +1725,8 @@ async function doRegister() {
   const creci = document.getElementById('reg-creci').value.trim();
   const password = document.getElementById('reg-password').value;
   if (!name || !company_name || !email || !password)
-    return toast('Preencha todos os campos obrigatórios', 'error');
-  if (password.length < 6) return toast('Senha deve ter no mínimo 6 caracteres', 'error');
+    return toast('Preencha todos os campos obrigatÃ³rios', 'error');
+  if (password.length < 6) return toast('Senha deve ter no mÃ­nimo 6 caracteres', 'error');
   showLoading('Criando conta...');
   const r = await api('POST', '/api/auth/register', { name, company_name, email, creci, password });
   hideLoading();
@@ -1717,7 +1734,7 @@ async function doRegister() {
   saveSession(r);
   showPage('page-dashboard', null, false);
   loadDashboard();
-  toast('Conta criada! Bem-vindo ao izy\'lOC 🎉', 'success');
+  toast('Conta criada! Bem-vindo ao izy\'lOC ð', 'success');
 }
 
 function saveSession(r) {
@@ -1734,7 +1751,7 @@ function logout() {
   showPage('page-auth');
 }
 
-// ─── DASHBOARD ────────────────────────────────────────────────────────────────
+// âââ DASHBOARD ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 function switchDashTab(tab, btn) {
   document.querySelectorAll('.dash-nav-tab').forEach(t => t.classList.remove('active'));
   btn.classList.add('active');
@@ -1769,18 +1786,18 @@ async function loadDashboard() {
     container.innerHTML = `<div class="empty-state">
       <div class="empty-icon"><svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div>
       <div class="empty-title">Nenhuma vistoria ainda</div>
-      <div class="empty-text">Registre sua primeira vistoria tocando no botão + abaixo.</div>
+      <div class="empty-text">Registre sua primeira vistoria tocando no botÃ£o + abaixo.</div>
       <button class="btn btn-primary" onclick="showNewInspection()">+ Nova Vistoria</button>
     </div>`; return;
   }
 
   container.innerHTML = list.slice(0,30).map(i => {
-    const tipo = i.type === 'entrada' ? 'Entrada' : 'Saída';
+    const tipo = i.type === 'entrada' ? 'Entrada' : 'SaÃ­da';
     const icon = i.type === 'entrada' ? '<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="7.5" cy="15.5" r="5.5"/><path d="M21 2l-9.6 9.6"/><path d="M15.5 7.5l3 3L22 7l-3-3"/></svg>' : '<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>';
     return `<div class="insp-card" onclick="openInspection('${i.id}')">
       <div class="insp-card-icon">${icon}</div>
       <div class="insp-card-body">
-        <div class="insp-card-addr">${i.property_address || 'Endereço não informado'}</div>
+        <div class="insp-card-addr">${i.property_address || 'EndereÃ§o nÃ£o informado'}</div>
         <div class="insp-card-type">${tipo}</div>
         <div class="insp-card-date">${i.inspection_date || formatDate(i.created_at)}</div>
       </div>
@@ -1796,7 +1813,7 @@ function formatDate(str) {
   try { return new Date(str).toLocaleDateString('pt-BR'); } catch { return str; }
 }
 
-// ─── NEW INSPECTION WIZARD ────────────────────────────────────────────────────
+// âââ NEW INSPECTION WIZARD ââââââââââââââââââââââââââââââââââââââââââââââââââââ
 function showNewInspection() {
   wizard = { step: 1, inspectionId: null, selectedRooms: [] };
   // Reset forms
@@ -1843,7 +1860,7 @@ function gotoWStep(step) {
 async function wizardNext(step) {
   if (step === 1) {
     if (!document.getElementById('wi-address').value.trim())
-      return toast('Endereço do imóvel é obrigatório', 'error');
+      return toast('EndereÃ§o do imÃ³vel Ã© obrigatÃ³rio', 'error');
     const dateVal = document.getElementById('wi-date').value;
     const fmtDate = dateVal ? new Date(dateVal+'T12:00:00').toLocaleDateString('pt-BR') : '';
     showLoading('Criando vistoria...');
@@ -1883,7 +1900,7 @@ async function wizardNext(step) {
       return toast('Selecione ao menos um ambiente', 'error');
     gotoWStep(4);
     document.getElementById('step4-header').textContent =
-      `📸 Registre os Itens (${wizard.selectedRooms.length} ambientes)`;
+      `ð¸ Registre os Itens (${wizard.selectedRooms.length} ambientes)`;
     await buildRoomsList();
   }
   else if (step === 4) {
@@ -1902,13 +1919,13 @@ function v(id) {
 
 function wizardBack(step) { gotoWStep(step - 1); }
 
-// ─── ROOM SELECTION ───────────────────────────────────────────────────────────
+// âââ ROOM SELECTION âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 function toggleRoomCheck(el, name) {
   const box = el.querySelector('.check-box');
   const isChecked = el.classList.contains('checked');
   el.classList.toggle('checked', !isChecked);
   box.classList.toggle('checked', !isChecked);
-  box.innerHTML = !isChecked ? '✓' : '';
+  box.innerHTML = !isChecked ? 'â' : '';
   if (!isChecked) {
     if (!wizard.selectedRooms.includes(name)) wizard.selectedRooms.push(name);
   } else {
@@ -1920,20 +1937,20 @@ function addCustomRoom() {
   const input = document.getElementById('custom-room');
   const name = input.value.trim();
   if (!name) return;
-  if (wizard.selectedRooms.includes(name)) return toast('Ambiente já adicionado', 'warning');
+  if (wizard.selectedRooms.includes(name)) return toast('Ambiente jÃ¡ adicionado', 'warning');
   wizard.selectedRooms.push(name);
   // Add to list
   const list = document.getElementById('room-check-list');
   const el = document.createElement('div');
   el.className = 'room-check-item checked';
   el.onclick = function() { toggleRoomCheck(this, name); };
-  el.innerHTML = `<div class="check-box checked">✓</div><span class="room-check-label">${name}</span>`;
+  el.innerHTML = `<div class="check-box checked">â</div><span class="room-check-label">${name}</span>`;
   list.appendChild(el);
   input.value = '';
   toast(`"${name}" adicionado`, 'success');
 }
 
-// ─── BUILD ROOMS IN STEP 4 ────────────────────────────────────────────────────
+// âââ BUILD ROOMS IN STEP 4 ââââââââââââââââââââââââââââââââââââââââââââââââââââ
 async function buildRoomsList() {
   const container = document.getElementById('rooms-list');
   container.innerHTML = '';
@@ -1952,8 +1969,8 @@ function renderRoomCard(room) {
   el.className = 'room-card'; el.id = `room-${room.id}`;
 
   const roomIcons = {
-    'Sala de Estar': '🛋', 'Cozinha': '🍳', 'Quarto 1': '🛏', 'Quarto 2': '🛏',
-    'Banheiro': '🚿', 'Área de Serviço': '🧺', 'Garagem': '🚗', 'Varanda': '🌿',
+    'Sala de Estar': 'ð', 'Cozinha': 'ð³', 'Quarto 1': 'ð', 'Quarto 2': 'ð',
+    'Banheiro': 'ð¿', 'Ãrea de ServiÃ§o': 'ð§º', 'Garagem': 'ð', 'Varanda': 'ð¿',
   };
   const icon = roomIcons[room.name] || '<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>';
 
@@ -1966,7 +1983,7 @@ function renderRoomCard(room) {
           <div class="room-count" id="rc-${room.id}">Nenhum item</div>
         </div>
       </div>
-      <span class="room-chevron" id="chevron-${room.id}">▼</span>
+      <span class="room-chevron" id="chevron-${room.id}">â¼</span>
     </div>
     <div class="room-body" id="rbody-${room.id}">
       <div id="items-${room.id}" style="margin-top:12px"></div>
@@ -1986,7 +2003,7 @@ function toggleRoom(id) {
   chev.classList.toggle('open', !open);
 }
 
-// ─── ITEMS ────────────────────────────────────────────────────────────────────
+// âââ ITEMS ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 function openAddItemModal(roomId) {
   document.getElementById('modal-room-id').value = roomId;
   document.getElementById('new-item-name').value = '';
@@ -2018,12 +2035,12 @@ function renderItemCard(item, roomId) {
   el.innerHTML = `
     <div class="item-header">
       <span class="item-name">${item.name}</span>
-      <span class="cond cond-default" id="cond-${item.id}">—</span>
+      <span class="cond cond-default" id="cond-${item.id}">â</span>
     </div>
     <div id="photo-grid-${item.id}" class="photo-grid"></div>
     <div id="photo-count-${item.id}" class="photo-count-badge" style="display:none"></div>
     <div id="ai-box-${item.id}" style="display:none">
-      <div class="ai-badge">✦ Descrição gerada pela IA</div>
+      <div class="ai-badge">â¦ DescriÃ§Ã£o gerada pela IA</div>
       <div class="ai-description" id="ai-desc-${item.id}"></div>
     </div>
     <div id="edit-box-${item.id}" style="display:none">
@@ -2032,12 +2049,12 @@ function renderItemCard(item, roomId) {
     </div>
     <div class="item-actions">
       <label class="btn btn-primary btn-sm" style="cursor:pointer;font-size:13px">
-        📷 Adicionar Foto
+        ð· Adicionar Foto
         <input type="file" accept="image/*" capture="environment" style="display:none"
           onchange="uploadPhoto('${item.id}', this)"/>
       </label>
-      <button class="btn btn-ghost btn-sm" onclick="toggleEdit('${item.id}')">✏️</button>
-      <button class="btn btn-ghost btn-sm" style="color:var(--danger)" onclick="deleteItem('${item.id}','${roomId}')">🗑</button>
+      <button class="btn btn-ghost btn-sm" onclick="toggleEdit('${item.id}')">âï¸</button>
+      <button class="btn btn-ghost btn-sm" style="color:var(--danger)" onclick="deleteItem('${item.id}','${roomId}')">ð</button>
     </div>`;
   container.appendChild(el);
 }
@@ -2065,8 +2082,8 @@ async function uploadPhoto(itemId, input) {
   }
   const totalBefore = grid ? grid.children.length : 0;
   const loadMsg = totalBefore > 0
-    ? `🤖 A IA está analisando ${totalBefore + 1} fotos...\nAguarde alguns segundos`
-    : '🤖 A IA está analisando a foto...\nAguarde alguns segundos';
+    ? `ð¤ A IA estÃ¡ analisando ${totalBefore + 1} fotos...\nAguarde alguns segundos`
+    : 'ð¤ A IA estÃ¡ analisando a foto...\nAguarde alguns segundos';
   showLoading(loadMsg);
   const fd = new FormData(); fd.append('photo', file);
   const r = await api('POST', `/api/items/${itemId}/photo`, fd, true);
@@ -2083,12 +2100,12 @@ async function uploadPhoto(itemId, input) {
     if (aiDesc) aiDesc.textContent = ai.description;
     if (ai.condition && condEl) {
       condEl.textContent = ai.condition;
-      condEl.className = `cond cond-${ai.condition.replace(/[óô]/g,'o').replace(/[éê]/g,'e')}`;
+      condEl.className = `cond cond-${ai.condition.replace(/[Ã³Ã´]/g,'o').replace(/[Ã©Ãª]/g,'e')}`;
     }
     const n = r.total_photos || 1;
-    toast(n > 1 ? `✅ IA analisou ${n} fotos!` : '✅ IA analisou a foto!', 'success');
+    toast(n > 1 ? `â IA analisou ${n} fotos!` : 'â IA analisou a foto!', 'success');
   } else if (!ai?.success) {
-    toast(ai?.description || 'Foto salva (configure ANTHROPIC_API_KEY para análise automática)', 'warning');
+    toast(ai?.description || 'Foto salva (configure ANTHROPIC_API_KEY para anÃ¡lise automÃ¡tica)', 'warning');
   }
   input.value = '';
 }
@@ -2105,11 +2122,11 @@ async function loadItemPhotos(itemId) {
     const thumb = document.createElement('div');
     thumb.className = 'photo-thumb'; thumb.id = `pthumb-${p.id}`;
     thumb.innerHTML = `<img src="${p.url}" alt="foto" onclick="window.open('${p.url}','_blank')"/>
-      <button class="photo-thumb-del" title="Remover foto" onclick="deletePhoto('${itemId}','${p.id}')">✕</button>`;
+      <button class="photo-thumb-del" title="Remover foto" onclick="deletePhoto('${itemId}','${p.id}')">â</button>`;
     grid.appendChild(thumb);
   });
   if (countBadge) {
-    if (photos.length > 1) { countBadge.style.display='block'; countBadge.textContent=`${photos.length} fotos • toque para ampliar`; }
+    if (photos.length > 1) { countBadge.style.display='block'; countBadge.textContent=`${photos.length} fotos â¢ toque para ampliar`; }
     else countBadge.style.display='none';
   }
 }
@@ -2125,7 +2142,7 @@ async function deletePhoto(itemId, photoId) {
   const countBadge = document.getElementById(`photo-count-${itemId}`);
   const remaining = grid ? grid.children.length : 0;
   if (countBadge) {
-    if (remaining > 1) countBadge.textContent=`${remaining} fotos • toque para ampliar`;
+    if (remaining > 1) countBadge.textContent=`${remaining} fotos â¢ toque para ampliar`;
     else countBadge.style.display='none';
   }
   toast('Foto removida', 'success');
@@ -2150,7 +2167,7 @@ async function saveDesc(itemId) {
   const aiBox = document.getElementById(`ai-box-${itemId}`);
   if (aiDesc && text) { aiDesc.textContent = text; aiBox.style.display = 'block'; }
   document.getElementById(`edit-box-${itemId}`).style.display = 'none';
-  toast('Descrição salva!', 'success');
+  toast('DescriÃ§Ã£o salva!', 'success');
 }
 
 async function deleteItem(itemId, roomId) {
@@ -2163,7 +2180,7 @@ async function deleteItem(itemId, roomId) {
   updateRoomCount(roomId);
 }
 
-// ─── SIGNATURES ───────────────────────────────────────────────────────────────
+// âââ SIGNATURES âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 function initSigPads() {
   ['locador','locatario','corretor'].forEach(p => {
     const canvas = document.getElementById(`canvas-${p}`);
@@ -2205,7 +2222,7 @@ async function saveSig(party) {
   hideLoading();
   if (!r.ok) return toast(r.error||'Erro', 'error');
   const el = document.getElementById(`sigstatus-${party}`);
-  if (el) { el.textContent = '✓ Assinado'; el.classList.add('done'); }
+  if (el) { el.textContent = 'â Assinado'; el.classList.add('done'); }
   toast(`Assinatura confirmada!`, 'success');
 }
 
@@ -2219,12 +2236,12 @@ async function generatePDF() {
     a.href = url; a.download = `izyLAUDO_Laudo_${wizard.inspectionId.substring(0,8).toUpperCase()}.pdf`;
     document.body.appendChild(a); a.click();
     document.body.removeChild(a); setTimeout(() => URL.revokeObjectURL(url), 10000);
-    toast('✅ Laudo gerado com sucesso!', 'success');
+    toast('â Laudo gerado com sucesso!', 'success');
     setTimeout(() => { showPage('page-dashboard',null,false); loadDashboard(); }, 2000);
   } else { toast(r.error||'Erro ao gerar PDF', 'error'); }
 }
 
-// ─── DETAIL PAGE ──────────────────────────────────────────────────────────────
+// âââ DETAIL PAGE ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 async function openInspection(id) {
   showLoading('Carregando...');
   const r = await api('GET', `/api/inspections/${id}`);
@@ -2235,7 +2252,7 @@ async function openInspection(id) {
 }
 
 function renderDetail(insp) {
-  const tipo = insp.type==='entrada' ? 'Entrada' : 'Saída';
+  const tipo = insp.type==='entrada' ? 'Entrada' : 'SaÃ­da';
   const rooms = insp.rooms || [];
   const sigs = insp.signatures || [];
 
@@ -2248,19 +2265,19 @@ function renderDetail(insp) {
         photosHtml = `<img src="${photos[0].url}" class="item-photo" alt="foto"/>`;
       } else if (photos.length > 1) {
         const thumbs = photos.map(p => `<div class="photo-thumb"><img src="${p.url}" alt="foto" onclick="window.open('${p.url}','_blank')"/></div>`).join('');
-        photosHtml = `<div class="photo-grid">${thumbs}</div><div class="photo-count-badge">${photos.length} fotos • toque para ampliar</div>`;
+        photosHtml = `<div class="photo-grid">${thumbs}</div><div class="photo-count-badge">${photos.length} fotos â¢ toque para ampliar</div>`;
       } else if (item.photo_filename) {
         photosHtml = `<img src="/uploads/${item.photo_filename}" class="item-photo" alt="foto"/>`;
       }
       return `<div class="item-card">
         <div class="item-header">
           <span class="item-name">${item.name}</span>
-          <span class="cond cond-${(item.condition||'').replace(/[óô]/g,'o').replace(/[éê]/g,'e')||'default'}">
-            ${item.condition||'—'}
+          <span class="cond cond-${(item.condition||'').replace(/[Ã³Ã´]/g,'o').replace(/[Ã©Ãª]/g,'e')||'default'}">
+            ${item.condition||'â'}
           </span>
         </div>
         ${photosHtml}
-        ${desc ? `<div class="ai-badge">✦ Descrição IA</div><div class="ai-description">${desc}</div>` : ''}
+        ${desc ? `<div class="ai-badge">â¦ DescriÃ§Ã£o IA</div><div class="ai-description">${desc}</div>` : ''}
       </div>`;
     }).join('');
     return `<div class="room-card">
@@ -2278,21 +2295,21 @@ function renderDetail(insp) {
         <span class="tag tag-${insp.type}">${tipo}</span>
         <span class="tag tag-${insp.status}">${insp.status}</span>
       </div>
-      <div style="font-size:17px;font-weight:800">${insp.property_address||'—'}</div>
-      <div class="text-small mt-4">${insp.property_type||''} ${insp.property_area?'· '+insp.property_area+'m²':''}</div>
-      <div class="text-small mt-2">📅 ${insp.inspection_date||'—'}</div>
-      ${insp.imobiliaria_name?`<div class="text-small mt-2">🏢 ${insp.imobiliaria_name}</div>`:''}
+      <div style="font-size:17px;font-weight:800">${insp.property_address||'â'}</div>
+      <div class="text-small mt-4">${insp.property_type||''} ${insp.property_area?'Â· '+insp.property_area+'mÂ²':''}</div>
+      <div class="text-small mt-2">ð ${insp.inspection_date||'â'}</div>
+      ${insp.imobiliaria_name?`<div class="text-small mt-2">ð¢ ${insp.imobiliaria_name}</div>`:''}
     </div>
     <div class="card">
       <div class="card-title">Partes Envolvidas</div>
       ${insp.locador_name?`<div class="mb-8"><div class="form-label">Locador</div><div>${insp.locador_name}</div>${insp.locador_cpf?`<div class="text-small">CPF: ${insp.locador_cpf}</div>`:''}</div>`:''}
-      ${insp.locatario_name?`<div class="mb-8"><div class="form-label">Locatário</div><div>${insp.locatario_name}</div>${insp.locatario_cpf?`<div class="text-small">CPF: ${insp.locatario_cpf}</div>`:''}</div>`:''}
-      ${insp.corretor_name?`<div><div class="form-label">Corretor</div><div>${insp.corretor_name} ${insp.corretor_creci?'· CRECI '+insp.corretor_creci:''}</div></div>`:''}
+      ${insp.locatario_name?`<div class="mb-8"><div class="form-label">LocatÃ¡rio</div><div>${insp.locatario_name}</div>${insp.locatario_cpf?`<div class="text-small">CPF: ${insp.locatario_cpf}</div>`:''}</div>`:''}
+      ${insp.corretor_name?`<div><div class="form-label">Corretor</div><div>${insp.corretor_name} ${insp.corretor_creci?'Â· CRECI '+insp.corretor_creci:''}</div></div>`:''}
     </div>
     ${rooms.length?`<div style="font-size:15px;font-weight:700;margin:12px 0 8px">Ambientes (${rooms.length})</div>${roomsHtml}`:''}
-    ${sigs.length?`<div class="card"><div class="card-title">✍️ Assinaturas</div>
-      ${sigs.map(s=>`<div class="flex gap-8 mb-8"><span class="tag tag-concluido">✓</span>
-        <span class="text-small">${s.party_type} — ${s.party_name||''}</span></div>`).join('')}
+    ${sigs.length?`<div class="card"><div class="card-title">âï¸ Assinaturas</div>
+      ${sigs.map(s=>`<div class="flex gap-8 mb-8"><span class="tag tag-concluido">â</span>
+        <span class="text-small">${s.party_type} â ${s.party_name||''}</span></div>`).join('')}
     </div>`:''}
     <button class="btn btn-primary btn-full mt-8 mb-16" onclick="dlPDF('${insp.id}')">
       <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg> Baixar Laudo PDF
@@ -2324,7 +2341,7 @@ window.addEventListener('resize', () => {
 <script>
 /* ===== IZYLAUDO ENHANCEMENTS v2 ===== */
 (function() {
-  // ── Toast utility ──────────────────────────────────────────────────────────
+  // ââ Toast utility ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
   function showToast(msg, type) {
     var ex = document.getElementById('izy-toast');
     if (ex) ex.remove();
@@ -2343,7 +2360,7 @@ window.addEventListener('resize', () => {
 
   window.addEventListener('load', function() {
 
-    // ── 1. Auto-fill Corretor from logged-in user ─────────────────────────
+    // ââ 1. Auto-fill Corretor from logged-in user âââââââââââââââââââââââââ
     var _origGotoWStep = window.gotoWStep;
     window.gotoWStep = function(n) {
       _origGotoWStep(n);
@@ -2362,7 +2379,7 @@ window.addEventListener('resize', () => {
       }
     };
 
-    // ── 2. Snapshot fields for corretor when saving inspection ────────────
+    // ââ 2. Snapshot fields for corretor when saving inspection ââââââââââââ
     var _origWizardNext = window.wizardNext;
     window.wizardNext = function(step) {
       // Email validation on step 2
@@ -2379,7 +2396,7 @@ window.addEventListener('resize', () => {
           }
         });
         if (hasMissing) {
-          showToast('⚠️ Preencha o e-mail de todas as partes para continuar.', 'warn');
+          showToast('â ï¸ Preencha o e-mail de todas as partes para continuar.', 'warn');
           var first = document.querySelector(
             '#locadores-container input[type="email"].party-email-req, #locatarios-container input[type="email"].party-email-req'
           );
@@ -2390,7 +2407,7 @@ window.addEventListener('resize', () => {
       _origWizardNext(step);
     };
 
-    // ── 3. AI UX Messages via MutationObserver ─────────────────────────────
+    // ââ 3. AI UX Messages via MutationObserver âââââââââââââââââââââââââââââ
     var _aiCheckDebounce = null;
     var observer = new MutationObserver(function(mutations) {
       mutations.forEach(function(m) {
@@ -2402,19 +2419,19 @@ window.addEventListener('resize', () => {
             var txt = (el.textContent || '').trim();
             if (txt.length < 5) return;
             var tl = txt.toLowerCase();
-            var isBad = tl.indexOf('não identific') !== -1 ||
-                        tl.indexOf('não corresponde') !== -1 ||
-                        tl.indexOf('não atende') !== -1 ||
+            var isBad = tl.indexOf('nÃ£o identific') !== -1 ||
+                        tl.indexOf('nÃ£o corresponde') !== -1 ||
+                        tl.indexOf('nÃ£o atende') !== -1 ||
                         tl.indexOf('could not process') !== -1 ||
                         tl.indexOf('unable to process') !== -1;
             if (isBad) {
-              showToast('📸 IA não reconheceu a foto. Tente uma imagem mais clara e próxima do item.', 'warn');
+              showToast('ð¸ IA nÃ£o reconheceu a foto. Tente uma imagem mais clara e prÃ³xima do item.', 'warn');
               // Add retry hint below element
               var hint = el.nextElementSibling;
               if (!hint || !hint.classList.contains('ai-retry-hint')) {
                 hint = document.createElement('div');
                 hint.className = 'ai-retry-hint';
-                hint.textContent = '↩ Envie uma nova foto com boa iluminação e foco no item.';
+                hint.textContent = 'â© Envie uma nova foto com boa iluminaÃ§Ã£o e foco no item.';
                 el.parentNode.insertBefore(hint, el.nextSibling);
               }
             } else {
@@ -2422,7 +2439,7 @@ window.addEventListener('resize', () => {
               var hint = el.nextElementSibling;
               if (hint && hint.classList.contains('ai-retry-hint')) hint.remove();
               if (txt.length > 20) {
-                showToast('✅ Foto analisada com sucesso pela IA!', 'success');
+                showToast('â Foto analisada com sucesso pela IA!', 'success');
               }
             }
           }, 200);
@@ -2431,11 +2448,11 @@ window.addEventListener('resize', () => {
     });
     observer.observe(document.body, { subtree: true, childList: true, characterData: true, subtree: true });
 
-    // ── 4. Pre-upload validation (enhance silent return) ──────────────────
+    // ââ 4. Pre-upload validation (enhance silent return) ââââââââââââââââââ
     var _origUploadPhoto = window.uploadPhoto;
     window.uploadPhoto = async function(itemId, input) {
       if (!input || !input.files || !input.files.length || !input.files[0]) {
-        showToast('⚠️ Selecione uma foto antes de enviar.', 'warn');
+        showToast('â ï¸ Selecione uma foto antes de enviar.', 'warn');
         return;
       }
       // Show loading hint on the file input label
@@ -2447,7 +2464,7 @@ window.addEventListener('resize', () => {
         loadMsg.style.color = '#1976D2';
         loadMsg.style.borderColor = '#1976D2';
         loadMsg.style.background = '#e3f2fd';
-        loadMsg.textContent = '🔄 Analisando com IA…';
+        loadMsg.textContent = 'ð Analisando com IAâ¦';
         lbl.parentNode.insertBefore(loadMsg, lbl.nextSibling);
       }
       try {
@@ -2463,7 +2480,7 @@ window.addEventListener('resize', () => {
 })();
 </script>
 <script>
-/* === IZYLAUDO ENHANCEMENTS v3 — Tipo de Vistoria Card Step === */
+/* === IZYLAUDO ENHANCEMENTS v3 â Tipo de Vistoria Card Step === */
 (function() {
   window.selectTipoCard = function(el) {
     document.querySelectorAll('.tipo-card').forEach(function(c) { c.classList.remove('selected'); });
@@ -2551,7 +2568,7 @@ window.addEventListener('resize', () => {
 })();
 </script>
 <script>
-/* === IZYLAUDO ENHANCEMENTS v4 — Revisão Final Step === */
+/* === IZYLAUDO ENHANCEMENTS v4 â RevisÃ£o Final Step === */
 (function() {
 
   // Build review content from current DOM state
@@ -2569,25 +2586,25 @@ window.addEventListener('resize', () => {
       return '<div style="background:#f8fafc;border-radius:10px;padding:14px 16px;margin-bottom:12px"><div style="font-weight:700;font-size:12px;color:#1976D2;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">' + title + '</div>' + inner + '</div>';
     }
 
-    // Tipo + Imóvel
-    var tipoMap = {entrada:'Entrada — Início da locação', saida:'Saída — Fim da locação', temporada:'Temporada / Airbnb'};
+    // Tipo + ImÃ³vel
+    var tipoMap = {entrada:'Entrada â InÃ­cio da locaÃ§Ã£o', saida:'SaÃ­da â Fim da locaÃ§Ã£o', temporada:'Temporada / Airbnb'};
     var tipoVal = val('wi-type') || sel('wi-type');
-    html += sec('Dados do Imóvel', [
+    html += sec('Dados do ImÃ³vel', [
       ['Tipo', tipoMap[tipoVal] || tipoVal],
-      ['Endereço', val('wi-address')],
-      ['Tipo Imóvel', sel('wi-prop-type')],
-      ['Área', val('wi-area') ? val('wi-area') + ' m²' : ''],
+      ['EndereÃ§o', val('wi-address')],
+      ['Tipo ImÃ³vel', sel('wi-prop-type')],
+      ['Ãrea', val('wi-area') ? val('wi-area') + ' mÂ²' : ''],
       ['Data', val('wi-date')]
     ]);
 
-    // Imobiliária
-    html += sec('Imobiliária', [
+    // ImobiliÃ¡ria
+    html += sec('ImobiliÃ¡ria', [
       ['Nome', val('wi-imob-name')],
       ['CNPJ', val('wi-imob-cnpj')],
       ['Telefone', val('wi-imob-phone')]
     ]);
 
-    // Partes — locadores
+    // Partes â locadores
     var locRows = [];
     for (var i = 0; i <= 3; i++) {
       var nm = val('loc-name-' + i);
@@ -2595,13 +2612,13 @@ window.addEventListener('resize', () => {
     }
     if (locRows.length) html += sec('Locadores', locRows);
 
-    // Partes — locatários
+    // Partes â locatÃ¡rios
     var locatRows = [];
     for (var j = 0; j <= 3; j++) {
       var nm2 = val('locat-name-' + j);
-      if (nm2) locatRows.push(['Locatário ' + (j+1), nm2]);
+      if (nm2) locatRows.push(['LocatÃ¡rio ' + (j+1), nm2]);
     }
-    if (locatRows.length) html += sec('Locatários', locatRows);
+    if (locatRows.length) html += sec('LocatÃ¡rios', locatRows);
 
     // Corretor (imobiliaria/corretor only)
     if (window._inspResponsible !== 'proprietario') {
@@ -2633,21 +2650,21 @@ window.addEventListener('resize', () => {
     });
     if (totalItems > 0) {
       var condSummary = [];
-      if (condCount.otimo) condSummary.push('Ótimo: ' + condCount.otimo);
+      if (condCount.otimo) condSummary.push('Ãtimo: ' + condCount.otimo);
       if (condCount.bom) condSummary.push('Bom: ' + condCount.bom);
       if (condCount.regular) condSummary.push('Regular: ' + condCount.regular);
       if (condCount.ruim) condSummary.push('Ruim: ' + condCount.ruim);
-      if (condCount.pessimo) condSummary.push('Péssimo: ' + condCount.pessimo);
+      if (condCount.pessimo) condSummary.push('PÃ©ssimo: ' + condCount.pessimo);
       html += sec('Vistoria', [
         ['Itens vistoriados', totalItems + ' itens'],
         ['Fotos registradas', totalPhotos + ' fotos'],
-        ['Condições', condSummary.join(' · ') || '—']
+        ['CondiÃ§Ãµes', condSummary.join(' Â· ') || 'â']
       ]);
     }
 
     // Obs
     var obs = val('wi-obs');
-    if (obs) html += sec('Observações', [['', obs]]);
+    if (obs) html += sec('ObservaÃ§Ãµes', [['', obs]]);
 
     return html || '<div style="text-align:center;color:#94a3b8;padding:20px">Nenhum dado encontrado.</div>';
   }
@@ -2685,7 +2702,7 @@ window.addEventListener('resize', () => {
   };
 
   window.addEventListener('load', function() {
-    // Intercept wizardNext(4) → show review instead of going to step 5
+    // Intercept wizardNext(4) â show review instead of going to step 5
     var _origWNext = window.wizardNext;
     window.wizardNext = function(step) {
       if (step === 4) {
@@ -2695,7 +2712,7 @@ window.addEventListener('resize', () => {
       _origWNext(step);
     };
 
-    // Intercept wizardBack(5) → show review instead of going to step 4
+    // Intercept wizardBack(5) â show review instead of going to step 4
     var _origWBack = window.wizardBack;
     window.wizardBack = function(step) {
       if (step === 5) {
@@ -2733,7 +2750,7 @@ window.addEventListener('resize', () => {
 (function() {
   /* ===== V5: RESPONSIBLE TYPE CONDITIONAL FLOW ===== */
 
-  // 1. selectRespCard — card click handler in wstep-resp
+  // 1. selectRespCard â card click handler in wstep-resp
   window.selectRespCard = function(el) {
     document.querySelectorAll('#wstep-resp .tipo-card').forEach(function(c) {
       c.classList.remove('active');
@@ -2748,7 +2765,7 @@ window.addEventListener('resize', () => {
     }
   };
 
-  // 2. applyRespTypeUI — show/hide blocks based on responsible type
+  // 2. applyRespTypeUI â show/hide blocks based on responsible type
   window.applyRespTypeUI = function(type) {
     var isImob = (type === 'imobiliaria');
     ['imob-block', 'corretor-block', 'corretor-sig-block'].forEach(function(id) {
@@ -2762,7 +2779,7 @@ window.addEventListener('resize', () => {
     });
   };
 
-  // 3. showRespStep — hide all numbered wsteps, show wstep-resp
+  // 3. showRespStep â hide all numbered wsteps, show wstep-resp
   window.showRespStep = function() {
     ['0','1','2','3','4','rev','5'].forEach(function(n) {
       var el = document.getElementById('wstep-' + n);
@@ -2773,7 +2790,7 @@ window.addEventListener('resize', () => {
     window.scrollTo(0, 0);
   };
 
-  // 4. respNext — "Proximo" button on wstep-resp
+  // 4. respNext â "Proximo" button on wstep-resp
   window.respNext = function() {
     if (!window._inspResponsible) return;
     window.applyRespTypeUI(window._inspResponsible);
@@ -2813,7 +2830,7 @@ window.addEventListener('resize', () => {
 <script id="v6-temporada">
 (function() {
 
-  // ═══ INJECT PANELS INTO DOM ═══
+  // âââ INJECT PANELS INTO DOM âââ
   function injectPanels() {
     if (!document.getElementById('temporada-subchoice')) {
       var tc = document.querySelector('.tipo-cards');
@@ -2852,7 +2869,7 @@ window.addEventListener('resize', () => {
     document.addEventListener('DOMContentLoaded', injectPanels);
   } else { injectPanels(); }
 
-  // ═══ ITEM SUGGESTIONS MAP ═══
+  // âââ ITEM SUGGESTIONS MAP âââ
   var TMP = {
     'cozinha':  ['Geladeira','Fog\u00E3o','Micro-ondas','Pia','Arm\u00E1rio','Mesa','Cadeiras','Lixeira'],
     'sala':     ['Sof\u00E1','Poltrona','Mesa de Centro','Televis\u00E3o','Rack','Cortina','Tapete'],
@@ -2870,7 +2887,7 @@ window.addEventListener('resize', () => {
     return [];
   };
 
-  // ═══ selectTemporadaType ═══
+  // âââ selectTemporadaType âââ
   window.selectTemporadaType = function(type) {
     window._inspTemporada = type;
     var sel = document.getElementById('wi-type');
@@ -2883,7 +2900,7 @@ window.addEventListener('resize', () => {
     if (btn) { btn.disabled = false; btn.style.opacity = '1'; btn.style.cursor = 'pointer'; }
   };
 
-  // ═══ Patch selectTipoCard ═══
+  // âââ Patch selectTipoCard âââ
   var _origSTC = window.selectTipoCard;
   window.selectTipoCard = function(el) {
     if (typeof _origSTC === 'function') _origSTC.call(this, el);
@@ -2907,7 +2924,7 @@ window.addEventListener('resize', () => {
     }
   };
 
-  // ═══ Patch tipoCardNext (v6 wraps v5 wraps original) ═══
+  // âââ Patch tipoCardNext (v6 wraps v5 wraps original) âââ
   var _origTCN = window.tipoCardNext;
   window.tipoCardNext = function() {
     var selCard = document.querySelector('.tipo-card.selected');
@@ -2921,13 +2938,13 @@ window.addEventListener('resize', () => {
     if (typeof _origTCN === 'function') _origTCN.call(this);
   };
 
-  // ═══ quickAddItem ═══
+  // âââ quickAddItem âââ
   window.quickAddItem = function(name) {
     window.qi(name);
     window.addItem();
   };
 
-  // ═══ Patch openAddItemModal for suggestions ═══
+  // âââ Patch openAddItemModal for suggestions âââ
   var _origOAIM = window.openAddItemModal;
   window.openAddItemModal = function(roomId) {
     if (typeof _origOAIM === 'function') _origOAIM.call(this, roomId);
@@ -2948,4 +2965,5 @@ window.addEventListener('resize', () => {
 
 })();
 </script>
+<div class="loading-overlay" id="loading" style="display:none"><div class="loading-spinner"></div><div class="loading-text" id="loading-text">Aguarde...</div></div>
 </body>
