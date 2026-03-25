@@ -2316,6 +2316,13 @@ window.addEventListener('resize', () => {
     window.gotoWStep = function(n) {
       if (n === 'rev') { window.showReviewStep(); return; }
       _origGoto5(n);
+      // When going back to steps <= 4, reset sc-5 and sl-4 to idle
+      if (typeof n === 'number' && n <= 4) {
+        var sc5r = document.getElementById('sc-5');
+        if (sc5r) sc5r.classList.remove('active','done');
+        var sl4r = document.getElementById('sl-4');
+        if (sl4r) sl4r.classList.remove('active');
+      }
       // When going to step 5 directly, mark sc-5 done
       if (n === 5) {
         var sc5 = document.getElementById('sc-5');
