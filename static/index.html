@@ -1330,8 +1330,7 @@ canvas { display: block; }
 .toggle-thumb {
   width: 18px; height: 18px; border-radius: 50%; background: var(--white);
   position: absolute; top: 2px; left: 2px;
-  transition: transform .2s;
-  box-shadow: 0 1px 3px rgba(0,0,0,.2);
+  transition: transform .2s; box-shadow: 0 1px 3px rgba(0,0,0,.2);
 }
 .toggle-switch.on .toggle-thumb { transform: translateX(18px); }
 
@@ -1403,7 +1402,7 @@ canvas { display: block; }
 /* ─── UTILS ─── */
 .text-center { text-align: center; }
 .text-muted { color: var(--text-3); }
-*.mt-2 { margin-top: 8px; }
+.mt-2 { margin-top: 8px; }
 .mt-4 { margin-top: 16px; }
 .mb-0 { margin-bottom: 0; }
 .hidden { display: none !important; }
@@ -2710,7 +2709,7 @@ function renderRoomCard(room) {
 
   const roomIcons = {
     'Sala de Estar': '🛋', 'Cozinha': '🍳', 'Quarto 1': '🛏', 'Quarto 2': '🛏',
-    'Banheiro1; '🚿', 'Área de Serviço': '🧺', 'Garagem': '🚗', 'Varanda': '🌿',
+    'Banheiro': '🚿', 'Área de Serviço': '🧺', 'Garagem': '🚗', 'Varanda': '🌿',
   };
   const icon = roomIcons[room.name] || '🏠';
 
