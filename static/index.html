@@ -2442,17 +2442,19 @@ window.addEventListener('resize', () => {
     }
   };
 
-  // 6. Patch wizardBack: when backing from step 1, go to wstep-resp (not step 0)
-  var _origWizardBack = window.wizardBack;
-  window.wizardBack = function(step) {
-    if (step === 1 && window._inspResponsible !== undefined) {
-      var w1 = document.getElementById('wstep-1');
-      if (w1) w1.style.display = 'none';
-      window.showRespStep();
-    } else {
-      if (typeof _origWizardBack === 'function') _origWizardBack.call(this, step);
-    }
-  };
+  // 6. Patch wizardBack via load event (fires after v4 load handler which re-assigns wizardBack)
+  window.addEventListener('load', function() {
+    var _origWizardBack = window.wizardBack;
+    window.wizardBack = function(step) {
+      if (step === 1 && window._inspResponsible !== undefined) {
+        var w1 = document.getElementById('wstep-1');
+        if (w1) w1.style.display = 'none';
+        window.showRespStep();
+      } else {
+        if (typeof _origWizardBack === 'function') _origWizardBack.call(this, step);
+      }
+    };
+  });
 
 })();
 </script>
