@@ -1866,7 +1866,7 @@ canvas { display: block; }
         <div class="wiz-page-title">Nova vistoria</div>
         <div class="wiz-page-sub" id="wiz-step-label">Etapa 1 de 6</div>
       </div>
-      <button class="btn-wiz-back" onclick="history.back ? (window._wizStep>0 ? null : showPage('dashboard')) : showPage('dashboard')" title="Voltar">
+      <button class="btn-wiz-back" onclick="history.back ? (window._wizStep>0 ? null : showPage('page-dashboard')) : showPage('page-dashboard')" title="Voltar">
         <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z"/></svg>
       </button>
     </div>
@@ -2201,7 +2201,7 @@ canvas { display: block; }
 <!-- ══════════════ PAGE: DETAIL ══════════════ -->
 <div id="page-detail" class="page">
   <div class="detail-header">
-    <button class="btn-wiz-back" onclick="showPage('dashboard')" style="margin-right:4px"><svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z"/></svg></button>
+    <button class="btn-wiz-back" onclick="showPage('page-dashboard')" style="margin-right:4px"><svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z"/></svg></button>
     <div class="detail-title">Detalhes da vistoria</div>
     <button class="btn btn-primary" style="height:36px;font-size:13px" onclick="generatePDF ? generatePDF() : null">
       Gerar PDF
@@ -2325,6 +2325,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // ─── NAVIGATION ───────────────────────────────────────────────────────────────
 function showPage(id, title = null, addHistory = true) {
+  hideLoading();
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.getElementById(id).classList.add('active');
   window.scrollTo(0,0);
