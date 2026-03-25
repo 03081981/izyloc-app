@@ -774,6 +774,8 @@ textarea.form-input { resize: vertical; min-height: 88px; line-height: 1.5; }
       <div class="step-wrap"><div class="step-circle" id="sc-3">4</div><div class="step-label" id="sl-lbl-3">Ambientes</div></div>
       <div class="step-line" id="sl-3"></div>
       <div class="step-wrap"><div class="step-circle" id="sc-4">5</div><div class="step-label" id="sl-lbl-4">Vistoria</div></div>
+      <div class="step-line" id="sl-4"></div>
+      <div class="step-wrap"><div class="step-circle" id="sc-5">6</div><div class="step-label" id="sl-lbl-5">Revisão</div></div>
     </div>
 
     <!-- STEP 0: Tipo de Vistoria -->
@@ -952,7 +954,21 @@ textarea.form-input { resize: vertical; min-height: 88px; line-height: 1.5; }
       </div>
     </div>
 
-    <!-- STEP 5: Assinaturas -->
+    <!-- STEP REV: Revisão Final -->
+    <div id="wstep-rev" style="display:none">
+      <div class="chip-header" style="background:linear-gradient(135deg,#1976D2,#42a5f5);color:#fff;padding:18px 20px;border-radius:12px 12px 0 0;margin:-20px -20px 20px;">
+        <div style="font-size:20px;margin-bottom:4px;">✅</div>
+        <div style="font-weight:700;font-size:16px;">Revisão Final</div>
+        <div style="font-size:12px;opacity:.85;margin-top:2px;">Confirme os dados antes de assinar</div>
+      </div>
+      <div id="rev-content" style="font-size:13px;color:#334155;"></div>
+      <div style="display:flex;justify-content:space-between;margin-top:24px;">
+        <button class="btn" style="background:#e2e8f0;color:#475569;border:none;padding:10px 18px;border-radius:8px;cursor:pointer;font-weight:600;" onclick="window.gotoWStep(4)">← Voltar</button>
+        <button class="btn btn-primary" onclick="window.goToSignatures()">Assinar e Finalizar →</button>
+      </div>
+    </div>
+
+        <!-- STEP 5: Assinaturas -->
     <div id="wstep-5" style="display:none">
       <div class="chip-header">✍️ Assinaturas</div>
       <p class="text-small mb-12">Cada parte assina na tela do dispositivo para confirmar a vistoria.</p>
@@ -2139,6 +2155,175 @@ window.addEventListener('resize', () => {
         window.gotoWStep(0);      // immediately redirect to our card step
       };
     }
+  });
+})();
+</script>
+<script>
+/* === IZYLAUDO ENHANCEMENTS v4 — Revisão Final Step === */
+(function() {
+
+  // Build review content from current DOM state
+  function buildRevContent() {
+    var html = '';
+    var val = function(id) { var el = document.getElementById(id); return el ? (el.value || el.textContent || '').trim() : ''; };
+    var sel = function(id) { var el = document.getElementById(id); return el && el.selectedOptions ? el.selectedOptions[0].text : (el ? el.value : ''); };
+
+    // Section helper
+    function sec(title, rows) {
+      var inner = rows.filter(function(r) { return r[1]; }).map(function(r) {
+        return '<div style="display:flex;gap:8px;padding:5px 0;border-bottom:1px solid #f1f5f9"><span style="color:#64748b;min-width:110px;flex-shrink:0">' + r[0] + '</span><span style="font-weight:600;color:#1e293b">' + r[1] + '</span></div>';
+      }).join('');
+      if (!inner) return '';
+      return '<div style="background:#f8fafc;border-radius:10px;padding:14px 16px;margin-bottom:12px"><div style="font-weight:700;font-size:12px;color:#1976D2;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">' + title + '</div>' + inner + '</div>';
+    }
+
+    // Tipo + Imóvel
+    var tipoMap = {entrada:'Entrada — Início da locação', saida:'Saída — Fim da locação', temporada:'Temporada / Airbnb'};
+    var tipoVal = val('wi-type') || sel('wi-type');
+    html += sec('Dados do Imóvel', [
+      ['Tipo', tipoMap[tipoVal] || tipoVal],
+      ['Endereço', val('wi-address')],
+      ['Tipo Imóvel', sel('wi-prop-type')],
+      ['Área', val('wi-area') ? val('wi-area') + ' m²' : ''],
+      ['Data', val('wi-date')]
+    ]);
+
+    // Imobiliária
+    html += sec('Imobiliária', [
+      ['Nome', val('wi-imob-name')],
+      ['CNPJ', val('wi-imob-cnpj')],
+      ['Telefone', val('wi-imob-phone')]
+    ]);
+
+    // Partes — locadores
+    var locRows = [];
+    for (var i = 0; i <= 3; i++) {
+      var nm = val('loc-name-' + i);
+      if (nm) locRows.push(['Locador ' + (i+1), nm]);
+    }
+    if (locRows.length) html += sec('Locadores', locRows);
+
+    // Partes — locatários
+    var locatRows = [];
+    for (var j = 0; j <= 3; j++) {
+      var nm2 = val('locat-name-' + j);
+      if (nm2) locatRows.push(['Locatário ' + (j+1), nm2]);
+    }
+    if (locatRows.length) html += sec('Locatários', locatRows);
+
+    // Corretor
+    html += sec('Corretor', [
+      ['Nome', val('wi-corr-name')],
+      ['CRECI', val('wi-corr-creci')]
+    ]);
+
+    // Ambientes (checked rooms)
+    var rooms = Array.from(document.querySelectorAll('.room-check:checked')).map(function(cb) {
+      var lbl = cb.closest('label') || document.querySelector('label[for="' + cb.id + '"]');
+      return lbl ? lbl.textContent.trim() : cb.value;
+    });
+    if (rooms.length) {
+      html += sec('Ambientes', [['Selecionados', rooms.join(', ')]]);
+    }
+
+    // Items summary from rooms-list
+    var roomDivs = document.querySelectorAll('#rooms-list .room-section, #rooms-list [data-room]');
+    var totalItems = 0, totalPhotos = 0;
+    var condCount = {otimo:0, bom:0, regular:0, ruim:0, pessimo:0};
+    document.querySelectorAll('[id^="cond-"]').forEach(function(sel) {
+      totalItems++;
+      if (sel.value) condCount[sel.value] = (condCount[sel.value] || 0) + 1;
+    });
+    document.querySelectorAll('[id^="photo-count-"]').forEach(function(el) {
+      totalPhotos += parseInt(el.textContent) || 0;
+    });
+    if (totalItems > 0) {
+      var condSummary = [];
+      if (condCount.otimo) condSummary.push('Ótimo: ' + condCount.otimo);
+      if (condCount.bom) condSummary.push('Bom: ' + condCount.bom);
+      if (condCount.regular) condSummary.push('Regular: ' + condCount.regular);
+      if (condCount.ruim) condSummary.push('Ruim: ' + condCount.ruim);
+      if (condCount.pessimo) condSummary.push('Péssimo: ' + condCount.pessimo);
+      html += sec('Vistoria', [
+        ['Itens vistoriados', totalItems + ' itens'],
+        ['Fotos registradas', totalPhotos + ' fotos'],
+        ['Condições', condSummary.join(' · ') || '—']
+      ]);
+    }
+
+    // Obs
+    var obs = val('wi-obs');
+    if (obs) html += sec('Observações', [['', obs]]);
+
+    return html || '<div style="text-align:center;color:#94a3b8;padding:20px">Nenhum dado encontrado.</div>';
+  }
+
+  // Show review step
+  window.showReviewStep = function() {
+    // Hide all wstep-N
+    document.querySelectorAll('[id^="wstep-"]').forEach(function(el) { el.style.display = 'none'; });
+    // Show wstep-rev
+    var rev = document.getElementById('wstep-rev');
+    if (rev) {
+      rev.style.display = '';
+      var content = document.getElementById('rev-content');
+      if (content) content.innerHTML = buildRevContent();
+    }
+    // Update stepper: sc-0..sc-4 done, sc-5 active, lines sl-0..sl-4 lit
+    for (var i = 0; i <= 4; i++) {
+      var sc = document.getElementById('sc-' + i);
+      if (sc) { sc.classList.remove('active'); sc.classList.add('done'); }
+      var sl = document.getElementById('sl-' + i);
+      if (sl) sl.classList.add('active');
+    }
+    var sc5 = document.getElementById('sc-5');
+    if (sc5) { sc5.classList.remove('done'); sc5.classList.add('active'); }
+  };
+
+  // Go to signatures
+  window.goToSignatures = function() {
+    window.gotoWStep(5);
+    // sc-5 done after review
+    var sc5 = document.getElementById('sc-5');
+    if (sc5) { sc5.classList.remove('active'); sc5.classList.add('done'); }
+    var sl4 = document.getElementById('sl-4');
+    if (sl4) sl4.classList.add('active');
+  };
+
+  window.addEventListener('load', function() {
+    // Intercept wizardNext(4) → show review instead of going to step 5
+    var _origWNext = window.wizardNext;
+    window.wizardNext = function(step) {
+      if (step === 4) {
+        window.showReviewStep();
+        return;
+      }
+      _origWNext(step);
+    };
+
+    // Intercept wizardBack(5) → show review instead of going to step 4
+    var _origWBack = window.wizardBack;
+    window.wizardBack = function(step) {
+      if (step === 5) {
+        window.showReviewStep();
+        return;
+      }
+      _origWBack(step);
+    };
+
+    // Also make gotoWStep('rev') work
+    var _origGoto5 = window.gotoWStep;
+    window.gotoWStep = function(n) {
+      if (n === 'rev') { window.showReviewStep(); return; }
+      _origGoto5(n);
+      // When going to step 5 directly, mark sc-5 done
+      if (n === 5) {
+        var sc5 = document.getElementById('sc-5');
+        if (sc5) { sc5.classList.remove('active'); sc5.classList.add('done'); }
+        var sl4 = document.getElementById('sl-4');
+        if (sl4) sl4.classList.add('active');
+      }
+    };
   });
 })();
 </script>
