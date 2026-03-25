@@ -525,7 +525,9 @@ textarea.form-input { resize: vertical; min-height: 88px; line-height: 1.5; }
     .party-email-req{border-color:#e74c3c !important;animation:shake .3s;}
     @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
 
-    /* === TIPO DE VISTORIA CARDS (Step 0) === */
+    /* === RESPONSIBLE TYPE CONDITIONAL === */
+    .resp-hidden{display:none!important;}
+/* === TIPO DE VISTORIA CARDS (Step 0) === */
     .tipo-cards{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin:20px 0;}
     .tipo-card{flex:1;min-width:120px;max-width:155px;border:2px solid #e2e8f0;border-radius:14px;padding:22px 12px 18px;text-align:center;cursor:pointer;transition:all .2s;background:#fff;box-shadow:0 1px 4px rgba(0,0,0,.06);}
     .tipo-card:hover{border-color:var(--primary,#1976D2);background:#f0f7ff;transform:translateY(-2px);box-shadow:0 4px 12px rgba(25,118,210,.15);}
@@ -807,6 +809,31 @@ textarea.form-input { resize: vertical; min-height: 88px; line-height: 1.5; }
       </div>
     </div>
 
+        <!-- STEP RESP: Quem realiza a vistoria? -->
+    <div id="wstep-resp" style="display:none">
+      <div class="chip-header" style="background:linear-gradient(135deg,#1976D2,#42a5f5);color:#fff;padding:18px 20px;border-radius:12px 12px 0 0;margin:-20px -20px 20px;">
+        <div style="font-size:22px;margin-bottom:4px;">👤</div>
+        <div style="font-weight:700;font-size:16px;">Quem está realizando a vistoria?</div>
+        <div style="font-size:12px;opacity:.85;margin-top:2px;">Isso define os dados solicitados</div>
+      </div>
+      <div class="tipo-cards">
+        <div class="tipo-card" data-resp="imobiliaria" onclick="selectRespCard(this)">
+          <span class="tc-icon">🏢</span>
+          <div class="tc-title">Imobiliária / Corretor</div>
+          <div class="tc-sub">Vistoria profissional</div>
+        </div>
+        <div class="tipo-card" data-resp="proprietario" onclick="selectRespCard(this)">
+          <span class="tc-icon">🏠</span>
+          <div class="tc-title">Proprietário</div>
+          <div class="tc-sub">Vistoria direta</div>
+        </div>
+      </div>
+      <div style="display:flex;justify-content:space-between;margin-top:24px;">
+        <button class="btn" style="background:#e2e8f0;color:#475569;border:none;padding:10px 18px;border-radius:8px;cursor:pointer;font-weight:600;" onclick="window.gotoWStep(0)">← Voltar</button>
+        <button class="btn btn-primary" id="btn-resp-next" onclick="respNext()" disabled style="opacity:.45;cursor:not-allowed;transition:opacity .2s">Próximo →</button>
+      </div>
+    </div>
+
         <!-- STEP 1: Imóvel -->
     <div id="wstep-1">
       <div class="chip-header"><svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg> Dados do Imóvel</div>
@@ -843,26 +870,38 @@ textarea.form-input { resize: vertical; min-height: 88px; line-height: 1.5; }
         </div>
       </div>
 
-      <div class="chip-header">🏢 Dados da Imobiliária</div>
+      <div id="imob-block">
+      <div class="chip-header">🏢 Imobiliária / Corretor</div>
       <div class="card">
         <div class="form-group">
-          <label class="form-label">Nome da Imobiliária</label>
-          <input type="text" id="wi-imob-name" class="form-input" placeholder="Nome da imobiliária"/>
+          <label class="form-label">Nome da Imobiliária / Corretor</label>
+          <input type="text" id="wi-imob-name" class="form-input" placeholder="Nome da imobiliária ou corretor"/>
         </div>
         <div class="grid-2">
           <div class="form-group">
-            <label class="form-label">CNPJ</label>
-            <input type="text" id="wi-imob-cnpj" class="form-input" placeholder="00.000.000/0001-00"/>
+            <label class="form-label">CNPJ / CPF</label>
+            <input type="text" id="wi-imob-cnpj" class="form-input" placeholder="CNPJ ou CPF"/>
           </div>
+          <div class="form-group">
+            <label class="form-label">CRECI</label>
+            <input type="text" id="wi-imob-creci" class="form-input" placeholder="CRECI (opcional)"/>
+          </div>
+        </div>
+        <div class="grid-2">
           <div class="form-group">
             <label class="form-label">Telefone</label>
             <input type="text" id="wi-imob-phone" class="form-input" placeholder="(00) 00000-0000"/>
           </div>
+          <div class="form-group">
+            <label class="form-label">Email *</label>
+            <input type="email" id="wi-imob-email" class="form-input" placeholder="email@imobiliaria.com"/>
+          </div>
         </div>
         <div class="form-group">
-          <label class="form-label">Endereço da Imobiliária</label>
+          <label class="form-label">Endereço</label>
           <input type="text" id="wi-imob-address" class="form-input" placeholder="Endereço"/>
         </div>
+      </div>
       </div>
       <button class="btn btn-primary btn-full" onclick="wizardNext(1)">Próximo →</button>
     </div>
@@ -877,6 +916,7 @@ textarea.form-input { resize: vertical; min-height: 88px; line-height: 1.5; }
       <div id="locatarios-container"></div>
       <button type="button" class="btn btn-outline btn-add-party" onclick="addLocatario()">+ Adicionar locatário</button>
 
+      <div id="corretor-block">
       <div class="chip-header">🏅 Corretor / Vistoriador</div>
       <div class="card">
         <div class="form-group"><label class="form-label">Nome Completo</label>
@@ -887,8 +927,9 @@ textarea.form-input { resize: vertical; min-height: 88px; line-height: 1.5; }
           <div class="form-group"><label class="form-label">Telefone</label>
             <input type="text" id="wi-corr-phone" class="form-input" placeholder="(00) 00000-0000"/></div>
         </div>
-        <div class="form-group"><label class="form-label">E-mail</label>
+        <div class="form-group"><label class="form-label">E-mail *</label>
           <input type="email" id="wi-corr-email" class="form-input" placeholder="email@ex.com"/></div>
+      </div>
       </div>
 
       <div class="flex gap-10">
@@ -1007,6 +1048,7 @@ textarea.form-input { resize: vertical; min-height: 88px; line-height: 1.5; }
         </div>
       </div>
 
+      <div id="corretor-sig-block">
       <div class="sig-block">
         <div class="sig-block-header">
           <div>
@@ -1022,6 +1064,7 @@ textarea.form-input { resize: vertical; min-height: 88px; line-height: 1.5; }
           <button class="btn btn-ghost btn-sm" onclick="clearSig('corretor')">Limpar</button>
           <button class="btn btn-primary btn-sm" style="flex:1" onclick="saveSig('corretor')">✓ Confirmar</button>
         </div>
+      </div>
       </div>
 
       <button class="btn btn-primary btn-full mt-16" onclick="generatePDF()" id="btn-gen-pdf">
@@ -2332,6 +2375,85 @@ window.addEventListener('resize', () => {
       }
     };
   });
+})();
+</script>
+
+<script id="v5-resp-flow">
+(function() {
+  /* ===== V5: RESPONSIBLE TYPE CONDITIONAL FLOW ===== */
+
+  // 1. selectRespCard — card click handler in wstep-resp
+  window.selectRespCard = function(el) {
+    document.querySelectorAll('#wstep-resp .tipo-card').forEach(function(c) {
+      c.classList.remove('active');
+    });
+    el.classList.add('active');
+    window._inspResponsible = el.getAttribute('data-resp');
+    var btn = document.getElementById('btn-resp-next');
+    if (btn) {
+      btn.disabled = false;
+      btn.style.opacity = '1';
+      btn.style.cursor = 'pointer';
+    }
+  };
+
+  // 2. applyRespTypeUI — show/hide blocks based on responsible type
+  window.applyRespTypeUI = function(type) {
+    var isImob = (type === 'imobiliaria');
+    ['imob-block', 'corretor-block', 'corretor-sig-block'].forEach(function(id) {
+      var el = document.getElementById(id);
+      if (!el) return;
+      if (isImob) {
+        el.classList.remove('resp-hidden');
+      } else {
+        el.classList.add('resp-hidden');
+      }
+    });
+  };
+
+  // 3. showRespStep — hide all numbered wsteps, show wstep-resp
+  window.showRespStep = function() {
+    ['0','1','2','3','4','rev','5'].forEach(function(n) {
+      var el = document.getElementById('wstep-' + n);
+      if (el) el.style.display = 'none';
+    });
+    var resp = document.getElementById('wstep-resp');
+    if (resp) resp.style.display = 'block';
+    window.scrollTo(0, 0);
+  };
+
+  // 4. respNext — "Proximo" button on wstep-resp
+  window.respNext = function() {
+    if (!window._inspResponsible) return;
+    window.applyRespTypeUI(window._inspResponsible);
+    var resp = document.getElementById('wstep-resp');
+    if (resp) resp.style.display = 'none';
+    if (typeof gotoWStep === 'function') gotoWStep(1);
+  };
+
+  // 5. Patch tipoCardNext: original runs (validates + stepper), then redirect to wstep-resp
+  var _origTipoCardNext = window.tipoCardNext;
+  window.tipoCardNext = function() {
+    if (typeof _origTipoCardNext === 'function') _origTipoCardNext.call(this);
+    // If original navigated to wstep-1, redirect to wstep-resp instead
+    var w1 = document.getElementById('wstep-1');
+    if (w1 && w1.style.display !== 'none') {
+      window.showRespStep();
+    }
+  };
+
+  // 6. Patch wizardBack: when backing from step 1, go to wstep-resp (not step 0)
+  var _origWizardBack = window.wizardBack;
+  window.wizardBack = function(step) {
+    if (step === 1 && window._inspResponsible !== undefined) {
+      var w1 = document.getElementById('wstep-1');
+      if (w1) w1.style.display = 'none';
+      window.showRespStep();
+    } else {
+      if (typeof _origWizardBack === 'function') _origWizardBack.call(this, step);
+    }
+  };
+
 })();
 </script>
 </body>
