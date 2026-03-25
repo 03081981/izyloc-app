@@ -374,8 +374,9 @@ cujas condições foram verificadas, registradas e aceitas por todos."""
                 sig_parties.append(('locatario', 'LOCATÁRIO / INQUILINO', _locat.get('name', '')))
         elif inspection.get('locatario_name'):
             sig_parties.append(('locatario', 'LOCATÁRIO / INQUILINO', inspection.get('locatario_name', '')))
-        # Corretor
-        sig_parties.append(('corretor', 'CORRETOR / VISTORIADOR', inspection.get('corretor_name', '')))
+        # Corretor (apenas se informado — fluxo imobiliaria/corretor)
+        if inspection.get('corretor_name'):
+            sig_parties.append(('corretor', 'CORRETOR / VISTORIADOR', inspection.get('corretor_name', '')))
 
         # Mapeia assinaturas coletadas
         sig_map = {s.get('party_type'): s for s in signatures_data}
