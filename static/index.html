@@ -11,530 +11,809 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/signature_pad/4.1.7/signature_pad.umd.min.js"></script>
 
 <style>
+/* =====================================================
+   IZYLAUDO — Design System Premium v7
+   Paleta, Tipografia, Componentes
+   ===================================================== */
+
+/* Import */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+/* ─── Tokens ─────────────────────────────────────── */
 :root {
-  --blue: #1565E8;
-  --blue-dark: #0D4FC4;
-  --blue-light: #EBF1FD;
-  --blue-mid: #3B82F6;
-  --black: #0A0A0A;
-  --text: #1A1A1A;
-  --text-muted: #6B7280;
-  --text-light: #9CA3AF;
-  --bg: #F5F6FA;
-  --white: #FFFFFF;
-  --border: #E5E7EB;
-  --border-light: #F3F4F6;
-  --danger: #DC2626;
-  --warning: #D97706;
-  --success: #16A34A;
-  --radius-sm: 8px;
-  --radius: 12px;
-  --radius-lg: 16px;
-  --radius-xl: 20px;
-  --shadow-xs: 0 1px 3px rgba(0,0,0,0.06);
-  --shadow: 0 2px 8px rgba(0,0,0,0.08);
-  --shadow-md: 0 4px 16px rgba(0,0,0,0.10);
-  --shadow-lg: 0 8px 32px rgba(0,0,0,0.14);
+  --blue:        #1565D8;
+  --blue-dark:   #0E3A75;
+  --blue-mid:    #1E6FCC;
+  --blue-light:  #EAF3FF;
+  --blue-border: #C3D9F8;
+  --bg:          #F7F9FC;
+  --white:       #FFFFFF;
+  --border:      #D9E2EC;
+  --text:        #243B53;
+  --text-2:      #5C6B7A;
+  --text-3:      #8898AA;
+  --success:     #059669;
+  --success-bg:  #D1FAE5;
+  --warn:        #D97706;
+  --warn-bg:     #FEF3C7;
+  --error:       #DC2626;
+  --error-bg:    #FEE2E2;
+  --r:           12px;
+  --r-sm:        8px;
+  --r-lg:        16px;
+  --sh:          0 1px 3px rgba(0,0,0,.07),0 4px 16px rgba(0,0,0,.06);
+  --sh-md:       0 4px 24px rgba(0,0,0,.10);
+  --sh-lg:       0 8px 40px rgba(0,0,0,.14);
+  --t:           0.18s ease;
+  --sidebar-w:   240px;
 }
 
-* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-html, body { height: 100%; }
-body {
-  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', sans-serif;
-  background: var(--bg);
-  color: var(--text);
-  min-height: 100vh;
-  overflow-x: hidden;
-  -webkit-font-smoothing: antialiased;
+/* ─── Reset ──────────────────────────────────────── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{font-size:16px;-webkit-text-size-adjust:100%}
+body{
+  font-family:'Inter',system-ui,sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  line-height:1.5;
+  min-height:100vh;
+  overscroll-behavior:none;
+}
+button{font-family:inherit;cursor:pointer;border:none;background:none}
+input,select,textarea{font-family:inherit}
+a{color:inherit;text-decoration:none}
+img{max-width:100%;display:block}
+
+/* ─── App Shell ──────────────────────────────────── */
+#app{display:flex;flex-direction:column;min-height:100vh}
+
+/* ─── Topbar (global, kept for JS hooks) ─────────── */
+.topbar{
+  position:fixed;top:0;left:0;right:0;z-index:200;
+  height:56px;
+  background:var(--white);
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;padding:0 16px;gap:12px;
+  box-shadow:0 1px 6px rgba(0,0,0,.06);
+}
+.topbar.hidden{display:none}
+.topbar-back{
+  width:36px;height:36px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  color:var(--blue);font-size:22px;font-weight:300;
+  transition:background var(--t);
+}
+.topbar-back:hover{background:var(--blue-light)}
+.topbar-back.hidden{visibility:hidden;pointer-events:none}
+.topbar-center{flex:1;display:flex;align-items:center;justify-content:center}
+.topbar-logo-small{
+  font-size:18px;font-weight:800;letter-spacing:-.5px;
+}
+.topbar-logo-small .blue{color:var(--blue)}
+.topbar-logo-small .dark-part{color:var(--blue-dark)}
+.topbar-right{display:flex;align-items:center;gap:8px}
+.btn-logout{
+  width:36px;height:36px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  color:var(--text-2);font-size:18px;
+  transition:background var(--t),color var(--t);
+}
+.btn-logout:hover{background:var(--error-bg);color:var(--error)}
+
+/* ─── Page System ────────────────────────────────── */
+.page{
+  display:none;
+  flex-direction:column;
+  min-height:100vh;
+  padding-top:56px; /* topbar height */
+}
+.page.active{display:flex}
+.page-content{
+  padding:20px 16px;
+  max-width:640px;
+  width:100%;
+  margin:0 auto;
+}
+.page-scroll{overflow-y:auto}
+.pb-100{padding-bottom:100px}
+
+/* ─── Auth Page ──────────────────────────────────── */
+.auth-page{
+  min-height:100vh;
+  display:flex;flex-direction:column;
+  padding-top:0 !important;
+}
+.auth-hero{
+  background:linear-gradient(135deg,var(--blue-dark) 0%,var(--blue) 100%);
+  padding:48px 24px 56px;
+  text-align:center;
+  position:relative;
+  overflow:hidden;
+}
+.auth-hero::before{
+  content:'';position:absolute;inset:0;
+  background:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+}
+.auth-hero-logo{
+  font-size:38px;font-weight:800;letter-spacing:-1px;
+  color:var(--white);position:relative;z-index:1;
+  margin-bottom:6px;
+}
+.auth-hero-logo .blue-part{color:#7EC8FF}
+.auth-hero-logo .dark-part{color:var(--white)}
+.auth-hero-tagline{
+  color:rgba(255,255,255,.75);font-size:14px;
+  position:relative;z-index:1;font-weight:400;letter-spacing:.3px;
+}
+.auth-body{
+  flex:1;
+  background:var(--white);
+  border-radius:20px 20px 0 0;
+  margin-top:-20px;
+  padding:28px 24px 40px;
+  position:relative;z-index:2;
+  box-shadow:0 -4px 20px rgba(0,0,0,.08);
+}
+.auth-tabs{
+  display:flex;gap:0;
+  border-bottom:2px solid var(--border);
+  margin-bottom:24px;
+}
+.auth-tab{
+  flex:1;padding:10px 8px;
+  font-size:14px;font-weight:600;color:var(--text-2);
+  border-bottom:2px solid transparent;
+  margin-bottom:-2px;transition:color var(--t),border-color var(--t);
+}
+.auth-tab.active{color:var(--blue);border-color:var(--blue)}
+
+/* ─── Forms ──────────────────────────────────────── */
+.form-group{margin-bottom:18px}
+.form-label{
+  display:block;margin-bottom:6px;
+  font-size:12px;font-weight:600;
+  color:var(--text-2);text-transform:uppercase;letter-spacing:.5px;
+}
+.form-input{
+  width:100%;padding:12px 14px;
+  border:1.5px solid var(--border);
+  border-radius:var(--r-sm);
+  font-size:15px;color:var(--text);
+  background:var(--white);
+  transition:border-color var(--t),box-shadow var(--t);
+  outline:none;
+  -webkit-appearance:none;
+}
+.form-input:focus{
+  border-color:var(--blue);
+  box-shadow:0 0 0 3px var(--blue-light);
+}
+.form-input::placeholder{color:var(--text-3)}
+select.form-input{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%235C6B7A' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;padding-right:36px;cursor:pointer}
+textarea.form-input{min-height:96px;resize:vertical}
+
+/* ─── Buttons ────────────────────────────────────── */
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  padding:12px 20px;border-radius:var(--r-sm);
+  font-size:15px;font-weight:600;
+  transition:all var(--t);cursor:pointer;
+  border:none;outline:none;
+  -webkit-tap-highlight-color:transparent;
+}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn-primary{
+  background:var(--blue);color:var(--white);
+  box-shadow:0 2px 8px rgba(21,101,216,.30);
+}
+.btn-primary:hover:not(:disabled){background:var(--blue-mid);box-shadow:0 4px 16px rgba(21,101,216,.40)}
+.btn-primary:active:not(:disabled){transform:translateY(1px)}
+.btn-outline{
+  background:transparent;color:var(--blue);
+  border:1.5px solid var(--blue-border);
+}
+.btn-outline:hover:not(:disabled){background:var(--blue-light)}
+.btn-ghost{
+  background:transparent;color:var(--text-2);
+}
+.btn-ghost:hover{background:var(--bg);color:var(--text)}
+.btn-danger{background:var(--error);color:var(--white)}
+.btn-danger:hover:not(:disabled){background:#b91c1c}
+.btn-full{width:100%}
+.btn-sm{padding:8px 14px;font-size:13px}
+.btn-lg{padding:15px 28px;font-size:16px;border-radius:var(--r)}
+.btn-icon{padding:8px;border-radius:var(--r-sm);width:36px;height:36px}
+
+/* ─── Cards ──────────────────────────────────────── */
+.card{
+  background:var(--white);
+  border:1px solid var(--border);
+  border-radius:var(--r);
+  padding:20px;
+  box-shadow:var(--sh);
+  margin-bottom:16px;
+}
+.card-sm{padding:14px 16px}
+.card-title{font-size:15px;font-weight:700;color:var(--text);margin-bottom:4px}
+.card-sub{font-size:13px;color:var(--text-2)}
+.card-header{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:16px;padding-bottom:14px;
+  border-bottom:1px solid var(--border);
+}
+.card-header-title{font-size:14px;font-weight:700;color:var(--text);text-transform:uppercase;letter-spacing:.5px}
+
+/* ─── Dashboard Header ───────────────────────────── */
+.dash-header{
+  background:var(--white);
+  border-bottom:1px solid var(--border);
+  padding:16px 20px 0;
+  position:sticky;top:56px;z-index:100;
+}
+.dash-header-top{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:14px;
+}
+.dash-logo{font-size:22px;font-weight:800;letter-spacing:-.5px}
+.dash-logo .blue{color:var(--blue)}
+.dash-logo .dark-part{color:var(--blue-dark)}
+.dash-tagline{font-size:11px;color:var(--text-3);font-weight:500;margin-top:1px}
+.dash-nav-tabs{
+  display:flex;gap:0;
+  overflow-x:auto;scrollbar-width:none;
+}
+.dash-nav-tabs::-webkit-scrollbar{display:none}
+.dash-nav-tab{
+  padding:10px 14px;
+  font-size:13px;font-weight:600;color:var(--text-2);
+  border-bottom:2px solid transparent;
+  white-space:nowrap;transition:all var(--t);
+  flex-shrink:0;
+}
+.dash-nav-tab.active{color:var(--blue);border-color:var(--blue)}
+
+/* ─── Stats Grid ─────────────────────────────────── */
+.stats-section{padding:20px 16px}
+.stats-grid{
+  display:grid;grid-template-columns:1fr 1fr;gap:12px;
+}
+.stat-card{
+  background:var(--white);
+  border:1px solid var(--border);
+  border-radius:var(--r);
+  padding:16px;
+  box-shadow:var(--sh);
+  position:relative;overflow:hidden;
+}
+.stat-card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:3px;
+  background:var(--blue);border-radius:var(--r) var(--r) 0 0;
+}
+.stat-card-icon{
+  width:36px;height:36px;border-radius:var(--r-sm);
+  background:var(--blue-light);
+  display:flex;align-items:center;justify-content:center;
+  margin-bottom:10px;color:var(--blue);font-size:18px;
+}
+.stat-number{
+  font-size:28px;font-weight:800;color:var(--text);
+  line-height:1;margin-bottom:4px;
+}
+.stat-label{font-size:12px;color:var(--text-2);font-weight:500}
+
+/* ─── Inspection List ────────────────────────────── */
+.section{padding:16px}
+.section-header{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:14px;
+}
+.section-title{font-size:14px;font-weight:700;color:var(--text);text-transform:uppercase;letter-spacing:.5px}
+.insp-card{
+  background:var(--white);
+  border:1px solid var(--border);
+  border-radius:var(--r);
+  padding:14px 16px;
+  display:flex;align-items:center;gap:14px;
+  margin-bottom:10px;
+  box-shadow:var(--sh);
+  cursor:pointer;transition:all var(--t);
+}
+.insp-card:hover{border-color:var(--blue-border);box-shadow:var(--sh-md);transform:translateY(-1px)}
+.insp-card-icon{
+  width:44px;height:44px;border-radius:var(--r-sm);
+  background:var(--blue-light);
+  display:flex;align-items:center;justify-content:center;
+  color:var(--blue);font-size:20px;flex-shrink:0;
+}
+.insp-card-body{flex:1;min-width:0}
+.insp-card-addr{font-size:14px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.insp-card-meta{font-size:12px;color:var(--text-2);margin-top:2px}
+.insp-card-badge{
+  font-size:11px;font-weight:600;padding:3px 8px;
+  border-radius:20px;flex-shrink:0;
+}
+.badge-entrada{background:#DBEAFE;color:#1D4ED8}
+.badge-saida{background:#FEF3C7;color:#92400E}
+.badge-temporada{background:#D1FAE5;color:#065F46}
+.badge-em_andamento{background:#FEF3C7;color:#92400E}
+.badge-concluido{background:#D1FAE5;color:#065F46}
+
+/* ─── Empty State ────────────────────────────────── */
+.empty-state{
+  text-align:center;padding:48px 24px;
+}
+.empty-icon{
+  width:72px;height:72px;border-radius:50%;
+  background:var(--blue-light);
+  display:flex;align-items:center;justify-content:center;
+  margin:0 auto 16px;color:var(--blue);
+}
+.empty-title{font-size:16px;font-weight:700;color:var(--text);margin-bottom:8px}
+.empty-text{font-size:14px;color:var(--text-2);margin-bottom:20px;max-width:280px;margin-left:auto;margin-right:auto}
+
+/* ─── Wizard ─────────────────────────────────────── */
+.wizard-header{
+  background:var(--white);
+  border-bottom:1px solid var(--border);
+  padding:14px 16px;
+  position:sticky;top:56px;z-index:100;
+}
+.wizard-title{font-size:13px;font-weight:700;color:var(--text);margin-bottom:10px;text-align:center}
+
+/* Stepper */
+.stepper{
+  display:flex;align-items:center;
+  overflow-x:auto;scrollbar-width:none;
+  padding:0 4px;gap:0;
+}
+.stepper::-webkit-scrollbar{display:none}
+.step-wrap{display:flex;flex-direction:column;align-items:center;gap:4px;flex-shrink:0}
+.step-circle{
+  width:28px;height:28px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:12px;font-weight:700;
+  border:2px solid var(--border);
+  color:var(--text-3);background:var(--white);
+  transition:all var(--t);
+}
+.step-circle.active{background:var(--blue);border-color:var(--blue);color:var(--white);box-shadow:0 2px 8px rgba(21,101,216,.35)}
+.step-circle.done{background:var(--success);border-color:var(--success);color:var(--white)}
+.step-label{font-size:10px;font-weight:600;color:var(--text-3);transition:color var(--t);white-space:nowrap}
+.step-label.active{color:var(--blue)}
+.step-label.done{color:var(--success)}
+.step-line{
+  flex:1;height:2px;background:var(--border);
+  margin:0 4px;margin-bottom:16px;
+  transition:background var(--t);min-width:16px;
+}
+.step-line.done{background:var(--success)}
+
+/* Wizard Steps Content */
+#wstep-0,#wstep-resp,#wstep-1,#wstep-2,#wstep-3,#wstep-4,#wstep-rev,#wstep-5{
+  padding:20px 16px;
+  max-width:640px;margin:0 auto;width:100%;
 }
 
-/* ─── TOP BAR ─── */
-.topbar {
-  background: var(--white);
-  padding: 0 16px;
-  height: 56px;
-  display: none;
-  align-items: center;
-  justify-content: space-between;
-  position: sticky; top: 0; z-index: 200;
-  border-bottom: 1px solid var(--border);
-  box-shadow: var(--shadow-xs);
+/* Section Headers inside wizard */
+.chip-header{
+  display:flex;align-items:center;gap:10px;
+  font-size:15px;font-weight:700;color:var(--text);
+  margin-bottom:14px;
+  padding:14px 16px;
+  background:var(--white);
+  border:1px solid var(--border);
+  border-radius:var(--r);
+  box-shadow:var(--sh);
 }
-.topbar.visible { display: flex; }
-.topbar-back {
-  width: 36px; height: 36px;
-  display: flex; align-items: center; justify-content: center;
-  background: none; border: none; cursor: pointer;
-  border-radius: 50%; color: var(--blue); font-size: 22px;
-  transition: background 0.15s;
+.chip-header svg{width:20px;height:20px;color:var(--blue);flex-shrink:0}
+.chip-header-gradient{
+  background:linear-gradient(135deg,var(--blue-dark),var(--blue));
+  color:var(--white);border:none;
+  border-radius:var(--r);
+  padding:20px;
+  margin-bottom:16px;
 }
-.topbar-back:hover { background: var(--blue-light); }
-.topbar-back.hidden { visibility: hidden; pointer-events: none; }
-.topbar-center { position: absolute; left: 50%; transform: translateX(-50%);
-                  font-size: 16px; font-weight: 600; color: var(--text); }
-.topbar-logo-small {
-  font-size: 20px; font-weight: 900; letter-spacing: -0.5px;
-}
-.topbar-logo-small .blue { color: var(--blue); }
-.topbar-logo-small .black { color: var(--black); }
-.topbar-right { width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; }
-.btn-logout {
-  background: none; border: none; cursor: pointer; color: var(--text-muted);
-  font-size: 18px; width: 36px; height: 36px; display: flex; align-items: center;
-  justify-content: center; border-radius: 50%;
-}
-.btn-logout:hover { background: var(--border-light); }
+.chip-header-gradient .ch-icon{font-size:28px;margin-bottom:6px}
+.chip-header-gradient .ch-title{font-size:17px;font-weight:700}
+.chip-header-gradient .ch-sub{font-size:12px;opacity:.8;margin-top:3px}
 
-/* ─── PAGES ─── */
-.page { display: none; }
-.page.active { display: block; }
+/* ─── Tipo Cards ─────────────────────────────────── */
+.tipo-cards{display:flex;flex-direction:column;gap:12px;margin-bottom:8px}
+.tipo-card{
+  background:var(--white);
+  border:2px solid var(--border);
+  border-radius:var(--r);
+  padding:18px;
+  display:flex;align-items:center;gap:16px;
+  cursor:pointer;
+  transition:all var(--t);
+  box-shadow:var(--sh);
+}
+.tipo-card:hover{border-color:var(--blue-border);box-shadow:var(--sh-md)}
+.tipo-card.selected{border-color:var(--blue);background:var(--blue-light);box-shadow:0 0 0 4px rgba(21,101,216,.12)}
+.tc-icon-wrap{
+  width:52px;height:52px;border-radius:var(--r);
+  background:var(--blue-light);
+  display:flex;align-items:center;justify-content:center;
+  font-size:26px;flex-shrink:0;
+  transition:background var(--t);
+}
+.tipo-card.selected .tc-icon-wrap{background:var(--blue);filter:brightness(1.1)}
+.tc-icon{font-size:26px}
+.tc-body{flex:1}
+.tc-title{font-size:15px;font-weight:700;color:var(--text);margin-bottom:2px}
+.tc-sub{font-size:13px;color:var(--text-2)}
+.tc-check{
+  width:22px;height:22px;border-radius:50%;
+  border:2px solid var(--border);
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;transition:all var(--t);
+}
+.tipo-card.selected .tc-check{background:var(--blue);border-color:var(--blue)}
+.tc-check-dot{
+  width:10px;height:10px;border-radius:50%;
+  background:var(--white);opacity:0;transition:opacity var(--t);
+}
+.tipo-card.selected .tc-check-dot{opacity:1}
 
-/* ─── AUTH PAGE ─── */
-.auth-page {
-  min-height: 100vh;
-  background: var(--white);
-  display: flex; flex-direction: column;
+/* Temporada subchoice */
+#temporada-subchoice{
+  margin-top:0;margin-bottom:0;
+  background:var(--blue-light);
+  border:2px solid var(--blue-border);
+  border-radius:0 0 var(--r) var(--r);
+  padding:14px 16px;
+  display:none;
+  flex-direction:column;gap:8px;
 }
-.auth-hero {
-  background: linear-gradient(160deg, #eef2ff 0%, #ffffff 100%);
-  padding: 60px 24px 48px;
-  text-align: center;
-  position: relative;
-  overflow: hidden;
+#temporada-subchoice.show{display:flex}
+.tmp-sub-label{font-size:12px;font-weight:700;color:var(--blue-dark);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px}
+.tmp-sub-btns{display:flex;gap:8px}
+.tmp-sub-btn{
+  flex:1;padding:10px;border-radius:var(--r-sm);
+  font-size:13px;font-weight:600;color:var(--blue);
+  background:var(--white);border:2px solid var(--blue-border);
+  transition:all var(--t);
 }
-.auth-hero::before {
-  display: none;
-}
-.auth-hero-logo {
-  font-size: 52px; font-weight: 900; letter-spacing: -2px;
-  line-height: 1; margin-bottom: 8px;
-}
-.auth-hero-logo .blue-part { color: var(--blue); }
-.auth-hero-logo .dark-part { color: #111827; font-weight: 900; }
-.topbar-logo-small .dark-part { color: var(--black); }
-.dash-logo .dark-part { color: var(--black); }
-.auth-hero-tagline {
-  font-size: 13px; color: #4b5563; margin-top: 6px; font-weight: 500;
-}
-.auth-body {
-  flex: 1; padding: 32px 24px; max-width: 420px; margin: 0 auto; width: 100%;
-}
-.auth-title { font-size: 24px; font-weight: 700; color: var(--text); margin-bottom: 6px; }
-.auth-subtitle { font-size: 14px; color: var(--text-muted); margin-bottom: 28px; }
+.tmp-sub-btn.selected,.tmp-sub-btn:hover{background:var(--blue);color:var(--white);border-color:var(--blue)}
 
-/* ─── FORMS ─── */
-.form-group { margin-bottom: 16px; }
-.form-label {
-  display: block; font-size: 13px; font-weight: 600;
-  color: var(--text); margin-bottom: 6px;
+/* ─── Room Check List ────────────────────────────── */
+.room-check-list{display:flex;flex-direction:column;gap:2px}
+.room-check-item{
+  display:flex;align-items:center;gap:12px;
+  padding:12px 14px;border-radius:var(--r-sm);
+  cursor:pointer;transition:background var(--t);
+  border:1.5px solid transparent;
 }
-.form-input {
-  width: 100%; padding: 13px 16px;
-  border: 1.5px solid var(--border);
-  border-radius: var(--radius); font-size: 15px; color: var(--text);
-  background: var(--white); outline: none; transition: border 0.2s, box-shadow 0.2s;
-  -webkit-appearance: none;
+.room-check-item:hover{background:var(--bg)}
+.room-check-item.checked{background:var(--blue-light);border-color:var(--blue-border)}
+.check-box{
+  width:20px;height:20px;border-radius:5px;
+  border:2px solid var(--border);
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;transition:all var(--t);
 }
-.form-input:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(21,101,232,0.12); }
-.form-input::placeholder { color: var(--text-light); }
-select.form-input {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' viewBox='0 0 24 24'%3E%3Cpath stroke='%236B7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'/%3E%3C/svg%3E");
-  background-repeat: no-repeat; background-position: right 12px center;
-  padding-right: 38px; cursor: pointer;
-}
-textarea.form-input { resize: vertical; min-height: 88px; line-height: 1.5; }
-.form-input-icon { position: relative; }
-.form-input-icon .form-input { padding-right: 42px; }
-.form-input-icon .icon { position: absolute; right: 14px; top: 50%; transform: translateY(-50%);
-                           color: var(--text-muted); cursor: pointer; font-size: 16px; }
+.room-check-item.checked .check-box{background:var(--blue);border-color:var(--blue)}
+.room-check-item.checked .check-box::after{content:'✓';color:white;font-size:12px;font-weight:700}
+.room-check-label{font-size:14px;font-weight:500;color:var(--text)}
 
-/* ─── BUTTONS ─── */
-.btn {
-  display: inline-flex; align-items: center; justify-content: center; gap: 7px;
-  padding: 13px 22px; border-radius: var(--radius); font-size: 15px; font-weight: 600;
-  cursor: pointer; border: none; transition: all 0.18s; text-decoration: none;
-  letter-spacing: -0.1px; white-space: nowrap;
+/* ─── Room Cards (Vistoria) ──────────────────────── */
+.room-card{
+  background:var(--white);
+  border:1px solid var(--border);
+  border-radius:var(--r);
+  margin-bottom:14px;
+  box-shadow:var(--sh);
+  overflow:hidden;
 }
-.btn-primary { background: var(--blue); color: white; }
-.btn-primary:hover { background: var(--blue-dark); transform: translateY(-1px); box-shadow: var(--shadow-md); }
-.btn-primary:active { transform: translateY(0); box-shadow: none; }
-.btn-black { background: var(--black); color: white; }
-.btn-black:hover { background: #222; transform: translateY(-1px); }
-.btn-outline { background: white; color: var(--blue); border: 1.5px solid var(--blue); }
-.btn-outline:hover { background: var(--blue-light); }
-.btn-ghost { background: none; border: none; color: var(--text-muted); padding: 8px 12px; font-size: 14px; cursor: pointer; }
-.btn-danger { background: var(--danger); color: white; }
-.btn-danger:hover { background: #b91c1c; }
-.btn-full { width: 100%; }
-.btn:disabled { opacity: 0.45; cursor: not-allowed; transform: none !important; box-shadow: none !important; }
-.btn-sm { padding: 8px 14px; font-size: 13px; border-radius: var(--radius-sm); }
-.btn-icon { padding: 10px; border-radius: var(--radius); }
-.btn-link { background: none; border: none; color: var(--blue); font-size: 14px;
-             cursor: pointer; font-weight: 500; padding: 0; text-decoration: underline; }
+.room-card-header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:14px 16px;
+  background:linear-gradient(90deg,var(--blue-light),var(--white));
+  border-bottom:1px solid var(--border);
+  cursor:pointer;
+}
+.room-name{font-size:14px;font-weight:700;color:var(--text)}
+.room-count{font-size:12px;color:var(--text-2);font-weight:500}
+.room-body{padding:14px 16px}
+.room-item{
+  display:flex;align-items:center;gap:10px;
+  padding:8px 0;border-bottom:1px solid var(--bg);
+}
+.room-item:last-child{border:none}
+.room-item-name{flex:1;font-size:13px;font-weight:500;color:var(--text)}
+.room-item-cond{font-size:12px;color:var(--text-2)}
+.room-item-thumb{
+  width:40px;height:40px;border-radius:var(--r-sm);
+  object-fit:cover;border:1px solid var(--border);flex-shrink:0;
+}
+.room-add-btn{
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  padding:10px;margin-top:10px;
+  border:1.5px dashed var(--blue-border);
+  border-radius:var(--r-sm);
+  font-size:13px;font-weight:600;color:var(--blue);
+  cursor:pointer;transition:all var(--t);
+}
+.room-add-btn:hover{background:var(--blue-light);border-color:var(--blue)}
 
-/* ─── AUTH TABS ─── */
-.auth-tabs {
-  display: flex; background: var(--bg); border-radius: var(--radius); padding: 3px; margin-bottom: 24px;
+/* ─── Photo Grid ─────────────────────────────────── */
+.photo-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:8px}
+.photo-thumb-wrap{
+  aspect-ratio:1;position:relative;border-radius:var(--r-sm);overflow:hidden;
+  background:var(--bg);border:1px solid var(--border);
 }
-.auth-tab {
-  flex: 1; padding: 10px; text-align: center; border-radius: 10px;
-  font-size: 14px; font-weight: 600; cursor: pointer; color: var(--text-muted);
-  border: none; background: none; transition: all 0.2s;
-}
-.auth-tab.active { background: white; color: var(--blue); box-shadow: var(--shadow-xs); }
-
-/* ─── DASHBOARD ─── */
-.dash-header {
-  background: var(--white);
-  padding: 20px 16px 0;
-  border-bottom: 1px solid var(--border);
-}
-.dash-logo {
-  font-size: 30px; font-weight: 900; letter-spacing: -1px; line-height: 1; margin-bottom: 2px;
-}
-.dash-logo .blue { color: var(--blue); }
-.dash-logo .black { color: var(--black); }
-.dash-tagline { font-size: 11px; color: var(--text-muted); font-weight: 500; margin-bottom: 16px; }
-.dash-nav-tabs {
-  display: flex; gap: 0; border-bottom: none; margin: 0 -16px;
-}
-.dash-nav-tab {
-  flex: 1; padding: 10px 8px; text-align: center; font-size: 13px; font-weight: 600;
-  color: var(--text-muted); cursor: pointer; border-bottom: 2px solid transparent;
-  border-top: none; border-left: none; border-right: none;
-  background: none; transition: all 0.2s;
-}
-.dash-nav-tab.active { color: var(--blue); border-bottom-color: var(--blue); }
-
-/* ─── STATS ─── */
-.stats-section { padding: 16px; }
-.stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 0; }
-.stat-card {
-  background: var(--white); border-radius: var(--radius); padding: 16px 14px;
-  box-shadow: var(--shadow-xs); border: 1px solid var(--border);
-}
-.stat-number { font-size: 32px; font-weight: 800; color: var(--blue); line-height: 1; }
-.stat-label { font-size: 12px; color: var(--text-muted); margin-top: 4px; font-weight: 500; }
-
-/* ─── SECTION ─── */
-.section { padding: 0 16px 16px; }
-.section-header {
-  display: flex; justify-content: space-between; align-items: center;
-  padding: 16px 0 10px;
-}
-.section-title { font-size: 17px; font-weight: 700; color: var(--text); }
-.section-link { font-size: 13px; color: var(--blue); font-weight: 600; cursor: pointer;
-                 background: none; border: none; }
-
-/* ─── INSPECTION CARDS ─── */
-.insp-card {
-  background: var(--white); border-radius: var(--radius); padding: 14px 16px;
-  box-shadow: var(--shadow-xs); margin-bottom: 8px; cursor: pointer;
-  border: 1px solid var(--border); transition: all 0.18s;
-  display: flex; align-items: center; gap: 12px;
-}
-.insp-card:hover { box-shadow: var(--shadow-md); transform: translateY(-1px); }
-.insp-card:active { transform: translateY(0); box-shadow: var(--shadow-xs); }
-.insp-card-icon {
-  width: 44px; height: 44px; border-radius: var(--radius-sm);
-  background: var(--blue-light); display: flex; align-items: center;
-  justify-content: center; font-size: 20px; flex-shrink: 0;
-}
-.insp-card-body { flex: 1; min-width: 0; }
-.insp-card-addr { font-size: 14px; font-weight: 600; color: var(--text); white-space: nowrap;
-                    overflow: hidden; text-overflow: ellipsis; }
-.insp-card-type { font-size: 13px; color: var(--blue); font-weight: 600; margin-top: 1px; }
-.insp-card-date { font-size: 12px; color: var(--text-muted); margin-top: 1px; }
-.insp-card-right { flex-shrink: 0; display: flex; flex-direction: column;
-                    align-items: flex-end; gap: 4px; }
-.insp-card-doc { font-size: 20px; color: var(--text-light); }
-.status-dot { width: 8px; height: 8px; border-radius: 50%; }
-.status-dot.rascunho { background: var(--warning); }
-.status-dot.assinado { background: var(--blue); }
-.status-dot.concluido { background: var(--success); }
-
-/* ─── FAB ─── */
-.fab {
-  position: fixed; bottom: 24px; right: 24px; z-index: 100;
-  width: 56px; height: 56px; border-radius: 50%;
-  background: var(--blue); color: white; border: none; cursor: pointer;
-  font-size: 26px; display: flex; align-items: center; justify-content: center;
-  box-shadow: 0 4px 20px rgba(21,101,232,0.4);
-  transition: all 0.2s;
-}
-.fab:hover { background: var(--blue-dark); transform: scale(1.05); }
-
-/* ─── PAGE CONTENT ─── */
-.page-content { padding: 16px; }
-.page-scroll { padding-bottom: 100px; }
-
-/* ─── CARDS ─── */
-.card {
-  background: var(--white); border-radius: var(--radius); padding: 16px;
-  box-shadow: var(--shadow-xs); border: 1px solid var(--border); margin-bottom: 12px;
-}
-.card-title { font-size: 15px; font-weight: 700; color: var(--text); margin-bottom: 12px; }
-.card-subtitle { font-size: 12px; color: var(--text-muted); margin-bottom: 12px; }
-
-/* ─── SECTION HEADER CHIP ─── */
-.chip-header {
-  background: var(--blue); color: white; border-radius: var(--radius-sm);
-  padding: 8px 14px; font-size: 13px; font-weight: 700; margin-bottom: 12px;
-  text-transform: uppercase; letter-spacing: 0.5px;
+.photo-thumb{width:100%;height:100%;object-fit:cover}
+.photo-delete{
+  position:absolute;top:4px;right:4px;
+  width:22px;height:22px;border-radius:50%;
+  background:rgba(0,0,0,.65);color:white;font-size:12px;
+  display:flex;align-items:center;justify-content:center;
 }
 
-/* ─── WIZARD STEPPER ─── */
-.stepper { display: flex; align-items: center; margin-bottom: 24px; }
-.stepper-step { display: flex; align-items: center; flex: 1; }
-.stepper-step:last-child { flex: 0; }
-.step-circle {
-  width: 28px; height: 28px; border-radius: 50%; border: 2px solid var(--border);
-  background: var(--white); color: var(--text-muted); font-size: 12px; font-weight: 700;
-  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
-  transition: all 0.2s;
+/* ─── Signature Blocks ───────────────────────────── */
+.sig-block{
+  background:var(--white);
+  border:1px solid var(--border);
+  border-radius:var(--r);
+  margin-bottom:16px;
+  overflow:hidden;
+  box-shadow:var(--sh);
 }
-.step-circle.active { background: var(--blue); border-color: var(--blue); color: white; }
-.step-circle.done { background: var(--blue); border-color: var(--blue); color: white; }
-.step-line { flex: 1; height: 2px; background: var(--border); margin: 0 4px; }
-.step-line.done { background: var(--blue); }
-
-/* ─── PROPERTY HEADER ─── */
-.prop-header {
-  background: var(--white); border-bottom: 1px solid var(--border);
-  padding: 20px 16px;
+.sig-block-header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:14px 16px;
+  border-bottom:1px solid var(--border);
+  background:var(--bg);
 }
-.prop-name { font-size: 22px; font-weight: 800; color: var(--text); }
-.prop-addr { font-size: 14px; color: var(--text-muted); margin-top: 2px; }
-
-/* ─── ROOM CARDS ─── */
-.room-card {
-  background: var(--white); border-radius: var(--radius); border: 1px solid var(--border);
-  margin-bottom: 10px; overflow: hidden; box-shadow: var(--shadow-xs);
+.sig-block-title{font-size:13px;font-weight:700;color:var(--text);text-transform:uppercase;letter-spacing:.3px}
+.sig-block-name{font-size:13px;color:var(--text-2);font-weight:500}
+.sig-block-status{
+  font-size:11px;font-weight:700;padding:3px 10px;
+  border-radius:20px;
+  background:var(--warn-bg);color:var(--warn);
 }
-.room-header {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 14px 16px; cursor: pointer;
+.sig-block-status.signed{background:var(--success-bg);color:var(--success)}
+.sig-canvas-wrap{
+  background:var(--bg);
+  border-bottom:1px solid var(--border);
+  position:relative;
+  min-height:140px;
 }
-.room-header-left { display: flex; align-items: center; gap: 10px; }
-.room-icon { width: 36px; height: 36px; background: var(--blue-light); border-radius: var(--radius-sm);
-              display: flex; align-items: center; justify-content: center; font-size: 18px; }
-.room-name { font-size: 15px; font-weight: 700; color: var(--text); }
-.room-count { font-size: 12px; color: var(--text-muted); }
-.room-chevron { color: var(--text-muted); font-size: 12px; transition: transform 0.2s; }
-.room-chevron.open { transform: rotate(180deg); }
-.room-body { padding: 0 16px 16px; border-top: 1px solid var(--border-light); }
-
-/* ─── ITEM CARDS ─── */
-.item-card {
-  background: var(--bg); border-radius: var(--radius-sm); padding: 12px;
-  margin-bottom: 8px; border: 1px solid var(--border);
-}
-.item-header { display: flex; align-items: center; justify-content: space-between; }
-.item-name { font-size: 14px; font-weight: 600; color: var(--text); }
-.item-photo { width: 100%; border-radius: var(--radius-sm); max-height: 200px;
-               object-fit: cover; margin-top: 8px; }
-.photo-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-top: 8px; }
-.photo-thumb { position: relative; aspect-ratio: 1; overflow: hidden; border-radius: var(--radius-sm); }
-.photo-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
-.photo-thumb-del { position: absolute; top: 3px; right: 3px; background: rgba(0,0,0,0.55);
-  color: #fff; border: none; border-radius: 50%; width: 20px; height: 20px;
-  font-size: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center;
-  padding: 0; line-height: 1; }
-.photo-thumb-del:hover { background: rgba(220,50,50,0.85); }
-.photo-count-badge { font-size: 11px; color: var(--text-muted); margin-top: 4px; }
-.ai-badge {
-  display: inline-block; background: var(--blue-light); color: var(--blue);
-  font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 20px;
-  text-transform: uppercase; letter-spacing: 0.5px; margin-top: 8px;
-}
-.ai-description { font-size: 13px; color: var(--text); margin-top: 6px; line-height: 1.55; }
-.item-actions { display: flex; gap: 6px; margin-top: 10px; flex-wrap: wrap; }
-
-/* ─── PHOTO UPLOAD ─── */
-.photo-zone {
-  border: 2px dashed var(--blue); border-radius: var(--radius);
-  padding: 24px 16px; text-align: center; cursor: pointer;
-  background: var(--blue-light); transition: all 0.2s; margin-bottom: 12px;
-}
-.photo-zone:hover { background: #dce9fc; }
-.photo-zone-icon { font-size: 32px; margin-bottom: 8px; }
-.photo-zone-text { font-size: 13px; color: var(--blue); font-weight: 600; }
-.photo-zone-sub { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
-
-/* ─── ROOM SELECT CHECKBOXES ─── */
-.room-check-list { display: flex; flex-direction: column; gap: 8px; }
-.room-check-item {
-  display: flex; align-items: center; gap: 12px; padding: 14px 16px;
-  background: var(--white); border: 1.5px solid var(--border); border-radius: var(--radius);
-  cursor: pointer; transition: all 0.15s;
-}
-.room-check-item.checked { border-color: var(--blue); background: var(--blue-light); }
-.check-box {
-  width: 22px; height: 22px; border-radius: 50%; border: 2px solid var(--border);
-  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
-  background: white; transition: all 0.15s;
-}
-.check-box.checked { background: var(--blue); border-color: var(--blue); }
-.check-box.checked::after { content: '✓'; color: white; font-size: 13px; font-weight: 700; }
-.room-check-label { font-size: 15px; font-weight: 600; color: var(--text); }
-
-/* ─── SIGNATURE ─── */
-.sig-block { background: var(--white); border-radius: var(--radius); border: 1px solid var(--border);
-              margin-bottom: 12px; overflow: hidden; }
-.sig-block-header { padding: 12px 16px; border-bottom: 1px solid var(--border);
-                     display: flex; justify-content: space-between; align-items: center; }
-.sig-block-title { font-size: 14px; font-weight: 700; color: var(--text); }
-.sig-block-name { font-size: 13px; color: var(--text-muted); }
-.sig-block-status { font-size: 13px; font-weight: 600; color: var(--blue); }
-.sig-block-status.done { color: var(--success); }
-.sig-canvas-wrap { background: #FAFAFA; }
-.sig-canvas { width: 100%; height: 140px; display: block; touch-action: none; }
-.sig-actions {
-  display: flex; gap: 8px; padding: 10px 14px;
-  border-top: 1px solid var(--border); background: var(--white);
+.sig-canvas{width:100%;height:140px;touch-action:none;display:block}
+.sig-actions{
+  display:flex;gap:8px;padding:12px 14px;
 }
 
-/* ─── CONDITION BADGES ─── */
-.cond { display: inline-block; padding: 2px 10px; border-radius: 20px;
-         font-size: 11px; font-weight: 700; }
-.cond-otimo, .cond-bom { background: #D1FAE5; color: #065F46; }
-.cond-regular { background: #FEF3C7; color: #92400E; }
-.cond-ruim, .cond-pessimo { background: #FEE2E2; color: #991B1B; }
-.cond-default { background: var(--border-light); color: var(--text-muted); }
-
-/* ─── TOAST ─── */
-.toast {
-  position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
-  background: var(--black); color: white; padding: 12px 22px; border-radius: 24px;
-  font-size: 14px; font-weight: 500; z-index: 9999; max-width: 88vw; text-align: center;
-  box-shadow: var(--shadow-lg); animation: toastIn 0.25s ease;
+/* ─── Profile Card ───────────────────────────────── */
+.profile-card{
+  background:var(--white);
+  border:1px solid var(--border);
+  border-radius:var(--r);
+  padding:24px;
+  box-shadow:var(--sh);
+  display:flex;align-items:center;gap:16px;
 }
-.toast.success { background: var(--success); }
-.toast.error { background: var(--danger); }
-.toast.warning { background: var(--warning); }
-@keyframes toastIn {
-  from { transform: translateX(-50%) translateY(16px); opacity: 0; }
-  to   { transform: translateX(-50%) translateY(0); opacity: 1; }
+.profile-avatar{
+  width:56px;height:56px;border-radius:50%;
+  background:linear-gradient(135deg,var(--blue-dark),var(--blue));
+  display:flex;align-items:center;justify-content:center;
+  font-size:22px;font-weight:700;color:white;flex-shrink:0;
+}
+.profile-info{flex:1;min-width:0}
+.profile-name{font-size:16px;font-weight:700;color:var(--text)}
+.profile-detail{font-size:13px;color:var(--text-2);margin-top:2px}
+
+/* ─── Modal ──────────────────────────────────────── */
+.modal-overlay{
+  display:none;position:fixed;inset:0;z-index:500;
+  background:rgba(15,30,50,.55);
+  backdrop-filter:blur(4px);
+  align-items:flex-end;
+  justify-content:center;
+}
+.modal-overlay.open{display:flex}
+.modal{
+  background:var(--white);
+  border-radius:20px 20px 0 0;
+  padding:16px 20px 40px;
+  width:100%;max-width:540px;
+  max-height:90vh;overflow-y:auto;
+  position:relative;
+  animation:slideUp .25s ease;
+}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.modal-handle{
+  width:36px;height:4px;background:var(--border);
+  border-radius:2px;margin:0 auto 16px;
+}
+.modal-title{font-size:17px;font-weight:700;color:var(--text);margin-bottom:16px}
+
+/* ─── Toast ──────────────────────────────────────── */
+.toast{
+  position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);
+  background:var(--text);color:white;
+  padding:10px 20px;border-radius:var(--r);
+  font-size:13px;font-weight:500;
+  z-index:1000;
+  opacity:0;transition:all .3s ease;
+  pointer-events:none;white-space:nowrap;
+  box-shadow:var(--sh-md);
+}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.toast.success{background:var(--success)}
+.toast.error{background:var(--error)}
+
+/* ─── Loading ────────────────────────────────────── */
+.loading-overlay{
+  position:fixed;inset:0;z-index:800;
+  background:rgba(255,255,255,.85);
+  backdrop-filter:blur(3px);
+  display:none;align-items:center;justify-content:center;flex-direction:column;gap:16px;
+}
+.loading-overlay.active{display:flex}
+.loading-spinner{
+  width:44px;height:44px;
+  border:3px solid var(--blue-light);
+  border-top-color:var(--blue);
+  border-radius:50%;
+  animation:spin .8s linear infinite;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-text{font-size:14px;font-weight:600;color:var(--text-2)}
+
+/* ─── FAB ────────────────────────────────────────── */
+.fab{
+  position:fixed;right:20px;bottom:24px;z-index:150;
+  width:56px;height:56px;border-radius:50%;
+  background:var(--blue);color:white;
+  font-size:28px;font-weight:300;
+  box-shadow:0 4px 20px rgba(21,101,216,.45);
+  display:flex;align-items:center;justify-content:center;
+  transition:all var(--t);
+}
+.fab:hover{background:var(--blue-mid);box-shadow:0 6px 28px rgba(21,101,216,.55);transform:translateY(-2px)}
+
+/* ─── Revision ───────────────────────────────────── */
+.rev-section{
+  background:var(--white);
+  border:1px solid var(--border);
+  border-radius:var(--r);
+  margin-bottom:12px;
+  overflow:hidden;
+  box-shadow:var(--sh);
+}
+.rev-section-title{
+  background:var(--bg);
+  padding:10px 14px;
+  font-size:11px;font-weight:800;color:var(--blue-dark);
+  text-transform:uppercase;letter-spacing:.8px;
+  border-bottom:1px solid var(--border);
+}
+.rev-row{
+  display:flex;padding:9px 14px;border-bottom:1px solid var(--bg);
+  gap:8px;
+}
+.rev-row:last-child{border:none}
+.rev-key{font-size:12px;font-weight:600;color:var(--text-2);width:120px;flex-shrink:0}
+.rev-val{font-size:13px;color:var(--text);font-weight:500;flex:1}
+
+/* ─── Alert / Info ───────────────────────────────── */
+.info-alert{
+  display:flex;align-items:flex-start;gap:10px;
+  padding:12px 14px;border-radius:var(--r-sm);
+  margin-bottom:14px;font-size:13px;
+}
+.info-alert.blue{background:var(--blue-light);color:var(--blue-dark);border:1px solid var(--blue-border)}
+.info-alert.warn{background:var(--warn-bg);color:#92400E;border:1px solid #FCD34D}
+.info-alert.success{background:var(--success-bg);color:#065F46;border:1px solid #A7F3D0}
+
+/* ─── Utilities ──────────────────────────────────── */
+.flex{display:flex}
+.flex-center{display:flex;align-items:center;justify-content:center}
+.flex-between{display:flex;align-items:center;justify-content:space-between}
+.flex-col{display:flex;flex-direction:column}
+.gap-8{gap:8px}.gap-10{gap:10px}.gap-12{gap:12px}.gap-16{gap:16px}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.mt-4{margin-top:4px}.mt-8{margin-top:8px}.mt-12{margin-top:12px}
+.mt-16{margin-top:16px}.mt-24{margin-top:24px}
+.mb-4{margin-bottom:4px}.mb-8{margin-bottom:8px}
+.mb-12{margin-bottom:12px}.mb-16{margin-bottom:16px}
+.text-small{font-size:13px;color:var(--text-2)}
+.text-muted{color:var(--text-3)}
+.text-center{text-align:center}
+.hidden{display:none!important}
+.resp-hidden{display:none!important}
+.w-full{width:100%}
+.bold{font-weight:700}
+
+/* ─── Suggestions chips ──────────────────────────── */
+.suggestions-panel{
+  padding:10px 14px;background:var(--blue-light);
+  border-top:1px solid var(--blue-border);
+}
+.suggestions-label{font-size:11px;font-weight:700;color:var(--blue-dark);text-transform:uppercase;letter-spacing:.4px;margin-bottom:6px}
+.suggestions-chips{display:flex;flex-wrap:wrap;gap:6px}
+.suggestion-chip{
+  font-size:12px;font-weight:600;color:var(--blue-dark);
+  background:var(--white);border:1.5px solid var(--blue-border);
+  border-radius:20px;padding:4px 10px;cursor:pointer;
+  transition:all var(--t);
+}
+.suggestion-chip:hover{background:var(--blue);color:white;border-color:var(--blue)}
+
+/* ─── Party Form Rows ────────────────────────────── */
+.party-row{
+  background:var(--white);
+  border:1px solid var(--border);
+  border-radius:var(--r);
+  padding:16px;
+  margin-bottom:10px;
+  position:relative;
+  box-shadow:var(--sh);
+}
+.party-row-title{font-size:12px;font-weight:700;color:var(--text-2);text-transform:uppercase;letter-spacing:.4px;margin-bottom:12px}
+.btn-remove-party{
+  position:absolute;top:12px;right:12px;
+  width:28px;height:28px;border-radius:50%;
+  background:var(--error-bg);color:var(--error);
+  font-size:16px;display:flex;align-items:center;justify-content:center;
+  transition:all var(--t);
+}
+.btn-remove-party:hover{background:var(--error);color:white}
+.btn-add-party{
+  width:100%;padding:10px;
+  border:1.5px dashed var(--border);
+  border-radius:var(--r-sm);
+  font-size:13px;font-weight:600;color:var(--text-2);
+  text-align:center;cursor:pointer;
+  transition:all var(--t);margin-bottom:16px;
+  background:transparent;
+}
+.btn-add-party:hover{border-color:var(--blue);color:var(--blue);background:var(--blue-light)}
+
+/* ─── Nav actions row ────────────────────────────── */
+.wiz-nav{
+  display:flex;gap:10px;margin-top:24px;padding-bottom:24px;
+}
+.wiz-nav .btn-back-wiz{
+  flex-shrink:0;
+  background:var(--bg);color:var(--text-2);border:1.5px solid var(--border);
+  padding:12px 16px;border-radius:var(--r-sm);font-weight:600;font-size:14px;
+}
+.wiz-nav .btn-back-wiz:hover{background:var(--border)}
+
+/* ─── Detail Page ────────────────────────────────── */
+#detail-content{padding:16px}
+
+/* ─── Desktop ────────────────────────────────────── */
+@media(min-width:768px){
+  .stats-grid{grid-template-columns:repeat(4,1fr)}
+  .tipo-cards{flex-direction:row}
+  .tipo-card{flex-direction:column;text-align:center;flex:1}
+  .tc-check{display:none}
+  .page-content{padding:24px}
+  .auth-page{flex-direction:row;min-height:100vh}
+  .auth-hero{
+    width:40%;flex-shrink:0;
+    display:flex;flex-direction:column;
+    align-items:center;justify-content:center;
+    border-radius:0;padding:60px 40px;
+  }
+  .auth-body{
+    flex:1;border-radius:0;margin-top:0;
+    display:flex;flex-direction:column;justify-content:center;
+    padding:60px 48px;box-shadow:none;
+    max-width:480px;
+  }
+  .dash-header{top:0}
+  .modal{border-radius:var(--r-lg);max-height:80vh;margin:auto}
+  .modal-overlay{align-items:center}
+  #wstep-0,#wstep-resp,#wstep-1,#wstep-2,#wstep-3,#wstep-4,#wstep-rev,#wstep-5{
+    padding:24px;
+  }
 }
 
-/* ─── LOADING ─── */
-.loading-overlay {
-  position: fixed; inset: 0; background: rgba(255,255,255,0.8);
-  backdrop-filter: blur(4px); z-index: 9000;
-  display: none; align-items: center; justify-content: center;
-}
-.loading-box { text-align: center; }
-.spinner {
-  width: 44px; height: 44px; border: 3.5px solid var(--border);
-  border-top-color: var(--blue); border-radius: 50%;
-  animation: spin 0.7s linear infinite; margin: 0 auto 12px;
-}
-@keyframes spin { to { transform: rotate(360deg); } }
-.loading-text { font-size: 14px; color: var(--text); font-weight: 600; }
-
-/* ─── MODAL ─── */
-.modal-overlay {
-  position: fixed; inset: 0; background: rgba(0,0,0,0.45); z-index: 500;
-  display: none; align-items: flex-end; justify-content: center;
-}
-.modal-overlay.open { display: flex; }
-.modal {
-  background: var(--white); border-radius: var(--radius-xl) var(--radius-xl) 0 0;
-  padding: 8px 20px 32px; width: 100%; max-width: 520px; max-height: 88vh; overflow-y: auto;
-  animation: slideModal 0.28s ease;
-}
-@keyframes slideModal { from { transform: translateY(100%); } to { transform: translateY(0); } }
-.modal-handle { width: 38px; height: 4px; background: var(--border); border-radius: 2px;
-                 margin: 10px auto 18px; }
-.modal-title { font-size: 18px; font-weight: 700; color: var(--text); margin-bottom: 16px; }
-
-/* ─── EMPTY STATE ─── */
-.empty-state { text-align: center; padding: 56px 24px; }
-.empty-icon { font-size: 64px; margin-bottom: 16px; }
-.empty-title { font-size: 20px; font-weight: 700; color: var(--text); margin-bottom: 8px; }
-.empty-text { font-size: 14px; color: var(--text-muted); margin-bottom: 24px; line-height: 1.5; }
-
-/* ─── UTILS ─── */
-.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-.flex { display: flex; align-items: center; }
-.flex-between { display: flex; justify-content: space-between; align-items: center; }
-.gap-8 { gap: 8px; } .gap-10 { gap: 10px; } .gap-12 { gap: 12px; }
-.mt-4 { margin-top: 4px; } .mt-8 { margin-top: 8px; } .mt-12 { margin-top: 12px; }
-.mt-16 { margin-top: 16px; } .mt-24 { margin-top: 24px; }
-.mb-8 { margin-bottom: 8px; } .mb-12 { margin-bottom: 12px; } .mb-16 { margin-bottom: 16px; }
-.pb-100 { padding-bottom: 100px; }
-.text-center { text-align: center; }
-.text-small { font-size: 13px; color: var(--text-muted); }
-.text-muted { color: var(--text-muted); }
-.text-blue { color: var(--blue); }
-.divider { border: none; border-top: 1px solid var(--border); margin: 16px 0; }
-.tag { display: inline-block; padding: 4px 10px; border-radius: 20px;
-        font-size: 12px; font-weight: 600; }
-.tag-entrada { background: #EBF1FD; color: var(--blue); }
-.tag-saida { background: #FEE2E2; color: var(--danger); }
-.tag-rascunho { background: #FEF3C7; color: #92400E; }
-.tag-assinado { background: #DBEAFE; color: #1E40AF; }
-.tag-concluido { background: #D1FAE5; color: #065F46; }
-
-@media (min-width: 600px) {
-  .page-content { max-width: 560px; margin: 0 auto; }
-  .stats-grid { grid-template-columns: repeat(4, 1fr); }
-  .fab { right: calc(50% - 280px + 24px); }
-}
-
-/* ─── MULTI-PARTY BLOCKS ─── */
-.btn-add-party {
-  width: 100%; margin-top: 6px; margin-bottom: 4px;
-  border: 2px dashed var(--blue); color: var(--blue);
-  background: var(--blue-light); border-radius: var(--radius);
-  padding: 10px 16px; font-weight: 600; font-size: 14px; cursor: pointer;
-  transition: background 0.15s;
-}
-.btn-add-party:hover { background: #dbeafe; }
-.party-block { position: relative; margin-bottom: 10px; }
-.party-block-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-.party-block-title { font-size: 12px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
-.btn-remove-party { background: none; border: 1px solid var(--danger); cursor: pointer;
-  color: var(--danger); font-size: 12px; font-weight: 600; padding: 3px 10px;
-  border-radius: 6px; transition: all 0.15s; }
-.btn-remove-party:hover { background: #fee2e2; }
-
-/* ── FORGOT / RESET PASSWORD ─────────────────────────────────────────── */
-.reset-link-box {
-  word-break:break-all;background:#eff6ff;border:1px solid #bfdbfe;
-  border-radius:8px;padding:10px 12px;font-size:11px;color:#1d4ed8;
-  text-align:left;margin-top:8px;cursor:pointer;user-select:all; }
-.alert-success-box {
-  background:#f0fdf4;border:1px solid #bbf7d0;border-radius:10px;
-  padding:14px;color:#166534;text-align:center; }
-.alert-error-box {
-  background:#fef2f2;border:1px solid #fecaca;border-radius:10px;
-  padding:14px;color:#991b1b;text-align:center; }
-
-    /* === IZYLAUDO ENHANCEMENTS === */
-    .step-wrap{display:flex;flex-direction:column;align-items:center;}
-    .step-label{font-size:10px;color:#94a3b8;margin-top:3px;text-align:center;white-space:nowrap;font-weight:500;transition:color .3s;}
-    .step-wrap .step-circle.active+.step-label{color:var(--primary,#1976D2);font-weight:700;}
-    .step-wrap .step-circle.done+.step-label{color:var(--primary,#1976D2);}
-    .izy-toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(60px);background:#1e293b;color:#fff;padding:12px 20px;border-radius:20px;font-size:14px;z-index:99999;opacity:0;transition:all .35s cubic-bezier(.22,1,.36,1);pointer-events:none;max-width:88vw;text-align:center;box-shadow:0 4px 20px rgba(0,0,0,.25);}
-    .izy-toast.izy-toast-show{opacity:1;transform:translateX(-50%) translateY(0);}
-    .izy-toast-warn{background:#d97706;}
-    .izy-toast-success{background:#16a34a;}
-    .izy-toast-error{background:#dc2626;}
-    .ai-retry-hint{font-size:12px;color:#d97706;margin-top:4px;padding:4px 8px;background:#fff8e1;border-radius:6px;border-left:3px solid #d97706;}
-    .party-email-req{border-color:#e74c3c !important;animation:shake .3s;}
-    @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
-
-    /* === RESPONSIBLE TYPE CONDITIONAL === */
-    .resp-hidden{display:none!important;}
-/* === TIPO DE VISTORIA CARDS (Step 0) === */
-    .tipo-cards{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin:20px 0;}
-    .tipo-card{flex:1;min-width:120px;max-width:155px;border:2px solid #e2e8f0;border-radius:14px;padding:22px 12px 18px;text-align:center;cursor:pointer;transition:all .2s;background:#fff;box-shadow:0 1px 4px rgba(0,0,0,.06);}
-    .tipo-card:hover{border-color:var(--primary,#1976D2);background:#f0f7ff;transform:translateY(-2px);box-shadow:0 4px 12px rgba(25,118,210,.15);}
-    .tipo-card.selected{border-color:var(--primary,#1976D2);background:#e3f0fd;box-shadow:0 0 0 3px rgba(25,118,210,.2);}
-    .tipo-card .tc-icon{font-size:34px;margin-bottom:10px;display:block;}
-    .tipo-card .tc-title{font-weight:700;font-size:14px;color:#1e293b;}
-    .tipo-card .tc-sub{font-size:11px;color:#64748b;margin-top:4px;}
 </style>
 </head>
 <body>
@@ -552,93 +831,58 @@ textarea.form-input { resize: vertical; min-height: 88px; line-height: 1.5; }
   </div>
 </div>
 
+
 <!-- ══════════════ PAGE: AUTH ══════════════ -->
-<div class="page active" id="page-auth">
+<div class="page" id="page-auth">
   <div class="auth-page">
     <div class="auth-hero">
       <div class="auth-hero-logo">
         <span class="blue-part">izy</span><span class="dark-part">LAUDO</span>
       </div>
-      <div class="auth-hero-tagline">Vistorias Imobiliárias</div>
+      <div class="auth-hero-tagline">Vistorias Imobiliárias Digitais</div>
     </div>
     <div class="auth-body">
       <div class="auth-tabs">
-        <button class="auth-tab active" onclick="switchAuthTab('login', this)">Entrar</button>
-        <button class="auth-tab" onclick="switchAuthTab('register', this)">Criar conta</button>
+        <button class="auth-tab active" onclick="switchAuthTab('login',this)">Entrar</button>
+        <button class="auth-tab" onclick="switchAuthTab('register',this)">Criar conta</button>
       </div>
 
-      <!-- LOGIN -->
-      <div id="form-login">
+      <!-- Login -->
+      <div id="auth-login">
         <div class="form-group">
           <label class="form-label">E-mail</label>
           <input type="email" id="login-email" class="form-input" placeholder="seu@email.com" autocomplete="email"/>
         </div>
         <div class="form-group">
           <label class="form-label">Senha</label>
-          <input type="password" id="login-password" class="form-input" placeholder="••••••••" autocomplete="current-password"/>
+          <input type="password" id="login-pass" class="form-input" placeholder="Sua senha" autocomplete="current-password"/>
         </div>
-        <button class="btn btn-primary btn-full" style="margin-top:4px" onclick="doLogin()">Entrar</button>
-        <div class="text-center" style="margin-top:10px">
-          <button class="btn-link" style="font-size:12px;color:#6b7280" onclick="showForgotForm()">Esqueci minha senha</button>
-        </div>
-        <div class="text-center mt-12">
-          <span class="text-small">Não tem conta? </span>
-          <button class="btn-link" onclick="switchAuthTabByName('register')">Cadastrar-se</button>
+        <button class="btn btn-primary btn-full btn-lg" onclick="doLogin()">Entrar</button>
+        <div class="text-center mt-16">
+          <button class="btn btn-ghost btn-sm" onclick="showPage('page-reset')">Esqueci minha senha</button>
         </div>
       </div>
 
-      <!-- REGISTER -->
-      <div id="form-register" style="display:none">
+      <!-- Register -->
+      <div id="auth-register" style="display:none">
         <div class="form-group">
-          <label class="form-label">Nome Completo</label>
-          <input type="text" id="reg-name" class="form-input" placeholder="Seu nome completo" autocomplete="name"/>
-        </div>
-        <div class="form-group">
-          <label class="form-label">Imobiliária / Empresa</label>
-          <input type="text" id="reg-company" class="form-input" placeholder="Nome da sua empresa"/>
+          <label class="form-label">Nome completo</label>
+          <input type="text" id="reg-name" class="form-input" placeholder="Seu nome"/>
         </div>
         <div class="form-group">
           <label class="form-label">E-mail</label>
-          <input type="email" id="reg-email" class="form-input" placeholder="seu@email.com" autocomplete="email"/>
+          <input type="email" id="reg-email" class="form-input" placeholder="seu@email.com"/>
         </div>
         <div class="form-group">
-          <label class="form-label">CRECI <span class="text-muted">(opcional)</span></label>
-          <input type="text" id="reg-creci" class="form-input" placeholder="Número do CRECI"/>
+          <label class="form-label">Imobiliária / Empresa (opcional)</label>
+          <input type="text" id="reg-company" class="form-input" placeholder="Nome da empresa"/>
         </div>
         <div class="form-group">
           <label class="form-label">Senha</label>
-          <input type="password" id="reg-password" class="form-input" placeholder="Mínimo 6 caracteres" autocomplete="new-password"/>
+          <input type="password" id="reg-pass" class="form-input" placeholder="Mínimo 6 caracteres"/>
         </div>
-        <button class="btn btn-primary btn-full" style="margin-top:4px" onclick="doRegister()">Criar Conta</button>
-        <div class="text-center mt-12">
-          <span class="text-small">Já tem conta? </span>
-          <button class="btn-link" onclick="switchAuthTabByName('login')">Entrar</button>
-        </div>
+        <button class="btn btn-primary btn-full btn-lg" onclick="doRegister()">Criar conta</button>
       </div>
-
-      <!-- FORGOT PASSWORD -->
-      <div id="form-forgot" style="display:none">
-        <div class="text-center" style="margin-bottom:16px">
-          <p style="font-weight:600;font-size:15px">Recuperar senha</p>
-          <p class="text-small text-muted" style="margin-top:4px">Informe seu e-mail cadastrado</p>
-        </div>
-        <div class="form-group">
-          <label class="form-label">E-mail</label>
-          <input type="email" id="forgot-email" class="form-input" placeholder="seu@email.com"/>
-        </div>
-        <button class="btn btn-primary btn-full" style="margin-top:4px" onclick="requestPasswordReset()">Enviar link de recuperação</button>
-        <div id="forgot-success" style="display:none;margin-top:16px" class="alert-success-box">
-          <p style="font-weight:600">✓ Link gerado com sucesso!</p>
-          <p class="text-small" style="margin-top:6px">Copie o link abaixo para redefinir sua senha:</p>
-          <div id="reset-link-box" class="reset-link-box"></div>
-        </div>
-        <div class="text-center mt-12">
-          <button class="btn-link" style="font-size:12px" onclick="backToLogin()">← Voltar ao login</button>
-        </div>
-      </div>
-    </div>
-    <div class="text-center pb-100" style="padding:16px">
-      <span class="text-small">izyLAUDO © 2024 · Todos os direitos reservados</span>
     </div>
   </div>
 </div>
@@ -656,47 +900,54 @@ textarea.form-input { resize: vertical; min-height: 88px; line-height: 1.5; }
       <div id="reset-checking" class="text-center" style="padding:20px 0">
         <p class="text-muted">Verificando link...</p>
       </div>
-      <div id="reset-invalid" style="display:none" class="alert-error-box">
-        <p style="font-weight:600">&#10060; Link inválido ou expirado</p>
-        <p class="text-small" style="margin-top:6px">Solicite um novo link de recuperação.</p>
-        <button class="btn btn-primary btn-full" style="margin-top:14px" onclick="showPage('page-auth');switchAuthTabByName('login')">Voltar ao login</button>
-      </div>
       <div id="reset-form" style="display:none">
-        <p id="reset-email-display" class="text-small text-muted text-center" style="margin-bottom:16px"></p>
-        <div class="form-group">
-          <label class="form-label">Nova senha</label>
-          <input type="password" id="reset-new-password" class="form-input" placeholder="Mínimo 6 caracteres"/>
+        <div class="info-alert blue" style="margin-bottom:20px">
+          <span>🔒</span>
+          <span>Defina sua nova senha. Mínimo de 6 caracteres.</span>
         </div>
         <div class="form-group">
-          <label class="form-label">Confirmar nova senha</label>
-          <input type="password" id="reset-confirm-password" class="form-input" placeholder="Repita a nova senha"/>
+          <label class="form-label">Nova Senha</label>
+          <input type="password" id="new-password" class="form-input" placeholder="Nova senha"/>
         </div>
-        <button class="btn btn-primary btn-full" style="margin-top:4px" onclick="confirmPasswordReset()">Redefinir senha</button>
+        <div class="form-group">
+          <label class="form-label">Confirmar Senha</label>
+          <input type="password" id="confirm-password" class="form-input" placeholder="Repita a senha"/>
+        </div>
+        <button class="btn btn-primary btn-full btn-lg" onclick="doResetPassword()">Redefinir Senha</button>
       </div>
-      <div id="reset-success" style="display:none" class="alert-success-box">
-        <p style="font-weight:600;font-size:16px">&#10003; Senha redefinida!</p>
-        <p class="text-small" style="margin-top:6px">Sua senha foi atualizada com sucesso.</p>
-        <button class="btn btn-primary btn-full" style="margin-top:14px" onclick="showPage('page-auth');switchAuthTabByName('login')">Fazer login</button>
+      <div id="reset-error" style="display:none">
+        <div class="info-alert" style="background:var(--error-bg);color:var(--error);border:1px solid #FECACA">
+          <span>⚠️</span>
+          <span id="reset-error-msg">Link inválido ou expirado.</span>
+        </div>
+        <button class="btn btn-outline btn-full mt-16" onclick="showPage('page-auth')">Voltar ao login</button>
       </div>
-    </div>
-    <div class="text-center" style="padding:16px">
-      <span class="text-small">izyLAUDO © 2024 · Todos os direitos reservados</span>
+      <div id="reset-success" style="display:none">
+        <div class="info-alert success">
+          <span>✅</span>
+          <span>Senha redefinida com sucesso!</span>
+        </div>
+        <button class="btn btn-primary btn-full mt-16" onclick="showPage('page-auth')">Ir para o login</button>
+      </div>
     </div>
   </div>
 </div>
 
 <!-- ══════════════ PAGE: DASHBOARD ══════════════ -->
 <div class="page" id="page-dashboard">
-  <!-- Header -->
+  <!-- Header fixo do dash -->
   <div class="dash-header">
-    <div class="flex-between">
+    <div class="dash-header-top">
       <div>
         <div class="dash-logo">
           <span class="blue">izy</span><span class="dark-part">LAUDO</span>
         </div>
         <div class="dash-tagline">Vistorias Imobiliárias</div>
       </div>
-      <button class="btn btn-sm btn-black" onclick="showNewInspection()">+ Nova Vistoria</button>
+      <button class="btn btn-primary btn-sm" onclick="showNewInspection()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Nova Vistoria
+      </button>
     </div>
     <div class="dash-nav-tabs">
       <button class="dash-nav-tab active" onclick="switchDashTab('vistorias', this)">Vistorias</button>
@@ -713,10 +964,15 @@ textarea.form-input { resize: vertical; min-height: 88px; line-height: 1.5; }
       </div>
       <div id="inspections-list">
         <div class="empty-state">
-          <div class="empty-icon"><svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div>
-          <div class="empty-title">Nenhuma vistoria</div>
-          <div class="empty-text">Toque em "Nova Vistoria" para registrar sua primeira vistoria de imóvel.</div>
-          <button class="btn btn-primary" onclick="showNewInspection()">Começar agora</button>
+          <div class="empty-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+          </div>
+          <div class="empty-title">Nenhuma vistoria ainda</div>
+          <div class="empty-text">Registre sua primeira vistoria de imóvel com fotos e laudo automático.</div>
+          <button class="btn btn-primary" onclick="showNewInspection()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Começar agora
+          </button>
         </div>
       </div>
     </div>
@@ -727,18 +983,22 @@ textarea.form-input { resize: vertical; min-height: 88px; line-height: 1.5; }
     <div class="stats-section">
       <div class="stats-grid">
         <div class="stat-card">
+          <div class="stat-card-icon">📋</div>
           <div class="stat-number" id="stat-total">0</div>
           <div class="stat-label">Total de vistorias</div>
         </div>
         <div class="stat-card">
+          <div class="stat-card-icon">📅</div>
           <div class="stat-number" id="stat-mes">0</div>
           <div class="stat-label">Este mês</div>
         </div>
         <div class="stat-card">
+          <div class="stat-card-icon">⏳</div>
           <div class="stat-number" id="stat-andamento">0</div>
           <div class="stat-label">Em andamento</div>
         </div>
         <div class="stat-card">
+          <div class="stat-card-icon">✅</div>
           <div class="stat-number" id="stat-concluido">0</div>
           <div class="stat-label">Concluídas</div>
         </div>
@@ -749,12 +1009,18 @@ textarea.form-input { resize: vertical; min-height: 88px; line-height: 1.5; }
   <!-- TAB: Perfil -->
   <div id="dash-tab-perfil" style="display:none">
     <div class="page-content mt-16">
-      <div class="card">
-        <div class="card-title" id="profile-name">—</div>
-        <div class="text-small" id="profile-company">—</div>
-        <div class="text-small mt-4" id="profile-email">—</div>
+      <div class="profile-card">
+        <div class="profile-avatar" id="profile-avatar-letter">U</div>
+        <div class="profile-info">
+          <div class="profile-name" id="profile-name">—</div>
+          <div class="profile-detail" id="profile-company">—</div>
+          <div class="profile-detail" id="profile-email">—</div>
+        </div>
       </div>
-      <button class="btn btn-outline btn-full mt-8" onclick="logout()">Sair da conta</button>
+      <button class="btn btn-outline btn-full mt-16" onclick="logout()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        Sair da conta
+      </button>
     </div>
   </div>
 
@@ -764,10 +1030,11 @@ textarea.form-input { resize: vertical; min-height: 88px; line-height: 1.5; }
 
 <!-- ══════════════ PAGE: WIZARD ══════════════ -->
 <div class="page" id="page-wizard">
-  <div class="page-content page-scroll">
+  <div class="wizard-header">
+    <div class="wizard-title">Nova Vistoria</div>
     <!-- Stepper -->
-    <div class="stepper" id="wizard-stepper" style="margin-bottom:8px">
-      <div class="step-wrap"><div class="step-circle active" id="sc-0">1</div><div class="step-label" id="sl-lbl-0">Tipo</div></div>
+    <div class="stepper" id="wizard-stepper">
+      <div class="step-wrap"><div class="step-circle active" id="sc-0">1</div><div class="step-label active" id="sl-lbl-0">Tipo</div></div>
       <div class="step-line" id="sl-0"></div>
       <div class="step-wrap"><div class="step-circle" id="sc-1">2</div><div class="step-label" id="sl-lbl-1">Imóvel</div></div>
       <div class="step-line" id="sl-1"></div>
@@ -779,64 +1046,94 @@ textarea.form-input { resize: vertical; min-height: 88px; line-height: 1.5; }
       <div class="step-line" id="sl-4"></div>
       <div class="step-wrap"><div class="step-circle" id="sc-5">6</div><div class="step-label" id="sl-lbl-5">Revisão</div></div>
     </div>
+  </div>
+
+  <div class="page-content page-scroll">
 
     <!-- STEP 0: Tipo de Vistoria -->
     <div id="wstep-0">
-      <div class="chip-header" style="background:linear-gradient(135deg,#1976D2,#42a5f5);color:#fff;padding:18px 20px;border-radius:12px 12px 0 0;margin:-20px -20px 20px;">
-        <div style="font-size:22px;margin-bottom:4px;">🏠</div>
-        <div style="font-weight:700;font-size:16px;">Tipo de Vistoria</div>
-        <div style="font-size:12px;opacity:.85;margin-top:2px;">Selecione o tipo para iniciar o laudo</div>
+      <div class="chip-header-gradient">
+        <div class="ch-icon">🏠</div>
+        <div class="ch-title">Tipo de Vistoria</div>
+        <div class="ch-sub">Selecione o tipo para iniciar o laudo</div>
       </div>
       <div class="tipo-cards">
         <div class="tipo-card" data-tipo="entrada" onclick="selectTipoCard(this)">
-          <span class="tc-icon">🔑</span>
-          <div class="tc-title">Entrada</div>
-          <div class="tc-sub">Início da locação</div>
+          <div class="tc-icon-wrap"><span class="tc-icon">🔑</span></div>
+          <div class="tc-body">
+            <div class="tc-title">Entrada</div>
+            <div class="tc-sub">Início da locação</div>
+          </div>
+          <div class="tc-check"><div class="tc-check-dot"></div></div>
         </div>
         <div class="tipo-card" data-tipo="saida" onclick="selectTipoCard(this)">
-          <span class="tc-icon">🚪</span>
-          <div class="tc-title">Saída</div>
-          <div class="tc-sub">Fim da locação</div>
+          <div class="tc-icon-wrap"><span class="tc-icon">🚪</span></div>
+          <div class="tc-body">
+            <div class="tc-title">Saída</div>
+            <div class="tc-sub">Fim da locação</div>
+          </div>
+          <div class="tc-check"><div class="tc-check-dot"></div></div>
         </div>
         <div class="tipo-card" data-tipo="temporada" onclick="selectTipoCard(this)">
-          <span class="tc-icon">🏖️</span>
-          <div class="tc-title">Temporada</div>
-          <div class="tc-sub">Airbnb / Curta estadia</div>
+          <div class="tc-icon-wrap"><span class="tc-icon">🏖️</span></div>
+          <div class="tc-body">
+            <div class="tc-title">Temporada</div>
+            <div class="tc-sub">Airbnb / Curta estadia</div>
+          </div>
+          <div class="tc-check"><div class="tc-check-dot"></div></div>
         </div>
       </div>
-      <div style="display:flex;justify-content:flex-end;margin-top:24px;">
-        <button class="btn btn-primary" id="btn-tipo-next" onclick="tipoCardNext()" disabled style="opacity:.45;cursor:not-allowed;transition:opacity .2s">Próximo →</button>
+      <div class="wiz-nav" style="justify-content:flex-end">
+        <button class="btn btn-primary" id="btn-tipo-next" onclick="tipoCardNext()" disabled style="opacity:.45;cursor:not-allowed">
+          Próximo
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+        </button>
       </div>
     </div>
 
-        <!-- STEP RESP: Quem realiza a vistoria? -->
+    <!-- STEP RESP: Quem realiza a vistoria? -->
     <div id="wstep-resp" style="display:none">
-      <div class="chip-header" style="background:linear-gradient(135deg,#1976D2,#42a5f5);color:#fff;padding:18px 20px;border-radius:12px 12px 0 0;margin:-20px -20px 20px;">
-        <div style="font-size:22px;margin-bottom:4px;">👤</div>
-        <div style="font-weight:700;font-size:16px;">Quem está realizando a vistoria?</div>
-        <div style="font-size:12px;opacity:.85;margin-top:2px;">Isso define os dados solicitados</div>
+      <div class="chip-header-gradient">
+        <div class="ch-icon">👤</div>
+        <div class="ch-title">Quem realiza a vistoria?</div>
+        <div class="ch-sub">Isso define os dados solicitados</div>
       </div>
       <div class="tipo-cards">
         <div class="tipo-card" data-resp="imobiliaria" onclick="selectRespCard(this)">
-          <span class="tc-icon">🏢</span>
-          <div class="tc-title">Imobiliária / Corretor</div>
-          <div class="tc-sub">Vistoria profissional</div>
+          <div class="tc-icon-wrap"><span class="tc-icon">🏢</span></div>
+          <div class="tc-body">
+            <div class="tc-title">Imobiliária / Corretor</div>
+            <div class="tc-sub">Vistoria profissional</div>
+          </div>
+          <div class="tc-check"><div class="tc-check-dot"></div></div>
         </div>
         <div class="tipo-card" data-resp="proprietario" onclick="selectRespCard(this)">
-          <span class="tc-icon">🏠</span>
-          <div class="tc-title">Proprietário</div>
-          <div class="tc-sub">Vistoria direta</div>
+          <div class="tc-icon-wrap"><span class="tc-icon">🏠</span></div>
+          <div class="tc-body">
+            <div class="tc-title">Proprietário</div>
+            <div class="tc-sub">Vistoria direta</div>
+          </div>
+          <div class="tc-check"><div class="tc-check-dot"></div></div>
         </div>
       </div>
-      <div style="display:flex;justify-content:space-between;margin-top:24px;">
-        <button class="btn" style="background:#e2e8f0;color:#475569;border:none;padding:10px 18px;border-radius:8px;cursor:pointer;font-weight:600;" onclick="window.gotoWStep(0)">← Voltar</button>
-        <button class="btn btn-primary" id="btn-resp-next" onclick="respNext()" disabled style="opacity:.45;cursor:not-allowed;transition:opacity .2s">Próximo →</button>
+      <div class="wiz-nav">
+        <button class="btn btn-back-wiz" onclick="window.gotoWStep(0)">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+          Voltar
+        </button>
+        <button class="btn btn-primary btn-full" id="btn-resp-next" onclick="respNext()" disabled style="opacity:.45;cursor:not-allowed">
+          Próximo
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+        </button>
       </div>
     </div>
 
-        <!-- STEP 1: Imóvel -->
+    <!-- STEP 1: Imóvel -->
     <div id="wstep-1">
-      <div class="chip-header"><svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg> Dados do Imóvel</div>
+      <div class="chip-header">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        Dados do Imóvel
+      </div>
       <div class="card">
         <div class="form-group">
           <label class="form-label">Tipo de Vistoria *</label>
@@ -871,78 +1168,99 @@ textarea.form-input { resize: vertical; min-height: 88px; line-height: 1.5; }
       </div>
 
       <div id="imob-block">
-      <div class="chip-header">🏢 Imobiliária / Corretor</div>
-      <div class="card">
-        <div class="form-group">
-          <label class="form-label">Nome da Imobiliária / Corretor</label>
-          <input type="text" id="wi-imob-name" class="form-input" placeholder="Nome da imobiliária ou corretor"/>
-        </div>
-        <div class="grid-2">
+        <div class="chip-header">🏢 Imobiliária / Corretor</div>
+        <div class="card">
           <div class="form-group">
-            <label class="form-label">CNPJ / CPF</label>
-            <input type="text" id="wi-imob-cnpj" class="form-input" placeholder="CNPJ ou CPF"/>
+            <label class="form-label">Nome da Imobiliária / Corretor</label>
+            <input type="text" id="wi-imob-name" class="form-input" placeholder="Nome da imobiliária ou corretor"/>
+          </div>
+          <div class="grid-2">
+            <div class="form-group">
+              <label class="form-label">CNPJ / CPF</label>
+              <input type="text" id="wi-imob-cnpj" class="form-input" placeholder="CNPJ ou CPF"/>
+            </div>
+            <div class="form-group">
+              <label class="form-label">CRECI</label>
+              <input type="text" id="wi-imob-creci" class="form-input" placeholder="CRECI (opcional)"/>
+            </div>
+          </div>
+          <div class="grid-2">
+            <div class="form-group">
+              <label class="form-label">Telefone</label>
+              <input type="text" id="wi-imob-phone" class="form-input" placeholder="(00) 00000-0000"/>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Email *</label>
+              <input type="email" id="wi-imob-email" class="form-input" placeholder="email@imobiliaria.com"/>
+            </div>
           </div>
           <div class="form-group">
-            <label class="form-label">CRECI</label>
-            <input type="text" id="wi-imob-creci" class="form-input" placeholder="CRECI (opcional)"/>
+            <label class="form-label">Endereço</label>
+            <input type="text" id="wi-imob-address" class="form-input" placeholder="Endereço"/>
           </div>
-        </div>
-        <div class="grid-2">
-          <div class="form-group">
-            <label class="form-label">Telefone</label>
-            <input type="text" id="wi-imob-phone" class="form-input" placeholder="(00) 00000-0000"/>
-          </div>
-          <div class="form-group">
-            <label class="form-label">Email *</label>
-            <input type="email" id="wi-imob-email" class="form-input" placeholder="email@imobiliaria.com"/>
-          </div>
-        </div>
-        <div class="form-group">
-          <label class="form-label">Endereço</label>
-          <input type="text" id="wi-imob-address" class="form-input" placeholder="Endereço"/>
         </div>
       </div>
-      </div>
-      <button class="btn btn-primary btn-full" onclick="wizardNext(1)">Próximo →</button>
+
+      <button class="btn btn-primary btn-full btn-lg" onclick="wizardNext(1)">
+        Próximo
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+      </button>
     </div>
 
     <!-- STEP 2: Partes -->
     <div id="wstep-2" style="display:none">
       <div class="chip-header">👤 Locadores (Proprietários)</div>
       <div id="locadores-container"></div>
-      <button type="button" class="btn btn-outline btn-add-party" onclick="addLocador()">+ Adicionar locador</button>
+      <button type="button" class="btn-add-party" onclick="addLocador()">+ Adicionar locador</button>
 
-      <div class="chip-header" style="margin-top:16px">👤 Locatários (Inquilinos)</div>
+      <div class="chip-header" style="margin-top:4px">👤 Locatários (Inquilinos)</div>
       <div id="locatarios-container"></div>
-      <button type="button" class="btn btn-outline btn-add-party" onclick="addLocatario()">+ Adicionar locatário</button>
+      <button type="button" class="btn-add-party" onclick="addLocatario()">+ Adicionar locatário</button>
 
       <div id="corretor-block">
-      <div class="chip-header">🏅 Corretor / Vistoriador</div>
-      <div class="card">
-        <div class="form-group"><label class="form-label">Nome Completo</label>
-          <input type="text" id="wi-corr-name" class="form-input" placeholder="Nome do corretor"/></div>
-        <div class="grid-2">
-          <div class="form-group"><label class="form-label">CRECI</label>
-            <input type="text" id="wi-corr-creci" class="form-input" placeholder="CRECI"/></div>
-          <div class="form-group"><label class="form-label">Telefone</label>
-            <input type="text" id="wi-corr-phone" class="form-input" placeholder="(00) 00000-0000"/></div>
+        <div class="chip-header">🏅 Corretor / Vistoriador</div>
+        <div class="card">
+          <div class="form-group">
+            <label class="form-label">Nome Completo</label>
+            <input type="text" id="wi-corr-name" class="form-input" placeholder="Nome do corretor"/>
+          </div>
+          <div class="grid-2">
+            <div class="form-group">
+              <label class="form-label">CRECI</label>
+              <input type="text" id="wi-corr-creci" class="form-input" placeholder="CRECI"/>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Telefone</label>
+              <input type="text" id="wi-corr-phone" class="form-input" placeholder="(00) 00000-0000"/>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">E-mail *</label>
+            <input type="email" id="wi-corr-email" class="form-input" placeholder="email@ex.com"/>
+          </div>
         </div>
-        <div class="form-group"><label class="form-label">E-mail *</label>
-          <input type="email" id="wi-corr-email" class="form-input" placeholder="email@ex.com"/></div>
-      </div>
       </div>
 
-      <div class="flex gap-10">
-        <button class="btn btn-outline" style="flex:0 0 auto" onclick="wizardBack(2)">←</button>
-        <button class="btn btn-primary btn-full" onclick="wizardNext(2)">Próximo →</button>
+      <div class="wiz-nav">
+        <button class="btn btn-back-wiz" onclick="wizardBack(2)">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+          Voltar
+        </button>
+        <button class="btn btn-primary btn-full" onclick="wizardNext(2)">
+          Próximo
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+        </button>
       </div>
     </div>
 
     <!-- STEP 3: Ambientes -->
     <div id="wstep-3" style="display:none">
-      <div class="chip-header"><svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg> Selecione os Ambientes</div>
+      <div class="chip-header">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        Selecione os Ambientes
+      </div>
       <div class="card">
-        <p class="text-small mb-12">Selecione os ambientes do imóvel para vistoriar. Você poderá adicionar itens e fotos em cada um.</p>
+        <p class="text-small mb-12">Selecione os ambientes que serão vistoriados. Você poderá adicionar itens e fotos em cada um.</p>
         <div class="room-check-list" id="room-check-list">
           <div class="room-check-item" onclick="toggleRoomCheck(this, 'Sala de Estar')">
             <div class="check-box"></div><span class="room-check-label">Sala de Estar</span>
@@ -974,45 +1292,71 @@ textarea.form-input { resize: vertical; min-height: 88px; line-height: 1.5; }
           <button class="btn btn-outline btn-sm" onclick="addCustomRoom()" style="white-space:nowrap">+ Adicionar</button>
         </div>
       </div>
-      <div class="flex gap-10">
-        <button class="btn btn-outline" style="flex:0 0 auto" onclick="wizardBack(3)">←</button>
-        <button class="btn btn-primary btn-full" onclick="wizardNext(3)">Iniciar Vistoria →</button>
+      <div class="wiz-nav">
+        <button class="btn btn-back-wiz" onclick="wizardBack(3)">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+          Voltar
+        </button>
+        <button class="btn btn-primary btn-full" onclick="wizardNext(3)">
+          Iniciar Vistoria
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+        </button>
       </div>
     </div>
 
     <!-- STEP 4: Vistoria por ambiente -->
     <div id="wstep-4" style="display:none">
-      <div class="chip-header" id="step4-header">📸 Registre os Itens</div>
-      <p class="text-small mb-12">Adicione fotos de cada item. A IA irá gerar a descrição automaticamente.</p>
+      <div class="chip-header" id="step4-header">
+        📸 Registre os Itens e Fotos
+      </div>
+      <div class="info-alert blue mb-12">
+        <span>💡</span>
+        <span>Adicione fotos de cada item. A IA irá gerar a descrição automaticamente.</span>
+      </div>
       <div id="rooms-list"></div>
       <div class="form-group mt-8">
         <label class="form-label">Observações Gerais</label>
         <textarea id="wi-obs" class="form-input" placeholder="Observações adicionais sobre a vistoria..."></textarea>
       </div>
-      <div class="flex gap-10 mt-8">
-        <button class="btn btn-outline" style="flex:0 0 auto" onclick="wizardBack(4)">←</button>
-        <button class="btn btn-primary btn-full" onclick="wizardNext(4)">Ir para Assinaturas →</button>
+      <div class="wiz-nav">
+        <button class="btn btn-back-wiz" onclick="wizardBack(4)">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+          Voltar
+        </button>
+        <button class="btn btn-primary btn-full" onclick="wizardNext(4)">
+          Ir para Assinaturas
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+        </button>
       </div>
     </div>
 
     <!-- STEP REV: Revisão Final -->
     <div id="wstep-rev" style="display:none">
-      <div class="chip-header" style="background:linear-gradient(135deg,#1976D2,#42a5f5);color:#fff;padding:18px 20px;border-radius:12px 12px 0 0;margin:-20px -20px 20px;">
-        <div style="font-size:20px;margin-bottom:4px;">✅</div>
-        <div style="font-weight:700;font-size:16px;">Revisão Final</div>
-        <div style="font-size:12px;opacity:.85;margin-top:2px;">Confirme os dados antes de assinar</div>
+      <div class="chip-header-gradient">
+        <div class="ch-icon">✅</div>
+        <div class="ch-title">Revisão Final</div>
+        <div class="ch-sub">Confirme todos os dados antes de assinar</div>
       </div>
       <div id="rev-content" style="font-size:13px;color:#334155;"></div>
-      <div style="display:flex;justify-content:space-between;margin-top:24px;">
-        <button class="btn" style="background:#e2e8f0;color:#475569;border:none;padding:10px 18px;border-radius:8px;cursor:pointer;font-weight:600;" onclick="window.gotoWStep(4)">← Voltar</button>
-        <button class="btn btn-primary" onclick="window.goToSignatures()">Assinar e Finalizar →</button>
+      <div class="wiz-nav">
+        <button class="btn btn-back-wiz" onclick="window.gotoWStep(4)">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+          Voltar
+        </button>
+        <button class="btn btn-primary btn-full" onclick="window.goToSignatures()">
+          Assinar e Finalizar
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+        </button>
       </div>
     </div>
 
-        <!-- STEP 5: Assinaturas -->
+    <!-- STEP 5: Assinaturas -->
     <div id="wstep-5" style="display:none">
       <div class="chip-header">✍️ Assinaturas</div>
-      <p class="text-small mb-12">Cada parte assina na tela do dispositivo para confirmar a vistoria.</p>
+      <div class="info-alert blue mb-12">
+        <span>ℹ️</span>
+        <span>Cada parte assina na tela para confirmar a vistoria.</span>
+      </div>
 
       <div class="sig-block">
         <div class="sig-block-header">
@@ -1049,36 +1393,39 @@ textarea.form-input { resize: vertical; min-height: 88px; line-height: 1.5; }
       </div>
 
       <div id="corretor-sig-block">
-      <div class="sig-block">
-        <div class="sig-block-header">
-          <div>
-            <div class="sig-block-title">Corretor / Vistoriador</div>
-            <div class="sig-block-name" id="signame-corretor">—</div>
+        <div class="sig-block">
+          <div class="sig-block-header">
+            <div>
+              <div class="sig-block-title">Corretor / Vistoriador</div>
+              <div class="sig-block-name" id="signame-corretor">—</div>
+            </div>
+            <div class="sig-block-status" id="sigstatus-corretor">Pendente</div>
           </div>
-          <div class="sig-block-status" id="sigstatus-corretor">Pendente</div>
+          <div class="sig-canvas-wrap">
+            <canvas class="sig-canvas" id="canvas-corretor"></canvas>
+          </div>
+          <div class="sig-actions">
+            <button class="btn btn-ghost btn-sm" onclick="clearSig('corretor')">Limpar</button>
+            <button class="btn btn-primary btn-sm" style="flex:1" onclick="saveSig('corretor')">✓ Confirmar</button>
+          </div>
         </div>
-        <div class="sig-canvas-wrap">
-          <canvas class="sig-canvas" id="canvas-corretor"></canvas>
-        </div>
-        <div class="sig-actions">
-          <button class="btn btn-ghost btn-sm" onclick="clearSig('corretor')">Limpar</button>
-          <button class="btn btn-primary btn-sm" style="flex:1" onclick="saveSig('corretor')">✓ Confirmar</button>
-        </div>
-      </div>
       </div>
 
-      <button class="btn btn-primary btn-full mt-16" onclick="generatePDF()" id="btn-gen-pdf">
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg> Gerar Laudo PDF
+      <button class="btn btn-primary btn-full btn-lg mt-16" onclick="generatePDF()" id="btn-gen-pdf">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        Gerar Laudo PDF
       </button>
       <button class="btn btn-ghost btn-full mt-8" onclick="wizardBack(5)">← Voltar</button>
     </div>
-  </div>
+
+  </div><!-- /page-content -->
 </div>
 
 <!-- ══════════════ PAGE: DETAIL ══════════════ -->
 <div class="page" id="page-detail">
   <div class="page-content page-scroll" id="detail-content"></div>
 </div>
+
 
 <!-- ══════════════ MODAL: ADD ITEM ══════════════ -->
 <div class="modal-overlay" id="modal-add-item" onclick="closeModal('modal-add-item')">
