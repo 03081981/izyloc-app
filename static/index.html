@@ -2118,6 +2118,15 @@ window.addEventListener('resize', () => {
         if (step === 1) { window.gotoWStep(0); } else { _origBack(step); }
       };
     }
+
+    // Patch showNewInspection to land on step 0 (tipo card) instead of step 1
+    var _origShowNew = window.showNewInspection;
+    if (_origShowNew) {
+      window.showNewInspection = function() {
+        _origShowNew();           // opens wizard overlay, runs gotoWStep(1)
+        window.gotoWStep(0);      // immediately redirect to our card step
+      };
+    }
   });
 })();
 </script>
