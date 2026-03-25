@@ -1521,8 +1521,10 @@ async function wizardNext(step) {
     const r = await api('PUT', `/api/inspections/${wizard.inspectionId}`, {
       locadores: collectLocadores(),
       locatarios: collectLocatarios(),
-      corretor_name: v('wi-corr-name'), corretor_creci: v('wi-corr-creci'),
-      corretor_phone: v('wi-corr-phone'), corretor_email: v('wi-corr-email'),
+      corretor_name: window._inspResponsible === 'proprietario' ? '' : v('wi-corr-name'),
+      corretor_creci: window._inspResponsible === 'proprietario' ? '' : v('wi-corr-creci'),
+      corretor_phone: window._inspResponsible === 'proprietario' ? '' : v('wi-corr-phone'),
+      corretor_email: window._inspResponsible === 'proprietario' ? '' : v('wi-corr-email'),
     });
     hideLoading();
     if (!r.ok) return toast(r.error || 'Erro ao salvar', 'error');
@@ -2254,11 +2256,13 @@ window.addEventListener('resize', () => {
     }
     if (locatRows.length) html += sec('Locatários', locatRows);
 
-    // Corretor
-    html += sec('Corretor', [
-      ['Nome', val('wi-corr-name')],
-      ['CRECI', val('wi-corr-creci')]
-    ]);
+    // Corretor (imobiliaria/corretor only)
+    if (window._inspResponsible !== 'proprietario') {
+      html += sec('Corretor', [
+        ['Nome', val('wi-corr-name')],
+        ['CRECI', val('wi-corr-creci')]
+      ]);
+    }
 
     // Ambientes (checked rooms)
     var rooms = Array.from(document.querySelectorAll('.room-check:checked')).map(function(cb) {
