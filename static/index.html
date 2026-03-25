@@ -2458,4 +2458,143 @@ window.addEventListener('resize', () => {
 
 })();
 </script>
+
+<script id="v6-temporada">
+(function() {
+
+  // ═══ INJECT PANELS INTO DOM ═══
+  function injectPanels() {
+    if (!document.getElementById('temporada-subchoice')) {
+      var tc = document.querySelector('.tipo-cards');
+      if (tc) {
+        var sp = document.createElement('div');
+        sp.id = 'temporada-subchoice';
+        sp.style.cssText = 'display:none;margin-top:14px;padding:14px 16px;background:#f0f4ff;border-radius:10px;border:1px solid #c7d7ff;';
+        sp.innerHTML = '<p style="font-size:13px;color:#555;margin:0 0 10px;font-weight:600;">Qual tipo de vistoria de temporada?</p>' +
+          '<div style="display:flex;gap:10px;">' +
+            '<button id="btn-checkin" onclick="selectTemporadaType(\'checkin\')" style="flex:1;padding:12px 8px;border:2px solid #ddd;border-radius:8px;background:#fff;cursor:pointer;">' +
+              '<div style="font-size:20px;">&#x1F511;</div>' +
+              '<div style="font-weight:600;margin-top:3px;font-size:13px;">Check-in / Entrada</div>' +
+            '</button>' +
+            '<button id="btn-checkout" onclick="selectTemporadaType(\'checkout\')" style="flex:1;padding:12px 8px;border:2px solid #ddd;border-radius:8px;background:#fff;cursor:pointer;">' +
+              '<div style="font-size:20px;">&#x1F3E0;</div>' +
+              '<div style="font-weight:600;margin-top:3px;font-size:13px;">Check-out / Sa\u00EDda</div>' +
+            '</button>' +
+          '</div>';
+        tc.parentNode.insertBefore(sp, tc.nextSibling);
+      }
+    }
+    if (!document.getElementById('temporada-item-suggestions')) {
+      var mr = document.getElementById('modal-room-id');
+      if (mr) {
+        var sg = document.createElement('div');
+        sg.id = 'temporada-item-suggestions';
+        sg.style.cssText = 'display:none;margin-bottom:10px;';
+        sg.innerHTML = '<p style="font-size:11px;color:#888;margin:0 0 5px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;">Sugest\u00F5es r\u00E1pidas:</p>' +
+          '<div id="temporada-chips" style="display:flex;flex-wrap:wrap;gap:4px;"></div>';
+        mr.parentNode.insertBefore(sg, mr);
+      }
+    }
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', injectPanels);
+  } else { injectPanels(); }
+
+  // ═══ ITEM SUGGESTIONS MAP ═══
+  var TMP = {
+    'cozinha':  ['Geladeira','Fog\u00E3o','Micro-ondas','Pia','Arm\u00E1rio','Mesa','Cadeiras','Lixeira'],
+    'sala':     ['Sof\u00E1','Poltrona','Mesa de Centro','Televis\u00E3o','Rack','Cortina','Tapete'],
+    'quarto':   ['Cama','Colch\u00E3o','Guarda-roupa','Criado-mudo','Espelho','Cortina'],
+    'banheiro': ['Chuveiro','Vaso Sanit\u00E1rio','Pia','Espelho','Box','Toalheiro'],
+    'servi':    ['M\u00E1quina de Lavar','Tanque','Varal','Arm\u00E1rio'],
+    'varanda':  ['Mesa','Cadeiras','Rede','Churrasqueira','Vasos'],
+    'externa':  ['Mesa','Cadeiras','Rede','Churrasqueira','Vasos']
+  };
+
+  window._getTmpSuggestions = function(name) {
+    if (!name) return [];
+    var lower = name.toLowerCase();
+    for (var k in TMP) { if (lower.indexOf(k) >= 0) return TMP[k]; }
+    return [];
+  };
+
+  // ═══ selectTemporadaType ═══
+  window.selectTemporadaType = function(type) {
+    window._inspTemporada = type;
+    var sel = document.getElementById('wi-type');
+    if (sel) sel.value = (type === 'checkin') ? 'entrada' : 'saida';
+    var ci = document.getElementById('btn-checkin');
+    var co = document.getElementById('btn-checkout');
+    if (ci) ci.style.borderColor = (type === 'checkin') ? '#2563eb' : '#ddd';
+    if (co) co.style.borderColor = (type === 'checkout') ? '#2563eb' : '#ddd';
+    var btn = document.getElementById('btn-tipo-next');
+    if (btn) { btn.disabled = false; btn.style.opacity = '1'; btn.style.cursor = 'pointer'; }
+  };
+
+  // ═══ Patch selectTipoCard ═══
+  var _origSTC = window.selectTipoCard;
+  window.selectTipoCard = function(el) {
+    if (typeof _origSTC === 'function') _origSTC.call(this, el);
+    var panel = document.getElementById('temporada-subchoice');
+    if (!panel) return;
+    var tipo = el ? el.getAttribute('data-tipo') : '';
+    if (tipo === 'temporada') {
+      panel.style.display = 'block';
+      window._inspTemporada = null;
+      var sel = document.getElementById('wi-type');
+      if (sel) sel.value = '';
+      var ci = document.getElementById('btn-checkin');
+      var co = document.getElementById('btn-checkout');
+      if (ci) ci.style.borderColor = '#ddd';
+      if (co) co.style.borderColor = '#ddd';
+      var btn = document.getElementById('btn-tipo-next');
+      if (btn) { btn.disabled = true; btn.style.opacity = '.45'; btn.style.cursor = 'not-allowed'; }
+    } else {
+      panel.style.display = 'none';
+      window._inspTemporada = null;
+    }
+  };
+
+  // ═══ Patch tipoCardNext (v6 wraps v5 wraps original) ═══
+  var _origTCN = window.tipoCardNext;
+  window.tipoCardNext = function() {
+    var selCard = document.querySelector('.tipo-card.selected');
+    var tipo = selCard ? selCard.getAttribute('data-tipo') : '';
+    if (tipo === 'temporada' && !window._inspTemporada) {
+      if (window.showToast) window.showToast('Selecione Check-in ou Check-out para continuar.', 'warn');
+      var panel = document.getElementById('temporada-subchoice');
+      if (panel) { panel.style.outline = '2px solid #ef4444'; setTimeout(function(){ panel.style.outline = ''; }, 800); }
+      return;
+    }
+    if (typeof _origTCN === 'function') _origTCN.call(this);
+  };
+
+  // ═══ quickAddItem ═══
+  window.quickAddItem = function(name) {
+    window.qi(name);
+    window.addItem();
+  };
+
+  // ═══ Patch openAddItemModal for suggestions ═══
+  var _origOAIM = window.openAddItemModal;
+  window.openAddItemModal = function(roomId) {
+    if (typeof _origOAIM === 'function') _origOAIM.call(this, roomId);
+    injectPanels();
+    var sgPanel = document.getElementById('temporada-item-suggestions');
+    var chips = document.getElementById('temporada-chips');
+    if (!sgPanel || !chips) return;
+    if (!window._inspTemporada) { sgPanel.style.display = 'none'; return; }
+    var roomEl = document.querySelector('#room-' + roomId + ' .room-name');
+    var roomName = roomEl ? roomEl.textContent.trim() : '';
+    var items = window._getTmpSuggestions(roomName);
+    if (!items.length) { sgPanel.style.display = 'none'; return; }
+    chips.innerHTML = items.map(function(it) {
+      return '<button class="btn btn-outline btn-sm" onclick="quickAddItem(\'' + it.replace(/'/g, "\\'") + '\')" style="font-size:12px;">' + it + '</button>';
+    }).join('');
+    sgPanel.style.display = 'block';
+  };
+
+})();
+</script>
 </body>
