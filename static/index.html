@@ -2123,8 +2123,9 @@ window.addEventListener('resize', () => {
     var _origShowNew = window.showNewInspection;
     if (_origShowNew) {
       window.showNewInspection = function() {
-        _origShowNew();           // opens wizard overlay, runs gotoWStep(1)
-        window.gotoWStep(0);      // immediately redirect to our card step
+        _origShowNew();           // opens wizard overlay, runs gotoWStep(1) + animations
+        // Use setTimeout to run AFTER any animation frames resolve
+        setTimeout(function() { window.gotoWStep(0); }, 0);
       };
     }
   });
