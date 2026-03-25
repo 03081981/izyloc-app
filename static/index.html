@@ -765,13 +765,15 @@ textarea.form-input { resize: vertical; min-height: 88px; line-height: 1.5; }
   <div class="page-content page-scroll">
     <!-- Stepper -->
     <div class="stepper" id="wizard-stepper" style="margin-bottom:8px">
-      <div class="step-wrap"><div class="step-circle active" id="sc-1">1</div><div class="step-label" id="sl-lbl-1">Imóvel</div></div>
+      <div class="step-wrap"><div class="step-circle active" id="sc-0">1</div><div class="step-label" id="sl-lbl-0">Tipo</div></div>
+      <div class="step-line" id="sl-0"></div>
+      <div class="step-wrap"><div class="step-circle" id="sc-1">2</div><div class="step-label" id="sl-lbl-1">Imóvel</div></div>
       <div class="step-line" id="sl-1"></div>
-      <div class="step-wrap"><div class="step-circle" id="sc-2">2</div><div class="step-label" id="sl-lbl-2">Partes</div></div>
+      <div class="step-wrap"><div class="step-circle" id="sc-2">3</div><div class="step-label" id="sl-lbl-2">Partes</div></div>
       <div class="step-line" id="sl-2"></div>
-      <div class="step-wrap"><div class="step-circle" id="sc-3">3</div><div class="step-label" id="sl-lbl-3">Ambientes</div></div>
+      <div class="step-wrap"><div class="step-circle" id="sc-3">4</div><div class="step-label" id="sl-lbl-3">Ambientes</div></div>
       <div class="step-line" id="sl-3"></div>
-      <div class="step-wrap"><div class="step-circle" id="sc-4">4</div><div class="step-label" id="sl-lbl-4">Vistoria</div></div>
+      <div class="step-wrap"><div class="step-circle" id="sc-4">5</div><div class="step-label" id="sl-lbl-4">Vistoria</div></div>
     </div>
 
     <!-- STEP 0: Tipo de Vistoria -->
@@ -2079,13 +2081,23 @@ window.addEventListener('resize', () => {
     window.gotoWStep = function(n) {
       var s0 = document.getElementById('wstep-0');
       if (s0) s0.style.display = 'none';
+      // Mark sc-0 done when on steps 1+, active on step 0
+      var sc0 = document.getElementById('sc-0');
+      var sl0 = document.getElementById('sl-0');
+      if (sc0) { sc0.classList.remove('active','done'); if (n >= 1) sc0.classList.add('done'); }
+      if (sl0) { sl0.classList.remove('active'); if (n >= 1) sl0.classList.add('active'); }
       if (n >= 1) _origGoto(n);
       if (n === 0) {
         document.querySelectorAll('[id^="wstep-"]').forEach(function(el) { el.style.display = 'none'; });
         if (s0) s0.style.display = '';
+        // Activate sc-0, deactivate sc-1..sc-4 and all lines
+        var sc0 = document.getElementById('sc-0');
+        if (sc0) { sc0.classList.remove('done'); sc0.classList.add('active'); }
+        var sl0 = document.getElementById('sl-0');
+        if (sl0) sl0.classList.remove('active');
         for (var i = 1; i <= 4; i++) {
           var sc = document.getElementById('sc-' + i);
-          if (sc) { sc.classList.remove('active','done'); if (i === 1) sc.classList.add('active'); }
+          if (sc) sc.classList.remove('active','done');
           var sl = document.getElementById('sl-' + i);
           if (sl) sl.classList.remove('active');
         }
@@ -2123,9 +2135,8 @@ window.addEventListener('resize', () => {
     var _origShowNew = window.showNewInspection;
     if (_origShowNew) {
       window.showNewInspection = function() {
-        _origShowNew();           // opens wizard overlay, runs gotoWStep(1) + animations
-        // Use setTimeout to run AFTER any animation frames resolve
-        setTimeout(function() { window.gotoWStep(0); }, 0);
+        _origShowNew();           // opens wizard overlay, runs gotoWStep(1)
+        window.gotoWStep(0);      // immediately redirect to our card step
       };
     }
   });
