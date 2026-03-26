@@ -3305,6 +3305,7 @@ if(card&&!card._ambiInit){
   if(back)back.addEventListener('click',function(){gotoWStep(2);});
   if(next)next.addEventListener('click',function(){gotoWStep(4);});
 }
+var _ptc=isComercial();if(_ptc&&card&&card._ambiMode!='comercial')buildComercialRows(card);else if(!_ptc&&card&&card._ambiMode=='comercial'&&window._ambiResHTML)buildResidencialRows(card);
 ambiUpdateSummary();
 }
 function ambiChange(id,delta){
@@ -3345,6 +3346,49 @@ div.appendChild(left);div.appendChild(ctrl);
 list.appendChild(div);
 ambiUpdateSummary();
 }
+function isComercial(){var s=document.getElementById(['wi','prop','type'].join('-'));var v=s?s.value:'';return v=='Sala comercial'||v=='Loja comercial'||v=='Prédio comercial'||v=='Galpão / Barracão';}
+function buildComercialRows(card){
+if(!window._ambiResHTML){
+var _els=card.querySelectorAll('.ambi-section-title,.counter-row');
+var _fr='';_els.forEach(function(e){_fr+=e.outerHTML;});
+window._ambiResHTML=_fr;}
+card.querySelectorAll('.ambi-section-title,.counter-row').forEach(function(e){e.remove();});
+var ref=card.querySelector('.ambi-custom-row');
+var envs=[
+{id:'ambi-c-salas',em:'🏢',nm:'Salas',v:1},
+{id:'ambi-c-ban',em:'🚰',nm:'Banheiros',v:1},
+{id:'ambi-c-banm',em:'🚻',nm:'Banheiro masculino',v:0},
+{id:'ambi-c-banf',em:'🚺',nm:'Banheiro feminino',v:0},
+{id:'ambi-c-rec',em:'👋',nm:'Recepção',v:0},
+{id:'ambi-c-copa',em:'☕',nm:'Copa / Cozinha',v:0},
+{id:'ambi-c-dep',em:'📦',nm:'Depósito',v:0},
+{id:'ambi-c-est',em:'🚗',nm:'Estacionamento',v:0},
+{id:'ambi-c-tec',em:'⚙️',nm:'Área técnica',v:0},
+{id:'ambi-c-gal',em:'🏭',nm:'Galpão / Área de produção',v:0}
+];
+envs.forEach(function(e){
+var row=document.createElement('div');
+row.className='counter-row'+(e.v>0?' counter-active':'');
+row.id=e.id;row.dataset.val=e.v;
+var left=document.createElement('div');left.className='counter-left';
+var em=document.createElement('span');em.className='counter-emoji';em.textContent=e.em;
+var nm=document.createElement('span');nm.className='counter-name';nm.textContent=e.nm;
+left.appendChild(em);left.appendChild(nm);
+var ctrl=document.createElement('div');ctrl.className='counter-controls';
+var bm=document.createElement('button');bm.className='counter-btn';bm.dataset.dir='-1';bm.innerHTML='&#8722;';
+var vsp=document.createElement('span');vsp.className='counter-val';vsp.textContent=e.v;
+var bp=document.createElement('button');bp.className='counter-btn';bp.dataset.dir='1';bp.innerHTML='&#43;';
+ctrl.appendChild(bm);ctrl.appendChild(vsp);ctrl.appendChild(bp);
+row.appendChild(left);row.appendChild(ctrl);
+card.insertBefore(row,ref);
+});card._ambiMode='comercial';}
+function buildResidencialRows(card){
+if(!window._ambiResHTML)return;
+card.querySelectorAll('.ambi-section-title,.counter-row').forEach(function(e){e.remove();});
+var ref=card.querySelector('.ambi-custom-row');
+var tmp=document.createElement('div');tmp.innerHTML=window._ambiResHTML;
+while(tmp.firstChild)card.insertBefore(tmp.firstChild,ref);
+card._ambiMode='residencial';}
 </script>
 </body>
 </html>
