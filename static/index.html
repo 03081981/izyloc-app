@@ -3784,7 +3784,7 @@ btn.classList.add('sel');
   var bin=atob(_jc); var bytes=new Uint8Array(bin.length);
   for(var i=0;i<bin.length;i++) bytes[i]=bin.charCodeAt(i);
   var _js=new TextDecoder('utf-8').decode(bytes);
-  eval(_js);
+  window.eval(_js);
 })();
 </script>
 </body>
