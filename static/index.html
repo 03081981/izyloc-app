@@ -2641,15 +2641,29 @@ function selectRealizaCard(card) {
   if (typeof wizard !== 'undefined') wizard.realizador = card.dataset.realiza || '';
 }
 function updateContextTag() {
+  // Fix stepper: Tipo(sc-0) done, Quem realiza(sc-1) done, Imovel(sc-2) active
+  [0,1].forEach(i => {
+    const c = document.getElementById('sc-'+i);
+    if(c){c.classList.remove('active');c.classList.add('done');}
+    const l = document.getElementById('sl-'+i);
+    if(l) l.classList.add('done');
+  });
+  const sc2 = document.getElementById('sc-2');
+  if(sc2){sc2.classList.remove('done');sc2.classList.add('active');}
+  const sl2 = document.getElementById('sl-2');
+  if(sl2) sl2.classList.remove('done');
+  // Read selected tipo from DOM
   const tipoCard = document.querySelector('.tipo-card.selected');
-  const tipoVal = tipoCard ? (tipoCard.dataset.tipo || '') : '';
-  const realizaVal = (typeof wizard !== 'undefined' && wizard.realizador) ? wizard.realizador : '';
-  const tMap = {entrada:'Vistoria de Entrada', saida:'Vistoria de Saída', temporada:'Temporada / Airbnb'};
-  const rMap = {imobiliaria:'Imobiliária / Corretor', proprietario:'Proprietário', terceiro:'Vistoriador'};
-  const tLabel = tMap[tipoVal] || tipoVal || '—';
-  const rLabel = rMap[realizaVal] || realizaVal || '—';
+  const tipoVal = tipoCard ? (tipoCard.dataset.tipo||'') : '';
+  // Read realizador from selected card (fallback to wizard)
+  const realizaCard = document.querySelector('.realiza-card.selected');
+  const realizaVal = realizaCard ? (realizaCard.dataset.realiza||'') : ((typeof wizard!=='undefined'&&wizard.realizador)?wizard.realizador:'');
+  const tMap = {entrada:'Vistoria de Entrada',saida:'Vistoria de Saída',temporada:'Temporada / Airbnb'};
+  const rMap = {imobiliaria:'Imobiliária / Corretor',proprietario:'Proprietário',terceiro:'Vistoriador'};
+  const tLabel = tMap[tipoVal]||tipoVal||'—';
+  const rLabel = rMap[realizaVal]||realizaVal||'—';
   const tag = document.getElementById('wi-ctx-label');
-  if (tag) tag.textContent = tLabel + ' · ' + rLabel;
+  if(tag) tag.textContent = tLabel+' · '+rLabel;
 }
 function validateAndGoWstep2() {
   const required = [
