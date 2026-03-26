@@ -1476,6 +1476,62 @@ canvas { display: block; }
 .ambi-custom-row .form-input{flex:1;}
 .ambi-summary-box{margin-top:16px;background:#f5f6f8;border-radius:8px;padding:12px 16px;font-size:13px;color:#3a4a5c;line-height:1.7;}
 @media(max-width:768px){.wiz-main-wrapper{margin-left:0!important;}.sidebar{display:none;}.counter-row{padding:12px;}.counter-name{font-size:14px;}}
+
+/* === Etapa 6 — Itens e Fotos === */
+.itf-ctx{display:inline-flex;align-items:center;gap:8px;padding:6px 16px;border-radius:20px;font-size:12px;font-weight:600;margin-bottom:18px}
+.itf-ctx.res{background:#e6f4ea;color:#2d6a4f}.itf-ctx.com{background:#ede7f6;color:#5e35b1}
+.itf-prog-wrap{margin-bottom:20px}
+.itf-prog-label{font-size:13px;color:#64748b;margin-bottom:6px}
+.itf-prog-track{height:8px;background:#e2e8f0;border-radius:4px;overflow:hidden}
+.itf-prog-fill{height:100%;background:#4f8ef7;border-radius:4px;transition:width .3s}
+.itf-tabs-wrap{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px}
+.itf-tab{padding:8px 16px;border-radius:20px;border:2px solid #e2e8f0;background:#fff;font-size:13px;cursor:pointer;transition:all .2s;font-family:inherit}
+.itf-tab.active{border-color:#4f8ef7;background:#eff6ff;color:#1d4ed8;font-weight:600}
+.itf-tab.done{border-color:#22c55e;background:#f0fdf4;color:#15803d}
+.itf-tab.done::after{content:' ✓'}
+.itf-card{background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:24px;margin-bottom:20px}
+.itf-sec-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:#94a3b8;margin:20px 0 12px;padding-bottom:6px;border-bottom:1px solid #f1f5f9}
+.itf-sec-title:first-child{margin-top:0}
+.itf-item-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:12px}
+.itf-item-box{border:2px solid #e2e8f0;border-radius:10px;padding:14px;transition:border-color .2s;background:#fafbfc}
+.itf-item-box.req{border-color:#fca5a5}.itf-item-box.has-photo{border-color:#93c5fd}
+.itf-item-label{font-size:13px;font-weight:600;color:#374151;margin-bottom:10px}
+.itf-photo-thumb{width:100%;max-height:110px;object-fit:cover;border-radius:6px;display:none;margin-bottom:8px}
+.itf-add-photo-btn{width:100%;padding:10px;border:2px dashed #cbd5e1;border-radius:8px;background:#f8fafc;color:#64748b;font-size:12px;cursor:pointer;text-align:center;transition:all .2s;font-family:inherit;box-sizing:border-box}
+.itf-add-photo-btn:hover{border-color:#4f8ef7;color:#1d4ed8;background:#eff6ff}
+.itf-ai-box{background:#eff6ff;border:1px solid #bfdbfe;border-radius:8px;padding:10px;margin-top:10px}
+.itf-ai-badge{font-size:11px;font-weight:700;color:#1d4ed8;margin-bottom:6px}
+.itf-ai-loading{font-size:12px;color:#64748b;font-style:italic}
+.itf-ai-desc{font-size:12px;color:#374151;width:100%;border:1px solid #bfdbfe;border-radius:6px;padding:6px;resize:vertical;min-height:48px;background:#fff;margin-top:4px;font-family:inherit;box-sizing:border-box}
+.itf-ai-regen{font-size:11px;color:#1d4ed8;background:none;border:none;cursor:pointer;text-decoration:underline;margin-top:4px;padding:0;font-family:inherit}
+.itf-obs-input{width:100%;margin-top:8px;padding:6px 8px;border:1px solid #e2e8f0;border-radius:6px;font-size:12px;box-sizing:border-box;font-family:inherit}
+.itf-cond-row{border:1px solid #e2e8f0;border-radius:10px;padding:14px;margin-bottom:8px;background:#fafbfc}
+.itf-cond-header{display:flex;align-items:center;justify-content:space-between}
+.itf-cond-name{font-size:13px;font-weight:600;color:#374151}
+.itf-toggle{position:relative;display:inline-block;width:40px;height:22px;flex-shrink:0}
+.itf-toggle input{opacity:0;width:0;height:0;position:absolute}
+.itf-slider{position:absolute;inset:0;background:#cbd5e1;border-radius:11px;cursor:pointer;transition:.3s}
+.itf-slider:before{content:"";position:absolute;width:16px;height:16px;left:3px;bottom:3px;background:#fff;border-radius:50%;transition:.3s}
+.itf-toggle input:checked+.itf-slider{background:#4f8ef7}
+.itf-toggle input:checked+.itf-slider:before{transform:translateX(18px)}
+.itf-cond-body{margin-top:12px;display:none}
+.itf-cond-body.open{display:block}
+.itf-verif-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px}
+.itf-verif-item{border:1px solid #e2e8f0;border-radius:10px;padding:12px;background:#fafbfc}
+.itf-verif-name{font-size:12px;font-weight:600;color:#374151;margin-bottom:8px}
+.itf-verif-btns{display:flex;flex-wrap:wrap;gap:5px}
+.itf-vbtn{padding:4px 9px;border-radius:6px;border:1px solid #e2e8f0;font-size:11px;cursor:pointer;background:#f8fafc;color:#64748b;transition:all .15s;font-family:inherit}
+.itf-vbtn.ok{background:#dcfce7;border-color:#86efac;color:#166534}
+.itf-vbtn.warn{background:#fef9c3;border-color:#fde047;color:#854d0e}
+.itf-vbtn.fail{background:#fee2e2;border-color:#fca5a5;color:#991b1b}
+.itf-vbtn.sel{font-weight:700;outline:2px solid currentColor;outline-offset:1px}
+.itf-notes{width:100%;min-height:72px;border:1px solid #e2e8f0;border-radius:8px;padding:10px;font-size:13px;resize:vertical;font-family:inherit;box-sizing:border-box}
+.itf-ambi-nav{display:flex;align-items:center;gap:10px;margin-top:20px;padding-top:16px;border-top:1px solid #f1f5f9}
+.itf-nav-row{display:flex;align-items:center;gap:12px;margin-top:8px}
+.itf-finish-btn{background:#22c55e;color:#fff;border:none;border-radius:8px;padding:11px 26px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;transition:background .2s}
+.itf-finish-btn:disabled{background:#94a3b8;cursor:not-allowed}
+.itf-finish-btn:not(:disabled):hover{background:#16a34a}
+@media(max-width:768px){.itf-item-row{grid-template-columns:1fr!important}.itf-verif-grid{grid-template-columns:1fr!important}}
 </style>
 </head>
 <body>
@@ -2166,17 +2222,11 @@ canvas { display: block; }
 </div>
 </div>
 <div id="wstep-4" style="display:none">
-      <div class="wstep-title" id="step4-header">Vistoria dos ambientes</div>
-      <div class="wstep-sub">Fotografe e descreva o estado de cada ambiente.</div>
-      <div id="rooms-list"></div>
-      <div class="form-card">
-        <div class="form-card-title">Observações gerais</div>
-        <textarea class="form-input" id="wi-obs" rows="4" placeholder="Observações adicionais sobre a vistoria..." style="height:auto;padding-top:10px;padding-bottom:10px;resize:vertical"></textarea>
-      </div>
-      <div class="wiz-nav">
-        <button class="btn-wiz-back-sm" onclick="prevWizStep ? prevWizStep() : null">Voltar</button>
-        <button class="btn-wiz-next" onclick="showReviewStep ? showReviewStep() : null">Revisar <svg viewBox="0 0 20 20" fill="currentColor" width="16" height="16"><path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z"/></svg></button>
-      </div>
+<div id="itf-ctx" class="itf-ctx res"></div>
+<div class="itf-prog-wrap"><div class="itf-prog-label"><span id="itf-prog-text">0 de 0 ambientes concluídos</span></div><div class="itf-prog-track"><div id="itf-prog-fill" class="itf-prog-fill" style="width:0%"></div></div></div>
+<div id="itf-tabs" class="itf-tabs-wrap"></div>
+<div id="itf-card" class="itf-card"></div>
+<div class="itf-nav-row"><button class="btn-secondary" id="itf-back">&#8592; Voltar</button><div style="flex:1"></div><button class="itf-finish-btn" id="itf-finish" disabled>Concluir e revisar</button></div>
     </div>
 
     <!-- STEP REV: REVISÃO -->
@@ -2702,7 +2752,8 @@ function gotoWStep(step) {
 
   if(step===1) updateContextTag();
   if(step===2) updatePartesContext();
-if(step===3) initAmbientes();}
+if(step===3) initAmbientes();
+if(step===4) initItensEFotos();}
 
 async function wizardNext(step) {
   if (step === 1) {
@@ -3389,6 +3440,253 @@ var ref=card.querySelector('.ambi-custom-row');
 var tmp=document.createElement('div');tmp.innerHTML=window._ambiResHTML;
 while(tmp.firstChild)card.insertBefore(tmp.firstChild,ref);
 card._ambiMode='residencial';}
+
+/* === Etapa 6 — Itens e Fotos === */
+var _ITF={
+mand_res:['Paredes','Piso','Teto/Ilumina\u00e7\u00e3o','Porta','Janela'],
+mand_com:['Paredes','Piso','Teto/Ilumina\u00e7\u00e3o','Porta/Acesso'],
+cond:{
+'ambi-quartos':['Arm\u00e1rio/Guarda-roupa','Cama/Box','Ar-condicionado','TV/Suporte'],
+'ambi-suites':['Arm\u00e1rio/Guarda-roupa','Cama/Box','Ar-condicionado','TV/Suporte'],
+'ambi-sala':['Sof\u00e1','TV/Rack','Ar-condicionado','Mesa de jantar'],
+'ambi-cozinha':['Fog\u00e3o','Geladeira','Micro-ondas','Arm\u00e1rios','Pia/Torneira'],
+'ambi-banheiros':['Vaso sanit\u00e1rio','Pia/Torneira','Chuveiro','Box','Espelho'],
+'ambi-lavabos':['Vaso sanit\u00e1rio','Pia/Torneira','Espelho'],
+'ambi-lavanderia':['Tanque','M\u00e1quina de lavar'],
+'ambi-garagem':['Port\u00e3o','Box demarcado'],
+'ambi-varanda':['Guarda-corpo','Churrasqueira'],
+'ambi-jantar':['Mesa de jantar','Cadeiras'],
+'ambi-escritorio':['Mesa/Bancada','Arm\u00e1rio','Ar-condicionado'],
+'ambi-deposito':['Prateleiras']
+},
+cond_com:{
+'ambi-c-salas':['Balc\u00e3o/Bancada','Ar-condicionado','Persianas/Cortinas','Equipamentos/Instala\u00e7\u00f5es','Janela/Esquadria'],
+'ambi-c-ban':['Vaso sanit\u00e1rio','Pia/Torneira','Espelho','Box/Chuveiro'],
+'ambi-c-banm':['Vaso sanit\u00e1rio','Pia/Torneira','Espelho'],
+'ambi-c-banf':['Vaso sanit\u00e1rio','Pia/Torneira','Espelho'],
+'ambi-c-rec':['Balc\u00e3o','Ar-condicionado','Persianas'],
+'ambi-c-copa':['Pia/Torneira','Arm\u00e1rios','Fog\u00e3o','Geladeira','Micro-ondas'],
+'ambi-c-dep':['Prateleiras','Ilumina\u00e7\u00e3o extra'],
+'ambi-c-est':['Port\u00e3o','Demarca\u00e7\u00e3o de vagas'],
+'ambi-c-tec':['Equipamentos','Quadro el\u00e9trico'],
+'ambi-c-gal':['Port\u00e3o','Equipamentos de produ\u00e7\u00e3o']
+},
+verif_res:[
+{id:'ilum',em:'\ud83d\udca1',nm:'Ilumina\u00e7\u00e3o',st:['Funcionando','L\u00e2mpada queimada','N\u00e3o funciona','N\u00e3o testado'],cl:['ok','warn','fail','']},
+{id:'tom',em:'\ud83d\udd0c',nm:'Tomadas',st:['Funcionando','N\u00e3o funciona','N\u00e3o testado'],cl:['ok','fail','']},
+{id:'agua',em:'\ud83d\udeb0',nm:'\u00c1gua/Encanamento',st:['Sem vazamentos','Vazamento','Press\u00e3o baixa','N\u00e3o testado'],cl:['ok','fail','warn','']},
+{id:'ac',em:'\u2744\ufe0f',nm:'Ar-condicionado',st:['Funcionando','Com defeito','N\u00e3o funciona','N\u00e3o testado'],cl:['ok','warn','fail','']},
+{id:'jan',em:'\ud83e\ude9f',nm:'Janela/Fechadura',st:['Funcionando','Com defeito','N\u00e3o funciona','N\u00e3o testado'],cl:['ok','warn','fail','']}
+],
+verif_com:[
+{id:'ilum',em:'\ud83d\udca1',nm:'Ilumina\u00e7\u00e3o',st:['Funcionando','L\u00e2mpada queimada','N\u00e3o funciona','N\u00e3o testado'],cl:['ok','warn','fail','']},
+{id:'el',em:'\ud83d\udd0c',nm:'Tomadas/El\u00e9trica',st:['Funcionando','N\u00e3o funciona','N\u00e3o testado'],cl:['ok','fail','']},
+{id:'ac',em:'\u2744\ufe0f',nm:'Ar-condicionado',st:['Funcionando','Com defeito','N\u00e3o funciona','N\u00e3o testado'],cl:['ok','warn','fail','']},
+{id:'agua',em:'\ud83d\udeb0',nm:'\u00c1gua/Encanamento',st:['Sem vazamentos','Vazamento','Press\u00e3o baixa','N\u00e3o testado'],cl:['ok','fail','warn','']},
+{id:'por',em:'\ud83e\ude9f',nm:'Portas/Fechaduras',st:['Funcionando','Com defeito','N\u00e3o funciona','N\u00e3o testado'],cl:['ok','warn','fail','']}
+]
+};
+var _itfS={ambis:[],cur:0,dat:{},mode:'res'};
+function initItensEFotos(){
+var card=document.getElementById('ambi-card');
+_itfS.mode=isComercial()?'com':'res';
+var ctx=document.getElementById('itf-ctx');
+if(ctx){ctx.className='itf-ctx '+_itfS.mode;}
+_itfS.ambis=[];
+if(card){
+card.querySelectorAll('.counter-row').forEach(function(row){
+var v=parseInt(row.dataset.val||0);
+if(v<1)return;
+var nm=row.querySelector('.counter-name')?row.querySelector('.counter-name').textContent:'';
+var em=row.querySelector('.counter-emoji')?row.querySelector('.counter-emoji').textContent:'';
+for(var i=0;i<v;i++){
+var uid=row.id+(v>1?'_'+(i+1):'');
+_itfS.ambis.push({id:uid,baseId:row.id,name:v>1?nm+' '+(i+1):nm,em:em});
+if(!_itfS.dat[uid])_itfS.dat[uid]={mand:{},cond:{},verif:{},notes:''};
+}
+});
+}
+if(_itfS.ambis.length===0){
+_itfS.ambis=[{id:'geral',baseId:'geral',name:'Geral',em:'\ud83c\udfe0'}];
+if(!_itfS.dat['geral'])_itfS.dat['geral']={mand:{},cond:{},verif:{},notes:''};
+}
+_itfS.cur=0;
+document.getElementById('itf-back').onclick=function(){gotoWStep(3);};
+document.getElementById('itf-finish').onclick=function(){if(!document.getElementById('itf-finish').disabled)gotoWStep(5);};
+itfBuildTabs();
+itfShowAmbi(0);
+itfUpdateProg();
+}
+function itfKey(s){return s.replace(/[^a-z0-9]/gi,'_');}
+function itfIsDone(ambiId){
+var dat=_itfS.dat[ambiId];if(!dat)return false;
+var mand=_itfS.mode=='com'?_ITF.mand_com:_ITF.mand_res;
+return mand.every(function(item){var iid=ambiId+'__m_'+itfKey(item);return dat.mand[iid]&&dat.mand[iid].photo;});
+}
+function itfUpdateProg(){
+var tot=_itfS.ambis.length;
+var done=_itfS.ambis.filter(function(a){return itfIsDone(a.id);}).length;
+var pct=tot>0?Math.round(done/tot*100):0;
+var t=document.getElementById('itf-prog-text');
+var f=document.getElementById('itf-prog-fill');
+if(t)t.textContent=done+' de '+tot+' ambiente'+(tot!=1?'s':'')+' conclu\u00eddo'+(tot!=1?'s':'');
+if(f)f.style.width=pct+'%';
+var fin=document.getElementById('itf-finish');
+if(fin)fin.disabled=(done<tot);
+itfBuildTabs();
+}
+function itfBuildTabs(){
+var wrap=document.getElementById('itf-tabs');if(!wrap)return;
+wrap.innerHTML='';
+_itfS.ambis.forEach(function(a,i){
+var b=document.createElement('button');
+var cls='itf-tab'+(i===_itfS.cur?' active':'')+(itfIsDone(a.id)?' done':'');
+b.className=cls;b.textContent=a.em+' '+a.name;
+b.onclick=(function(idx){return function(){itfShowAmbi(idx);};})(i);
+wrap.appendChild(b);
+});
+}
+function itfShowAmbi(idx){
+var curA=_itfS.ambis[_itfS.cur];
+var notesEl=document.getElementById('itf-notes-'+curA.id);
+if(notesEl)_itfS.dat[curA.id].notes=notesEl.value;
+_itfS.cur=idx;itfBuildCard(idx);itfBuildTabs();
+}
+function itfBuildCard(idx){
+var a=_itfS.ambis[idx];var dat=_itfS.dat[a.id];
+var card=document.getElementById('itf-card');if(!card)return;
+var mand=_itfS.mode=='com'?_ITF.mand_com:_ITF.mand_res;
+var condMap=_itfS.mode=='com'?_ITF.cond_com:_ITF.cond;
+var conds=condMap[a.baseId]||[];
+var verifs=_itfS.mode=='com'?_ITF.verif_com:_ITF.verif_res;
+var h='<h3 style="margin:0 0 16px;font-size:17px;color:#1e293b">'+a.em+' '+a.name+'</h3>';
+h+='<div class="itf-sec-title">Itens obrigat\u00f3rios</div><div class="itf-item-row">';
+mand.forEach(function(item){
+var iid=a.id+'__m_'+itfKey(item);var st=dat.mand[iid]||{};
+h+=itfMandH(iid,item,st);
+});
+h+='</div>';
+if(conds.length>0){
+h+='<div class="itf-sec-title">Itens presentes no ambiente</div>';
+conds.forEach(function(item){
+var iid=a.id+'__c_'+itfKey(item);var st=dat.cond[iid]||{};
+h+=itfCondH(iid,item,st);
+});
+}
+h+='<div class="itf-sec-title">Verifica\u00e7\u00f5es t\u00e9cnicas</div><div class="itf-verif-grid">';
+verifs.forEach(function(v){
+var sel=dat.verif[v.id];
+h+='<div class="itf-verif-item"><div class="itf-verif-name">'+v.em+' '+v.nm+'</div><div class="itf-verif-btns">';
+v.st.forEach(function(s,si){
+var cls=v.cl[si]||'';var isSel=(sel===si)?' sel':'';
+h+='<button class="itf-vbtn '+cls+isSel+'" onclick="itfSetVerif(\''+a.id+'\',\''+v.id+'\','+si+',this)">'+s+'</button>';
+});
+h+='</div></div>';
+});
+h+='</div>';
+h+='<div class="itf-sec-title">Observa\u00e7\u00f5es gerais</div>';
+h+='<textarea class="itf-notes" id="itf-notes-'+a.id+'" placeholder="Observa\u00e7\u00f5es sobre o ambiente...">'+(dat.notes||'')+'</textarea>';
+h+='<div class="itf-ambi-nav">';
+if(idx>0){var pv=_itfS.ambis[idx-1];h+='<button class="btn-secondary" onclick="itfShowAmbi('+(idx-1)+')">&#8592; '+pv.em+' '+pv.name+'</button>';}
+h+='<div style="flex:1"></div>';
+if(idx<_itfS.ambis.length-1){var nx=_itfS.ambis[idx+1];h+='<button class="btn-primary" onclick="itfShowAmbi('+(idx+1)+')">'+nx.em+' '+nx.name+' &#8594;</button>';}
+h+='</div>';
+card.innerHTML=h;
+card.querySelectorAll('.itf-add-photo-btn').forEach(function(btn){
+btn.onclick=function(){
+var iid=btn.dataset.iid;var tp=btn.dataset.tp;
+var inp=document.createElement('input');inp.type='file';inp.accept='image/*';
+inp.onchange=function(){if(inp.files[0])itfHandlePhoto(inp.files[0],iid,tp,a);};
+inp.click();
+};
+});
+}
+function itfMandH(iid,label,st){
+var hp=st.photo?'has-photo':'req';
+return '<div class="itf-item-box '+hp+'" id="mbox-'+iid+'">'
++'<div class="itf-item-label">'+label+'</div>'
++(st.photo?'<img class="itf-photo-thumb" src="'+st.photo+'" style="display:block">':'<img class="itf-photo-thumb">')
++'<button class="itf-add-photo-btn" data-iid="'+iid+'" data-tp="mand">'+(st.photo?'\ud83d\udd04 Trocar foto':'\ud83d\udcf7 Adicionar foto')+'</button>'
++(st.ai?itfAiH(iid,st.ai):'<div class="itf-ai-box" id="ai-'+iid+'" style="display:none"></div>')
++'<input class="itf-obs-input" placeholder="Observa\u00e7\u00e3o..." id="obs-'+iid+'" value="'+(st.obs||'')+'" oninput="_itfS.dat[_itfS.ambis[_itfS.cur].id].mand[\''+iid+'\']&&(_itfS.dat[_itfS.ambis[_itfS.cur].id].mand[\''+iid+'\'].obs=this.value)">'
++'</div>';
+}
+function itfCondH(iid,label,st){
+return '<div class="itf-cond-row" id="crow-'+iid+'">'
++'<div class="itf-cond-header"><span class="itf-cond-name">'+label+'</span>'
++'<label class="itf-toggle"><input type="checkbox" '+(st.on?'checked':'')+' onchange="itfTogCond(\''+iid+'\',this.checked)"><span class="itf-slider"></span></label>'
++'</div>'
++'<div class="itf-cond-body'+(st.on?' open':'')+'" id="cbody-'+iid+'">'
++(st.photo?'<img class="itf-photo-thumb" src="'+st.photo+'" style="display:block;margin-top:12px">':'<img class="itf-photo-thumb" style="margin-top:12px">')
++'<button class="itf-add-photo-btn" data-iid="'+iid+'" data-tp="cond" style="margin-top:8px">'+(st.photo?'\ud83d\udd04 Trocar foto':'\ud83d\udcf7 Adicionar foto')+'</button>'
++(st.ai?itfAiH(iid,st.ai):'<div class="itf-ai-box" id="ai-'+iid+'" style="display:none"></div>')
++'<textarea style="width:100%;margin-top:8px;padding:8px;border:1px solid #e2e8f0;border-radius:6px;font-size:12px;resize:vertical;min-height:40px;box-sizing:border-box;font-family:inherit" placeholder="Observa\u00e7\u00e3o..." oninput="_itfS.dat[_itfS.ambis[_itfS.cur].id].cond[\''+iid+'\']&&(_itfS.dat[_itfS.ambis[_itfS.cur].id].cond[\''+iid+'\'].obs=this.value)">'+(st.obs||'')+'</textarea>'
++'</div></div>';
+}
+function itfAiH(iid,desc){
+return '<div class="itf-ai-box" id="ai-'+iid+'">'
++'<div class="itf-ai-badge">\u2736 IA izyLAUDO</div>'
++'<textarea class="itf-ai-desc" id="aidesc-'+iid+'">'+desc+'</textarea>'
++'<button class="itf-ai-regen" onclick="itfRegen(\''+iid+'\')">&#8635; Regenerar</button>'
++'</div>';
+}
+function itfHandlePhoto(file,iid,tp,ambi){
+var reader=new FileReader();
+reader.onload=function(e){
+var url=e.target.result;var b64=url.split(',')[1];
+var dat=_itfS.dat[ambi.id];
+var bkt=tp=='mand'?dat.mand:dat.cond;
+if(!bkt[iid])bkt[iid]={};bkt[iid].photo=url;
+var box=document.getElementById(tp=='mand'?'mbox-'+iid:'crow-'+iid);
+if(box){
+var img=box.querySelector('.itf-photo-thumb');
+if(img){img.src=url;img.style.display='block';}
+var btn=box.querySelector('.itf-add-photo-btn');
+if(btn)btn.textContent='\ud83d\udd04 Trocar foto';
+if(tp=='mand'){box.className='itf-item-box has-photo';}
+}
+var aiBox=document.getElementById('ai-'+iid);
+if(aiBox){aiBox.style.display='block';aiBox.innerHTML='<div class="itf-ai-badge">\u2736 IA izyLAUDO</div><div class="itf-ai-loading">Analisando imagem...</div>';}
+itfCallIA(b64,ambi.id,iid,function(err,desc){
+var ab=document.getElementById('ai-'+iid);
+if(ab){
+if(err){ab.style.display='none';}
+else{bkt[iid].ai=desc;ab.innerHTML=itfAiH(iid,desc);}
+}
+itfUpdateProg();
+});
+itfUpdateProg();
+};
+reader.readAsDataURL(file);
+}
+function itfCallIA(b64,ambiId,iid,cb){
+fetch('/api/ai/describe-item',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({image:b64,ambiente:ambiId,item:iid})})
+.then(function(r){return r.ok?r.json():Promise.reject(r);})
+.then(function(d){cb(null,d.description||d.text||'');})
+.catch(function(){cb('err');});
+}
+function itfRegen(iid){
+var dat=_itfS.dat[_itfS.ambis[_itfS.cur].id];
+var st=dat.mand[iid]||dat.cond[iid]||{};
+if(!st.photo)return;
+var box=document.getElementById('ai-'+iid);
+if(box)box.innerHTML='<div class="itf-ai-badge">\u2736 IA izyLAUDO</div><div class="itf-ai-loading">Regenerando...</div>';
+itfCallIA(st.photo.split(',')[1],_itfS.ambis[_itfS.cur].id,iid,function(err,desc){
+if(box&&!err){st.ai=desc;box.innerHTML=itfAiH(iid,desc);}
+});
+}
+function itfTogCond(iid,checked){
+var body=document.getElementById('cbody-'+iid);
+if(body)body.className='itf-cond-body'+(checked?' open':'');
+var a=_itfS.ambis[_itfS.cur];
+if(!_itfS.dat[a.id].cond[iid])_itfS.dat[a.id].cond[iid]={};
+_itfS.dat[a.id].cond[iid].on=checked;
+}
+function itfSetVerif(ambiId,verifId,stateIdx,btn){
+_itfS.dat[ambiId].verif[verifId]=stateIdx;
+btn.parentNode.querySelectorAll('.itf-vbtn').forEach(function(b){b.classList.remove('sel');});
+btn.classList.add('sel');
+}
 </script>
 </body>
 </html>
