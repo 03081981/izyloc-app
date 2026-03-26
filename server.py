@@ -1343,7 +1343,7 @@ if __name__ == '__main__':
     tornado.ioloop.IOLoop.current().start()# ─── AI DESCRIBE ITEM ─────────────────────────────────────────────────────────
 
 class DescribeItemHandler(BaseHandler):
-    async def post(self):
+    def post(self):
         user = self.require_auth()
         if not user: return
         data = self.json_body()
