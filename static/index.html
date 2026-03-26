@@ -921,22 +921,22 @@ body {
 }
 .step-item {
   display: flex; flex-direction: column; align-items: center;
-  position: relative; min-width: 72px;
+  position: relative; min-width: 56px;
 }
 .step-item + .step-item::before {
   content: '';
-  position: absolute; top: 13px; right: 50%;
+  position: absolute; top: 11px; right: 50%;
   left: -50%; height: 2px;
   background: var(--border);
   z-index: 0;
 }
 .step-item.done + .step-item::before { background: var(--blue); }
 .step-circle {
-  width: 26px; height: 26px; border-radius: 50%;
+  width: 22px; height: 22px; border-radius: 50%;
   border: 2px solid var(--border);
   background: var(--white);
   display: flex; align-items: center; justify-content: center;
-  font-size: 11px; font-weight: 700; color: var(--text-3);
+  font-size: 10px; font-weight: 700; color: var(--text-3);
   position: relative; z-index: 1;
   transition: all .2s;
 }
@@ -947,7 +947,7 @@ body {
   border-color: var(--blue); background: var(--blue); color: var(--white);
 }
 .step-label {
-  font-size: 11px; font-weight: 500; color: var(--text-3);
+  font-size: 9px; font-weight: 500; color: var(--text-3);
   margin-top: 5px; white-space: nowrap;
 }
 .step-item.active .step-label { color: var(--blue); font-weight: 600; }
@@ -1903,12 +1903,15 @@ canvas { display: block; }
     </div>
     <div class="wizard-stepper-wrap" style="padding:10px 24px 14px;border-bottom:1px solid var(--border-light);">
       <div class="wizard-stepper" id="wizard-stepper">
-        <div class="step-item active" id="sc-0"><div class="step-circle" id="sl-0">1</div><div class="step-label" id="sl-lbl-0">Tipo</div></div>
-        <div class="step-item" id="sc-1"><div class="step-circle" id="sl-1">2</div><div class="step-label" id="sl-lbl-1">Imóvel</div></div>
-        <div class="step-item" id="sc-2"><div class="step-circle" id="sl-2">3</div><div class="step-label" id="sl-lbl-2">Partes</div></div>
-        <div class="step-item" id="sc-3"><div class="step-circle" id="sl-3">4</div><div class="step-label" id="sl-lbl-3">Ambientes</div></div>
-        <div class="step-item" id="sc-4"><div class="step-circle" id="sl-4">5</div><div class="step-label" id="sl-lbl-4">Vistoria</div></div>
-        <div class="step-item" id="sc-5"><div class="step-circle" id="sl-5">6</div><div class="step-label" id="sl-lbl-5">Assinatura</div></div>
+                <div class="step-item active" id="sc-0"><div class="step-circle" id="sl-0">1</div><div class="step-label" id="sl-lbl-0">Tipo</div></div>
+        <div class="step-item" id="sc-1"><div class="step-circle" id="sl-1">2</div><div class="step-label" id="sl-lbl-1">Quem realiza</div></div>
+        <div class="step-item" id="sc-2"><div class="step-circle" id="sl-2">3</div><div class="step-label" id="sl-lbl-2">Imóvel</div></div>
+        <div class="step-item" id="sc-3"><div class="step-circle" id="sl-3">4</div><div class="step-label" id="sl-lbl-3">Partes</div></div>
+        <div class="step-item" id="sc-4"><div class="step-circle" id="sl-4">5</div><div class="step-label" id="sl-lbl-4">Ambientes</div></div>
+        <div class="step-item" id="sc-5"><div class="step-circle" id="sl-5">6</div><div class="step-label" id="sl-lbl-5">Itens e fotos</div></div>
+        <div class="step-item" id="sc-6"><div class="step-circle" id="sl-6">7</div><div class="step-label" id="sl-lbl-6">Revisão</div></div>
+        <div class="step-item" id="sc-7"><div class="step-circle" id="sl-7">8</div><div class="step-label" id="sl-lbl-7">Assinaturas</div></div>
+        <div class="step-item" id="sc-8"><div class="step-circle" id="sl-8">9</div><div class="step-label" id="sl-lbl-8">PDF</div></div>
       </div>
     </div>
   <div class="page-content page-scroll">
@@ -2671,7 +2674,7 @@ function selectTipoCard(card) {
 function gotoWStep(step) {
   wizard.step = step;
   // Stepper visual
-  for (let i=1; i<=4; i++) {
+  for (let i=0; i<=8; i++) {
     const c = document.getElementById(`sc-${i}`);
     if (!c) continue;
     c.classList.remove('active','done');
