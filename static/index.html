@@ -2075,7 +2075,7 @@ canvas { display: block; }
 <option>AC</option><option>AL</option><option>AP</option><option>AM</option><option>BA</option><option>CE</option><option>DF</option><option>ES</option><option>GO</option><option>MA</option><option>MT</option><option>MS</option><option>MG</option><option>PA</option><option>PB</option><option>PR</option><option>PE</option><option>PI</option><option>RJ</option><option>RN</option><option>RS</option><option>RO</option><option>RR</option><option>SC</option><option>SP</option><option>SE</option><option>TO</option>
           </select></div>
           <div class="form-group"><label class="form-label">CEP</label>
-          <input class="form-input" id="wi-cep" type="text" placeholder="00000-000"/></div>
+          <input class="form-input" id="wi-cep" type="text" placeholder="00000-000" onblur="fetchCEP()"/><span id="wi-cep-err" style="display:none;color:#e53935;font-size:12px;margin-top:4px;">CEP n&atilde;o encontrado</span></div>
         </div>
       </div>
       <div class="form-card">
@@ -3233,6 +3233,28 @@ window.addEventListener('resize', () => {
     if (c && signaturePads[p]) resizeCanvas(c, signaturePads[p]);
   });
 });
+function fetchCEP(){
+var cepEl=document.getElementById("wi-cep");
+var errEl=document.getElementById("wi-cep-err");
+if(!cepEl||!errEl)return;
+errEl.style.display="none";
+var cep=cepEl.value.replace(/\D/g,"");
+if(cep.length!==8)return;
+fetch("https://viacep.com.br/ws/"+cep+"/json/")
+.then(function(r){return r.json();})
+.then(function(d){
+if(d.erro){errEl.style.display="block";return;}
+var addr=document.getElementById("wi-address");
+var bairro=document.getElementById("wi-bairro");
+var cidade=document.getElementById("wi-cidade");
+var estado=document.getElementById("wi-estado");
+if(addr&&d.logradouro)addr.value=d.logradouro;
+if(bairro&&d.bairro)bairro.value=d.bairro;
+if(cidade&&d.localidade)cidade.value=d.localidade;
+if(estado&&d.uf)estado.value=d.uf;
+})
+.catch(function(){errEl.style.display="block";});
+}
 </script>
 </body>
 </html>
