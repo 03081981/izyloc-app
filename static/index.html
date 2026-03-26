@@ -1028,6 +1028,8 @@ body {
   .tipo-cards { grid-template-columns: 1fr !important; }
   .tipo-img-wrap { height: 160px; }
   .tc-photo { height: 160px; }
+  .form-row { grid-template-columns: 1fr !important; }
+  .form-grid { grid-template-columns: 1fr !important; }
 }
 .tc-check {
   display: flex; align-items: center; gap: 6px;
@@ -1109,6 +1111,10 @@ body {
 }
 .wstep-sub { font-size: 14px; color: var(--text-3); margin-bottom: 24px; }
 
+
+.wi-context-tag { display:inline-flex; align-items:center; gap:6px; background:#e8f5e9; color:#2e7d32; border:1px solid #a5d6a7; border-radius:20px; padding:5px 14px; font-size:12px; font-weight:600; margin-bottom:18px; }
+.wi-ctx-check { color:#43a047; font-size:14px; }
+.req-star { color:#e53935; }
 .form-card {
   background: var(--white); border-radius: var(--r);
   border: 1px solid var(--border-light);
@@ -2048,78 +2054,56 @@ canvas { display: block; }
 
     <!-- STEP 1: DADOS DO IMÓVEL -->
     <div id="wstep-1" style="display:none">
-      <div class="wstep-title">Dados do imóvel</div>
-      <div class="wstep-sub">Preencha as informações do imóvel vistoriado.</div>
+      <div id="wi-context-tag" class="wi-context-tag"><span class="wi-ctx-check">&#10003;</span> <span id="wi-ctx-label">&#8212;</span></div>
       <input type="hidden" id="wi-type"/>
       <div class="form-card">
-        <div class="form-card-title">Localização</div>
-        <div class="form-group" style="margin-bottom:14px">
-          <label class="form-label">Endereço completo</label>
-          <input class="form-input" id="wi-address" type="text" placeholder="Rua, número, complemento"/>
+        <div class="form-card-title">Localiza&#231;&#227;o</div>
+        <div class="form-row form-row-full" style="margin-bottom:14px"><div class="form-group">
+          <label class="form-label">Endere&#231;o completo <span class="req-star">*</span></label>
+          <input class="form-input" id="wi-address" type="text" placeholder="Rua, n&#250;mero, complemento"/>
+        </div></div>
+        <div class="form-row" style="margin-bottom:14px">
+          <div class="form-group"><label class="form-label">Bairro <span class="req-star">*</span></label>
+          <input class="form-input" id="wi-bairro" type="text" placeholder="Bairro"/></div>
+          <div class="form-group"><label class="form-label">Cidade <span class="req-star">*</span></label>
+          <input class="form-input" id="wi-cidade" type="text" placeholder="Cidade"/></div>
         </div>
         <div class="form-row">
-          <div class="form-group">
-            <label class="form-label">Tipo de imóvel</label>
-            <select class="form-input" id="wi-prop-type">
-              <option value="">Selecione...</option>
-              <option>Apartamento</option>
-              <option>Casa</option>
-              <option>Sala comercial</option>
-              <option>Galpão</option>
-              <option>Terreno</option>
-              <option>Outro</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label class="form-label">Área (m²)</label>
-            <input class="form-input" id="wi-area" type="number" placeholder="Ex: 75"/>
-          </div>
-        </div>
-        <div class="form-group">
-          <label class="form-label">Data da vistoria</label>
-          <input class="form-input" id="wi-date" type="date"/>
+          <div class="form-group"><label class="form-label">Estado <span class="req-star">*</span></label>
+          <select class="form-input" id="wi-estado"><option value="">Selecione...</option>
+<option>AC</option><option>AL</option><option>AP</option><option>AM</option><option>BA</option><option>CE</option><option>DF</option><option>ES</option><option>GO</option><option>MA</option><option>MT</option><option>MS</option><option>MG</option><option>PA</option><option>PB</option><option>PR</option><option>PE</option><option>PI</option><option>RJ</option><option>RN</option><option>RS</option><option>RO</option><option>RR</option><option>SC</option><option>SP</option><option>SE</option><option>TO</option>
+          </select></div>
+          <div class="form-group"><label class="form-label">CEP</label>
+          <input class="form-input" id="wi-cep" type="text" placeholder="00000-000"/></div>
         </div>
       </div>
-      <div class="form-card" id="imob-block">
-        <div class="form-card-title">Imobiliária (opcional)</div>
+      <div class="form-card">
+        <div class="form-card-title">Caracter&#237;sticas</div>
         <div class="form-row">
-          <div class="form-group">
-            <label class="form-label">Nome da imobiliária</label>
-            <input class="form-input" id="wi-imob-name" type="text" placeholder="Nome"/>
-          </div>
-          <div class="form-group">
-            <label class="form-label">CNPJ</label>
-            <input class="form-input" id="wi-imob-cnpj" type="text" placeholder="00.000.000/0000-00"/>
-          </div>
+          <div class="form-group"><label class="form-label">Tipo do im&#243;vel <span class="req-star">*</span></label>
+          <select class="form-input" id="wi-prop-type"><option value="">Selecione...</option>
+          <option>Apartamento</option><option>Casa</option><option>Sala comercial</option>
+          <option>Galp&#227;o</option><option>Studio</option><option>Kitnet</option><option>Outro</option>
+          </select></div>
+          <div class="form-group"><label class="form-label">&#193;rea total (m&#178;)</label>
+          <input class="form-input" id="wi-area" type="number" placeholder="Ex: 65" min="0" step="0.01"/></div>
         </div>
+      </div>
+      <div class="form-card">
+        <div class="form-card-title">Data e hora</div>
         <div class="form-row">
-          <div class="form-group">
-            <label class="form-label">CRECI</label>
-            <input class="form-input" id="wi-imob-creci" type="text" placeholder="CRECI"/>
-          </div>
-          <div class="form-group">
-            <label class="form-label">Telefone</label>
-            <input class="form-input" id="wi-imob-phone" type="tel" placeholder="(00) 00000-0000"/>
-          </div>
-        </div>
-        <div class="form-row">
-          <div class="form-group">
-            <label class="form-label">E-mail</label>
-            <input class="form-input" id="wi-imob-email" type="email" placeholder="email@imobiliaria.com"/>
-          </div>
-          <div class="form-group">
-            <label class="form-label">Endereço</label>
-            <input class="form-input" id="wi-imob-address" type="text" placeholder="Endereço da imobiliária"/>
-          </div>
+          <div class="form-group"><label class="form-label">Data da vistoria <span class="req-star">*</span></label>
+          <input class="form-input" id="wi-data" type="date"/></div>
+          <div class="form-group"><label class="form-label">Hora da vistoria</label>
+          <input class="form-input" id="wi-hora" type="time"/></div>
         </div>
       </div>
       <div class="wiz-nav">
-        <button class="btn-wiz-back-sm" onclick="prevWizStep ? prevWizStep() : null">Voltar</button>
-        <button class="btn-wiz-next" onclick="nextWizStep ? nextWizStep() : null">Continuar <svg viewBox="0 0 20 20" fill="currentColor" width="16" height="16"><path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z"/></svg></button>
+        <button class="btn-wiz-back-sm" onclick="showWstepQuem()">← Voltar</button>
+        <button class="btn-wiz-next" onclick="validateAndGoWstep2()">Próximo <svg viewBox="0 0 20 20" fill="currentColor" width="16" height="16"><path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z"/></svg></button>
       </div>
     </div>
 
-    <!-- STEP 2: PARTES -->
     <div id="wstep-2" style="display:none">
       <div class="wstep-title">Partes envolvidas</div>
       <div class="wstep-sub">Informe os dados dos locadores, locatários e corretor.</div>
@@ -2655,6 +2639,40 @@ function selectRealizaCard(card) {
   card.classList.add('selected');
   if (typeof wizard !== 'undefined') wizard.realizador = card.dataset.realiza || '';
 }
+function updateContextTag() {
+  const tipoCard = document.querySelector('.tipo-card.selected');
+  const tipoVal = tipoCard ? (tipoCard.dataset.tipo || '') : '';
+  const realizaVal = (typeof wizard !== 'undefined' && wizard.realizador) ? wizard.realizador : '';
+  const tMap = {entrada:'Vistoria de Entrada', saida:'Vistoria de Saída', temporada:'Temporada / Airbnb'};
+  const rMap = {imobiliaria:'Imobiliária / Corretor', proprietario:'Proprietário', terceiro:'Vistoriador'};
+  const tLabel = tMap[tipoVal] || tipoVal || '—';
+  const rLabel = rMap[realizaVal] || realizaVal || '—';
+  const tag = document.getElementById('wi-ctx-label');
+  if (tag) tag.textContent = tLabel + ' · ' + rLabel;
+}
+function validateAndGoWstep2() {
+  const required = [
+    {id:'wi-address', label:'Endereço'},
+    {id:'wi-bairro', label:'Bairro'},
+    {id:'wi-cidade', label:'Cidade'},
+    {id:'wi-estado', label:'Estado'},
+    {id:'wi-prop-type', label:'Tipo do imóvel'},
+    {id:'wi-data', label:'Data da vistoria'}
+  ];
+  let ok = true;
+  required.forEach(f => {
+    const el = document.getElementById(f.id);
+    if (!el) return;
+    if (!el.value || el.value.trim() === '') {
+      el.style.borderColor = '#e53935';
+      ok = false;
+    } else {
+      el.style.borderColor = '';
+    }
+  });
+  if (!ok) return;
+  gotoWStep(2);
+}
 
 function showWstepQuem() {
   // Use gotoWStep(1) for stepper visual (Tipo done, Imóvel active), then swap content
@@ -2691,7 +2709,8 @@ function gotoWStep(step) {
   const wq = document.getElementById('wstep-quem');
   if (wq) wq.style.display = 'none';
   window.scrollTo(0,0);
-}
+
+  if(step===1) updateContextTag();}
 
 async function wizardNext(step) {
   if (step === 1) {
