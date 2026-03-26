@@ -1423,6 +1423,37 @@ canvas { display: block; }
 .hidden { display: none !important; }
 .flex-center { display: flex; align-items: center; justify-content: center; }
 
+/* ─── REALIZA CARDS (WIZARD STEP: QUEM REALIZA) ─── */
+.realiza-cards {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+  max-width: 680px;
+  margin-bottom: 24px;
+}
+.realiza-card .tc-photo { height: 180px; }
+.wiz-nav-bar {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-top: 28px; padding-top: 20px;
+  border-top: 1px solid var(--border-light);
+}
+.btn-wiz-voltar {
+  height: 44px; padding: 0 22px;
+  background: var(--white); color: var(--text-2);
+  border: 1.5px solid var(--border); border-radius: var(--r);
+  font-size: 14px; font-weight: 600; cursor: pointer;
+  display: flex; align-items: center; gap: 6px;
+  transition: all .15s;
+}
+.btn-wiz-voltar:hover { border-color: #aaa; color: var(--text); }
+@media (max-width: 768px) {
+  .realiza-cards { grid-template-columns: 1fr !important; }
+  .wiz-main-wrapper { margin-left: 0 !important; }
+  .sidebar { display: none; }
+  .tipo-cards { grid-template-columns: 1fr !important; }
+  .tipo-img-wrap { height: 160px; }
+  .tc-photo { height: 160px; }
+}
 </style>
 </head>
 <body>
@@ -1938,11 +1969,63 @@ canvas { display: block; }
       <div class="wiz-nav">
         <div></div>
         <div class="wiz-nav-right">
-          <button class="btn-wiz-next" id="btn-tipo-next" onclick="gotoWStep(1)">
+          <button class="btn-wiz-next" id="btn-tipo-next" onclick="showWstepQuem()">
             Próximo
             <svg viewBox="0 0 20 20" fill="currentColor" width="16" height="16"><path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z"/></svg>
           </button>
         </div>
+      </div>
+    </div>
+
+    <!-- STEP QUEM: QUEM REALIZA A VISTORIA -->
+    <div id="wstep-quem" style="display:none">
+      <div class="wstep-title">Quem realiza a vistoria?</div>
+      <div class="wstep-sub">Selecione o responsável pela execução da vistoria do imóvel.</div>
+
+      <div class="realiza-cards">
+
+        <!-- Card 1: Imobiliária / Corretor -->
+        <div class="tipo-card realiza-card selected" data-realiza="imobiliaria" onclick="selectRealizaCard(this)">
+          <div class="tc-photo" style="background-image:url('https://images.unsplash.com/photo-1600880292203-757bb62b4baf?w=500&h=360&fit=crop&q=80')">
+            <div class="tc-tag tc-tag-entrada">Profissional</div>
+            <div class="tc-checkmark"><svg viewBox="0 0 12 12" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 6l3 3 5-5"/></svg></div>
+          </div>
+          <div class="tc-footer">
+            <div class="tc-label">Imobiliária / Corretor</div>
+            <div class="tc-sub">Vistoria profissional com CRECI</div>
+          </div>
+        </div>
+
+        <!-- Card 2: Proprietário -->
+        <div class="tipo-card realiza-card" data-realiza="proprietario" onclick="selectRealizaCard(this)">
+          <div class="tc-photo" style="background-image:url('https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=500&h=360&fit=crop&q=80')">
+            <div class="tc-tag tc-tag-temporada">Proprietário</div>
+            <div class="tc-checkmark"><svg viewBox="0 0 12 12" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 6l3 3 5-5"/></svg></div>
+          </div>
+          <div class="tc-footer">
+            <div class="tc-label">Proprietário</div>
+            <div class="tc-sub">Vistoria direta pelo dono do imóvel</div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Info box -->
+      <div class="wiz-info-box" style="background:#f0f6ff; border:1px solid #b5d4f4; color:#1a4a8a; margin-bottom:28px;">
+        <span class="wiz-info-icon"><svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"/></svg></span>
+        <span>O tipo selecionado define automaticamente as cláusulas e a estrutura do laudo.</span>
+      </div>
+
+      <!-- Navigation -->
+      <div class="wiz-nav-bar">
+        <button class="btn-wiz-voltar" onclick="gotoWStep(0)">
+          <svg viewBox="0 0 20 20" fill="currentColor" width="16" height="16"><path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z"/></svg>
+          Voltar
+        </button>
+        <button class="btn-wiz-next" onclick="gotoWStep(1)">
+          Próximo
+          <svg viewBox="0 0 20 20" fill="currentColor" width="16" height="16"><path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z"/></svg>
+        </button>
       </div>
     </div>
 
@@ -2562,6 +2645,22 @@ function showNewInspection() {
   document.getElementById('rooms-list').innerHTML = '';
   gotoWStep(0);
   showPage('page-wizard', 'Nova Vistoria');
+}
+
+function selectRealizaCard(card) {
+  document.querySelectorAll('.realiza-card').forEach(c => c.classList.remove('selected'));
+  card.classList.add('selected');
+  if (typeof wizard !== 'undefined') wizard.realizador = card.dataset.realiza || '';
+}
+
+function showWstepQuem() {
+  // Use gotoWStep(1) for stepper visual (Tipo done, Imóvel active), then swap content
+  gotoWStep(1);
+  const w1 = document.getElementById('wstep-1');
+  if (w1) w1.style.display = 'none';
+  const wq = document.getElementById('wstep-quem');
+  if (wq) wq.style.display = 'block';
+  window.scrollTo(0, 0);
 }
 
 function selectTipoCard(card) {
