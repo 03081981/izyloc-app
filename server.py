@@ -1273,6 +1273,54 @@ class PhotoHandler(tornado.web.StaticFileHandler):
 
 # ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ SERVIR FRONTEND ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ
 
+
+class AnalyzeImageHandler(BaseHandler):
+    """Endpoint para analisar imagem via IA (recebe base64 do frontend)."""
+    def post(self):
+        try:
+            data = json.loads(self.request.body)
+            image_b64 = data.get('image', '')
+            item_name = data.get('item', 'item')
+            room_name = data.get('ambiente', 'ambiente')
+
+            if not image_b64:
+                self.set_status(400)
+                self.write({'error': 'Imagem não fornecida'})
+                return
+
+            # Decode base64 and save to temp file
+            import tempfile
+            import base64 as b64mod
+            img_bytes = b64mod.b64decode(image_b64)
+
+            # Detect format from first bytes
+            ext = '.jpg'
+            if img_bytes[:4] == b'\x89PNG':
+                ext = '.png'
+            elif img_bytes[:4] == b'RIFF':
+                ext = '.webp'
+
+            tmp = tempfile.NamedTemporaryFile(suffix=ext, delete=False, dir=UPLOAD_DIR)
+            tmp.write(img_bytes)
+            tmp.close()
+
+            try:
+                result = analyze_photo(tmp.name, item_name, room_name)
+            finally:
+                try:
+                    os.unlink(tmp.name)
+                except:
+                    pass
+
+            self.write({
+                'description': result.get('description', ''),
+                'condition': result.get('condition', ''),
+                'success': result.get('success', False)
+            })
+        except Exception as e:
+            self.set_status(500)
+            self.write({'error': str(e)})
+
 class MainHandler(tornado.web.RequestHandler):
     def get(self, path=None):
         static_dir = os.path.join(os.path.dirname(__file__), 'static')
@@ -1319,6 +1367,8 @@ def make_app():
         (r'/api/inspections/([^/]+)/signatures', SignaturesHandler),
         # PDF
         (r'/api/inspections/([^/]+)/pdf', GeneratePDFHandler),
+        # AI Image Analysis
+        (r'/api/analyze-image', AnalyzeImageHandler),
         # Static files
         (r'/uploads/(.*)', tornado.web.StaticFileHandler, {'path': upload_dir}),
         (r'/static/(.*)', tornado.web.StaticFileHandler, {'path': static_dir}),
