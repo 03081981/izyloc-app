@@ -1461,6 +1461,21 @@ canvas { display: block; }
   .tc-photo { height: 160px; }
 }
 .partes-imob-card{background:#f0f6ff;border:1px solid #b5d4f4;}.party-item{padding:16px 0;border-bottom:1px solid #e8ecf0;}.party-item:last-child{border-bottom:none;}.party-item-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;}.btn-remove-party{background:none;border:1px solid #e53935;color:#e53935;border-radius:6px;padding:4px 12px;font-size:12px;cursor:pointer;}.btn-remove-party:hover{background:#ffeaea;}.btn-add-party{margin-top:16px;background:none;border:2px solid #2d7dd2;color:#2d7dd2;border-radius:8px;padding:8px 18px;font-size:14px;font-weight:600;cursor:pointer;}.btn-add-party:hover{background:#f0f6ff;}
+.ambi-warn-box{background:#fffbea;border:1px solid #f5c842;border-radius:10px;padding:14px 18px;margin-bottom:16px;font-size:14px;color:#7a5c00;}
+.ambi-section-title{font-size:12px;font-weight:700;color:#6b7a8d;text-transform:uppercase;letter-spacing:.06em;margin:18px 0 8px;padding-bottom:6px;border-bottom:1px solid #e8ecf0;}
+.counter-row{display:flex;justify-content:space-between;align-items:center;padding:12px 14px;border-radius:8px;border:1px solid transparent;margin-bottom:4px;transition:all .2s;}
+.counter-row.counter-active{background:#f0f6ff;border-color:#b5d4f4;}
+.counter-left{display:flex;align-items:center;gap:10px;}
+.counter-emoji{font-size:20px;}
+.counter-name{font-size:15px;color:#1a2e44;font-weight:500;}
+.counter-controls{display:flex;align-items:center;gap:12px;}
+.counter-btn{width:32px;height:32px;border-radius:50%;border:2px solid #2d7dd2;background:#fff;color:#2d7dd2;font-size:18px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+.counter-btn:hover{background:#2d7dd2;color:#fff;}
+.counter-val{font-size:16px;font-weight:700;color:#0f2a4a;min-width:24px;text-align:center;}
+.ambi-custom-row{display:flex;gap:10px;align-items:center;margin-top:18px;padding-top:14px;border-top:1px solid #e8ecf0;}
+.ambi-custom-row .form-input{flex:1;}
+.ambi-summary-box{margin-top:16px;background:#f5f6f8;border-radius:8px;padding:12px 16px;font-size:13px;color:#3a4a5c;line-height:1.7;}
+@media(max-width:768px){.wiz-main-wrapper{margin-left:0!important;}.sidebar{display:none;}.counter-row{padding:12px;}.counter-name{font-size:14px;}}
 </style>
 </head>
 <body>
@@ -2118,24 +2133,39 @@ canvas { display: block; }
 <div class="wiz-nav"><button class="btn-wiz-back-sm" onclick="gotoWStep(1)">&larr; Voltar</button><button class="btn-wiz-next" onclick="validateAndGoWstep3()">Pr&oacute;ximo &rarr;</button></div>
 </div>
 <div id="wstep-3" style="display:none">
-      <div class="wstep-title">Selecionar ambientes</div>
-      <div class="wstep-sub">Escolha os cômodos que serão vistoriados.</div>
-      <div class="form-card">
-        <div id="room-check-list"></div>
-        <div class="custom-room-row">
-          <input class="form-input" id="custom-room" type="text" placeholder="Adicionar ambiente personalizado..." style="flex:1"/>
-          <button class="btn btn-primary" style="height:44px;padding:0 16px" onclick="addCustomRoom ? addCustomRoom() : null">Adicionar</button>
-        </div>
-      </div>
-      <div id="v6-temporada"></div>
-      <div class="wiz-nav">
-        <button class="btn-wiz-back-sm" onclick="prevWizStep ? prevWizStep() : null">Voltar</button>
-        <button class="btn-wiz-next" onclick="nextWizStep ? nextWizStep() : null">Continuar <svg viewBox="0 0 20 20" fill="currentColor" width="16" height="16"><path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z"/></svg></button>
-      </div>
-    </div>
-
-    <!-- STEP 4: VISTORIA (fotos por ambiente) -->
-    <div id="wstep-4" style="display:none">
+<div id="ambi-ctx-tag" class="wi-context-tag"><span class="wi-ctx-check">&#10003;</span> <span id="ambi-ctx-label">&mdash;</span></div>
+<div id="ambi-temporada-warn" class="ambi-warn-box" style="display:none">&#11088; Vistoria de Temporada &mdash; os ambientes vir&atilde;o com sugest&otilde;es completas de itens mobiliados na pr&oacute;xima etapa.</div>
+<div class="form-card" id="ambi-card">
+<div class="form-card-title">Ambientes</div>
+<div class="ambi-section-title">Dormit&oacute;rios</div>
+<div class="counter-row counter-active" id="ambi-quartos" data-val="1"><div class="counter-left"><span class="counter-emoji">&#x1F6CF;&#xFE0F;</span><span class="counter-name">Quartos</span></div><div class="counter-controls"><button class="counter-btn" data-dir="-1">&#8722;</button><span class="counter-val">1</span><button class="counter-btn" data-dir="1">&#43;</button></div></div>
+<div class="counter-row" id="ambi-suites" data-val="0"><div class="counter-left"><span class="counter-emoji">&#x1F6C1;</span><span class="counter-name">Su&iacute;tes</span></div><div class="counter-controls"><button class="counter-btn" data-dir="-1">&#8722;</button><span class="counter-val">0</span><button class="counter-btn" data-dir="1">&#43;</button></div></div>
+<div class="ambi-section-title">Banheiros</div>
+<div class="counter-row counter-active" id="ambi-banheiros" data-val="1"><div class="counter-left"><span class="counter-emoji">&#x1F6BF;</span><span class="counter-name">Banheiros</span></div><div class="counter-controls"><button class="counter-btn" data-dir="-1">&#8722;</button><span class="counter-val">1</span><button class="counter-btn" data-dir="1">&#43;</button></div></div>
+<div class="counter-row" id="ambi-lavabos" data-val="0"><div class="counter-left"><span class="counter-emoji">&#x1FAA5;</span><span class="counter-name">Lavabos</span></div><div class="counter-controls"><button class="counter-btn" data-dir="-1">&#8722;</button><span class="counter-val">0</span><button class="counter-btn" data-dir="1">&#43;</button></div></div>
+<div class="ambi-section-title">&Aacute;reas sociais</div>
+<div class="counter-row counter-active" id="ambi-sala" data-val="1"><div class="counter-left"><span class="counter-emoji">&#x1F6CB;&#xFE0F;</span><span class="counter-name">Sala</span></div><div class="counter-controls"><button class="counter-btn" data-dir="-1">&#8722;</button><span class="counter-val">1</span><button class="counter-btn" data-dir="1">&#43;</button></div></div>
+<div class="counter-row counter-active" id="ambi-cozinha" data-val="1"><div class="counter-left"><span class="counter-emoji">&#x1F373;</span><span class="counter-name">Cozinha</span></div><div class="counter-controls"><button class="counter-btn" data-dir="-1">&#8722;</button><span class="counter-val">1</span><button class="counter-btn" data-dir="1">&#43;</button></div></div>
+<div class="counter-row" id="ambi-jantar" data-val="0"><div class="counter-left"><span class="counter-emoji">&#x1F37D;&#xFE0F;</span><span class="counter-name">Sala de jantar</span></div><div class="counter-controls"><button class="counter-btn" data-dir="-1">&#8722;</button><span class="counter-val">0</span><button class="counter-btn" data-dir="1">&#43;</button></div></div>
+<div class="ambi-section-title">&Aacute;reas de servi&ccedil;o e extras</div>
+<div class="counter-row" id="ambi-lavanderia" data-val="0"><div class="counter-left"><span class="counter-emoji">&#x1F455;</span><span class="counter-name">Lavanderia</span></div><div class="counter-controls"><button class="counter-btn" data-dir="-1">&#8722;</button><span class="counter-val">0</span><button class="counter-btn" data-dir="1">&#43;</button></div></div>
+<div class="counter-row" id="ambi-garagem" data-val="0"><div class="counter-left"><span class="counter-emoji">&#x1F697;</span><span class="counter-name">Garagem</span></div><div class="counter-controls"><button class="counter-btn" data-dir="-1">&#8722;</button><span class="counter-val">0</span><button class="counter-btn" data-dir="1">&#43;</button></div></div>
+<div class="counter-row" id="ambi-varanda" data-val="0"><div class="counter-left"><span class="counter-emoji">&#x1F33F;</span><span class="counter-name">Varanda / Sacada</span></div><div class="counter-controls"><button class="counter-btn" data-dir="-1">&#8722;</button><span class="counter-val">0</span><button class="counter-btn" data-dir="1">&#43;</button></div></div>
+<div class="counter-row" id="ambi-escritorio" data-val="0"><div class="counter-left"><span class="counter-emoji">&#x1F4BC;</span><span class="counter-name">Escrit&oacute;rio</span></div><div class="counter-controls"><button class="counter-btn" data-dir="-1">&#8722;</button><span class="counter-val">0</span><button class="counter-btn" data-dir="1">&#43;</button></div></div>
+<div class="counter-row" id="ambi-deposito" data-val="0"><div class="counter-left"><span class="counter-emoji">&#x1F4E6;</span><span class="counter-name">Dep&oacute;sito</span></div><div class="counter-controls"><button class="counter-btn" data-dir="-1">&#8722;</button><span class="counter-val">0</span><button class="counter-btn" data-dir="1">&#43;</button></div></div>
+<div class="ambi-custom-row">
+<input class="form-input" id="ambi-custom-input" type="text" placeholder="Nome do ambiente personalizado"/>
+<button class="btn-add-party" id="ambi-add-btn">+ Adicionar</button>
+</div>
+<div id="ambi-custom-list"></div>
+<div id="ambi-summary" class="ambi-summary-box"><span style="color:#888">Selecione os ambientes acima.</span></div>
+</div>
+<div class="wiz-nav">
+<button class="btn-wiz-back-sm" id="ambi-btn-back">&larr; Voltar</button>
+<button class="btn-wiz-next" id="ambi-btn-next">Pr&oacute;ximo &rarr;</button>
+</div>
+</div>
+<div id="wstep-4" style="display:none">
       <div class="wstep-title" id="step4-header">Vistoria dos ambientes</div>
       <div class="wstep-sub">Fotografe e descreva o estado de cada ambiente.</div>
       <div id="rooms-list"></div>
@@ -2671,7 +2701,8 @@ function gotoWStep(step) {
   window.scrollTo(0,0);
 
   if(step===1) updateContextTag();
-  if(step===2) updatePartesContext();}
+  if(step===2) updatePartesContext();
+if(step===3) initAmbientes();}
 
 async function wizardNext(step) {
   if (step === 1) {
@@ -3244,6 +3275,75 @@ if(!el.value.trim()||el.value.indexOf('@')<0){el.style.borderColor='#e53935';ok=
 });
 if(!ok)return;
 gotoWStep(3);
+}
+function initAmbientes(){
+[0,1,2,3].forEach(function(i){var c=document.getElementById('sc-'+i);if(c){c.classList.remove('active');c.classList.add('done');}var l=document.getElementById('sl-'+i);if(l)l.classList.add('done');});
+var s4=document.getElementById('sc-4');if(s4){s4.classList.remove('done');s4.classList.add('active');}
+var tc=document.querySelector('.tipo-card.selected');var tV=tc?(tc.dataset.tipo||''):'';
+var rc=document.querySelector('.realiza-card.selected');var rv=rc?(rc.dataset.realiza||''):((typeof wizard!=='undefined'&&wizard.realizador)?wizard.realizador:'');
+var tM={entrada:'Vistoria de Entrada',saida:'Vistoria de Saída',temporada:'Temporada/Airbnb'};
+var rM={imobiliaria:'Imobiliária/Corretor',proprietario:'Proprietário'};
+var tag=document.getElementById('ambi-ctx-label');
+if(tag)tag.textContent=(tM[tV]||tV||'—')+' · '+(rM[rv]||rv||'—');
+var warn=document.getElementById('ambi-temporada-warn');
+if(warn)warn.style.display=(tV==='temporada')?'block':'none';
+var card=document.getElementById('ambi-card');
+if(card&&!card._ambiInit){
+  card._ambiInit=true;
+  card.addEventListener('click',function(e){
+    var btn=e.target.closest('.counter-btn');
+    if(!btn)return;
+    var row=btn.closest('.counter-row');
+    if(!row)return;
+    var delta=parseInt(btn.dataset.dir||0);
+    ambiChange(row.id,delta);
+  });
+  var addBtn=document.getElementById('ambi-add-btn');
+  if(addBtn)addBtn.addEventListener('click',ambiAddCustom);
+  var back=document.getElementById('ambi-btn-back');
+  var next=document.getElementById('ambi-btn-next');
+  if(back)back.addEventListener('click',function(){gotoWStep(2);});
+  if(next)next.addEventListener('click',function(){gotoWStep(4);});
+}
+ambiUpdateSummary();
+}
+function ambiChange(id,delta){
+var row=document.getElementById(id);if(!row)return;
+var val=parseInt(row.dataset.val||0)+delta;
+if(val<0)val=0;row.dataset.val=val;
+var disp=row.querySelector('.counter-val');if(disp)disp.textContent=val;
+if(val>0)row.classList.add('counter-active');else row.classList.remove('counter-active');
+ambiUpdateSummary();
+}
+function ambiUpdateSummary(){
+var rows=document.querySelectorAll('#wstep-3 .counter-row');
+var items=[];
+rows.forEach(function(row){var val=parseInt(row.dataset.val||0);if(val>0){var n=row.querySelector('.counter-name');if(n)items.push(n.textContent+': '+val);}});
+var box=document.getElementById('ambi-summary');if(!box)return;
+if(items.length)box.innerHTML=items.join(' &nbsp;&bull;&nbsp; ');
+else box.innerHTML='<span style="color:#888">Selecione os ambientes acima.</span>';
+}
+function ambiAddCustom(){
+var inp=document.getElementById('ambi-custom-input');
+if(!inp||!inp.value.trim())return;
+var name=inp.value.trim();inp.value='';
+var list=document.getElementById('ambi-custom-list');if(!list)return;
+var div=document.createElement('div');
+div.className='counter-row counter-active';
+div.id='ambi-c'+Date.now();
+div.dataset.val='1';
+var left=document.createElement('div');left.className='counter-left';
+var em=document.createElement('span');em.className='counter-emoji';em.textContent='📍';
+var nm=document.createElement('span');nm.className='counter-name';nm.textContent=name;
+left.appendChild(em);left.appendChild(nm);
+var ctrl=document.createElement('div');ctrl.className='counter-controls';
+var bm=document.createElement('button');bm.className='counter-btn';bm.dataset.dir='-1';bm.innerHTML='&#8722;';
+var vsp=document.createElement('span');vsp.className='counter-val';vsp.textContent='1';
+var bp=document.createElement('button');bp.className='counter-btn';bp.dataset.dir='1';bp.innerHTML='&#43;';
+ctrl.appendChild(bm);ctrl.appendChild(vsp);ctrl.appendChild(bp);
+div.appendChild(left);div.appendChild(ctrl);
+list.appendChild(div);
+ambiUpdateSummary();
 }
 </script>
 </body>
