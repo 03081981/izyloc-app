@@ -2680,11 +2680,13 @@ function gotoWStep(step) {
     const l = document.getElementById(`sl-${i}`);
     if (l) { l.classList.toggle('done', i < step); }
   }
-  // Show/hide steps (steps 4 and 5 map to wstep-4 and wstep-5)
-  [1,2,3,4,5].forEach(n => {
+  // Show/hide steps including wstep-0 (Tipo) and wstep-quem
+  [0,1,2,3,4,5].forEach(n => {
     const el = document.getElementById(`wstep-${n}`);
     if (el) el.style.display = (n === step) ? 'block' : 'none';
   });
+  const wq = document.getElementById('wstep-quem');
+  if (wq) wq.style.display = 'none';
   window.scrollTo(0,0);
 }
 
