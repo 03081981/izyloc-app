@@ -2056,6 +2056,7 @@ canvas { display: block; }
     <div id="wstep-1" style="display:none">
       <div id="wi-context-tag" class="wi-context-tag"><span class="wi-ctx-check">&#10003;</span> <span id="wi-ctx-label">&#8212;</span></div>
       <input type="hidden" id="wi-type"/>
+      <input type="hidden" id="wi-imob-name"/><input type="hidden" id="wi-imob-cnpj"/><input type="hidden" id="wi-imob-phone"/><input type="hidden" id="wi-imob-address"/>
       <div class="form-card">
         <div class="form-card-title">Localiza&#231;&#227;o</div>
         <div class="form-row form-row-full" style="margin-bottom:14px"><div class="form-group">
@@ -2093,7 +2094,7 @@ canvas { display: block; }
         <div class="form-card-title">Data e hora</div>
         <div class="form-row">
           <div class="form-group"><label class="form-label">Data da vistoria <span class="req-star">*</span></label>
-          <input class="form-input" id="wi-data" type="date"/></div>
+          <input class="form-input" id="wi-date" type="date"/></div>
           <div class="form-group"><label class="form-label">Hora da vistoria</label>
           <input class="form-input" id="wi-hora" type="time"/></div>
         </div>
@@ -2657,7 +2658,7 @@ function validateAndGoWstep2() {
     {id:'wi-cidade', label:'Cidade'},
     {id:'wi-estado', label:'Estado'},
     {id:'wi-prop-type', label:'Tipo do imóvel'},
-    {id:'wi-data', label:'Data da vistoria'}
+    {id:'wi-date', label:'Data da vistoria'}
   ];
   let ok = true;
   required.forEach(f => {
