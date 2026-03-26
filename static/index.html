@@ -6,12 +6,12 @@
 <meta name="theme-color" content="#1565E8"/>
 <meta name="apple-mobile-web-app-capable" content="yes"/>
 <meta name="apple-mobile-web-app-status-bar-style" content="default"/>
-<title>izyLAUDO â Vistorias ImobiliÃ¡rias</title>
+<title>izyLAUDO – Vistorias Imobiliárias</title>
 <link rel="manifest" href="/static/manifest.json"/>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/signature_pad/4.1.7/signature_pad.umd.min.js"></script>
 
 <style>
-/* izyLAUDO Design System v8 â Premium SaaS */
+/* izyLAUDO Design System v8 — Premium SaaS */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
 
 :root {
@@ -60,12 +60,12 @@ body {
   overflow-x: hidden;
 }
 
-/* âââ SCROLLBAR âââ */
+/* ─── SCROLLBAR ─── */
 ::-webkit-scrollbar { width: 6px; height: 6px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
 
-/* âââ TOPBAR (global back/logout bar) âââ */
+/* ─── TOPBAR (global back/logout bar) ─── */
 #topbar {
   display: none;
   position: fixed; top: 0; left: 0; right: 0;
@@ -101,11 +101,11 @@ body {
 }
 #btn-logout:hover { background: var(--bg); color: var(--text-2); }
 
-/* âââ PAGE SYSTEM âââ */
+/* ─── PAGE SYSTEM ─── */
 .page { display: none; min-height: 100vh; }
 .page.active { display: block; }
 
-/* âââ AUTH PAGE âââ */
+/* ─── AUTH PAGE ─── */
 #page-auth {
   display: none;
   min-height: 100vh;
@@ -223,11 +223,11 @@ body {
 }
 .auth-error.show { display: block; }
 
-/* âââ AUTH FORMS TOGGLE âââ */
+/* ─── AUTH FORMS TOGGLE ─── */
 #form-login, #form-register, #form-forgot { display: none; }
 #form-login.show, #form-register.show, #form-forgot.show { display: block; }
 
-/* âââ RESET PAGE âââ */
+/* ─── RESET PAGE ─── */
 #page-reset {
   display: none;
   min-height: 100vh;
@@ -271,7 +271,7 @@ body {
   margin: 0 auto 20px;
 }
 
-/* âââ APP LAYOUT (sidebar + main) âââ */
+/* ─── APP LAYOUT (sidebar + main) ─── */
 #page-dashboard {
   display: none;
   min-height: 100vh;
@@ -280,7 +280,7 @@ body {
   display: flex;
 }
 
-/* âââ SIDEBAR âââ */
+/* ─── SIDEBAR ─── */
 .sidebar {
   width: var(--sidebar-w);
   min-height: 100vh;
@@ -375,7 +375,7 @@ body {
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
 
-/* âââ MAIN WRAPPER âââ */
+/* ─── MAIN WRAPPER ─── */
 .dash-main-wrapper {
   margin-left: var(--sidebar-w);
   min-height: 100vh;
@@ -384,7 +384,7 @@ body {
   min-width: 0;
 }
 
-/* âââ DASH TOPBAR âââ */
+/* ─── DASH TOPBAR ─── */
 .dash-topbar {
   height: 64px;
   background: var(--white);
@@ -423,14 +423,14 @@ body {
 }
 .topbar-icon-btn:hover { background: var(--bg); color: var(--text-2); }
 
-/* âââ DASH TAB CONTENT âââ */
+/* ─── DASH TAB CONTENT ─── */
 .dash-tab-content {
   flex: 1; padding: 28px;
   display: none;
 }
 .dash-tab-content.active { display: block; }
 
-/* âââ DASH GRID âââ */
+/* ─── DASH GRID ─── */
 .dash-grid {
   display: grid;
   grid-template-columns: 1fr 340px;
@@ -438,7 +438,7 @@ body {
   align-items: start;
 }
 
-/* âââ SECTION HEADER âââ */
+/* ─── SECTION HEADER ─── */
 .section-header {
   display: flex; align-items: center; justify-content: space-between;
   margin-bottom: 14px; margin-top: 24px;
@@ -452,7 +452,7 @@ body {
 }
 .section-link:hover { text-decoration: underline; }
 
-/* âââ STAT CARDS âââ */
+/* ─── STAT CARDS ─── */
 .stat-cards-row {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -486,7 +486,7 @@ body {
   text-transform: uppercase; letter-spacing: .5px;
 }
 
-/* âââ INSPECTIONS LIST âââ */
+/* ─── INSPECTIONS LIST ─── */
 #inspections-list {
   display: flex; flex-direction: column; gap: 10px;
 }
@@ -548,7 +548,7 @@ body {
   text-align: center; padding: 48px 20px; color: var(--text-3);
 }
 
-/* âââ NEW DASHBOARD v2 âââ */
+/* ─── NEW DASHBOARD v2 ─── */
 .db-hero {
   display: flex; align-items: center; justify-content: space-between;
   margin-bottom: 24px; flex-wrap: wrap; gap: 12px;
@@ -736,7 +736,7 @@ body {
 .inspections-empty svg { width: 48px; height: 48px; margin: 0 auto 16px; opacity: .3; }
 .inspections-empty p { font-size: 14px; }
 
-/* âââ CREDITS PANEL âââ */
+/* ─── CREDITS PANEL ─── */
 .credits-panel {
   background: var(--white);
   border-radius: var(--r-lg);
@@ -797,7 +797,7 @@ body {
   font-size: 11px; color: var(--text-3); text-align: center; margin-top: 8px;
 }
 
-/* âââ EXTRATO PANEL âââ */
+/* ─── EXTRATO PANEL ─── */
 .extrato-panel {
   background: var(--white);
   border-radius: var(--r-lg);
@@ -829,14 +829,14 @@ body {
 .ext-debit { background: #FEE2E2; color: #DC2626; }
 .ext-laudo { background: var(--blue-light); color: var(--blue); }
 
-/* âââ DASHBOARD STATS TAB âââ */
+/* ─── DASHBOARD STATS TAB ─── */
 .stats-section { padding: 4px 0; }
 .stats-grid-full {
   display: grid; grid-template-columns: repeat(4, 1fr);
   gap: 16px; margin-bottom: 24px;
 }
 
-/* âââ PROFILE TAB âââ */
+/* ─── PROFILE TAB ─── */
 .profile-card {
   background: var(--white); border-radius: var(--r-lg);
   box-shadow: var(--sh); border: 1px solid var(--border-light);
@@ -868,11 +868,11 @@ body {
 }
 .profile-field-value { font-size: 14px; font-weight: 500; color: var(--text); }
 
-/* âââ NAV DASH TABS (hidden, kept for JS compat) âââ */
+/* ─── NAV DASH TABS (hidden, kept for JS compat) ─── */
 .dash-nav-tabs { display: none !important; }
 .dash-header { display: none !important; }
 
-/* âââ WIZARD PAGE âââ */
+/* ─── WIZARD PAGE ─── */
 #page-wizard {
   display: none;
   min-height: 100vh;
@@ -910,7 +910,7 @@ body {
 }
 .btn-wiz-back:hover { background: var(--bg); }
 
-/* âââ STEPPER âââ */
+/* ─── STEPPER ─── */
 .wizard-stepper-wrap {
   padding: 12px 0 14px;
   overflow-x: auto;
@@ -953,7 +953,7 @@ body {
 .step-item.active .step-label { color: var(--blue); font-weight: 600; }
 .step-item.done .step-label { color: var(--blue); }
 
-/* âââ WIZARD CONTENT âââ */
+/* ─── WIZARD CONTENT ─── */
 .page-content {
   flex: 1; overflow-y: auto; padding: 28px 24px;
 }
@@ -967,7 +967,7 @@ body {
   margin-bottom: 28px;
 }
 
-/* âââ TIPO CARDS (WIZARD STEP 0) âââ */
+/* ─── TIPO CARDS (WIZARD STEP 0) ─── */
 .tipo-cards {
   display: grid; grid-template-columns: repeat(3, 1fr);
   gap: 16px; margin-bottom: 24px;
@@ -1060,7 +1060,7 @@ body {
 }
 .wiz-info-icon { color: var(--blue); flex-shrink: 0; margin-top: 1px; }
 
-/* âââ WIZARD NAV âââ */
+/* ─── WIZARD NAV ─── */
 .wiz-nav {
   display: flex; justify-content: space-between; align-items: center;
   padding-top: 20px; margin-top: 8px;
@@ -1086,7 +1086,7 @@ body {
 }
 .btn-wiz-back-sm:hover { background: var(--bg); border-color: var(--text-3); }
 
-/* âââ SUBCHOICE (check-in/check-out) âââ */
+/* ─── SUBCHOICE (check-in/check-out) ─── */
 #temporada-subchoice { display: none; }
 #temporada-subchoice.show { display: block; }
 .subchoice-row {
@@ -1103,7 +1103,7 @@ body {
 .subchoice-btn:hover { border-color: var(--blue-border); color: var(--blue); }
 .subchoice-btn.active { border-color: var(--blue); background: var(--blue-light); color: var(--blue); }
 
-/* âââ WIZARD FORMS âââ */
+/* ─── WIZARD FORMS ─── */
 .wiz-step { display: none; }
 .wiz-step.active { display: block; }
 .wstep-title {
@@ -1142,7 +1142,7 @@ body {
   font-size: 14px; font-weight: 600; color: var(--text-2);
 }
 
-/* âââ ROOMS (step 3 & 4) âââ */
+/* ─── ROOMS (step 3 & 4) ─── */
 .room-check-row {
   display: flex; align-items: center; gap: 10px;
   padding: 10px 14px;
@@ -1196,7 +1196,7 @@ body {
 }
 .photo-add-btn:hover { border-color: var(--blue); color: var(--blue); background: var(--blue-light); }
 
-/* âââ REVIEW + SIGNATURES âââ */
+/* ─── REVIEW + SIGNATURES ─── */
 .rev-section { margin-bottom: 20px; }
 .rev-section-title {
   font-size: 13px; font-weight: 700; color: var(--text-3);
@@ -1217,7 +1217,7 @@ canvas { display: block; }
 .sig-actions { display: flex; gap: 8px; }
 .sig-status { font-size: 12px; color: var(--text-3); margin-top: 6px; }
 
-/* âââ DETAIL PAGE âââ */
+/* ─── DETAIL PAGE ─── */
 #page-detail {
   display: none; min-height: 100vh;
   flex-direction: column; background: var(--bg);
@@ -1232,7 +1232,7 @@ canvas { display: block; }
 .detail-title { font-size: 16px; font-weight: 700; color: var(--text); flex: 1; }
 #detail-content { flex: 1; padding: 24px; overflow-y: auto; }
 
-/* âââ MODAL âââ */
+/* ─── MODAL ─── */
 .modal-overlay {
   display: none; position: fixed; inset: 0;
   background: rgba(0,0,0,.45); z-index: 500;
@@ -1258,7 +1258,7 @@ canvas { display: block; }
   display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px;
 }
 
-/* âââ LOADING OVERLAY âââ */
+/* ─── LOADING OVERLAY ─── */
 .loading-overlay {
   position: fixed; inset: 0;
   background: rgba(255,255,255,.85);
@@ -1277,7 +1277,7 @@ canvas { display: block; }
 @keyframes spin { to { transform: rotate(360deg); } }
 .loading-text { font-size: 14px; color: var(--text-2); font-weight: 500; }
 
-/* âââ TOAST âââ */
+/* ─── TOAST ─── */
 .toast-el {
   position: fixed; bottom: 24px; left: 50%;
   transform: translateX(-50%) translateY(100px);
@@ -1292,7 +1292,7 @@ canvas { display: block; }
 .toast-el.success { background: var(--success); }
 .toast-el.error { background: var(--error); }
 
-/* âââ FAB âââ */
+/* ─── FAB ─── */
 .fab {
   display: none;
   position: fixed; bottom: 24px; right: 24px;
@@ -1306,7 +1306,7 @@ canvas { display: block; }
 }
 .fab:hover { background: var(--blue-mid); transform: scale(1.08); }
 
-/* âââ LOCATARIO/LOCADOR BLOCKS âââ */
+/* ─── LOCATARIO/LOCADOR BLOCKS ─── */
 .person-block {
   background: var(--white); border-radius: var(--r);
   border: 1px solid var(--border-light);
@@ -1335,7 +1335,7 @@ canvas { display: block; }
 }
 .btn-add-person:hover { border-color: var(--blue); color: var(--blue); background: var(--blue-light); }
 
-/* âââ SWITCH TOGGLE âââ */
+/* ─── SWITCH TOGGLE ─── */
 .toggle-row {
   display: flex; align-items: center; justify-content: space-between;
   padding: 12px 14px; background: var(--bg); border-radius: var(--r-sm);
@@ -1355,7 +1355,7 @@ canvas { display: block; }
 }
 .toggle-switch.on .toggle-thumb { transform: translateX(18px); }
 
-/* âââ ITEM SUGGESTIONS âââ */
+/* ─── ITEM SUGGESTIONS ─── */
 #temporada-item-suggestions { display: none; }
 #temporada-item-suggestions.show { display: block; }
 .suggestion-chips {
@@ -1369,7 +1369,7 @@ canvas { display: block; }
 }
 .chip:hover { border-color: var(--blue); color: var(--blue); background: var(--blue-light); }
 
-/* âââ RESP FLOW âââ */
+/* ─── RESP FLOW ─── */
 #v5-resp-flow, #v6-temporada { display: none; }
 #v5-resp-flow.show, #v6-temporada.show { display: block; }
 .resp-option-row {
@@ -1385,7 +1385,7 @@ canvas { display: block; }
 .resp-opt-btn:hover { border-color: var(--blue-border); color: var(--blue); }
 .resp-opt-btn.active { border-color: var(--blue); background: var(--blue-light); color: var(--blue); }
 
-/* âââ RESPONSIVE âââ */
+/* ─── RESPONSIVE ─── */
 @media (max-width: 1200px) {
   .db-cards-row { grid-template-columns: repeat(3, 1fr); }
 }
@@ -1420,7 +1420,7 @@ canvas { display: block; }
   .form-row { grid-template-columns: 1fr; }
 }
 
-/* âââ UTILS âââ */
+/* ─── UTILS ─── */
 .text-center { text-align: center; }
 .text-muted { color: var(--text-3); }
 .mt-2 { margin-top: 8px; }
@@ -1429,7 +1429,7 @@ canvas { display: block; }
 .hidden { display: none !important; }
 .flex-center { display: flex; align-items: center; justify-content: center; }
 
-/* âââ REALIZA CARDS (WIZARD STEP: QUEM REALIZA) âââ */
+/* ─── REALIZA CARDS (WIZARD STEP: QUEM REALIZA) ─── */
 .realiza-cards {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -1466,22 +1466,22 @@ canvas { display: block; }
 
 <!-- TOP BAR -->
 <div class="topbar" id="topbar">
-  <button class="topbar-back hidden" id="btn-back" onclick="goBack()">â¹</button>
+  <button class="topbar-back hidden" id="btn-back" onclick="goBack()">‹</button>
   <div class="topbar-center" id="topbar-title">
     <span class="topbar-logo-small">
       <span class="blue">iZY'</span><span class="black">lOC</span>
     </span>
   </div>
   <div class="topbar-right">
-    <button class="btn-logout" id="btn-logout" onclick="logout()" title="Sair" style="display:none">â</button>
+    <button class="btn-logout" id="btn-logout" onclick="logout()" title="Sair" style="display:none">⏏</button>
   </div>
 </div>
 
 
-<!-- ââââââââââââââ PAGE: AUTH ââââââââââââââ -->
+<!-- ══════════════ PAGE: AUTH ══════════════ -->
 <div id="page-auth" class="page">
   <div class="auth-card">
-    <div style='text-align:center; margin-bottom:20px;'><div style='font-size:28px; font-weight:700; line-height:1; letter-spacing:-0.5px;'><span style='color:#2d7dd2; font-weight:400;'>izy</span><span style='color:#1a1a1a; font-weight:700;'>LAUDO</span></div><div style='font-size:10px; color:#999; letter-spacing:1px; text-transform:uppercase; margin-top:4px;'>Vistorias ImobiliÃ¡rias</div></div>
+    <div style='text-align:center; margin-bottom:20px;'><div style='font-size:28px; font-weight:700; line-height:1; letter-spacing:-0.5px;'><span style='color:#2d7dd2; font-weight:400;'>izy</span><span style='color:#1a1a1a; font-weight:700;'>LAUDO</span></div><div style='font-size:10px; color:#999; letter-spacing:1px; text-transform:uppercase; margin-top:4px;'>Vistorias Imobiliárias</div></div>
 
     <!-- LOGIN -->
     <div id="form-login" class="show">
@@ -1501,7 +1501,7 @@ canvas { display: block; }
       </div>
       <button class="btn btn-primary btn-full" onclick="doLogin()">Entrar</button>
       <div class="auth-switch">
-        NÃ£o tem conta? <button class="auth-link" onclick="document.getElementById('form-login').classList.remove('show');document.getElementById('form-register').classList.add('show');document.querySelector('.auth-title').textContent='Criar conta'">Cadastre-se</button>
+        Não tem conta? <button class="auth-link" onclick="document.getElementById('form-login').classList.remove('show');document.getElementById('form-register').classList.add('show');document.querySelector('.auth-title').textContent='Criar conta'">Cadastre-se</button>
       </div>
     </div>
 
@@ -1519,27 +1519,27 @@ canvas { display: block; }
         <input class="form-input" id="reg-email" type="email" placeholder="seu@email.com"/>
       </div>
       <div class="form-group">
-        <label class="form-label">Empresa / ImobiliÃ¡ria</label>
+        <label class="form-label">Empresa / Imobiliária</label>
         <input class="form-input" id="reg-company" type="text" placeholder="Nome da empresa"/>
       </div>
       <div class="form-group">
         <label class="form-label">CRECI</label>
-        <input class="form-input" id="reg-creci" type="text" placeholder="NÃºmero do CRECI"/>
+        <input class="form-input" id="reg-creci" type="text" placeholder="Número do CRECI"/>
       </div>
       <div class="form-group">
         <label class="form-label">Senha</label>
-        <input class="form-input" id="reg-password" type="password" placeholder="MÃ­nimo 8 caracteres"/>
+        <input class="form-input" id="reg-password" type="password" placeholder="Mínimo 8 caracteres"/>
       </div>
       <button class="btn btn-primary btn-full" onclick="doRegister()" style="margin-top:4px">Criar conta</button>
       <div class="auth-switch">
-        JÃ¡ tem conta? <button class="auth-link" onclick="document.getElementById('form-register').classList.remove('show');document.getElementById('form-login').classList.add('show')">Entrar</button>
+        Já tem conta? <button class="auth-link" onclick="document.getElementById('form-register').classList.remove('show');document.getElementById('form-login').classList.add('show')">Entrar</button>
       </div>
     </div>
 
     <!-- FORGOT -->
     <div id="form-forgot">
       <div class="auth-title">Recuperar senha</div>
-      <div class="auth-sub">Informe seu e-mail para receber o link de redefiniÃ§Ã£o</div>
+      <div class="auth-sub">Informe seu e-mail para receber o link de redefinição</div>
       <div class="form-group">
         <label class="form-label">E-mail</label>
         <input class="form-input" id="forgot-email" type="email" placeholder="seu@email.com"/>
@@ -1555,29 +1555,29 @@ canvas { display: block; }
   </div>
 </div>
 
-<!-- ââââââââââââââ PAGE: RESET ââââââââââââââ -->
+<!-- ══════════════ PAGE: RESET ══════════════ -->
 <div id="page-reset" class="page">
   <div class="reset-card">
-    <div style='text-align:center; margin-bottom:20px;'><div style='font-size:28px; font-weight:700; line-height:1; letter-spacing:-0.5px;'><span style='color:#2d7dd2; font-weight:400;'>izy</span><span style='color:#1a1a1a; font-weight:700;'>LAUDO</span></div><div style='font-size:10px; color:#999; letter-spacing:1px; text-transform:uppercase; margin-top:4px;'>Vistorias ImobiliÃ¡rias</div></div>
+    <div style='text-align:center; margin-bottom:20px;'><div style='font-size:28px; font-weight:700; line-height:1; letter-spacing:-0.5px;'><span style='color:#2d7dd2; font-weight:400;'>izy</span><span style='color:#1a1a1a; font-weight:700;'>LAUDO</span></div><div style='font-size:10px; color:#999; letter-spacing:1px; text-transform:uppercase; margin-top:4px;'>Vistorias Imobiliárias</div></div>
 
     <div id="reset-checking">
       <div class="reset-icon-wrap">
         <svg width="28" height="28" viewBox="0 0 20 20" fill="#1565D8"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z"/></svg>
       </div>
       <div class="reset-title">Verificando link...</div>
-      <div class="reset-sub">Aguarde enquanto validamos seu link de recuperaÃ§Ã£o.</div>
+      <div class="reset-sub">Aguarde enquanto validamos seu link de recuperação.</div>
     </div>
 
     <div id="reset-link-box">
       <div class="reset-title">Redefinir senha</div>
-      <div class="reset-sub">Link vÃ¡lido para o e-mail:</div>
+      <div class="reset-sub">Link válido para o e-mail:</div>
       <div class="reset-email-box" id="reset-email-display"></div>
     </div>
 
     <div id="reset-form">
       <div class="form-group" style="margin-bottom:16px">
         <label class="form-label">Nova senha</label>
-        <input class="form-input" id="reset-new-password" type="password" placeholder="MÃ­nimo 8 caracteres"/>
+        <input class="form-input" id="reset-new-password" type="password" placeholder="Mínimo 8 caracteres"/>
       </div>
       <div class="form-group" style="margin-bottom:20px">
         <label class="form-label">Confirmar nova senha</label>
@@ -1599,26 +1599,26 @@ canvas { display: block; }
   </div>
 </div>
 
-<!-- ââââââââââââââ PAGE: DASHBOARD ââââââââââââââ -->
+<!-- ══════════════ PAGE: DASHBOARD ══════════════ -->
 <div id="page-dashboard" class="page">
   <!-- SIDEBAR -->
   <aside class="sidebar">
-    <div class="sidebar-logo"><div style='padding: 20px 20px 16px;'><div style='font-size:20px; font-weight:700; line-height:1; letter-spacing:-0.5px;'><span style='color:#2d7dd2; font-weight:400;'>izy</span><span style='color:#fff; font-weight:700;'>LAUDO</span></div><div style='font-size:9px; color:rgba(255,255,255,0.4); letter-spacing:1px; text-transform:uppercase; margin-top:3px;'>Vistorias ImobiliÃ¡rias</div></div></div>
+    <div class="sidebar-logo"><div style='padding: 20px 20px 16px;'><div style='font-size:20px; font-weight:700; line-height:1; letter-spacing:-0.5px;'><span style='color:#2d7dd2; font-weight:400;'>izy</span><span style='color:#fff; font-weight:700;'>LAUDO</span></div><div style='font-size:9px; color:rgba(255,255,255,0.4); letter-spacing:1px; text-transform:uppercase; margin-top:3px;'>Vistorias Imobiliárias</div></div></div>
     <nav class="sidebar-nav">
       <button class="nav-item active" id="nav-dash" onclick="switchTab('vistorias',this)"><span class="nav-icon-wrap"><svg viewBox="0 0 20 20" fill="currentColor"><path d="M3 4a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1H4a1 1 0 01-1-1V4zm0 8a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1H4a1 1 0 01-1-1v-4zm8-8a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1V4zm0 8a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1v-4z"/></svg></span>Dashboard</button>
       <button class="nav-item" id="nav-nova" onclick="showNewInspection()"><span class="nav-icon-wrap"><svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"/></svg></span>Nova vistoria</button>
       <div class="nav-divider"></div>
       <button class="nav-item" id="nav-laudos" onclick="switchTab('vistorias',this)"><span class="nav-icon-wrap"><svg viewBox="0 0 20 20" fill="currentColor"><path d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z"/></svg></span>Meus laudos</button>
       <button class="nav-item" id="nav-fotos" onclick="switchTab('estatisticas',this)"><span class="nav-icon-wrap"><svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z"/></svg></span>Fotos e consumo</button>
-      <button class="nav-item" id="nav-recarga" onclick="switchTab('estatisticas',this)"><span class="nav-icon-wrap"><svg viewBox="0 0 20 20" fill="currentColor"><path d="M4 4a2 2 0 00-2 2v1h16V6a2 2 0 00-2-2H4zM2 11v3a2 2 0 002 2h12a2 2 0 002-2v-3H2zm9 2a1 1 0 100-2H9a1 1 0 100 2h2z"/></svg></span>Recarga de crÃ©ditos</button>
+      <button class="nav-item" id="nav-recarga" onclick="switchTab('estatisticas',this)"><span class="nav-icon-wrap"><svg viewBox="0 0 20 20" fill="currentColor"><path d="M4 4a2 2 0 00-2 2v1h16V6a2 2 0 00-2-2H4zM2 11v3a2 2 0 002 2h12a2 2 0 002-2v-3H2zm9 2a1 1 0 100-2H9a1 1 0 100 2h2z"/></svg></span>Recarga de créditos</button>
       <button class="nav-item" id="nav-extrato" onclick="switchTab('estatisticas',this)"><span class="nav-icon-wrap"><svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 3a1 1 0 000 2v8a2 2 0 002 2h2.586l-1.293 1.293a1 1 0 101.414 1.414L10 15.414l2.293 2.293a1 1 0 001.414-1.414L12.414 15H15a2 2 0 002-2V5a1 1 0 100-2H3zm11 4a1 1 0 10-2 0v4a1 1 0 102 0V7zm-3 1a1 1 0 10-2 0v3a1 1 0 102 0V8zM8 9a1 1 0 00-2 0v2a1 1 0 102 0V9z"/></svg></span>Extrato financeiro</button>
     </nav>
     <div class="sidebar-bottom">
-      <button class="nav-item" id="nav-config" onclick="switchTab('perfil',this)"><span class="nav-icon-wrap"><svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z"/></svg></span>ConfiguraÃ§Ãµes</button>
+      <button class="nav-item" id="nav-config" onclick="switchTab('perfil',this)"><span class="nav-icon-wrap"><svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z"/></svg></span>Configurações</button>
       <div class="sidebar-user" onclick="switchTab('perfil',document.getElementById('nav-config'))">
         <div class="sidebar-avatar" id="profile-avatar-letter">M</div>
         <div class="sidebar-user-info">
-          <div class="sidebar-user-name" id="profile-name">UsuÃ¡rio</div>
+          <div class="sidebar-user-name" id="profile-name">Usuário</div>
           <div class="sidebar-user-sub" id="profile-company">Empresa</div>
         </div>
       </div>
@@ -1645,8 +1645,8 @@ canvas { display: block; }
       <!-- DASHBOARD HEADER -->
       <div class="db-hero">
         <div class="db-hero-left">
-          <div class="db-greeting" id="db-greeting">OlÃ¡, bem-vindo!</div>
-          <div class="db-subtitle">Aqui estÃ¡ o resumo da sua operaÃ§Ã£o hoje.</div>
+          <div class="db-greeting" id="db-greeting">Olá, bem-vindo!</div>
+          <div class="db-subtitle">Aqui está o resumo da sua operação hoje.</div>
         </div>
         <button class="db-btn-nova" onclick="showNewInspection()">
           <svg viewBox="0 0 20 20" fill="currentColor" width="16" height="16"><path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"/></svg>
@@ -1668,7 +1668,7 @@ canvas { display: block; }
             <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"/></svg>
           </div>
           <div class="db-card-value" id="stat-concluido">0</div>
-          <div class="db-card-label">ConcluÃ­das</div>
+          <div class="db-card-label">Concluídas</div>
         </div>
         <div class="db-card db-card-warn">
           <div class="db-card-icon">
@@ -1681,14 +1681,14 @@ canvas { display: block; }
           <div class="db-card-icon">
             <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z"/></svg>
           </div>
-          <div class="db-card-value" id="stat-mes">â</div>
-          <div class="db-card-label">Este mÃªs</div>
+          <div class="db-card-value" id="stat-mes">—</div>
+          <div class="db-card-label">Este mês</div>
         </div>
         <div class="db-card db-card-gray">
           <div class="db-card-icon">
             <svg viewBox="0 0 20 20" fill="currentColor"><path d="M4 4a2 2 0 00-2 2v1h16V6a2 2 0 00-2-2H4zM2 11v3a2 2 0 002 2h12a2 2 0 002-2v-3H2zm9 2a1 1 0 100-2H9a1 1 0 100 2h2z"/></svg>
           </div>
-          <div class="db-card-value" id="stat-saldo">â</div>
+          <div class="db-card-value" id="stat-saldo">—</div>
           <div class="db-card-label">Saldo (fotos)</div>
         </div>
       </div>
@@ -1696,10 +1696,10 @@ canvas { display: block; }
       <!-- MAIN CONTENT GRID -->
       <div class="db-main-grid">
 
-        <!-- LEFT: Ãºltimas vistorias -->
+        <!-- LEFT: últimas vistorias -->
         <div class="db-col-main">
           <div class="db-section-header">
-            <span class="db-section-title">Ãltimas vistorias</span>
+            <span class="db-section-title">Últimas vistorias</span>
             <span class="db-section-link" onclick="loadDashboard && loadDashboard()">
               <svg viewBox="0 0 20 20" fill="currentColor" width="13" height="13"><path fill-rule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z"/></svg>
               Atualizar
@@ -1720,8 +1720,8 @@ canvas { display: block; }
             <div class="db-balance-block">
               <div class="db-balance-row">
                 <div>
-                  <div class="db-balance-label">Saldo disponÃ­vel</div>
-                  <div class="db-balance-value" id="db-saldo-display">â fotos</div>
+                  <div class="db-balance-label">Saldo disponível</div>
+                  <div class="db-balance-value" id="db-saldo-display">— fotos</div>
                 </div>
                 <div class="db-balance-badge">
                   <svg viewBox="0 0 20 20" fill="currentColor" width="18" height="18"><path d="M4 4a2 2 0 00-2 2v1h16V6a2 2 0 00-2-2H4zM2 11v3a2 2 0 002 2h12a2 2 0 002-2v-3H2zm9 2a1 1 0 100-2H9a1 1 0 100 2h2z"/></svg>
@@ -1729,7 +1729,7 @@ canvas { display: block; }
               </div>
               <div class="db-price-row">
                 <span class="db-price-label">Valor por foto processada</span>
-                <span class="db-price-val" id="db-preco-display">â</span>
+                <span class="db-price-val" id="db-preco-display">—</span>
               </div>
             </div>
             <table class="db-extrato-table">
@@ -1742,10 +1742,10 @@ canvas { display: block; }
             </table>
           </div>
 
-          <!-- AÃÃES RÃPIDAS -->
+          <!-- AÇÕES RÁPIDAS -->
           <div class="db-panel">
             <div class="db-panel-header">
-              <span class="db-panel-title">AÃ§Ãµes rÃ¡pidas</span>
+              <span class="db-panel-title">Ações rápidas</span>
             </div>
             <div class="db-quick-actions">
               <button class="db-qa-btn" onclick="showNewInspection()">
@@ -1758,7 +1758,7 @@ canvas { display: block; }
                 <div class="db-qa-icon db-qa-green">
                   <svg viewBox="0 0 20 20" fill="currentColor"><path d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z"/></svg>
                 </div>
-                <span>HistÃ³rico</span>
+                <span>Histórico</span>
               </button>
               <button class="db-qa-btn" onclick="switchTab('estatisticas',document.getElementById('nav-extrato'))">
                 <div class="db-qa-icon db-qa-warn">
@@ -1797,14 +1797,14 @@ canvas { display: block; }
             <div class="stat-card-icon stat-icon-green">
               <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"/></svg>
             </div>
-            <div class="stat-value" id="stat-credits">â</div>
-            <div class="stat-label">Fotos disponÃ­veis</div>
+            <div class="stat-value" id="stat-credits">—</div>
+            <div class="stat-label">Fotos disponíveis</div>
           </div>
           <div class="stat-card">
             <div class="stat-card-icon stat-icon-warn">
               <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z"/></svg>
             </div>
-            <div class="stat-value" id="stat-fotos-usadas">â</div>
+            <div class="stat-value" id="stat-fotos-usadas">—</div>
             <div class="stat-label">Fotos utilizadas</div>
           </div>
           <div class="stat-card">
@@ -1816,11 +1816,11 @@ canvas { display: block; }
           </div>
         </div>
         <div class="credits-panel" style="max-width:480px">
-          <div class="panel-header"><span class="panel-title">Recarregar crÃ©ditos</span></div>
+          <div class="panel-header"><span class="panel-title">Recarregar créditos</span></div>
           <div class="credits-balance-row">
             <div>
               <div class="credits-bal-label">Saldo atual</div>
-              <div class="credits-bal-value">â fotos</div>
+              <div class="credits-bal-value">— fotos</div>
             </div>
           </div>
           <div class="pkg-grid" style="grid-template-columns:repeat(4,1fr)">
@@ -1840,22 +1840,22 @@ canvas { display: block; }
         <div class="profile-header">
           <div class="profile-avatar-lg" id="profile-avatar-lg">M</div>
           <div class="profile-header-info">
-            <div class="profile-header-name" id="profile-name-header">UsuÃ¡rio</div>
+            <div class="profile-header-name" id="profile-name-header">Usuário</div>
             <div class="profile-header-role">Vistoriador</div>
           </div>
         </div>
         <div class="profile-body">
           <div class="profile-field">
             <span class="profile-field-label">Nome</span>
-            <span class="profile-field-value" id="profile-name-val">â</span>
+            <span class="profile-field-value" id="profile-name-val">—</span>
           </div>
           <div class="profile-field">
             <span class="profile-field-label">E-mail</span>
-            <span class="profile-field-value" id="profile-email">â</span>
+            <span class="profile-field-value" id="profile-email">—</span>
           </div>
           <div class="profile-field">
             <span class="profile-field-label">Empresa</span>
-            <span class="profile-field-value" id="profile-company-val">â</span>
+            <span class="profile-field-value" id="profile-company-val">—</span>
           </div>
           <div class="profile-field" style="border:none;padding-top:20px">
             <button class="btn btn-ghost" onclick="if(confirm('Sair da conta?')){logout()}">
@@ -1878,21 +1878,21 @@ canvas { display: block; }
   <button class="fab" onclick="showNewInspection()">+</button>
 </div>
 
-<!-- ââââââââââââââ PAGE: WIZARD ââââââââââââââ -->
+<!-- ══════════════ PAGE: WIZARD ══════════════ -->
 <div id="page-wizard" class="page">
   <aside class="sidebar">
-    <div class="sidebar-logo"><div style='padding: 20px 20px 16px;'><div style='font-size:20px; font-weight:700; line-height:1; letter-spacing:-0.5px;'><span style='color:#2d7dd2; font-weight:400;'>izy</span><span style='color:#fff; font-weight:700;'>LAUDO</span></div><div style='font-size:9px; color:rgba(255,255,255,0.4); letter-spacing:1px; text-transform:uppercase; margin-top:3px;'>Vistorias ImobiliÃ¡rias</div></div></div>
+    <div class="sidebar-logo"><div style='padding: 20px 20px 16px;'><div style='font-size:20px; font-weight:700; line-height:1; letter-spacing:-0.5px;'><span style='color:#2d7dd2; font-weight:400;'>izy</span><span style='color:#fff; font-weight:700;'>LAUDO</span></div><div style='font-size:9px; color:rgba(255,255,255,0.4); letter-spacing:1px; text-transform:uppercase; margin-top:3px;'>Vistorias Imobiliárias</div></div></div>
     <nav class="sidebar-nav">
       <button class="nav-item" onclick="showPage('page-dashboard')"><span class="nav-icon-wrap"><svg viewBox="0 0 20 20" fill="currentColor"><path d="M3 4a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1H4a1 1 0 01-1-1V4zm0 8a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1H4a1 1 0 01-1-1v-4zm8-8a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1V4zm0 8a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1v-4z"/></svg></span>Dashboard</button>
       <button class="nav-item active"><span class="nav-icon-wrap"><svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"/></svg></span>Nova vistoria</button>
       <div class="nav-divider"></div>
       <button class="nav-item" onclick="showPage('page-dashboard')"><span class="nav-icon-wrap"><svg viewBox="0 0 20 20" fill="currentColor"><path d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z"/></svg></span>Meus laudos</button>
       <button class="nav-item" onclick="showPage('page-dashboard')"><span class="nav-icon-wrap"><svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z"/></svg></span>Fotos e consumo</button>
-      <button class="nav-item" onclick="showPage('page-dashboard')"><span class="nav-icon-wrap"><svg viewBox="0 0 20 20" fill="currentColor"><path d="M4 4a2 2 0 00-2 2v1h16V6a2 2 0 00-2-2H4zM2 11v3a2 2 0 002 2h12a2 2 0 002-2v-3H2zm9 2a1 1 0 100-2H9a1 1 0 100 2h2z"/></svg></span>Recarga de crÃ©ditos</button>
+      <button class="nav-item" onclick="showPage('page-dashboard')"><span class="nav-icon-wrap"><svg viewBox="0 0 20 20" fill="currentColor"><path d="M4 4a2 2 0 00-2 2v1h16V6a2 2 0 00-2-2H4zM2 11v3a2 2 0 002 2h12a2 2 0 002-2v-3H2zm9 2a1 1 0 100-2H9a1 1 0 100 2h2z"/></svg></span>Recarga de créditos</button>
       <button class="nav-item" onclick="showPage('page-dashboard')"><span class="nav-icon-wrap"><svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 3a1 1 0 000 2v8a2 2 0 002 2h2.586l-1.293 1.293a1 1 0 101.414 1.414L10 15.414l2.293 2.293a1 1 0 001.414-1.414L12.414 15H15a2 2 0 002-2V5a1 1 0 100-2H3zm11 4a1 1 0 10-2 0v4a1 1 0 102 0V7zm-3 1a1 1 0 10-2 0v3a1 1 0 102 0V8zM8 9a1 1 0 00-2 0v2a1 1 0 102 0V9z"/></svg></span>Extrato financeiro</button>
     </nav>
     <div class="sidebar-bottom">
-      <button class="nav-item" onclick="showPage('page-dashboard')"><span class="nav-icon-wrap"><svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z"/></svg></span>ConfiguraÃ§Ãµes</button>
+      <button class="nav-item" onclick="showPage('page-dashboard')"><span class="nav-icon-wrap"><svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z"/></svg></span>Configurações</button>
       <button class="nav-item" onclick="if(confirm('Sair da conta?')){logout()}"><span class="nav-icon-wrap"><svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 3a1 1 0 00-1 1v12a1 1 0 102 0V4a1 1 0 00-1-1zm10.293 9.293a1 1 0 001.414 1.414l3-3a1 1 0 000-1.414l-3-3a1 1 0 10-1.414 1.414L14.586 9H7a1 1 0 100 2h7.586l-1.293 1.293z"/></svg></span>Sair</button>
     </div>
   </aside>
@@ -1911,11 +1911,11 @@ canvas { display: block; }
       <div class="wizard-stepper" id="wizard-stepper">
                 <div class="step-item active" id="sc-0"><div class="step-circle" id="sl-0">1</div><div class="step-label" id="sl-lbl-0">Tipo</div></div>
         <div class="step-item" id="sc-1"><div class="step-circle" id="sl-1">2</div><div class="step-label" id="sl-lbl-1">Quem realiza</div></div>
-        <div class="step-item" id="sc-2"><div class="step-circle" id="sl-2">3</div><div class="step-label" id="sl-lbl-2">ImÃ³vel</div></div>
+        <div class="step-item" id="sc-2"><div class="step-circle" id="sl-2">3</div><div class="step-label" id="sl-lbl-2">Imóvel</div></div>
         <div class="step-item" id="sc-3"><div class="step-circle" id="sl-3">4</div><div class="step-label" id="sl-lbl-3">Partes</div></div>
         <div class="step-item" id="sc-4"><div class="step-circle" id="sl-4">5</div><div class="step-label" id="sl-lbl-4">Ambientes</div></div>
         <div class="step-item" id="sc-5"><div class="step-circle" id="sl-5">6</div><div class="step-label" id="sl-lbl-5">Itens e fotos</div></div>
-        <div class="step-item" id="sc-6"><div class="step-circle" id="sl-6">7</div><div class="step-label" id="sl-lbl-6">RevisÃ£o</div></div>
+        <div class="step-item" id="sc-6"><div class="step-circle" id="sl-6">7</div><div class="step-label" id="sl-lbl-6">Revisão</div></div>
         <div class="step-item" id="sc-7"><div class="step-circle" id="sl-7">8</div><div class="step-label" id="sl-lbl-7">Assinaturas</div></div>
         <div class="step-item" id="sc-8"><div class="step-circle" id="sl-8">9</div><div class="step-label" id="sl-lbl-8">PDF</div></div>
       </div>
@@ -1935,18 +1935,18 @@ canvas { display: block; }
           </div>
           <div class="tc-footer">
             <div class="tc-label">Laudo de Entrada</div>
-            <div class="tc-sub">Registro inicial do imÃ³vel</div>
+            <div class="tc-sub">Registro inicial do imóvel</div>
           </div>
         </div>
 
         <div class="tipo-card" data-tipo="saida" onclick="selectTipoCard(this)">
           <div class="tc-photo" style="background-image:url('https://images.unsplash.com/photo-1581578731548-c64695cc6952?w=400&h=260&fit=crop&q=80')">
-            <div class="tc-tag tc-tag-saida">SaÃ­da</div>
+            <div class="tc-tag tc-tag-saida">Saída</div>
             <div class="tc-checkmark"><svg viewBox="0 0 12 12" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 6l3 3 5-5"/></svg></div>
           </div>
           <div class="tc-footer">
-            <div class="tc-label">Laudo de SaÃ­da</div>
-            <div class="tc-sub">ComparaÃ§Ã£o na devoluÃ§Ã£o</div>
+            <div class="tc-label">Laudo de Saída</div>
+            <div class="tc-sub">Comparação na devolução</div>
           </div>
         </div>
 
@@ -1957,13 +1957,13 @@ canvas { display: block; }
           </div>
           <div class="tc-footer">
             <div class="tc-label">Temporada / Airbnb</div>
-            <div class="tc-sub">Controle de itens e mobÃ­lia</div>
+            <div class="tc-sub">Controle de itens e mobília</div>
           </div>
         </div>
       </div>
 
       <div id="temporada-subchoice">
-        <div class="wstep-sub" style="margin-bottom:10px">Tipo de movimentaÃ§Ã£o:</div>
+        <div class="wstep-sub" style="margin-bottom:10px">Tipo de movimentação:</div>
         <div class="subchoice-row">
           <button class="subchoice-btn active" id="btn-checkin" onclick="document.querySelectorAll('.subchoice-btn').forEach(b=>b.classList.remove('active'));this.classList.add('active')">Check-in</button>
           <button class="subchoice-btn" id="btn-checkout" onclick="document.querySelectorAll('.subchoice-btn').forEach(b=>b.classList.remove('active'));this.classList.add('active')">Check-out</button>
@@ -1972,14 +1972,14 @@ canvas { display: block; }
 
       <div class="wiz-info-box">
         <span class="wiz-info-icon"><svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"/></svg></span>
-        <span><strong>Importante:</strong> O tipo de vistoria define automaticamente as clÃ¡usulas e estrutura do laudo.</span>
+        <span><strong>Importante:</strong> O tipo de vistoria define automaticamente as cláusulas e estrutura do laudo.</span>
       </div>
 
       <div class="wiz-nav">
         <div></div>
         <div class="wiz-nav-right">
           <button class="btn-wiz-next" id="btn-tipo-next" onclick="showWstepQuem()">
-            PrÃ³ximo
+            Próximo
             <svg viewBox="0 0 20 20" fill="currentColor" width="16" height="16"><path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z"/></svg>
           </button>
         </div>
@@ -1989,31 +1989,31 @@ canvas { display: block; }
     <!-- STEP QUEM: QUEM REALIZA A VISTORIA -->
     <div id="wstep-quem" style="display:none">
       <div class="wstep-title">Quem realiza a vistoria?</div>
-      <div class="wstep-sub">Selecione o responsÃ¡vel pela execuÃ§Ã£o da vistoria do imÃ³vel.</div>
+      <div class="wstep-sub">Selecione o responsável pela execução da vistoria do imóvel.</div>
 
       <div class="realiza-cards">
 
-        <!-- Card 1: ImobiliÃ¡ria / Corretor -->
+        <!-- Card 1: Imobiliária / Corretor -->
         <div class="tipo-card realiza-card selected" data-realiza="imobiliaria" onclick="selectRealizaCard(this)">
           <div class="tc-photo" style="background-image:url('https://images.unsplash.com/photo-1600880292203-757bb62b4baf?w=500&h=360&fit=crop&q=80')">
             <div class="tc-tag tc-tag-entrada">Profissional</div>
             <div class="tc-checkmark"><svg viewBox="0 0 12 12" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 6l3 3 5-5"/></svg></div>
           </div>
           <div class="tc-footer">
-            <div class="tc-label">ImobiliÃ¡ria / Corretor</div>
+            <div class="tc-label">Imobiliária / Corretor</div>
             <div class="tc-sub">Vistoria profissional com CRECI</div>
           </div>
         </div>
 
-        <!-- Card 2: ProprietÃ¡rio -->
+        <!-- Card 2: Proprietário -->
         <div class="tipo-card realiza-card" data-realiza="proprietario" onclick="selectRealizaCard(this)">
           <div class="tc-photo" style="background-image:url('/static/proprietario.jpg')">
-            <div class="tc-tag tc-tag-temporada">ProprietÃ¡rio</div>
+            <div class="tc-tag tc-tag-temporada">Proprietário</div>
             <div class="tc-checkmark"><svg viewBox="0 0 12 12" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 6l3 3 5-5"/></svg></div>
           </div>
           <div class="tc-footer">
-            <div class="tc-label">ProprietÃ¡rio</div>
-            <div class="tc-sub">Vistoria direta pelo dono do imÃ³vel</div>
+            <div class="tc-label">Proprietário</div>
+            <div class="tc-sub">Vistoria direta pelo dono do imóvel</div>
           </div>
         </div>
 
@@ -2022,7 +2022,7 @@ canvas { display: block; }
       <!-- Info box -->
       <div class="wiz-info-box" style="background:#f0f6ff; border:1px solid #b5d4f4; color:#1a4a8a; margin-bottom:28px;">
         <span class="wiz-info-icon"><svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"/></svg></span>
-        <span>O tipo selecionado define automaticamente as clÃ¡usulas e a estrutura do laudo.</span>
+        <span>O tipo selecionado define automaticamente as cláusulas e a estrutura do laudo.</span>
       </div>
 
       <!-- Navigation -->
@@ -2032,7 +2032,7 @@ canvas { display: block; }
           Voltar
         </button>
         <button class="btn-wiz-next" onclick="gotoWStep(1)">
-          PrÃ³ximo
+          Próximo
           <svg viewBox="0 0 20 20" fill="currentColor" width="16" height="16"><path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z"/></svg>
         </button>
       </div>
@@ -2052,7 +2052,7 @@ canvas { display: block; }
       </div>
     </div>
 
-    <!-- STEP 1: DADOS DO IMÃVEL -->
+    <!-- STEP 1: DADOS DO IMÓVEL -->
     <div id="wstep-1" style="display:none">
       <div id="wi-context-tag" class="wi-context-tag"><span class="wi-ctx-check">&#10003;</span> <span id="wi-ctx-label">&#8212;</span></div>
       <input type="hidden" id="wi-type"/>
@@ -2075,7 +2075,7 @@ canvas { display: block; }
 <option>AC</option><option>AL</option><option>AP</option><option>AM</option><option>BA</option><option>CE</option><option>DF</option><option>ES</option><option>GO</option><option>MA</option><option>MT</option><option>MS</option><option>MG</option><option>PA</option><option>PB</option><option>PR</option><option>PE</option><option>PI</option><option>RJ</option><option>RN</option><option>RS</option><option>RO</option><option>RR</option><option>SC</option><option>SP</option><option>SE</option><option>TO</option>
           </select></div>
           <div class="form-group"><label class="form-label">CEP</label>
-          <input class="form-input" id="wi-cep" type="text" placeholder="00000-000" onblur="fetchCEP()"/><span id="wi-cep-err" style="display:none;color:#e53935;font-size:12px;margin-top:4px;">CEP não encontrado</span></div>
+          <input class="form-input" id="wi-cep" type="text" placeholder="00000-000"/></div>
         </div>
       </div>
       <div class="form-card">
@@ -2100,14 +2100,14 @@ canvas { display: block; }
         </div>
       </div>
       <div class="wiz-nav">
-        <button class="btn-wiz-back-sm" onclick="showWstepQuem()">â Voltar</button>
-        <button class="btn-wiz-next" onclick="validateAndGoWstep2()">PrÃ³ximo <svg viewBox="0 0 20 20" fill="currentColor" width="16" height="16"><path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z"/></svg></button>
+        <button class="btn-wiz-back-sm" onclick="showWstepQuem()">← Voltar</button>
+        <button class="btn-wiz-next" onclick="validateAndGoWstep2()">Próximo <svg viewBox="0 0 20 20" fill="currentColor" width="16" height="16"><path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z"/></svg></button>
       </div>
     </div>
 
     <div id="wstep-2" style="display:none">
       <div class="wstep-title">Partes envolvidas</div>
-      <div class="wstep-sub">Informe os dados dos locadores, locatÃ¡rios e corretor.</div>
+      <div class="wstep-sub">Informe os dados dos locadores, locatários e corretor.</div>
       <div class="form-card">
         <div class="form-card-title">Locadores</div>
         <div id="locadores-container">
@@ -2132,11 +2132,11 @@ canvas { display: block; }
         </button>
       </div>
       <div class="form-card">
-        <div class="form-card-title">LocatÃ¡rios</div>
+        <div class="form-card-title">Locatários</div>
         <div id="locatarios-container">
           <div class="person-block" id="locat-block-0">
             <div class="person-block-header">
-              <span class="person-block-title">LocatÃ¡rio 1</span>
+              <span class="person-block-title">Locatário 1</span>
             </div>
             <div class="form-row">
               <div class="form-group"><label class="form-label">Nome</label><input class="form-input" id="locat-name-0" type="text" placeholder="Nome completo"/></div>
@@ -2151,7 +2151,7 @@ canvas { display: block; }
         </div>
         <button class="btn-add-person" onclick="addLocatario ? addLocatario() : null">
           <svg viewBox="0 0 20 20" fill="currentColor" width="16" height="16"><path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"/></svg>
-          Adicionar locatÃ¡rio
+          Adicionar locatário
         </button>
       </div>
       <div class="form-card" id="corretor-block">
@@ -2174,7 +2174,7 @@ canvas { display: block; }
     <!-- STEP 3: AMBIENTES -->
     <div id="wstep-3" style="display:none">
       <div class="wstep-title">Selecionar ambientes</div>
-      <div class="wstep-sub">Escolha os cÃ´modos que serÃ£o vistoriados.</div>
+      <div class="wstep-sub">Escolha os cômodos que serão vistoriados.</div>
       <div class="form-card">
         <div id="room-check-list"></div>
         <div class="custom-room-row">
@@ -2195,8 +2195,8 @@ canvas { display: block; }
       <div class="wstep-sub">Fotografe e descreva o estado de cada ambiente.</div>
       <div id="rooms-list"></div>
       <div class="form-card">
-        <div class="form-card-title">ObservaÃ§Ãµes gerais</div>
-        <textarea class="form-input" id="wi-obs" rows="4" placeholder="ObservaÃ§Ãµes adicionais sobre a vistoria..." style="height:auto;padding-top:10px;padding-bottom:10px;resize:vertical"></textarea>
+        <div class="form-card-title">Observações gerais</div>
+        <textarea class="form-input" id="wi-obs" rows="4" placeholder="Observações adicionais sobre a vistoria..." style="height:auto;padding-top:10px;padding-bottom:10px;resize:vertical"></textarea>
       </div>
       <div class="wiz-nav">
         <button class="btn-wiz-back-sm" onclick="prevWizStep ? prevWizStep() : null">Voltar</button>
@@ -2204,9 +2204,9 @@ canvas { display: block; }
       </div>
     </div>
 
-    <!-- STEP REV: REVISÃO -->
+    <!-- STEP REV: REVISÃO -->
     <div id="wstep-rev" style="display:none">
-      <div class="wstep-title">RevisÃ£o do laudo</div>
+      <div class="wstep-title">Revisão do laudo</div>
       <div class="wstep-sub">Confira os dados antes de prosseguir para a assinatura.</div>
       <div id="rev-content"></div>
       <div class="wiz-nav">
@@ -2228,7 +2228,7 @@ canvas { display: block; }
         </div>
       </div>
       <div class="sig-card">
-        <div class="sig-name" id="signame-locatario">LocatÃ¡rio</div>
+        <div class="sig-name" id="signame-locatario">Locatário</div>
         <div class="sig-canvas-wrap"><canvas id="canvas-locatario" width="560" height="140"></canvas></div>
         <div class="sig-status" id="sigstatus-locatario">Aguardando assinatura</div>
         <div class="sig-actions">
@@ -2256,7 +2256,7 @@ canvas { display: block; }
   </div><!-- /wiz-main-wrapper -->
 </div>
 
-<!-- ââââââââââââââ PAGE: DETAIL ââââââââââââââ -->
+<!-- ══════════════ PAGE: DETAIL ══════════════ -->
 <div id="page-detail" class="page">
   <div class="detail-header">
     <button class="btn-wiz-back" onclick="showPage('page-dashboard')" style="margin-right:4px"><svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z"/></svg></button>
@@ -2269,7 +2269,7 @@ canvas { display: block; }
 </div>
 
 <script>
-// ââ switchTab: sidebar navigation helper ââ
+// ── switchTab: sidebar navigation helper ──
 function switchTab(tab, el) {
   document.querySelectorAll('.dash-tab-content').forEach(function(t) {
     t.classList.remove('active');
@@ -2278,12 +2278,12 @@ function switchTab(tab, el) {
   if (target) target.classList.add('active');
   document.querySelectorAll('.nav-item').forEach(function(n) { n.classList.remove('active'); });
   if (el) el.classList.add('active');
-  var titles = {vistorias:'Dashboard', estatisticas:'Fotos e consumo', perfil:'ConfiguraÃ§Ãµes'};
+  var titles = {vistorias:'Dashboard', estatisticas:'Fotos e consumo', perfil:'Configurações'};
   var tt = document.getElementById('dash-topbar-title');
   if (tt) tt.textContent = titles[tab] || 'Dashboard';
 }
 
-// ââ Sync profile fields across tabs ââ
+// ── Sync profile fields across tabs ──
 (function() {
   var orig = window.loadDashboard;
   window.loadDashboard = function() {
@@ -2323,7 +2323,7 @@ function switchTab(tab, el) {
 </script>
 
 
-<!-- ââââââââââââââ MODAL: ADD ITEM ââââââââââââââ -->
+<!-- ══════════════ MODAL: ADD ITEM ══════════════ -->
 <div class="modal-overlay" id="modal-add-item" onclick="closeModal('modal-add-item')">
   <div class="modal" onclick="event.stopPropagation()">
     <div class="modal-handle"></div>
@@ -2340,11 +2340,11 @@ function switchTab(tab, el) {
       <button class="btn btn-outline btn-sm" onclick="qi('Porta')">Porta</button>
       <button class="btn btn-outline btn-sm" onclick="qi('Torneira')">Torneira</button>
       <button class="btn btn-outline btn-sm" onclick="qi('Tomada')">Tomada</button>
-      <button class="btn btn-outline btn-sm" onclick="qi('ArmÃ¡rio')">ArmÃ¡rio</button>
+      <button class="btn btn-outline btn-sm" onclick="qi('Armário')">Armário</button>
       <button class="btn btn-outline btn-sm" onclick="qi('Pia')">Pia</button>
       <button class="btn btn-outline btn-sm" onclick="qi('Chuveiro')">Chuveiro</button>
-      <button class="btn btn-outline btn-sm" onclick="qi('Vaso SanitÃ¡rio')">Vaso</button>
-      <button class="btn btn-outline btn-sm" onclick="qi('RodapÃ©')">RodapÃ©</button>
+      <button class="btn btn-outline btn-sm" onclick="qi('Vaso Sanitário')">Vaso</button>
+      <button class="btn btn-outline btn-sm" onclick="qi('Rodapé')">Rodapé</button>
       <button class="btn btn-outline btn-sm" onclick="qi('Interruptor')">Interruptor</button>
       <button class="btn btn-outline btn-sm" onclick="qi('Vidro')">Vidro</button>
     </div>
@@ -2362,13 +2362,13 @@ function switchTab(tab, el) {
 </div>
 
 <script>
-// âââ STATE ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ─── STATE ────────────────────────────────────────────────────────────────────
 const API = '';
 let currentUser = null, currentToken = null, currentInspection = null;
 let pageHistory = [], signaturePads = {};
 let wizard = { step: 1, inspectionId: null, selectedRooms: [] };
 
-// âââ BOOT âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ─── BOOT ─────────────────────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
   const tok = localStorage.getItem('izylo_token');
   const usr = localStorage.getItem('izylo_user');
@@ -2381,7 +2381,7 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('wi-date').value = new Date().toISOString().split('T')[0];
 });
 
-// âââ NAVIGATION âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ─── NAVIGATION ───────────────────────────────────────────────────────────────
 function showPage(id, title = null, addHistory = true) {
   hideLoading();
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
@@ -2425,7 +2425,7 @@ function goBack() {
   }
 }
 
-// âââ API ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ─── API ──────────────────────────────────────────────────────────────────────
 async function api(method, path, body = null, isMultipart = false) {
   const h = {};
   if (currentToken) h['Authorization'] = `Bearer ${currentToken}`;
@@ -2438,10 +2438,10 @@ async function api(method, path, body = null, isMultipart = false) {
       return { blob: await r.blob(), ok: r.ok };
     const d = await r.json();
     return { ...d, ok: r.ok };
-  } catch { return { error: 'Erro de conexÃ£o', ok: false }; }
+  } catch { return { error: 'Erro de conexão', ok: false }; }
 }
 
-// âââ TOAST & LOADING ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ─── TOAST & LOADING ──────────────────────────────────────────────────────────
 let toastTO;
 function toast(msg, type = '') {
   document.getElementById('toast-el')?.remove();
@@ -2456,7 +2456,7 @@ function showLoading(t='Aguarde...') {
 }
 function hideLoading() { document.getElementById('loading').style.display = 'none'; }
 
-// âââ AUTH âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ─── AUTH ─────────────────────────────────────────────────────────────────────
 function switchAuthTab(tab, btn) {
   document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
   btn.classList.add('active');
@@ -2489,8 +2489,8 @@ async function doRegister() {
   const creci = document.getElementById('reg-creci').value.trim();
   const password = document.getElementById('reg-password').value;
   if (!name || !company_name || !email || !password)
-    return toast('Preencha todos os campos obrigatÃ³rios', 'error');
-  if (password.length < 6) return toast('Senha deve ter no mÃ­nimo 6 caracteres', 'error');
+    return toast('Preencha todos os campos obrigatórios', 'error');
+  if (password.length < 6) return toast('Senha deve ter no mínimo 6 caracteres', 'error');
   showLoading('Criando conta...');
   const r = await api('POST', '/api/auth/register', { name, company_name, email, creci, password });
   hideLoading();
@@ -2498,7 +2498,7 @@ async function doRegister() {
   saveSession(r);
   showPage('page-dashboard', null, false);
   loadDashboard();
-  toast('Conta criada! Bem-vindo ao iZY\'lOC ð', 'success');
+  toast('Conta criada! Bem-vindo ao iZY\'lOC 🎉', 'success');
 }
 
 function saveSession(r) {
@@ -2515,7 +2515,7 @@ function logout() {
   showPage('page-auth');
 }
 
-// âââ DASHBOARD ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ─── DASHBOARD ────────────────────────────────────────────────────────────────
 function switchDashTab(tab, btn) {
   document.querySelectorAll('.dash-nav-tab').forEach(t => t.classList.remove('active'));
   btn.classList.add('active');
@@ -2549,7 +2549,7 @@ async function loadDashboard() {
   document.getElementById('stat-andamento').textContent = emAndamento;
   document.getElementById('stat-concluido').textContent = concluidas;
 
-  // Aba estatÃ­sticas (manter sincronizado)
+  // Aba estatísticas (manter sincronizado)
   const t2 = document.getElementById('stat-total-2');
   if (t2) t2.textContent = total;
   const a2 = document.getElementById('stat-andamento-2');
@@ -2575,15 +2575,15 @@ async function loadDashboard() {
         <path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
       </svg>
       <p style="font-size:15px;font-weight:600;color:var(--text-2);margin-bottom:6px">Nenhuma vistoria ainda</p>
-      <p style="margin-bottom:20px">Registre sua primeira vistoria clicando no botÃ£o acima.</p>
+      <p style="margin-bottom:20px">Registre sua primeira vistoria clicando no botão acima.</p>
       <button class="btn btn-primary" onclick="showNewInspection()">+ Nova vistoria</button>
     </div>`; return;
   }
 
   container.innerHTML = list.slice(0,30).map(i => {
-    const tipo = i.type === 'entrada' ? 'Entrada' : 'SaÃ­da';
-    const icon = i.type === 'entrada' ? 'ð' : 'ð¦';
-    const statusLabel = i.status === 'concluido' ? 'ConcluÃ­da'
+    const tipo = i.type === 'entrada' ? 'Entrada' : 'Saída';
+    const icon = i.type === 'entrada' ? '🔑' : '📦';
+    const statusLabel = i.status === 'concluido' ? 'Concluída'
       : i.status === 'rascunho' ? 'Em andamento'
       : i.status === 'assinado' ? 'Assinado'
       : i.status === 'processando' ? 'Processando'
@@ -2595,7 +2595,7 @@ async function loadDashboard() {
     return `<div class="insp-card" onclick="openInspection('${i.id}')">
       <div class="insp-thumb"><span style="font-size:22px">${icon}</span></div>
       <div class="insp-info">
-        <div class="insp-address">${i.property_address || 'EndereÃ§o nÃ£o informado'}</div>
+        <div class="insp-address">${i.property_address || 'Endereço não informado'}</div>
         <div class="insp-meta">
           <span>${tipo}</span>
           <span>${date}</span>
@@ -2612,7 +2612,7 @@ function formatDate(str) {
   try { return new Date(str).toLocaleDateString('pt-BR'); } catch { return str; }
 }
 
-// âââ NEW INSPECTION WIZARD ââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ─── NEW INSPECTION WIZARD ────────────────────────────────────────────────────
 function showNewInspection() {
   wizard = { step: 1, inspectionId: null, selectedRooms: [] };
   // Reset forms
@@ -2658,44 +2658,20 @@ function updateContextTag() {
   // Read realizador from selected card (fallback to wizard)
   const realizaCard = document.querySelector('.realiza-card.selected');
   const realizaVal = realizaCard ? (realizaCard.dataset.realiza||'') : ((typeof wizard!=='undefined'&&wizard.realizador)?wizard.realizador:'');
-  const tMap = {entrada:'Vistoria de Entrada',saida:'Vistoria de SaÃ­da',temporada:'Temporada / Airbnb'};
-  const rMap = {imobiliaria:'ImobiliÃ¡ria / Corretor',proprietario:'ProprietÃ¡rio',terceiro:'Vistoriador'};
-  const tLabel = tMap[tipoVal]||tipoVal||'â';
-  const rLabel = rMap[realizaVal]||realizaVal||'â';
+  const tMap = {entrada:'Vistoria de Entrada',saida:'Vistoria de Saída',temporada:'Temporada / Airbnb'};
+  const rMap = {imobiliaria:'Imobiliária / Corretor',proprietario:'Proprietário',terceiro:'Vistoriador'};
+  const tLabel = tMap[tipoVal]||tipoVal||'—';
+  const rLabel = rMap[realizaVal]||realizaVal||'—';
   const tag = document.getElementById('wi-ctx-label');
-  if(tag) tag.textContent = tLabel+' Â· '+rLabel;
-}
-function fetchCEP(){
-  const cepEl=document.getElementById("wi-cep");
-  const errEl=document.getElementById("wi-cep-err");
-  if(!cepEl||!errEl)return;
-  errEl.style.display="none";
-  const cep=cepEl.value.replace(/\D/g,"");
-  if(cep.length!==8)return;
-  fetch("https://viacep.com.br/ws/"+cep+"/json/")
-  .then(r=>r.json())
-  .then(d=>{
-    if(d.erro){errEl.style.display="block";return;}
-    const addr=document.getElementById("wi-address");
-    const bairro=document.getElementById("wi-bairro");
-    const cidade=document.getElementById("wi-cidade");
-    const estado=document.getElementById("wi-estado");
-    if(addr&&d.logradouro)addr.value=d.logradouro;
-    if(bairro&&d.bairro)bairro.value=d.bairro;
-    if(cidade&&d.localidade)cidade.value=d.localidade;
-    if(estado&&d.uf)estado.value=d.uf;
-    const comp=document.getElementById("wi-address");
-    if(comp)comp.focus();
-  })
-  .catch(()=>{errEl.style.display="block";});
+  if(tag) tag.textContent = tLabel+' · '+rLabel;
 }
 function validateAndGoWstep2() {
   const required = [
-    {id:'wi-address', label:'EndereÃ§o'},
+    {id:'wi-address', label:'Endereço'},
     {id:'wi-bairro', label:'Bairro'},
     {id:'wi-cidade', label:'Cidade'},
     {id:'wi-estado', label:'Estado'},
-    {id:'wi-prop-type', label:'Tipo do imÃ³vel'},
+    {id:'wi-prop-type', label:'Tipo do imóvel'},
     {id:'wi-date', label:'Data da vistoria'}
   ];
   let ok = true;
@@ -2714,7 +2690,7 @@ function validateAndGoWstep2() {
 }
 
 function showWstepQuem() {
-  // Use gotoWStep(1) for stepper visual (Tipo done, ImÃ³vel active), then swap content
+  // Use gotoWStep(1) for stepper visual (Tipo done, Imóvel active), then swap content
   gotoWStep(1);
   const w1 = document.getElementById('wstep-1');
   if (w1) w1.style.display = 'none';
@@ -2754,7 +2730,7 @@ function gotoWStep(step) {
 async function wizardNext(step) {
   if (step === 1) {
     if (!document.getElementById('wi-address').value.trim())
-      return toast('EndereÃ§o do imÃ³vel Ã© obrigatÃ³rio', 'error');
+      return toast('Endereço do imóvel é obrigatório', 'error');
     const dateVal = document.getElementById('wi-date').value;
     const fmtDate = dateVal ? new Date(dateVal+'T12:00:00').toLocaleDateString('pt-BR') : '';
     showLoading('Criando vistoria...');
@@ -2794,7 +2770,7 @@ async function wizardNext(step) {
       return toast('Selecione ao menos um ambiente', 'error');
     gotoWStep(4);
     document.getElementById('step4-header').textContent =
-      `ð¸ Registre os Itens (${wizard.selectedRooms.length} ambientes)`;
+      `📸 Registre os Itens (${wizard.selectedRooms.length} ambientes)`;
     await buildRoomsList();
   }
   else if (step === 4) {
@@ -2813,13 +2789,13 @@ function v(id) {
 
 function wizardBack(step) { gotoWStep(step - 1); }
 
-// âââ ROOM SELECTION âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ─── ROOM SELECTION ───────────────────────────────────────────────────────────
 function toggleRoomCheck(el, name) {
   const box = el.querySelector('.check-box');
   const isChecked = el.classList.contains('checked');
   el.classList.toggle('checked', !isChecked);
   box.classList.toggle('checked', !isChecked);
-  box.innerHTML = !isChecked ? 'â' : '';
+  box.innerHTML = !isChecked ? '✓' : '';
   if (!isChecked) {
     if (!wizard.selectedRooms.includes(name)) wizard.selectedRooms.push(name);
   } else {
@@ -2831,20 +2807,20 @@ function addCustomRoom() {
   const input = document.getElementById('custom-room');
   const name = input.value.trim();
   if (!name) return;
-  if (wizard.selectedRooms.includes(name)) return toast('Ambiente jÃ¡ adicionado', 'warning');
+  if (wizard.selectedRooms.includes(name)) return toast('Ambiente já adicionado', 'warning');
   wizard.selectedRooms.push(name);
   // Add to list
   const list = document.getElementById('room-check-list');
   const el = document.createElement('div');
   el.className = 'room-check-item checked';
   el.onclick = function() { toggleRoomCheck(this, name); };
-  el.innerHTML = `<div class="check-box checked">â</div><span class="room-check-label">${name}</span>`;
+  el.innerHTML = `<div class="check-box checked">✓</div><span class="room-check-label">${name}</span>`;
   list.appendChild(el);
   input.value = '';
   toast(`"${name}" adicionado`, 'success');
 }
 
-// âââ BUILD ROOMS IN STEP 4 ââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ─── BUILD ROOMS IN STEP 4 ────────────────────────────────────────────────────
 async function buildRoomsList() {
   const container = document.getElementById('rooms-list');
   container.innerHTML = '';
@@ -2863,10 +2839,10 @@ function renderRoomCard(room) {
   el.className = 'room-card'; el.id = `room-${room.id}`;
 
   const roomIcons = {
-    'Sala de Estar': 'ð', 'Cozinha': 'ð³', 'Quarto 1': 'ð', 'Quarto 2': 'ð',
-    'Banheiro': 'ð¿', 'Ãrea de ServiÃ§o': 'ð§º', 'Garagem': 'ð', 'Varanda': 'ð¿',
+    'Sala de Estar': '🛋', 'Cozinha': '🍳', 'Quarto 1': '🛏', 'Quarto 2': '🛏',
+    'Banheiro': '🚿', 'Área de Serviço': '🧺', 'Garagem': '🚗', 'Varanda': '🌿',
   };
-  const icon = roomIcons[room.name] || 'ð ';
+  const icon = roomIcons[room.name] || '🏠';
 
   el.innerHTML = `
     <div class="room-header" onclick="toggleRoom('${room.id}')">
@@ -2877,7 +2853,7 @@ function renderRoomCard(room) {
           <div class="room-count" id="rc-${room.id}">Nenhum item</div>
         </div>
       </div>
-      <span class="room-chevron" id="chevron-${room.id}">â¼</span>
+      <span class="room-chevron" id="chevron-${room.id}">▼</span>
     </div>
     <div class="room-body" id="rbody-${room.id}">
       <div id="items-${room.id}" style="margin-top:12px"></div>
@@ -2896,7 +2872,7 @@ function toggleRoom(id) {
   chev.classList.toggle('open', !open);
 }
 
-// âââ ITEMS ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ─── ITEMS ────────────────────────────────────────────────────────────────────
 function openAddItemModal(roomId) {
   document.getElementById('modal-room-id').value = roomId;
   document.getElementById('new-item-name').value = '';
@@ -2928,12 +2904,12 @@ function renderItemCard(item, roomId) {
   el.innerHTML = `
     <div class="item-header">
       <span class="item-name">${item.name}</span>
-      <span class="cond cond-default" id="cond-${item.id}">â</span>
+      <span class="cond cond-default" id="cond-${item.id}">—</span>
     </div>
     <div id="photo-grid-${item.id}" class="photo-grid"></div>
     <div id="photo-count-${item.id}" class="photo-count-badge" style="display:none"></div>
     <div id="ai-box-${item.id}" style="display:none">
-      <div class="ai-badge">â¦ DescriÃ§Ã£o gerada pela IA</div>
+      <div class="ai-badge">✦ Descrição gerada pela IA</div>
       <div class="ai-description" id="ai-desc-${item.id}"></div>
     </div>
     <div id="edit-box-${item.id}" style="display:none">
@@ -2942,15 +2918,15 @@ function renderItemCard(item, roomId) {
     </div>
     <div class="item-actions">
       <label class="btn btn-primary btn-sm" style="cursor:pointer;font-size:13px">
-        ð· Adicionar Foto
+        📷 Adicionar Foto
         <input type="file" accept="image/*" capture="environment" style="display:none"
           onchange="uploadPhoto('${item.id}', this)"/>
       </label>
-      <button class="btn btn-ghost btn-sm" onclick="toggleEdit('${item.id}')">âï¸</button>
-      <button class="btn btn-ghost btn-sm" style="color:var(--danger)" onclick="deleteItem('${item.id}','${roomId}')">ð</button>
+      <button class="btn btn-ghost btn-sm" onclick="toggleEdit('${item.id}')">✏️</button>
+      <button class="btn btn-ghost btn-sm" style="color:var(--danger)" onclick="deleteItem('${item.id}','${roomId}')">🗑</button>
     </div>`;
   container.appendChild(el);
-  // Carrega fotos jÃ¡ existentes ao renderizar
+  // Carrega fotos já existentes ao renderizar
   loadItemPhotos(item.id);
 }
 
@@ -2964,7 +2940,7 @@ async function uploadPhoto(itemId, input) {
   if (!input.files?.[0]) return;
   const file = input.files[0];
 
-  // PrÃ©-visualizaÃ§Ã£o imediata na grade
+  // Pré-visualização imediata na grade
   const grid = document.getElementById(`photo-grid-${itemId}`);
   const tempId = 'temp-' + Date.now();
   if (grid) {
@@ -2978,18 +2954,18 @@ async function uploadPhoto(itemId, input) {
     reader.readAsDataURL(file);
   }
 
-  // Quantidade de fotos jÃ¡ existentes
+  // Quantidade de fotos já existentes
   const totalBefore = grid ? grid.children.length : 0;
   const loadMsg = totalBefore > 0
-    ? `ð¤ A IA estÃ¡ analisando ${totalBefore + 1} fotos...\nAguarde alguns segundos`
-    : 'ð¤ A IA estÃ¡ analisando a foto...\nAguarde alguns segundos';
+    ? `🤖 A IA está analisando ${totalBefore + 1} fotos...\nAguarde alguns segundos`
+    : '🤖 A IA está analisando a foto...\nAguarde alguns segundos';
   showLoading(loadMsg);
 
   const fd = new FormData(); fd.append('photo', file);
   const r = await api('POST', `/api/items/${itemId}/photo`, fd, true);
   hideLoading();
 
-  // Remove prÃ©-visualizaÃ§Ã£o temporÃ¡ria
+  // Remove pré-visualização temporária
   document.getElementById(tempId)?.remove();
 
   if (!r.ok) { toast(r.error || 'Erro ao enviar foto', 'error'); return; }
@@ -3007,13 +2983,13 @@ async function uploadPhoto(itemId, input) {
     if (aiDesc) aiDesc.textContent = ai.description;
     if (ai.condition && condEl) {
       condEl.textContent = ai.condition;
-      condEl.className = `cond cond-${ai.condition.replace(/[Ã³Ã´]/g,'o').replace(/[Ã©Ãª]/g,'e')}`;
+      condEl.className = `cond cond-${ai.condition.replace(/[óô]/g,'o').replace(/[éê]/g,'e')}`;
     }
     const n = r.total_photos || 1;
-    const msg = n > 1 ? `â IA analisou ${n} fotos!` : 'â IA analisou a foto!';
+    const msg = n > 1 ? `✅ IA analisou ${n} fotos!` : '✅ IA analisou a foto!';
     toast(msg, 'success');
   } else if (!ai?.success) {
-    toast(ai?.description || 'Foto salva (configure ANTHROPIC_API_KEY para anÃ¡lise automÃ¡tica)', 'warning');
+    toast(ai?.description || 'Foto salva (configure ANTHROPIC_API_KEY para análise automática)', 'warning');
   }
   // Limpa o input para permitir adicionar a mesma foto novamente
   input.value = '';
@@ -3033,13 +3009,13 @@ async function loadItemPhotos(itemId) {
     thumb.innerHTML = `
       <img src="${p.url}" alt="foto" onclick="window.open('${p.url}','_blank')"/>
       <button class="photo-thumb-del" title="Remover foto"
-        onclick="deletePhoto('${itemId}','${p.id}')">â</button>`;
+        onclick="deletePhoto('${itemId}','${p.id}')">✕</button>`;
     grid.appendChild(thumb);
   });
   if (countBadge) {
     if (photos.length > 1) {
       countBadge.style.display = 'block';
-      countBadge.textContent = `${photos.length} fotos â¢ toque para ampliar`;
+      countBadge.textContent = `${photos.length} fotos • toque para ampliar`;
     } else {
       countBadge.style.display = 'none';
     }
@@ -3058,7 +3034,7 @@ async function deletePhoto(itemId, photoId) {
   const remaining = grid ? grid.children.length : 0;
   if (countBadge) {
     if (remaining > 1) {
-      countBadge.textContent = `${remaining} fotos â¢ toque para ampliar`;
+      countBadge.textContent = `${remaining} fotos • toque para ampliar`;
     } else {
       countBadge.style.display = 'none';
     }
@@ -3085,7 +3061,7 @@ async function saveDesc(itemId) {
   const aiBox = document.getElementById(`ai-box-${itemId}`);
   if (aiDesc && text) { aiDesc.textContent = text; aiBox.style.display = 'block'; }
   document.getElementById(`edit-box-${itemId}`).style.display = 'none';
-  toast('DescriÃ§Ã£o salva!', 'success');
+  toast('Descrição salva!', 'success');
 }
 
 async function deleteItem(itemId, roomId) {
@@ -3098,7 +3074,7 @@ async function deleteItem(itemId, roomId) {
   updateRoomCount(roomId);
 }
 
-// âââ SIGNATURES âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ─── SIGNATURES ───────────────────────────────────────────────────────────────
 function initSigPads() {
   ['locador','locatario','corretor'].forEach(p => {
     const canvas = document.getElementById(`canvas-${p}`);
@@ -3140,12 +3116,12 @@ async function saveSig(party) {
   hideLoading();
   if (!r.ok) return toast(r.error||'Erro', 'error');
   const el = document.getElementById(`sigstatus-${party}`);
-  if (el) { el.textContent = 'â Assinado'; el.classList.add('done'); }
+  if (el) { el.textContent = '✓ Assinado'; el.classList.add('done'); }
   toast(`Assinatura confirmada!`, 'success');
 }
 
 async function generatePDF() {
-  showLoading('ð Gerando laudo PDF...');
+  showLoading('📄 Gerando laudo PDF...');
   const r = await api('GET', `/api/inspections/${wizard.inspectionId}/pdf`);
   hideLoading();
   if (r.blob) {
@@ -3154,12 +3130,12 @@ async function generatePDF() {
     a.href = url; a.download = `iZYlOC_Laudo_${wizard.inspectionId.substring(0,8).toUpperCase()}.pdf`;
     document.body.appendChild(a); a.click();
     document.body.removeChild(a); URL.revokeObjectURL(url);
-    toast('â Laudo gerado com sucesso!', 'success');
+    toast('✅ Laudo gerado com sucesso!', 'success');
     setTimeout(() => { showPage('page-dashboard',null,false); loadDashboard(); }, 2000);
   } else { toast(r.error||'Erro ao gerar PDF', 'error'); }
 }
 
-// âââ DETAIL PAGE ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ─── DETAIL PAGE ──────────────────────────────────────────────────────────────
 async function openInspection(id) {
   showLoading('Carregando...');
   const r = await api('GET', `/api/inspections/${id}`);
@@ -3170,7 +3146,7 @@ async function openInspection(id) {
 }
 
 function renderDetail(insp) {
-  const tipo = insp.type==='entrada' ? 'Entrada' : 'SaÃ­da';
+  const tipo = insp.type==='entrada' ? 'Entrada' : 'Saída';
   const rooms = insp.rooms || [];
   const sigs = insp.signatures || [];
 
@@ -3186,24 +3162,24 @@ function renderDetail(insp) {
           `<div class="photo-thumb"><img src="${p.url}" alt="foto" onclick="window.open('${p.url}','_blank')"/></div>`
         ).join('');
         photosHtml = `<div class="photo-grid">${thumbs}</div>
-          <div class="photo-count-badge">${photos.length} fotos â¢ toque para ampliar</div>`;
+          <div class="photo-count-badge">${photos.length} fotos • toque para ampliar</div>`;
       } else if (item.photo_filename) {
         photosHtml = `<img src="/uploads/${item.photo_filename}" class="item-photo" alt="foto"/>`;
       }
       return `<div class="item-card">
         <div class="item-header">
           <span class="item-name">${item.name}</span>
-          <span class="cond cond-${(item.condition||'').replace(/[Ã³Ã´]/g,'o').replace(/[Ã©Ãª]/g,'e')||'default'}">
-            ${item.condition||'â'}
+          <span class="cond cond-${(item.condition||'').replace(/[óô]/g,'o').replace(/[éê]/g,'e')||'default'}">
+            ${item.condition||'—'}
           </span>
         </div>
         ${photosHtml}
-        ${desc ? `<div class="ai-badge">â¦ DescriÃ§Ã£o IA</div><div class="ai-description">${desc}</div>` : ''}
+        ${desc ? `<div class="ai-badge">✦ Descrição IA</div><div class="ai-description">${desc}</div>` : ''}
       </div>`;
     }).join('');
     return `<div class="room-card">
       <div class="room-header"><div class="room-header-left">
-        <div class="room-icon">ð </div>
+        <div class="room-icon">🏠</div>
         <div class="room-name">${room.name}</div>
       </div></div>
       <div class="room-body">${items||'<p class="text-small mt-8">Nenhum item</p>'}</div>
@@ -3216,24 +3192,24 @@ function renderDetail(insp) {
         <span class="tag tag-${insp.type}">${tipo}</span>
         <span class="tag tag-${insp.status}">${insp.status}</span>
       </div>
-      <div style="font-size:17px;font-weight:800">${insp.property_address||'â'}</div>
-      <div class="text-small mt-4">${insp.property_type||''} ${insp.property_area?'Â· '+insp.property_area+'mÂ²':''}</div>
-      <div class="text-small mt-2">ð ${insp.inspection_date||'â'}</div>
-      ${insp.imobiliaria_name?`<div class="text-small mt-2">ð¢ ${insp.imobiliaria_name}</div>`:''}
+      <div style="font-size:17px;font-weight:800">${insp.property_address||'—'}</div>
+      <div class="text-small mt-4">${insp.property_type||''} ${insp.property_area?'· '+insp.property_area+'m²':''}</div>
+      <div class="text-small mt-2">📅 ${insp.inspection_date||'—'}</div>
+      ${insp.imobiliaria_name?`<div class="text-small mt-2">🏢 ${insp.imobiliaria_name}</div>`:''}
     </div>
     <div class="card">
       <div class="card-title">Partes Envolvidas</div>
       ${insp.locador_name?`<div class="mb-8"><div class="form-label">Locador</div><div>${insp.locador_name}</div>${insp.locador_cpf?`<div class="text-small">CPF: ${insp.locador_cpf}</div>`:''}</div>`:''}
-      ${insp.locatario_name?`<div class="mb-8"><div class="form-label">LocatÃ¡rio</div><div>${insp.locatario_name}</div>${insp.locatario_cpf?`<div class="text-small">CPF: ${insp.locatario_cpf}</div>`:''}</div>`:''}
-      ${insp.corretor_name?`<div><div class="form-label">Corretor</div><div>${insp.corretor_name} ${insp.corretor_creci?'Â· CRECI '+insp.corretor_creci:''}</div></div>`:''}
+      ${insp.locatario_name?`<div class="mb-8"><div class="form-label">Locatário</div><div>${insp.locatario_name}</div>${insp.locatario_cpf?`<div class="text-small">CPF: ${insp.locatario_cpf}</div>`:''}</div>`:''}
+      ${insp.corretor_name?`<div><div class="form-label">Corretor</div><div>${insp.corretor_name} ${insp.corretor_creci?'· CRECI '+insp.corretor_creci:''}</div></div>`:''}
     </div>
     ${rooms.length?`<div style="font-size:15px;font-weight:700;margin:12px 0 8px">Ambientes (${rooms.length})</div>${roomsHtml}`:''}
-    ${sigs.length?`<div class="card"><div class="card-title">âï¸ Assinaturas</div>
-      ${sigs.map(s=>`<div class="flex gap-8 mb-8"><span class="tag tag-concluido">â</span>
-        <span class="text-small">${s.party_type} â ${s.party_name||''}</span></div>`).join('')}
+    ${sigs.length?`<div class="card"><div class="card-title">✍️ Assinaturas</div>
+      ${sigs.map(s=>`<div class="flex gap-8 mb-8"><span class="tag tag-concluido">✓</span>
+        <span class="text-small">${s.party_type} — ${s.party_name||''}</span></div>`).join('')}
     </div>`:''}
     <button class="btn btn-primary btn-full mt-8 mb-16" onclick="dlPDF('${insp.id}')">
-      ð Baixar Laudo PDF
+      📄 Baixar Laudo PDF
     </button>`;
 }
 
