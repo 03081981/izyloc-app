@@ -1537,6 +1537,11 @@ canvas { display: block; }
 .itf-state-btn.active-bad{background:#fee2e2;border-color:#ef4444;color:#dc2626;font-weight:600}
 .itf-custom-section{margin-top:16px;border-top:1px solid #e2e8f0;padding-top:12px}
 .itf-custom-label{font-size:11px;font-weight:600;color:#94a3b8;text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px}
+.itf-photo-strip{display:flex;flex-direction:column;gap:10px;margin-bottom:8px}
+.itf-photo-card{border:1px solid #e2e8f0;border-radius:8px;overflow:hidden;background:#fff}
+.itf-photo-num{font-size:11px;font-weight:600;color:#64748b;text-transform:uppercase;letter-spacing:.05em;padding:4px 10px;background:#f1f5f9;border-bottom:1px solid #e2e8f0}
+.itf-photo-card .itf-photo-thumb{height:200px;max-height:200px;border-radius:0}
+.itf-photo-card .itf-ai-box{padding:4px 8px;background:#f8fafc}
 .itf-finish-btn:disabled{background:#94a3b8;cursor:not-allowed}
 .itf-finish-btn:not(:disabled):hover{background:#16a34a}
 @media(max-width:768px){.itf-item-row{grid-template-columns:1fr!important}.itf-verif-grid{grid-template-columns:1fr!important}}
@@ -3710,12 +3715,12 @@ inp.click();
 });
 }
 function itfMandH(iid,label,st){
-var hp=st.photo?'has-photo':'req';
+var _ph=st.photos||(st.photo?[{url:st.photo,desc:st.ai||''}]:[]);
+var hp=_ph.length?'has-photo':'req';
 return '<div class="itf-item-box '+hp+'" id="mbox-'+iid+'">'
 +'<div class="itf-item-label">'+label+'</div>'
-+(st.photo?'<img class="itf-photo-thumb" src="'+st.photo+'" style="display:block">':'<img class="itf-photo-thumb">')
-+'<button class="itf-add-photo-btn" data-iid="'+iid+'" data-tp="mand">'+(st.photo?'\ud83d\udd04 Trocar foto':'\ud83d\udcf7 Adicionar foto')+'</button>'
-+(st.ai?itfAiH(iid,st.ai):'<div class="itf-ai-box" id="ai-'+iid+'" style="display:none"></div>')
++'<div class="itf-photo-strip" id="strip-'+iid+'">'+_ph.map(function(p,pi){return '<div class="itf-photo-card"><div class="itf-photo-num">Foto '+(pi+1)+'</div><img class="itf-photo-thumb" src="'+p.url+'" style="display:block"><div class="itf-ai-box">'+(p.desc?itfAiH(iid+'-'+pi,p.desc):'')+'</div></div>';}).join('')+'</div>'
++'<button class="itf-add-photo-btn" data-iid="'+iid+'" data-tp="mand">'+(_ph.length?'+ Adicionar outra foto':'\ud83d\udcf7 Adicionar foto')+'</button>'
 +'<div class="itf-state-wrap" id="st-'+iid+'">'
 +'<button class="itf-state-btn'+(st.state==='bom'?' active-bom':'')+'" data-iid="'+iid+'" data-st="bom" onclick="itfSetState(\''+iid+'\',\'bom\',\'mand\')">✓ Bom</button>'
 +'<button class="itf-state-btn'+(st.state==='reg'?' active-reg':'')+'" data-iid="'+iid+'" data-st="reg" onclick="itfSetState(\''+iid+'\',\'reg\',\'mand\')">⚠ Regular</button>'
@@ -3725,14 +3730,14 @@ return '<div class="itf-item-box '+hp+'" id="mbox-'+iid+'">'
 +'</div>';
 }
 function itfCondH(iid,label,st){
+var _phc=st.photos||(st.photo?[{url:st.photo,desc:st.ai||''}]:[]);
 return '<div class="itf-cond-row" id="crow-'+iid+'">'
 +'<div class="itf-cond-header"><span class="itf-cond-name">'+label+'</span>'
 +'<label class="itf-toggle"><input type="checkbox" '+(st.on?'checked':'')+' onchange="itfTogCond(\''+iid+'\',this.checked)"><span class="itf-slider"></span></label>'
 +'</div>'
 +'<div class="itf-cond-body'+(st.on?' open':'')+'" id="cbody-'+iid+'">'
-+(st.photo?'<img class="itf-photo-thumb" src="'+st.photo+'" style="display:block;margin-top:12px">':'<img class="itf-photo-thumb" style="margin-top:12px">')
-+'<button class="itf-add-photo-btn" data-iid="'+iid+'" data-tp="cond" style="margin-top:8px">'+(st.photo?'\ud83d\udd04 Trocar foto':'\ud83d\udcf7 Adicionar foto')+'</button>'
-+(st.ai?itfAiH(iid,st.ai):'<div class="itf-ai-box" id="ai-'+iid+'" style="display:none"></div>')
++'<div class="itf-photo-strip" id="strip-'+iid+'" style="margin-top:12px">'+_phc.map(function(p,pi){return '<div class="itf-photo-card"><div class="itf-photo-num">Foto '+(pi+1)+'</div><img class="itf-photo-thumb" src="'+p.url+'" style="display:block"><div class="itf-ai-box">'+(p.desc?itfAiH(iid+'-'+pi,p.desc):'')+'</div></div>';}).join('')+'</div>'
++'<button class="itf-add-photo-btn" data-iid="'+iid+'" data-tp="cond" style="margin-top:8px">'+(_phc.length?'+ Adicionar outra foto':'\ud83d\udcf7 Adicionar foto')+'</button>'
 +'<div class="itf-state-wrap" id="st-'+iid+'">'
 +'<button class="itf-state-btn'+(st.state==='bom'?' active-bom':'')+'" data-iid="'+iid+'" data-st="bom" onclick="itfSetState(\''+iid+'\',\'bom\',\'cond\')">✓ Bom</button>'
 +'<button class="itf-state-btn'+(st.state==='reg'?' active-reg':'')+'" data-iid="'+iid+'" data-st="reg" onclick="itfSetState(\''+iid+'\',\'reg\',\'cond\')">⚠ Regular</button>'
@@ -3754,22 +3759,36 @@ reader.onload=function(e){
 var url=e.target.result;var b64=url.split(',')[1];
 var dat=_itfS.dat[ambi.id];
 var bkt=tp=='mand'?dat.mand:dat.cond;
-if(!bkt[iid])bkt[iid]={};bkt[iid].photo=url;
-var box=document.getElementById(tp=='mand'?'mbox-'+iid:'crow-'+iid);
+if(!bkt[iid])bkt[iid]={};
+if(!bkt[iid].photos)bkt[iid].photos=[];
+var pIdx=bkt[iid].photos.length;
+bkt[iid].photos.push({url:url,desc:''});bkt[iid].photo=url;
+var boxId=tp=='mand'?'mbox-'+iid:'crow-'+iid;
+var box=document.getElementById(boxId);
 if(box){
-var img=box.querySelector('.itf-photo-thumb');
-if(img){img.src=url;img.style.display='block';}
-var btn=box.querySelector('.itf-add-photo-btn');
-if(btn)btn.textContent='\ud83d\udd04 Trocar foto';
+var strip=document.getElementById('strip-'+iid);
+if(!strip){
+strip=document.createElement('div');
+strip.className='itf-photo-strip';
+strip.id='strip-'+iid;
+var addBtn=box.querySelector('.itf-add-photo-btn');
+if(addBtn){box.insertBefore(strip,addBtn);}else{box.appendChild(strip);}
+}
+var pCard=document.createElement('div');pCard.className='itf-photo-card';
+pCard.innerHTML='<div class="itf-photo-num">Foto '+(pIdx+1)+'</div>'
++'<img class="itf-photo-thumb" src="'+url+'" style="display:block">'
++'<div class="itf-ai-box" id="pai-'+iid+'-'+pIdx+'" style="display:block"><div class="itf-ai-badge">\u2736 IA izyLAUDO</div><div class="itf-ai-loading">Analisando imagem...</div></div>';
+strip.appendChild(pCard);
+var addBtn2=box.querySelector('.itf-add-photo-btn');
+if(addBtn2)addBtn2.textContent='+ Adicionar outra foto';
 if(tp=='mand'){box.className='itf-item-box has-photo';}
 }
-var aiBox=document.getElementById('ai-'+iid);
-if(aiBox){aiBox.style.display='block';aiBox.innerHTML='<div class="itf-ai-badge">\u2736 IA izyLAUDO</div><div class="itf-ai-loading">Analisando imagem...</div>';}
+var _pi=pIdx;
 itfCallIA(b64,ambi.id,iid,function(err,desc,cond){
-var ab=document.getElementById('ai-'+iid);
+var ab=document.getElementById('pai-'+iid+'-'+_pi);
 if(ab){
 if(err){ab.style.display='none';}
-else{bkt[iid].ai=desc;ab.innerHTML=itfAiH(iid,desc);if(cond)itfAutoState(iid,cond,bkt);}
+else{bkt[iid].photos[_pi].desc=desc;bkt[iid].ai=desc;ab.innerHTML=itfAiH(iid,desc);if(_pi===0&&cond)itfAutoState(iid,cond,bkt);}
 }
 itfUpdateProg();
 });
