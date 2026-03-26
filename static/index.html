@@ -1490,40 +1490,62 @@ canvas { display: block; }
 .itf-tab.done{border-color:#22c55e;background:#f0fdf4;color:#15803d}
 .itf-tab.done::after{content:' ✓'}
 .itf-card{background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:24px;margin-bottom:20px}
-.itf-sec-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:#94a3b8;margin:20px 0 12px;padding-bottom:6px;border-bottom:1px solid #f1f5f9}
+.itf-sec-title{font-size:11px;font-weight:600;color:#8a95a3;text-transform:uppercase;letter-spacing:.8px;margin:20px 0 12px}
 .itf-sec-title:first-child{margin-top:0}
-.itf-item-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:12px}
-.itf-item-box{border:2px solid #e2e8f0;border-radius:10px;padding:14px;transition:border-color .2s;background:#fafbfc}
-.itf-item-box.req{border-color:#fca5a5}.itf-item-box.has-photo{border-color:#93c5fd}
-.itf-item-label{font-size:13px;font-weight:600;color:#374151;margin-bottom:10px}
-.itf-photo-thumb{width:100%;height:220px;max-height:220px;object-fit:cover;border-radius:6px;display:none;margin-bottom:8px;background:#f1f5f9}
-.itf-add-photo-btn{width:100%;padding:10px;min-height:120px;display:flex;align-items:center;justify-content:center;border:2px dashed #cbd5e1;border-radius:8px;background:#f8fafc;color:#64748b;font-size:12px;cursor:pointer;text-align:center;transition:all .2s;font-family:inherit;box-sizing:border-box}
-.itf-add-photo-btn:hover{border-color:#4f8ef7;color:#1d4ed8;background:#eff6ff}
-.itf-ai-box{background:#eff6ff;border:1px solid #bfdbfe;border-radius:8px;padding:10px;margin-top:10px}
-.itf-ai-badge{font-size:11px;font-weight:700;color:#1d4ed8;margin-bottom:6px}
-.itf-ai-loading{font-size:12px;color:#64748b;font-style:italic}
-.itf-ai-desc{font-size:12px;color:#374151;width:100%;border:1px solid #bfdbfe;border-radius:6px;padding:6px;resize:vertical;min-height:48px;background:#fff;margin-top:4px;font-family:inherit;box-sizing:border-box}
-.itf-ai-regen{font-size:11px;color:#1d4ed8;background:none;border:none;cursor:pointer;text-decoration:underline;margin-top:4px;padding:0;font-family:inherit}
-.itf-obs-input{width:100%;margin-top:8px;padding:6px 8px;border:1px solid #e2e8f0;border-radius:6px;font-size:12px;box-sizing:border-box;font-family:inherit}
-.itf-cond-row{border:1px solid #e2e8f0;border-radius:10px;padding:14px;margin-bottom:8px;background:#fafbfc}
-.itf-cond-header{display:flex;align-items:center;justify-content:space-between}
-.itf-cond-name{font-size:13px;font-weight:600;color:#374151}
-.itf-toggle{position:relative;display:inline-block;width:40px;height:22px;flex-shrink:0}
+.itf-item-row{display:flex;flex-direction:column;gap:0;margin-bottom:12px}
+.itf-item-block{border:.5px solid #dce3ed;border-radius:12px;margin-bottom:12px;overflow:hidden}
+.itf-item-block.no-photo{border-color:#dce3ed}
+.itf-item-block.has-photo{border-color:#93c5fd}
+.itf-item-header{display:flex;align-items:center;justify-content:space-between;padding:11px 16px;background:#f8fafc;border-bottom:.5px solid #dce3ed}
+.itf-item-left{display:flex;align-items:center;gap:10px}
+.itf-badge-obrig{font-size:10px;background:#e8edf3;color:#5a6a7e;padding:2px 8px;border-radius:20px}
+.itf-badge-cond{font-size:10px;background:#fff8e8;color:#854f0b;padding:2px 8px;border-radius:20px}
+.itf-item-name{font-size:13px;font-weight:500;color:#1a2d45}
+.itf-estado-sel{font-size:11px;padding:3px 10px;border-radius:20px;border:.5px solid #dce3ed;background:#fff;cursor:pointer;color:#5a6a7e;outline:none;font-family:inherit}
+.itf-item-body{padding:14px 16px}
+.itf-foto-row{display:grid;grid-template-columns:110px 1fr;gap:14px}
+.itf-foto-wrap{position:relative}
+.itf-foto-thumb{width:110px;height:90px;object-fit:cover;border-radius:8px;display:block}
+.itf-foto-add{width:110px;height:90px;border:2px dashed #b5d4f4;border-radius:8px;background:#f0f6ff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;cursor:pointer;color:#2d7dd2;font-size:10px}
+.itf-foto-label{font-size:10px;text-align:center;margin-top:4px;color:#2d7dd2;font-weight:500}
+.itf-desc-col{display:flex;flex-direction:column;gap:8px}
+.itf-ia-mini{background:#f0f6ff;border:.5px solid #b5d4f4;border-radius:8px;padding:8px 10px}
+.itf-ia-mini.pending{opacity:.4}
+.itf-ia-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:5px}
+.itf-ia-badge{background:#2d7dd2;color:#fff;font-size:10px;padding:2px 8px;border-radius:20px;font-weight:500}
+.itf-ia-regen{background:transparent;border:1px solid #b5d4f4;color:#185fa5;border-radius:5px;padding:2px 8px;font-size:10px;cursor:pointer;font-family:inherit}
+.itf-ia-desc{font-size:11px;color:#5a6a7e;line-height:1.5;font-style:italic}
+.itf-ia-pending{font-size:11px;color:#aab2bc;font-style:italic}
+.itf-obs-input{width:100%;background:#f8fafc;border:.5px solid #dce3ed;border-radius:6px;padding:7px 10px;font-size:12px;color:#1a2d45;outline:none;resize:none;height:42px;font-family:inherit;box-sizing:border-box;margin-top:10px}
+.itf-add-photo-btn{width:100%;padding:8px;border:1.5px dashed #b5d4f4;border-radius:8px;background:#f0f6ff;color:#2d7dd2;font-size:12px;cursor:pointer;text-align:center;margin-top:10px;font-family:inherit}
+.itf-photo-strip{display:flex;flex-direction:column;gap:10px;margin-bottom:8px}
+.itf-photo-card{border:.5px solid #dce3ed;border-radius:8px;overflow:hidden;background:#fff}
+.itf-photo-card .itf-foto-row{border:none;margin:0}
+.itf-photo-num{font-size:10px;font-weight:600;color:#5a6a7e;text-transform:uppercase;letter-spacing:.05em;padding:4px 10px;background:#f1f5f9;border-bottom:.5px solid #dce3ed}
+.itf-cond-row{border:.5px solid #dce3ed;border-radius:12px;margin-bottom:8px;overflow:hidden}
+.itf-cond-row.ativo{border-color:#2d7dd2}
+.itf-cond-header{display:flex;align-items:center;justify-content:space-between;padding:11px 16px;background:#fff}
+.itf-cond-name{font-size:13px;font-weight:500;color:#1a2d45}
+.itf-cond-right{display:flex;align-items:center;gap:10px}
+.itf-possui-label{font-size:12px;color:#5a6a7e}
+.itf-toggle{position:relative;display:inline-block;width:36px;height:20px;flex-shrink:0}
 .itf-toggle input{opacity:0;width:0;height:0;position:absolute}
-.itf-slider{position:absolute;inset:0;background:#cbd5e1;border-radius:11px;cursor:pointer;transition:.3s}
-.itf-slider:before{content:"";position:absolute;width:16px;height:16px;left:3px;bottom:3px;background:#fff;border-radius:50%;transition:.3s}
-.itf-toggle input:checked+.itf-slider{background:#4f8ef7}
-.itf-toggle input:checked+.itf-slider:before{transform:translateX(18px)}
-.itf-cond-body{margin-top:12px;display:none}
+.itf-slider{position:absolute;inset:0;background:#dce3ed;border-radius:20px;cursor:pointer;transition:.2s}
+.itf-slider:before{content:"";position:absolute;width:14px;height:14px;left:3px;bottom:3px;background:#fff;border-radius:50%;transition:.2s}
+.itf-toggle input:checked+.itf-slider{background:#2d7dd2}
+.itf-toggle input:checked+.itf-slider:before{transform:translateX(16px)}
+.itf-cond-body{padding:14px 16px;border-top:.5px solid #dce3ed;display:none}
 .itf-cond-body.open{display:block}
-.itf-verif-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px}
-.itf-verif-item{border:1px solid #e2e8f0;border-radius:10px;padding:12px;background:#fafbfc}
-.itf-verif-name{font-size:12px;font-weight:600;color:#374151;margin-bottom:8px}
-.itf-verif-btns{display:flex;flex-wrap:wrap;gap:5px}
-.itf-vbtn{padding:4px 9px;border-radius:6px;border:1px solid #e2e8f0;font-size:11px;cursor:pointer;background:#f8fafc;color:#64748b;transition:all .15s;font-family:inherit}
-.itf-vbtn.ok{background:#dcfce7;border-color:#86efac;color:#166534}
-.itf-vbtn.warn{background:#fef9c3;border-color:#fde047;color:#854d0e}
-.itf-vbtn.fail{background:#fee2e2;border-color:#fca5a5;color:#991b1b}
+.itf-custom-section{margin-top:16px;border-top:1px solid #e2e8f0;padding-top:12px}
+.itf-custom-label{font-size:11px;font-weight:600;color:#94a3b8;text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px}
+.itf-verif-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.itf-verif-item{border:.5px solid #dce3ed;border-radius:10px;padding:12px 14px;background:#f8fafc}
+.itf-verif-name{font-size:13px;font-weight:500;color:#1a2d45;margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.itf-verif-btns{display:flex;flex-wrap:wrap;gap:6px}
+.itf-vbtn{padding:4px 10px;border-radius:20px;border:1.5px solid #dce3ed;background:#fff;font-size:11px;color:#5a6a7e;cursor:pointer;font-family:inherit;transition:all .15s}
+.itf-vbtn.ok{border-color:#2e7d32;background:#e8f4eb;color:#2e7d32;font-weight:500}
+.itf-vbtn.warn{border-color:#e65100;background:#fff3e0;color:#e65100;font-weight:500}
+.itf-vbtn.fail{border-color:#a32d2d;background:#fce8e8;color:#a32d2d;font-weight:500}
 .itf-vbtn.sel{font-weight:700;outline:2px solid currentColor;outline-offset:1px}
 .itf-notes{width:100%;min-height:72px;border:1px solid #e2e8f0;border-radius:8px;padding:10px;font-size:13px;resize:vertical;font-family:inherit;box-sizing:border-box}
 .itf-ambi-nav{display:flex;align-items:center;gap:10px;margin-top:20px;padding-top:16px;border-top:1px solid #f1f5f9}
@@ -3716,42 +3738,42 @@ inp.click();
 }
 function itfMandH(iid,label,st){
 var _ph=st.photos||(st.photo?[{url:st.photo,desc:st.ai||''}]:[]);
-var hp=_ph.length?'has-photo':'req';
-return '<div class="itf-item-box '+hp+'" id="mbox-'+iid+'">'
-+'<div class="itf-item-label">'+label+'</div>'
-+'<div class="itf-photo-strip" id="strip-'+iid+'">'+_ph.map(function(p,pi){return '<div class="itf-photo-card"><div class="itf-photo-num">Foto '+(pi+1)+'</div><img class="itf-photo-thumb" src="'+p.url+'" style="display:block"><div class="itf-ai-box">'+(p.desc?itfAiH(iid+'-'+pi,p.desc):'')+'</div></div>';}).join('')+'</div>'
-+'<button class="itf-add-photo-btn" data-iid="'+iid+'" data-tp="mand">'+(_ph.length?'+ Adicionar outra foto':'\ud83d\udcf7 Adicionar foto')+'</button>'
-+'<div class="itf-state-wrap" id="st-'+iid+'">'
-+'<button class="itf-state-btn'+(st.state==='bom'?' active-bom':'')+'" data-iid="'+iid+'" data-st="bom" onclick="itfSetState(\''+iid+'\',\'bom\',\'mand\')">✓ Bom</button>'
-+'<button class="itf-state-btn'+(st.state==='reg'?' active-reg':'')+'" data-iid="'+iid+'" data-st="reg" onclick="itfSetState(\''+iid+'\',\'reg\',\'mand\')">⚠ Regular</button>'
-+'<button class="itf-state-btn'+(st.state==='bad'?' active-bad':'')+'" data-iid="'+iid+'" data-st="bad" onclick="itfSetState(\''+iid+'\',\'bad\',\'mand\')">✕ Ruim</button>'
+var hp=_ph.length?'has-photo':'no-photo';
+var stVal=st.state||'';
+return '<div class="itf-item-block '+hp+'" id="mbox-'+iid+'">'
++'<div class="itf-item-header">'
++'<div class="itf-item-left"><span class="itf-badge-obrig">Obrigat\u00f3rio</span><span class="itf-item-name">'+label+'</span></div>'
++'<select class="itf-estado-sel" id="sel-'+iid+'" onchange="itfSetState(\''+iid+'\',this.value,\'mand\')"><option value=""'+(stVal===''?' selected':'')+'>Estado</option><option value="bom"'+(stVal==='bom'?' selected':'')+'>Bom</option><option value="reg"'+(stVal==='reg'?' selected':'')+'>Regular</option><option value="bad"'+(stVal==='bad'?' selected':'')+'>Ruim</option></select>'
 +'</div>'
-+'<input class="itf-obs-input" placeholder="Observa\u00e7\u00e3o..." id="obs-'+iid+'" value="'+(st.obs||'')+'" oninput="_itfS.dat[_itfS.ambis[_itfS.cur].id].mand[\''+iid+'\']&&(_itfS.dat[_itfS.ambis[_itfS.cur].id].mand[\''+iid+'\'].obs=this.value)">'
-+'</div>';
++'<div class="itf-item-body">'
++'<div class="itf-photo-strip" id="strip-'+iid+'">'
++(_ph.length?_ph.map(function(p,pi){return '<div class="itf-photo-card"><div class="itf-photo-num">Foto '+(pi+1)+'</div><div class="itf-foto-row"><div class="itf-foto-wrap"><img class="itf-foto-thumb" src="'+p.url+'"></div><div class="itf-desc-col">'+(p.desc?'<div class="itf-ia-mini"><div class="itf-ia-top"><span class="itf-ia-badge">\u2736 IA izyLAUDO</span><button class="itf-ia-regen" onclick="itfRegenAI(\''+iid+'\','+pi+')">'+'\u21bb Regenerar</button></div><div class="itf-ia-desc">'+p.desc+'</div></div>':'<div class="itf-ia-mini pending"><div class="itf-ia-top"><span class="itf-ia-badge">\u2736 IA</span></div><div class="itf-ia-pending">Analisando...</div></div>')+'</div></div></div>';}).join(''):'<div class="itf-foto-row"><div class="itf-foto-wrap"><div class="itf-foto-add"><span style="font-size:20px">\ud83d\udcf7</span><span>Tirar foto</span></div><div class="itf-foto-label">Adicionar foto</div></div><div class="itf-desc-col"><div class="itf-ia-mini pending"><div class="itf-ia-top"><span class="itf-ia-badge">\u2736 IA</span></div><div class="itf-ia-pending">Aguardando foto para gerar descri\u00e7\u00e3o...</div></div></div></div>')
++'</div>'
++'<button class="itf-add-photo-btn" data-iid="'+iid+'" data-tp="mand">'+(_ph.length?'+ Adicionar outra foto':'\ud83d\udcf7 Adicionar foto')+'</button>'
++'<textarea class="itf-obs-input" placeholder="Observa\u00e7\u00e3o..." id="obs-'+iid+'" oninput="_itfS.dat[_itfS.ambis[_itfS.cur].id].mand[\''+iid+'\']&&(_itfS.dat[_itfS.ambis[_itfS.cur].id].mand[\''+iid+'\'].obs=this.value)">'+( st.obs||'')+'</textarea>'
++'</div></div>';
 }
 function itfCondH(iid,label,st){
 var _phc=st.photos||(st.photo?[{url:st.photo,desc:st.ai||''}]:[]);
-return '<div class="itf-cond-row" id="crow-'+iid+'">'
-+'<div class="itf-cond-header"><span class="itf-cond-name">'+label+'</span>'
+var stVal=st.state||'';
+return '<div class="itf-cond-row'+(st.on?' ativo':'')+'" id="crow-'+iid+'">'
++'<div class="itf-cond-header">'
++'<div class="itf-item-left"><span class="itf-badge-cond">Se houver</span><span class="itf-cond-name">'+label+'</span></div>'
++'<div class="itf-cond-right">'
++'<span class="itf-possui-label">Possui</span>'
 +'<label class="itf-toggle"><input type="checkbox" '+(st.on?'checked':'')+' onchange="itfTogCond(\''+iid+'\',this.checked)"><span class="itf-slider"></span></label>'
-+'</div>'
++(st.on?'<select class="itf-estado-sel" id="sel-'+iid+'" onchange="itfSetState(\''+iid+'\',this.value,\'cond\')"><option value=""'+(stVal===''?' selected':'')+'>Estado</option><option value="bom"'+(stVal==='bom'?' selected':'')+'>Bom</option><option value="reg"'+(stVal==='reg'?' selected':'')+'>Regular</option><option value="bad"'+(stVal==='bad'?' selected':'')+'>Ruim</option></select>':'')
++'</div></div>'
 +'<div class="itf-cond-body'+(st.on?' open':'')+'" id="cbody-'+iid+'">'
-+'<div class="itf-photo-strip" id="strip-'+iid+'" style="margin-top:12px">'+_phc.map(function(p,pi){return '<div class="itf-photo-card"><div class="itf-photo-num">Foto '+(pi+1)+'</div><img class="itf-photo-thumb" src="'+p.url+'" style="display:block"><div class="itf-ai-box">'+(p.desc?itfAiH(iid+'-'+pi,p.desc):'')+'</div></div>';}).join('')+'</div>'
-+'<button class="itf-add-photo-btn" data-iid="'+iid+'" data-tp="cond" style="margin-top:8px">'+(_phc.length?'+ Adicionar outra foto':'\ud83d\udcf7 Adicionar foto')+'</button>'
-+'<div class="itf-state-wrap" id="st-'+iid+'">'
-+'<button class="itf-state-btn'+(st.state==='bom'?' active-bom':'')+'" data-iid="'+iid+'" data-st="bom" onclick="itfSetState(\''+iid+'\',\'bom\',\'cond\')">✓ Bom</button>'
-+'<button class="itf-state-btn'+(st.state==='reg'?' active-reg':'')+'" data-iid="'+iid+'" data-st="reg" onclick="itfSetState(\''+iid+'\',\'reg\',\'cond\')">⚠ Regular</button>'
-+'<button class="itf-state-btn'+(st.state==='bad'?' active-bad':'')+'" data-iid="'+iid+'" data-st="bad" onclick="itfSetState(\''+iid+'\',\'bad\',\'cond\')">✕ Ruim</button>'
++'<div class="itf-photo-strip" id="strip-'+iid+'">'
++(_phc.length?_phc.map(function(p,pi){return '<div class="itf-photo-card"><div class="itf-photo-num">Foto '+(pi+1)+'</div><div class="itf-foto-row"><div class="itf-foto-wrap"><img class="itf-foto-thumb" src="'+p.url+'"></div><div class="itf-desc-col">'+(p.desc?'<div class="itf-ia-mini"><div class="itf-ia-top"><span class="itf-ia-badge">\u2736 IA izyLAUDO</span><button class="itf-ia-regen" onclick="itfRegenAI(\''+iid+'\','+pi+')">'+'\u21bb Regenerar</button></div><div class="itf-ia-desc">'+p.desc+'</div></div>':'<div class="itf-ia-mini pending"><div class="itf-ia-top"><span class="itf-ia-badge">\u2736 IA</span></div><div class="itf-ia-pending">Analisando...</div></div>')+'</div></div></div>';}).join(''):'')
 +'</div>'
-+'<textarea style="width:100%;margin-top:8px;padding:8px;border:1px solid #e2e8f0;border-radius:6px;font-size:12px;resize:vertical;min-height:40px;box-sizing:border-box;font-family:inherit" placeholder="Observa\u00e7\u00e3o..." oninput="_itfS.dat[_itfS.ambis[_itfS.cur].id].cond[\''+iid+'\']&&(_itfS.dat[_itfS.ambis[_itfS.cur].id].cond[\''+iid+'\'].obs=this.value)">'+(st.obs||'')+'</textarea>'
++'<button class="itf-add-photo-btn" data-iid="'+iid+'" data-tp="cond">'+(_phc.length?'+ Adicionar outra foto':'\ud83d\udcf7 Adicionar foto')+'</button>'
++'<textarea class="itf-obs-input" placeholder="Observa\u00e7\u00e3o..." id="obs-'+iid+'" oninput="_itfS.dat[_itfS.ambis[_itfS.cur].id].cond[\''+iid+'\']&&(_itfS.dat[_itfS.ambis[_itfS.cur].id].cond[\''+iid+'\'].obs=this.value)">'+(st.obs||'')+'</textarea>'
 +'</div></div>';
 }
 function itfAiH(iid,desc){
-return '<div class="itf-ai-box" id="ai-'+iid+'">'
-+'<div class="itf-ai-badge">\u2736 IA izyLAUDO</div>'
-+'<textarea class="itf-ai-desc" id="aidesc-'+iid+'">'+desc+'</textarea>'
-+'<button class="itf-ai-regen" onclick="itfRegen(\''+iid+'\')">&#8635; Regenerar</button>'
-+'</div>';
+return '<div class="itf-ia-mini"><div class="itf-ia-top"><span class="itf-ia-badge">\u2736 IA izyLAUDO</span><button class="itf-ia-regen" onclick="itfRegenAI(\''+iid+'\')">'+'\u21bb Regenerar</button></div><div class="itf-ia-desc">'+desc+'</div></div>';
 }
 function itfHandlePhoto(file,iid,tp,ambi){
 var reader=new FileReader();
@@ -3767,28 +3789,20 @@ var boxId=tp=='mand'?'mbox-'+iid:'crow-'+iid;
 var box=document.getElementById(boxId);
 if(box){
 var strip=document.getElementById('strip-'+iid);
-if(!strip){
-strip=document.createElement('div');
-strip.className='itf-photo-strip';
-strip.id='strip-'+iid;
-var addBtn=box.querySelector('.itf-add-photo-btn');
-if(addBtn){box.insertBefore(strip,addBtn);}else{box.appendChild(strip);}
-}
-var pCard=document.createElement('div');pCard.className='itf-photo-card';
-pCard.innerHTML='<div class="itf-photo-num">Foto '+(pIdx+1)+'</div>'
-+'<img class="itf-photo-thumb" src="'+url+'" style="display:block">'
-+'<div class="itf-ai-box" id="pai-'+iid+'-'+pIdx+'" style="display:block"><div class="itf-ai-badge">\u2736 IA izyLAUDO</div><div class="itf-ai-loading">Analisando imagem...</div></div>';
-strip.appendChild(pCard);
-var addBtn2=box.querySelector('.itf-add-photo-btn');
-if(addBtn2)addBtn2.textContent='+ Adicionar outra foto';
-if(tp=='mand'){box.className='itf-item-box has-photo';}
+if(!strip){strip=document.createElement('div');strip.className='itf-photo-strip';strip.id='strip-'+iid;var ab=box.querySelector('.itf-add-photo-btn');if(ab)ab.parentNode.insertBefore(strip,ab);}
+if(pIdx===0){var emptyRow=strip.querySelector('.itf-foto-row');if(emptyRow&&!emptyRow.closest('.itf-photo-card'))strip.removeChild(emptyRow);}
+var pc=document.createElement('div');pc.className='itf-photo-card';
+pc.innerHTML='<div class="itf-photo-num">Foto '+(pIdx+1)+'</div><div class="itf-foto-row"><div class="itf-foto-wrap"><img class="itf-foto-thumb" src="'+url+'"></div><div class="itf-desc-col"><div class="itf-ia-mini pending" id="pai-'+iid+'-'+pIdx+'"><div class="itf-ia-top"><span class="itf-ia-badge">\u2736 IA izyLAUDO</span></div><div class="itf-ia-pending">Analisando imagem...</div></div></div></div>';
+strip.appendChild(pc);
+var ab2=box.querySelector('.itf-add-photo-btn');if(ab2)ab2.textContent='+ Adicionar outra foto';
+if(tp=='mand')box.className='itf-item-block has-photo';
 }
 var _pi=pIdx;
 itfCallIA(b64,ambi.id,iid,function(err,desc,cond){
 var ab=document.getElementById('pai-'+iid+'-'+_pi);
 if(ab){
-if(err){ab.style.display='none';}
-else{bkt[iid].photos[_pi].desc=desc;bkt[iid].ai=desc;ab.innerHTML=itfAiH(iid,desc);if(_pi===0&&cond)itfAutoState(iid,cond,bkt);}
+if(err){ab.classList.remove('pending');ab.innerHTML='<div class="itf-ia-top"><span class="itf-ia-badge">\u2736 IA</span></div><div class="itf-ia-pending">Erro na an\u00e1lise</div>';}
+else{bkt[iid].photos[_pi].desc=desc;bkt[iid].ai=desc;ab.classList.remove('pending');ab.innerHTML='<div class="itf-ia-top"><span class="itf-ia-badge">\u2736 IA izyLAUDO</span><button class="itf-ia-regen" onclick="itfRegenAI(\''+iid+'\','+_pi+')">\u21bb Regenerar</button></div><div class="itf-ia-desc">'+desc+'</div>';if(_pi===0&&cond)itfAutoState(iid,cond,bkt);}
 }
 itfUpdateProg();
 });
@@ -3824,22 +3838,30 @@ var m={'\u00f3timo':'bom','bom':'bom','regular':'reg','ruim':'bad','p\u00e9ssimo
 var st=m[cond]||'';
 if(!st)return;
 if(bkt[iid])bkt[iid].state=st;
-var wrap=document.getElementById('st-'+iid);
-if(!wrap)return;
-wrap.querySelectorAll('.itf-state-btn').forEach(function(b){
-b.classList.remove('active-bom','active-reg','active-bad');
-if(b.dataset.st===st)b.classList.add('active-'+st);
+var sel=document.getElementById('sel-'+iid);
+if(sel)sel.value=st;
 });
 }
 function itfSetState(iid,st,tp){
 var a=_itfS.ambis[_itfS.cur];
 var bkt=tp==='mand'?_itfS.dat[a.id].mand:_itfS.dat[a.id].cond;
 if(bkt[iid])bkt[iid].state=st;
-var wrap=document.getElementById('st-'+iid);
-if(!wrap)return;
-wrap.querySelectorAll('.itf-state-btn').forEach(function(b){
-b.classList.remove('active-bom','active-reg','active-bad');
-if(b.dataset.st===st)b.classList.add('active-'+st);
+}
+function itfRegenAI(iid,pIdx){
+if(typeof pIdx==='undefined')pIdx=0;
+var a=_itfS.ambis[_itfS.cur];var dat=_itfS.dat[a.id];
+var bkt=dat.mand[iid]?dat.mand:dat.cond;
+if(!bkt[iid]||!bkt[iid].photos||!bkt[iid].photos[pIdx])return;
+var p=bkt[iid].photos[pIdx];
+var ab=document.getElementById('pai-'+iid+'-'+pIdx);
+if(ab){ab.classList.add('pending');ab.innerHTML='<div class="itf-ia-top"><span class="itf-ia-badge">\u2736 IA izyLAUDO</span></div><div class="itf-ia-pending">Regenerando...</div>';}
+var b64=p.url.split(',')[1];
+itfCallIA(b64,a.id,iid,function(err,desc,cond){
+if(ab){
+ab.classList.remove('pending');
+if(err){ab.innerHTML='<div class="itf-ia-top"><span class="itf-ia-badge">\u2736 IA</span></div><div class="itf-ia-pending">Erro</div>';}
+else{bkt[iid].photos[pIdx].desc=desc;ab.innerHTML='<div class="itf-ia-top"><span class="itf-ia-badge">\u2736 IA izyLAUDO</span><button class="itf-ia-regen" onclick="itfRegenAI(\''+iid+'\','+pIdx+')">\u21bb Regenerar</button></div><div class="itf-ia-desc">'+desc+'</div>';}
+}
 });
 }
 function itfAddCustom(ambiId){
@@ -3852,24 +3874,15 @@ _itfS.dat[ambiId].mand[iid]={custom:true};
 var list=document.getElementById('cuslist-'+ambiId);
 if(!list)return;
 var div=document.createElement('div');
-div.id='mbox-'+iid;div.className='itf-item-box req';
-div.innerHTML='<div class="itf-item-label">'+label+'</div>'
-+'<img class="itf-photo-thumb">'
-+'<button class="itf-add-photo-btn" data-iid="'+iid+'" data-tp="mand">📷 Adicionar foto</button>'
-+'<div class="itf-ai-box" id="ai-'+iid+'" style="display:none"></div>'
-+'<div class="itf-state-wrap" id="st-'+iid+'">'
-+'<button class="itf-state-btn" data-iid="'+iid+'" data-st="bom" onclick="itfSetState(\''+iid+'\',\'bom\',\'mand\')">\u2713 Bom</button>'
-+'<button class="itf-state-btn" data-iid="'+iid+'" data-st="reg" onclick="itfSetState(\''+iid+'\',\'reg\',\'mand\')">\u26a0 Regular</button>'
-+'<button class="itf-state-btn" data-iid="'+iid+'" data-st="bad" onclick="itfSetState(\''+iid+'\',\'bad\',\'mand\')">\u2715 Ruim</button>'
-+'</div>'
-+'<input class="itf-obs-input" placeholder="Observa\u00e7\u00e3o..." id="obs-'+iid+'" value="">';
-div.querySelector('.itf-add-photo-btn').onclick=function(){
-var aa=_itfS.ambis.find(function(x){return x.id===ambiId;});
-if(!aa)return;
-var fi=document.createElement('input');fi.type='file';fi.accept='image/*';
-fi.onchange=function(){if(fi.files[0])itfHandlePhoto(fi.files[0],iid,'mand',aa);};
-fi.click();
-};
+div.id='mbox-'+iid;div.className='itf-item-block no-photo';
+div.innerHTML='<div class="itf-item-header"><div class="itf-item-left"><span class="itf-badge-obrig">Custom</span><span class="itf-item-name">'+label+'</span></div><select class="itf-estado-sel" id="sel-'+iid+'" onchange="itfSetState(\''+iid+'\',this.value,\'mand\')"><option value="">Estado</option><option value="bom">Bom</option><option value="reg">Regular</option><option value="bad">Ruim</option></select></div><div class="itf-item-body"><div class="itf-photo-strip" id="strip-'+iid+'"><div class="itf-foto-row"><div class="itf-foto-wrap"><div class="itf-foto-add"><span style="font-size:20px">\ud83d\udcf7</span><span>Tirar foto</span></div></div><div class="itf-desc-col"><div class="itf-ia-mini pending"><div class="itf-ia-top"><span class="itf-ia-badge">\u2736 IA</span></div><div class="itf-ia-pending">Aguardando foto...</div></div></div></div></div><button class="itf-add-photo-btn" data-iid="'+iid+'" data-tp="mand">\ud83d\udcf7 Adicionar foto</button><textarea class="itf-obs-input" placeholder="Observa\u00e7\u00e3o..." id="obs-'+iid+'"></textarea></div>';
+var addBtn=div.querySelector('.itf-add-photo-btn');
+if(addBtn){
+var fileIn=document.createElement('input');fileIn.type='file';fileIn.accept='image/*';fileIn.capture='environment';fileIn.style.display='none';
+div.appendChild(fileIn);
+addBtn.onclick=function(){fileIn.click();};
+fileIn.onchange=function(){if(this.files&&this.files[0]){var a=_itfS.ambis[_itfS.cur];itfHandlePhoto(this.files[0],iid,'mand',a);this.value='';}};
+}
 list.appendChild(div);
 }
 function itfSetVerif(ambiId,verifId,stateIdx,btn){
