@@ -992,7 +992,7 @@ body {
   box-shadow: 0 0 0 3px rgba(45,125,210,.12), var(--sh-md);
 }
 .tc-photo {
-  height: 130px; position: relative;
+  height: 180px; position: relative;
   background-size: cover; background-position: center;
   overflow: hidden;
 }
@@ -1020,6 +1020,15 @@ body {
 .tc-tag-temporada { background: rgba(21,101,216,.85); }
 .tc-checkmark { position: absolute; top: 10px; right: 10px; width: 22px; height: 22px; border-radius: 50%; background: #2d7dd2; display: none; align-items: center; justify-content: center; z-index: 2; }
 .tipo-card.selected .tc-checkmark { display: flex; }
+.tipo-img-wrap { height: 180px; overflow: hidden; }
+.tipo-img-wrap img { width: 100%; height: 100%; object-fit: cover; object-position: center; }
+@media (max-width: 768px) {
+  .wiz-main-wrapper { margin-left: 0 !important; }
+  .sidebar { display: none; }
+  .tipo-cards { grid-template-columns: 1fr !important; }
+  .tipo-img-wrap { height: 160px; }
+  .tc-photo { height: 160px; }
+}
 .tc-check {
   display: flex; align-items: center; gap: 6px;
   font-size: 12px; font-weight: 600; color: var(--text-3);
@@ -1841,8 +1850,12 @@ canvas { display: block; }
       <button class="nav-item active"><span class="nav-icon-wrap"><svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"/></svg></span>Nova vistoria</button>
       <div class="nav-divider"></div>
       <button class="nav-item" onclick="showPage('page-dashboard')"><span class="nav-icon-wrap"><svg viewBox="0 0 20 20" fill="currentColor"><path d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z"/></svg></span>Meus laudos</button>
+      <button class="nav-item" onclick="showPage('page-dashboard')"><span class="nav-icon-wrap"><svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z"/></svg></span>Fotos e consumo</button>
+      <button class="nav-item" onclick="showPage('page-dashboard')"><span class="nav-icon-wrap"><svg viewBox="0 0 20 20" fill="currentColor"><path d="M4 4a2 2 0 00-2 2v1h16V6a2 2 0 00-2-2H4zM2 11v3a2 2 0 002 2h12a2 2 0 002-2v-3H2zm9 2a1 1 0 100-2H9a1 1 0 100 2h2z"/></svg></span>Recarga de créditos</button>
+      <button class="nav-item" onclick="showPage('page-dashboard')"><span class="nav-icon-wrap"><svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 3a1 1 0 000 2v8a2 2 0 002 2h2.586l-1.293 1.293a1 1 0 101.414 1.414L10 15.414l2.293 2.293a1 1 0 001.414-1.414L12.414 15H15a2 2 0 002-2V5a1 1 0 100-2H3zm11 4a1 1 0 10-2 0v4a1 1 0 102 0V7zm-3 1a1 1 0 10-2 0v3a1 1 0 102 0V8zM8 9a1 1 0 00-2 0v2a1 1 0 102 0V9z"/></svg></span>Extrato financeiro</button>
     </nav>
     <div class="sidebar-bottom">
+      <button class="nav-item" onclick="showPage('page-dashboard')"><span class="nav-icon-wrap"><svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z"/></svg></span>Configurações</button>
       <button class="nav-item" onclick="if(confirm('Sair da conta?')){logout()}"><span class="nav-icon-wrap"><svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 3a1 1 0 00-1 1v12a1 1 0 102 0V4a1 1 0 00-1-1zm10.293 9.293a1 1 0 001.414 1.414l3-3a1 1 0 000-1.414l-3-3a1 1 0 10-1.414 1.414L14.586 9H7a1 1 0 100 2h7.586l-1.293 1.293z"/></svg></span>Sair</button>
     </div>
   </aside>
@@ -2549,6 +2562,11 @@ function showNewInspection() {
   document.getElementById('rooms-list').innerHTML = '';
   gotoWStep(0);
   showPage('page-wizard', 'Nova Vistoria');
+}
+
+function selectTipoCard(card) {
+  document.querySelectorAll('.tipo-card').forEach(c => c.classList.remove('selected'));
+  card.classList.add('selected');
 }
 
 function gotoWStep(step) {
