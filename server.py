@@ -1315,8 +1315,6 @@ def make_app():
         (r'/api/items/([^/]+)/photo', PhotoUploadHandler),
         (r'/api/items/([^/]+)/photos', ItemPhotosHandler),
         (r'/api/items/([^/]+)/photos/([^/]+)', PhotoDeleteHandler),
-        # AI
-        (r'/api/ai/describe-item', DescribeItemHandler),
         # Signatures
         (r'/api/inspections/([^/]+)/signatures', SignaturesHandler),
         # PDF
@@ -1340,36 +1338,4 @@ if __name__ == '__main__':
 ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ  Acesse: http://localhost:{port}        ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ
 ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ
     """)
-    tornado.ioloop.IOLoop.current().start()# ─── AI DESCRIBE ITEM ─────────────────────────────────────────────────────────
-
-class DescribeItemHandler(BaseHandler):
-    def post(self):
-        user = self.require_auth()
-        if not user: return
-        data = self.json_body()
-        image_b64 = data.get("image", "")
-        item_name = data.get("item", "item")
-        ambiente = data.get("ambiente", "ambiente")
-        if not image_b64:
-            self.err("Imagem nao fornecida", 400)
-            return
-        import tempfile
-        import base64 as b64mod
-        try:
-            img_bytes = b64mod.b64decode(image_b64)
-        except Exception:
-            self.err("Imagem invalida", 400)
-            return
-        with tempfile.NamedTemporaryFile(suffix=".jpg", delete=False) as tmp:
-            tmp.write(img_bytes)
-            tmp_path = tmp.name
-        try:
-            result = analyze_photo(tmp_path, item_name, ambiente)
-            self.ok(result)
-        finally:
-            try:
-                os.unlink(tmp_path)
-            except Exception:
-                pass
-
-
+    tornado.ioloop.IOLoop.current().start()
