@@ -1115,14 +1115,6 @@ body {
 .wi-context-tag { display:inline-flex; align-items:center; gap:6px; background:#e8f5e9; color:#2e7d32; border:1px solid #a5d6a7; border-radius:20px; padding:5px 14px; font-size:12px; font-weight:600; margin-bottom:18px; }
 .wi-ctx-check { color:#43a047; font-size:14px; }
 .req-star { color:#e53935; }
-.partes-imob-card{background:#f0f6ff;border:1px solid #b5d4f4;}
-.party-item{padding:16px 0;border-bottom:1px solid #e8ecf0;}
-.party-item:last-child{border-bottom:none;}
-.party-item-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;}
-.btn-remove-party{background:none;border:1px solid #e53935;color:#e53935;border-radius:6px;padding:4px 12px;font-size:12px;cursor:pointer;}
-.btn-remove-party:hover{background:#ffeaea;}
-.btn-add-party{margin-top:16px;background:none;border:2px solid #2d7dd2;color:#2d7dd2;border-radius:8px;padding:8px 18px;font-size:14px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:6px;}
-.btn-add-party:hover{background:#f0f6ff;}
 .form-card {
   background: var(--white); border-radius: var(--r);
   border: 1px solid var(--border-light);
@@ -2114,46 +2106,73 @@ canvas { display: block; }
     </div>
 
     <div id="wstep-2" style="display:none">
-<div id="partes-ctx-tag" class="wi-context-tag"><span class="wi-ctx-check">✓</span> <span id="partes-ctx-label">—</span></div>
-<div id="partes-imob-block" class="form-card partes-imob-card" style="display:none">
-<div class="form-card-title">Imobiliária / Corretor</div>
-<div class="form-row" style="margin-bottom:14px">
-<div class="form-group"><label class="form-label">Nome da imobiliária ou corretor <span class="req-star">*</span></label><input class="form-input" id="partes-imob-nome" type="text" placeholder="Nome"/></div>
-<div class="form-group"><label class="form-label">CPF / CNPJ <span class="req-star">*</span></label><input class="form-input" id="partes-imob-doc" type="text" placeholder="000.000.000-00"/></div>
-</div><div class="form-row" style="margin-bottom:14px">
-<div class="form-group"><label class="form-label">CRECI <span class="req-star">*</span></label><input class="form-input" id="partes-imob-creci" type="text" placeholder="CRECI"/></div>
-<div class="form-group"><label class="form-label">Telefone <span class="req-star">*</span></label><input class="form-input" id="partes-imob-tel" type="text" placeholder="(00) 00000-0000"/></div>
-</div>
-<div class="form-row">
-<div class="form-group"><label class="form-label">E-mail <span class="req-star">*</span></label><input class="form-input" id="partes-imob-email" type="email" placeholder="email@exemplo.com"/></div>
-<div class="form-group"><label class="form-label">Endereço da imobiliária</label><input class="form-input" id="partes-imob-addr" type="text" placeholder="Endereço"/></div>
-</div>
-</div><div class="form-card">
-<div class="form-card-title">Locadores</div>
-<div id="partes-locadores-list"><div class="party-item">
-<div class="form-row" style="margin-bottom:14px">
-<div class="form-group"><label class="form-label">Nome completo</label><input class="form-input party-nome" type="text" placeholder="Nome completo"/></div>
-<div class="form-group"><label class="form-label">CPF</label><input class="form-input party-cpf" type="text" placeholder="000.000.000-00"/></div>
-</div>
-<div class="form-row">
-<div class="form-group"><label class="form-label">Telefone</label><input class="form-input party-tel" type="text" placeholder="(00) 00000-0000"/></div>
-<div class="form-group"><label class="form-label">E-mail <span class="req-star">*</span></label><input class="form-input party-email" type="email" placeholder="email@exemplo.com"/></div>
-</div></div></div>
-<button class="btn-add-party" onclick="addLocadorPartes()">+ Adicionar locador</button></div><div class="form-card">
-<div class="form-card-title" id="partes-locat-title">Locatários</div>
-<div id="partes-locatarios-list"><div class="party-item">
-<div class="form-row" style="margin-bottom:14px">
-<div class="form-group"><label class="form-label party-locat-lbl">Nome completo</label><input class="form-input party-nome" type="text" placeholder="Nome completo"/></div>
-<div class="form-group"><label class="form-label">CPF</label><input class="form-input party-cpf" type="text" placeholder="000.000.000-00"/></div>
-</div>
-<div class="form-row">
-<div class="form-group"><label class="form-label">Telefone</label><input class="form-input party-tel" type="text" placeholder="(00) 00000-0000"/></div>
-<div class="form-group"><label class="form-label">E-mail <span class="req-star">*</span></label><input class="form-input party-email" type="email" placeholder="email@exemplo.com"/></div>
-</div></div></div>
-<button class="btn-add-party" id="partes-add-locat-btn" onclick="addLocatarioPartes()">+ Adicionar locatário</button></div><div class="wiz-nav">
-<button class="btn-wiz-back-sm" onclick="gotoWStep(1)">← Voltar</button>
-<button class="btn-wiz-next" onclick="validateAndGoWstep3()">Próximo <svg viewBox="0 0 20 20" fill="currentColor" width="16" height="16"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/></svg></button>
-</div></div><div id="wstep-3" style="display:none">
+      <div class="wstep-title">Partes envolvidas</div>
+      <div class="wstep-sub">Informe os dados dos locadores, locatÃ¡rios e corretor.</div>
+      <div class="form-card">
+        <div class="form-card-title">Locadores</div>
+        <div id="locadores-container">
+          <div class="person-block" id="loc-block-0">
+            <div class="person-block-header">
+              <span class="person-block-title">Locador 1</span>
+            </div>
+            <div class="form-row">
+              <div class="form-group"><label class="form-label">Nome</label><input class="form-input" id="loc-name-0" type="text" placeholder="Nome completo"/></div>
+              <div class="form-group"><label class="form-label">CPF</label><input class="form-input" id="loc-cpf-0" type="text" placeholder="000.000.000-00"/></div>
+            </div>
+            <div class="form-row">
+              <div class="form-group"><label class="form-label">RG</label><input class="form-input" id="loc-rg-0" type="text" placeholder="RG"/></div>
+              <div class="form-group"><label class="form-label">Telefone</label><input class="form-input" id="loc-phone-0" type="tel" placeholder="(00) 00000-0000"/></div>
+            </div>
+            <div class="form-group"><label class="form-label">E-mail</label><input class="form-input" id="loc-email-0" type="email" placeholder="email@exemplo.com"/></div>
+          </div>
+        </div>
+        <button class="btn-add-person" onclick="addLocador ? addLocador() : null">
+          <svg viewBox="0 0 20 20" fill="currentColor" width="16" height="16"><path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"/></svg>
+          Adicionar locador
+        </button>
+      </div>
+      <div class="form-card">
+        <div class="form-card-title">LocatÃ¡rios</div>
+        <div id="locatarios-container">
+          <div class="person-block" id="locat-block-0">
+            <div class="person-block-header">
+              <span class="person-block-title">LocatÃ¡rio 1</span>
+            </div>
+            <div class="form-row">
+              <div class="form-group"><label class="form-label">Nome</label><input class="form-input" id="locat-name-0" type="text" placeholder="Nome completo"/></div>
+              <div class="form-group"><label class="form-label">CPF</label><input class="form-input" id="locat-cpf-0" type="text" placeholder="000.000.000-00"/></div>
+            </div>
+            <div class="form-row">
+              <div class="form-group"><label class="form-label">RG</label><input class="form-input" id="locat-rg-0" type="text" placeholder="RG"/></div>
+              <div class="form-group"><label class="form-label">Telefone</label><input class="form-input" id="locat-phone-0" type="tel" placeholder="(00) 00000-0000"/></div>
+            </div>
+            <div class="form-group"><label class="form-label">E-mail</label><input class="form-input" id="locat-email-0" type="email" placeholder="email@exemplo.com"/></div>
+          </div>
+        </div>
+        <button class="btn-add-person" onclick="addLocatario ? addLocatario() : null">
+          <svg viewBox="0 0 20 20" fill="currentColor" width="16" height="16"><path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"/></svg>
+          Adicionar locatÃ¡rio
+        </button>
+      </div>
+      <div class="form-card" id="corretor-block">
+        <div class="form-card-title">Corretor (opcional)</div>
+        <div class="form-row">
+          <div class="form-group"><label class="form-label">Nome</label><input class="form-input" id="wi-corr-name" type="text" placeholder="Nome do corretor"/></div>
+          <div class="form-group"><label class="form-label">CRECI</label><input class="form-input" id="wi-corr-creci" type="text" placeholder="CRECI"/></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label class="form-label">Telefone</label><input class="form-input" id="wi-corr-phone" type="tel" placeholder="(00) 00000-0000"/></div>
+          <div class="form-group"><label class="form-label">E-mail</label><input class="form-input" id="wi-corr-email" type="email" placeholder="email@corretor.com"/></div>
+        </div>
+      </div>
+      <div class="wiz-nav">
+        <button class="btn-wiz-back-sm" onclick="prevWizStep ? prevWizStep() : null">Voltar</button>
+        <button class="btn-wiz-next" onclick="nextWizStep ? nextWizStep() : null">Continuar <svg viewBox="0 0 20 20" fill="currentColor" width="16" height="16"><path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z"/></svg></button>
+      </div>
+    </div>
+
+    <!-- STEP 3: AMBIENTES -->
+    <div id="wstep-3" style="display:none">
       <div class="wstep-title">Selecionar ambientes</div>
       <div class="wstep-sub">Escolha os cÃ´modos que serÃ£o vistoriados.</div>
       <div class="form-card">
@@ -2670,56 +2689,6 @@ function fetchCEP(){
   })
   .catch(()=>{errEl.style.display="block";});
 }
-function updatePartesContext(){
-[0,1,2].forEach(i=>{const c=document.getElementById('sc-'+i);if(c){c.classList.remove('active');c.classList.add('done');}const l=document.getElementById('sl-'+i);if(l)l.classList.add('done');});
-const s3=document.getElementById('sc-3');if(s3){s3.classList.remove('done');s3.classList.add('active');}
-const tc=document.querySelector('.tipo-card.selected');
-const tV=tc?(tc.dataset.tipo||''): '';
-const rc=document.querySelector('.realiza-card.selected');
-const rv=rc?(rc.dataset.realiza||''): ((typeof wizard!=='undefined'&&wizard.realizador)?wizard.realizador:'');
-const tM={entrada:'Vistoria de Entrada',saida:'Vistoria de Sa\u00edda',temporada:'Temporada/Airbnb'};
-const rM={imobiliaria:'Imobili\u00e1ria/Corretor',proprietario:'Propriet\u00e1rio'};
-const tag=document.getElementById('partes-ctx-label');
-if(tag)tag.textContent=(tM[tV]||tV||'\u2014')+' \u00b7 '+(rM[rv]||rv||'\u2014');
-const ib=document.getElementById('partes-imob-block');
-if(ib)ib.style.display=(rv==='imobiliaria')?'':'none';
-const lt=document.getElementById('partes-locat-title');
-const ab=document.getElementById('partes-add-locat-btn');
-const isO=(rv==='proprietario');
-if(lt)lt.textContent=isO?'Locat\u00e1rios / H\u00f3spedes':'Locat\u00e1rios';
-if(ab)ab.textContent='+ Adicionar '+(isO?'locat\u00e1rio / h\u00f3spede':'locat\u00e1rio');
-document.querySelectorAll('.party-locat-lbl').forEach(el=>{el.textContent=isO?'Locat\u00e1rio / H\u00f3spede':'Nome completo';});
-}
-function _mkParty(lbl){
-var h='<div class="party-item"><div class="party-item-header">';
-h+='<span class="party-item-lbl" style="font-weight:600;font-size:14px;color:#0f2a4a">'+lbl+'</span>';
-h+='<button class="btn-remove-party" onclick="removeParty(this)">Remover</button></div>';
-h+='<div class="form-row" style="margin-bottom:14px">';
-h+='<div class="form-group"><label class="form-label">Nome completo</label>';
-h+='<input class="form-input party-nome" type="text" placeholder="Nome completo"/></div>';
-h+='<div class="form-group"><label class="form-label">CPF</label>';
-h+='<input class="form-input party-cpf" type="text" placeholder="000.000.000-00"/></div></div>';
-h+='<div class="form-row"><div class="form-group"><label class="form-label">Telefone</label>';
-h+='<input class="form-input party-tel" type="text" placeholder="(00) 00000-0000"/></div>';
-h+='<div class="form-group"><label class="form-label">E-mail <span class="req-star">*</span></label>';
-h+='<input class="form-input party-email" type="email" placeholder="email@exemplo.com"/></div></div></div>';
-return h;}
-function addLocadorPartes(){var l=document.getElementById('partes-locadores-list');if(!l)return;l.insertAdjacentHTML('beforeend',_mkParty('Locador'));}
-function addLocatarioPartes(){var l=document.getElementById('partes-locatarios-list');if(!l)return;var lt=document.getElementById('partes-locat-title');var isO=lt&&lt.textContent.indexOf('H\u00f3s')>-1;l.insertAdjacentHTML('beforeend',_mkParty(isO?'Locat\u00e1rio / H\u00f3spede':'Locat\u00e1rio'));}
-function removeParty(btn){var item=btn.closest('.party-item');if(item)item.remove();}
-function validateAndGoWstep3(){
-var ok=true;
-var ib=document.getElementById('partes-imob-block');
-if(ib&&ib.style.display!=='none'){
-['partes-imob-nome','partes-imob-doc','partes-imob-creci','partes-imob-tel','partes-imob-email'].forEach(function(id){
-var el=document.getElementById(id);if(!el)return;
-if(!el.value.trim()){el.style.borderColor='#e53935';ok=false;}else el.style.borderColor='';});}
-document.querySelectorAll('#wstep-2 .party-email').forEach(function(el){
-if(!el.value.trim()||el.value.indexOf('@')<0){el.style.borderColor='#e53935';ok=false;}else el.style.borderColor='';
-});
-if(!ok)return;
-gotoWStep(3);
-}
 function validateAndGoWstep2() {
   const required = [
     {id:'wi-address', label:'EndereÃ§o'},
@@ -2780,8 +2749,7 @@ function gotoWStep(step) {
   if (wq) wq.style.display = 'none';
   window.scrollTo(0,0);
 
-  if(step===1) updateContextTag();
-if(step===2) updatePartesContext();}
+  if(step===1) updateContextTag();}
 
 async function wizardNext(step) {
   if (step === 1) {
