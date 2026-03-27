@@ -2686,7 +2686,7 @@ function validateAndGoWstep2() {
     }
   });
   if (!ok) return;
-  wizardNext(1);
+  nextWizStep();
 }
 
 function showWstepQuem() {
@@ -2748,7 +2748,7 @@ async function wizardNext(step) {
     hideLoading();
     if (!r.ok) return toast(r.error || 'Erro ao criar vistoria', 'error');
     wizard.inspectionId = r.id; currentInspection = r;
-    gotoWStep(3);
+    gotoWStep(2);
   }
   else if (step === 2) {
     showLoading('Salvando...');
