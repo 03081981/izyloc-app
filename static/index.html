@@ -3900,6 +3900,85 @@ btn.classList.add('sel');
   var _js=new TextDecoder('utf-8').decode(bytes);
   window.eval(_js);
 })();
+
+// ─── REVISÃO FINAL ──────────────────────────────────────────────────────────
+
+async function initRevisaoFinal() {
+  const insp = currentInspection;
+  if (!insp) return;
+  const tipo  = (insp.type || '').toUpperCase();
+  const addr  = insp.property_address || '—';
+  const idate = insp.inspection_date
+    ? new Date(insp.inspection_date).toLocaleDateString('pt-BR')
+    : '—';
+  const locador   = insp.locador_name   || '—';
+  const locatario = insp.locatario_name || '—';
+  const el = document.getElementById('rev-cards');
+  if (!el) return;
+  el.innerHTML = [
+    ['Tipo de Vistoria',    tipo],
+    ['Endereco do Imovel',  addr],
+    ['Data da Vistoria',    idate],
+    ['Locador / Cedente',   locador],
+    ['Locatario / Cessionario', locatario],
+  ].map(([label, val]) =>
+    '<div class="rev-info-card">' +
+      '<div class="rev-info-label">' + label + '</div>' +
+      '<div class="rev-info-value">'  + val   + '</div>' +
+    '</div>'
+  ).join('');
+}
+
+async function revGerarLaudo() {
+  if (!wizard.inspectionId) { toast('Nenhuma vistoria em andamento', 'error'); return; }
+  const btn = document.querySelector('[onclick="revGerarLaudo()"]');
+  if (btn) { btn.disabled = true; btn.textContent = 'Gerando...'; }
+  try { await api('PATCH', '/api/inspections/' + wizard.inspectionId, { status: 'concluida' }); } catch(e) {}
+  document.querySelectorAll('#wstep-rev > div').forEach(function(el) {
+    if (el.id === 'rev-screen-1' || el.id === 'rev-screen-2') {
+      el.style.display = (el.id === 'rev-screen-2') ? '' : 'none';
+    }
+  });
+  if (btn) { btn.disabled = false; btn.textContent = 'Gerar laudo →'; }
+}
+
+async function revBaixarPDF() {
+  if (!wizard.inspectionId) { toast('Nenhuma vistoria em andamento', 'error'); return; }
+  const btn = document.querySelector('[onclick="revBaixarPDF()"]');
+  if (btn) { btn.disabled = true; btn.textContent = 'Gerando PDF...'; }
+  try {
+    const resp = await fetch('/api/inspections/' + wizard.inspectionId + '/pdf', {
+      headers: { 'Authorization': 'Bearer ' + currentToken }
+    });
+    if (!resp.ok) throw new Error('Erro ' + resp.status);
+    const blob = await resp.blob();
+    const url  = URL.createObjectURL(blob);
+    const a    = document.createElement('a');
+    a.href = url; a.download = 'laudo-' + wizard.inspectionId + '.pdf';
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    toast('PDF baixado com sucesso!', 'success');
+  } catch(e) { toast('Erro ao baixar PDF: ' + e.message, 'error'); }
+  finally { if (btn) { btn.disabled = false; btn.innerHTML = '&#128229; Baixar PDF'; } }
+}
+
+async function revEnviarAssinar() {
+  if (!wizard.inspectionId) { toast('Nenhuma vistoria em andamento', 'error'); return; }
+  const btn = document.querySelector('[onclick="revEnviarAssinar()"]');
+  if (btn) { btn.disabled = true; btn.textContent = 'Enviando...'; }
+  try {
+    const resp = await api('POST', '/api/inspections/' + wizard.inspectionId + '/send-to-sign');
+    const data = await resp.json();
+    if (data.error) throw new Error(data.error);
+    toast('Documento enviado para assinatura via Autentique!', 'success');
+    if (data.sign_links && data.sign_links.length > 0) {
+      const lines = data.sign_links.filter(l => l.link).map(l => (l.name||l.email) + ':\n' + l.link);
+      if (lines.length) setTimeout(() => alert('Links de assinatura:\n\n' + lines.join('\n\n')), 300);
+    }
+  } catch(e) { toast('Erro ao enviar para assinatura: ' + e.message, 'error'); }
+  finally { if (btn) { btn.disabled = false; btn.innerHTML = '&#9997;&#65039; Enviar para assinar'; } }
+}
+
 </script>
 </body>
 </html>
