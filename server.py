@@ -1266,6 +1266,172 @@ class GeneratePDFHandler(BaseHandler):
 
 # ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ SERVE FOTOS ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ
 
+class SendToSignHandler(BaseHandler):
+    """Envia o laudo gerado para assinatura digital via Autentique API."""
+
+    def post(self, insp_id):
+        user = self.require_auth()
+        if not user:
+            return
+
+        import os as _os, json as _json, tempfile
+        try:
+            import requests as _req
+            import base64 as _b64
+        except ImportError:
+            self.set_status(500)
+            self.write({'error': 'requests nao instalado'})
+            return
+
+        autentique_token = _os.environ.get('AUTENTIQUE_TOKEN', '')
+        if not autentique_token:
+            self.set_status(500)
+            self.write({'error': 'AUTENTIQUE_TOKEN nao configurado'})
+            return
+
+        conn = get_conn()
+        try:
+            cur = conn.cursor()
+            cur.execute(
+                "SELECT i.*, u.email as user_email, u.name as user_name "
+                "FROM inspections i JOIN users u ON i.user_id = u.id "
+                "WHERE i.id = ? AND i.user_id = ?",
+                (insp_id, user['id'])
+            )
+            insp = cur.fetchone()
+            if not insp:
+                self.set_status(404)
+                self.write({'error': 'Vistoria nao encontrada'})
+                return
+
+            inspection_data = dict(insp)
+
+            cur.execute("SELECT * FROM rooms WHERE inspection_id = ?", (insp_id,))
+            rooms = [dict(r) for r in cur.fetchall()]
+
+            cur.execute("SELECT * FROM signatures WHERE inspection_id = ?", (insp_id,))
+            sigs = [dict(s) for s in cur.fetchall()]
+
+            tmp = tempfile.NamedTemporaryFile(suffix='.pdf', delete=False)
+            tmp_path = tmp.name
+            tmp.close()
+
+            ok = generate_pdf(inspection_data, rooms, sigs, tmp_path)
+            if not ok:
+                self.set_status(500)
+                self.write({'error': 'Erro ao gerar PDF'})
+                return
+
+            with open(tmp_path, 'rb') as f:
+                pdf_bytes = f.read()
+            try:
+                _os.unlink(tmp_path)
+            except Exception:
+                pass
+
+            signatories = []
+            u_email = inspection_data.get('user_email') or user.get('email', '')
+            u_name  = inspection_data.get('user_name')  or user.get('name', '')
+            if u_email:
+                signatories.append({'email': u_email, 'name': u_name})
+
+            if inspection_data.get('locadores_json'):
+                try:
+                    for p in _json.loads(inspection_data['locadores_json']):
+                        if p.get('email'):
+                            signatories.append({'email': p['email'], 'name': p.get('name', '')})
+                except Exception:
+                    pass
+            elif inspection_data.get('locador_email'):
+                signatories.append({'email': inspection_data['locador_email'],
+                                    'name': inspection_data.get('locador_name', '')})
+
+            if inspection_data.get('locatarios_json'):
+                try:
+                    for p in _json.loads(inspection_data['locatarios_json']):
+                        if p.get('email'):
+                            signatories.append({'email': p['email'], 'name': p.get('name', '')})
+                except Exception:
+                    pass
+            elif inspection_data.get('locatario_email'):
+                signatories.append({'email': inspection_data['locatario_email'],
+                                    'name': inspection_data.get('locatario_name', '')})
+
+            pdf_b64 = _b64.b64encode(pdf_bytes).decode('utf-8')
+            addr = (inspection_data.get('property_address') or insp_id)[:80]
+            doc_name = ('Laudo de Vistoria - ' + addr).replace('"', '')
+
+            sigs_gql_parts = []
+            for s in signatories:
+                nm = (s.get('name') or '').replace('"', '')
+                em = (s.get('email') or '').replace('"', '')
+                if em:
+                    sigs_gql_parts.append(
+                        '{email: "' + em + '", name: "' + nm + '", action: SIGN}'
+                    )
+            sigs_gql = ', '.join(sigs_gql_parts)
+
+            mutation = (
+                'mutation CreateDocument {'
+                '  createDocument('
+                '    document: {name: "' + doc_name + '", signatures: [' + sigs_gql + ']},'
+                '    files: [{name: "laudo.pdf", content: "' + pdf_b64 + '"}]'
+                '  ) {'
+                '    id name created_at'
+                '    signatures { public_id name email link { short_link } }'
+                '  }'
+                '}'
+            )
+
+            resp = _req.post(
+                'https://api.autentique.com.br/v2/graphql',
+                headers={'Authorization': 'Bearer ' + autentique_token,
+                         'Content-Type': 'application/json'},
+                json={'query': mutation},
+                timeout=60
+            )
+
+            result = resp.json()
+            if 'errors' in result:
+                self.set_status(500)
+                self.write({'error': str(result['errors'])})
+                return
+
+            doc = (result.get('data') or {}).get('createDocument') or {}
+            doc_id = doc.get('id', '')
+
+            sign_links = []
+            for sig in (doc.get('signatures') or []):
+                sign_links.append({
+                    'name':  sig.get('name', ''),
+                    'email': sig.get('email', ''),
+                    'link':  (sig.get('link') or {}).get('short_link', '')
+                })
+
+            try:
+                cur.execute(
+                    "UPDATE inspections SET autentique_id = ? WHERE id = ?",
+                    (doc_id, insp_id)
+                )
+                conn.commit()
+            except Exception:
+                pass
+
+            self.write({
+                'success': True,
+                'document_id': doc_id,
+                'document_name': doc.get('name', ''),
+                'sign_links': sign_links,
+            })
+
+        except Exception as e:
+            self.set_status(500)
+            self.write({'error': str(e)})
+        finally:
+            conn.close()
+
+
+
 class PhotoHandler(tornado.web.StaticFileHandler):
     def set_default_headers(self):
         self.set_header("Access-Control-Allow-Origin", "*")
@@ -1367,6 +1533,7 @@ def make_app():
         (r'/api/inspections/([^/]+)/signatures', SignaturesHandler),
         # PDF
         (r'/api/inspections/([^/]+)/pdf', GeneratePDFHandler),
+        (r'/api/inspections/([^/]+)/send-to-sign', SendToSignHandler),
         # AI Image Analysis
         (r'/api/analyze-image', AnalyzeImageHandler),
         # Static files
