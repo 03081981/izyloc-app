@@ -2766,12 +2766,19 @@ async function wizardNext(step) {
     gotoWStep(3);
   }
   else if (step === 3) {
-    if (!wizard.selectedRooms.length)
-      return toast('Selecione ao menos um ambiente', 'error');
+    showLoading('Salvando...');
+    const r = await api('PUT', `/api/inspections/${wizard.inspectionId}`, {
+      locador_name: v('wi-loc-name'), locador_cpf: v('wi-loc-cpf'),
+      locador_rg: v('wi-loc-rg'), locador_phone: v('wi-loc-phone'), locador_email: v('wi-loc-email'),
+      locatario_name: v('wi-locat-name'), locatario_cpf: v('wi-locat-cpf'),
+      locatario_rg: v('wi-locat-rg'), locatario_phone: v('wi-locat-phone'), locatario_email: v('wi-locat-email'),
+      corretor_name: v('wi-corr-name'), corretor_creci: v('wi-corr-creci'),
+      corretor_phone: v('wi-corr-phone'), corretor_email: v('wi-corr-email'),
+    });
+    hideLoading();
+    if (!r.ok) return toast(r.error || 'Erro ao salvar', 'error');
+    currentInspection = r;
     gotoWStep(4);
-    document.getElementById('step4-header').textContent =
-      `📸 Registre os Itens (${wizard.selectedRooms.length} ambientes)`;
-    await buildRoomsList();
   }
   else if (step === 4) {
     if (v('wi-obs')) {
