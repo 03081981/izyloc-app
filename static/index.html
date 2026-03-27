@@ -2229,6 +2229,7 @@ canvas { display: block; }
     <div id="wstep-1" style="display:none">
       <div id="wi-context-tag" class="wi-context-tag"><span class="wi-ctx-check">&#10003;</span> <span id="wi-ctx-label">&#8212;</span></div>
       <input type="hidden" id="wi-type" value="entrada"/>
+      <input type="hidden" id="wizard-tipo-label" value="entrada"/>
       <input type="hidden" id="wi-imob-name"/><input type="hidden" id="wi-imob-cnpj"/><input type="hidden" id="wi-imob-phone"/><input type="hidden" id="wi-imob-address"/>
       <div class="form-card">
         <div class="form-card-title">Localiza&#231;&#227;o</div>
@@ -2849,7 +2850,7 @@ function showWstepQuem() {
 function selectTipoCard(card) {
   document.querySelectorAll('.tipo-card').forEach(c => c.classList.remove('selected'));
   card.classList.add('selected');
-  var h=document.getElementById('wi-type');if(h)h.value=card.getAttribute('data-tipo')||'';
+  var h=document.getElementById('wi-type');if(h)h.value=card.getAttribute('data-tipo')||'';var h2=document.getElementById('wizard-tipo-label');if(h2)h2.value=card.getAttribute('data-tipo')||'';
 }
 
 function gotoWStep(step) {
@@ -3953,6 +3954,7 @@ window.revGerarLaudo = async function() {
       el.style.display = (el.id === 'rev-screen-2') ? '' : 'none';
     }
   });
+  for(var i=0;i<=7;i++){var c=document.getElementById('sc-'+i);if(!c)continue;c.classList.remove('active','done');if(i<7)c.classList.add('done');if(i===7)c.classList.add('active');}
   if (btn) { btn.disabled = false; btn.textContent = 'Gerar laudo →'; }
 }
 
