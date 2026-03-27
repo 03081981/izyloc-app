@@ -2849,6 +2849,7 @@ function showWstepQuem() {
 function selectTipoCard(card) {
   document.querySelectorAll('.tipo-card').forEach(c => c.classList.remove('selected'));
   card.classList.add('selected');
+  var h=document.getElementById('wi-type');if(h)h.value=card.getAttribute('data-tipo')||'';
 }
 
 function gotoWStep(step) {
@@ -3903,7 +3904,7 @@ btn.classList.add('sel');
 
 // ─── REVISÃO FINAL ──────────────────────────────────────────────────────────
 
-async function initRevisaoFinal() {
+async window.initRevisaoFinal = function() {
   const insp = currentInspection;
   if (!insp) return;
   const tipo  = (insp.type || '').toUpperCase();
