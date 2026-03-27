@@ -3932,7 +3932,19 @@ async function initRevisaoFinal() {
 
 window.revGerarLaudo = async function() {
   var iid = wizard.inspectionId || (currentInspection && currentInspection.id);
-  if (!iid) { toast('Nenhuma vistoria em andamento', 'error'); return; }
+  if (!iid) {
+    var typeVal = (document.getElementById('wi-type')||{}).value || 'entrada';
+    var addrVal = (document.getElementById('wi-address')||{}).value || '';
+    var dateEl = document.getElementById('wi-date');
+    var fmtDate = dateEl && dateEl.value ? new Date(dateEl.value+'T12:00:00').toLocaleDateString('pt-BR') : '';
+    if (!addrVal) { toast('Nenhuma vistoria em andamento', 'error'); return; }
+    showLoading('Criando vistoria...');
+    var r = await api('POST', '/api/inspections', { type: typeVal, date: fmtDate, address: addrVal });
+    hideLoading();
+    if (!r.ok) { toast(r.error || 'Erro ao criar vistoria', 'error'); return; }
+    wizard.inspectionId = r.id; currentInspection = r; iid = r.id;
+    wizard.address = r.address || addrVal;
+  }
   const btn = document.querySelector('[onclick="revGerarLaudo()"]');
   if (btn) { btn.disabled = true; btn.textContent = 'Gerando...'; }
   try { await api('PATCH', '/api/inspections/' + iid, { status: 'concluida' }); } catch(e) {}
