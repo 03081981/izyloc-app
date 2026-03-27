@@ -3318,11 +3318,7 @@ window.addEventListener('resize', () => {
       };
       var next = nextMap[step];
       if (next !== undefined) {
-        if (step === 3 && typeof wizardNext === 'function') {
-          wizardNext(step);
-        } else {
-          gotoWStep(next);
-        }
+        gotoWStep(next);
       }
     };
 
