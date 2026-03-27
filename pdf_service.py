@@ -1,8 +1,8 @@
 # ============================================================
-# izyLAUDO — PDF SERVICE
+# izyLAUDO â PDF SERVICE
 # Gera laudos em PDF usando os templates oficiais.
 # ============================================================
-# Mantém a assinatura: generate_pdf(inspection_data, rooms_data,
+# MantÃ©m a assinatura: generate_pdf(inspection_data, rooms_data,
 #                                    signatures_data, output_path) -> bool
 # ============================================================
 
@@ -21,7 +21,7 @@ from datetime import datetime
 
 logger = logging.getLogger(__name__)
 
-# ─── CORES ──────────────────────────────────────────────────
+# âââ CORES ââââââââââââââââââââââââââââââââââââââââââââââââââ
 AZUL  = HexColor('#2d7dd2')
 PRETO = HexColor('#1a1a1a')
 CINZA = HexColor('#666666')
@@ -31,7 +31,7 @@ W, H = A4
 ML, MR, MT, MB = 3*cm, 2*cm, 3*cm, 2*cm
 TW = W - ML - MR
 
-# ─── ESTILOS ────────────────────────────────────────────────
+# âââ ESTILOS ââââââââââââââââââââââââââââââââââââââââââââââââ
 def mk_styles():
     return {
         'normal': ParagraphStyle('normal',
@@ -102,7 +102,7 @@ def maiusculo(v):
     """Converte para CAIXA ALTA exceto e-mails e URLs."""
     return v if ('@' in v or 'http' in v) else v.upper()
 
-# ─── COMPONENTES ────────────────────────────────────────────
+# âââ COMPONENTES ââââââââââââââââââââââââââââââââââââââââââââ
 
 def add_cabecalho(story, s, titulo_doc, numero_doc):
     logo = Paragraph(
@@ -314,7 +314,7 @@ def add_rodape(story, s):
         u'Documento gerado pelo sistema izyLAUDO \u2014 Vistorias Imobili\u00e1rias \u00b7 '
         u'Assinatura digital via Autentique \u00b7 Lei n\u00ba 14.063/2020', s['rodape']))
 
-# ─── FUN\u00c7\u00c3O DO TEMPLATE ─────────────────────────────────────
+# âââ FUN\u00c7\u00c3O DO TEMPLATE âââââââââââââââââââââââââââââââââââââ
 def gerar_laudo_entrada_proprietario(dados_imovel, dados_locador,
                                       dados_locatario, ambientes,
                                       local_data, output_path):
@@ -368,7 +368,7 @@ def gerar_laudo_entrada_proprietario(dados_imovel, dados_locador,
     doc.build(story)
 
 
-# ─── HELPERS DE MAPEAMENTO ──────────────────────────────────
+# âââ HELPERS DE MAPEAMENTO ââââââââââââââââââââââââââââââââââ
 
 MESES_PT = {
     1: 'JANEIRO', 2: 'FEVEREIRO', 3: u'MAR\u00c7O', 4: 'ABRIL',
@@ -441,7 +441,7 @@ def _generate_numero_laudo(inspection_data):
     return f'{prefixo}-{ano}-{seq}'
 
 
-# ─── FUN\u00c7\u00c3O PRINCIPAL (mant\u00e9m assinatura compat\u00edvel) ────────
+# âââ FUN\u00c7\u00c3O PRINCIPAL (mant\u00e9m assinatura compat\u00edvel) ââââââââ
 
 def generate_pdf(inspection_data: dict, rooms_data: list,
                  signatures_data: list, output_path: str) -> bool:
@@ -457,12 +457,23 @@ def generate_pdf(inspection_data: dict, rooms_data: list,
         dt = _parse_date(inspection_date_str)
         date_display = _format_date_display(inspection_date_str)
 
+        cidade_raw = _safe(insp.get('cidade'), '')
+        estado_raw = _safe(insp.get('estado'), '')
+        if cidade_raw and estado_raw:
+            cidade_uf = u'{} / {}'.format(cidade_raw, estado_raw)
+        elif cidade_raw:
+            cidade_uf = cidade_raw
+        elif estado_raw:
+            cidade_uf = estado_raw
+        else:
+            cidade_uf = u'\u2014'
+
         dados_imovel = {
             'endereco'    : address,
-            'complemento' : u'\u2014',
-            'bairro'      : u'\u2014',
-            'cidade_uf'   : u'\u2014',
-            'cep'         : u'\u2014',
+            'complemento' : _safe(insp.get('complemento'), u'\u2014'),
+            'bairro'      : _safe(insp.get('bairro'), u'\u2014'),
+            'cidade_uf'   : cidade_uf,
+            'cep'         : _safe(insp.get('cep'), u'\u2014'),
             'tipo'        : _safe(insp.get('property_type'), u'\u2014'),
             'area'        : _safe(insp.get('property_area'), u'\u2014'),
             'data_hora'   : date_display,
