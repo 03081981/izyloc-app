@@ -2086,8 +2086,9 @@ canvas { display: block; }
           <option>Apartamento</option><option>Casa</option><option>Studio / Kitnet</option>
           <option>Cobertura</option><option>Sala comercial</option><option>Loja comercial</option>
           <option>Prédio comercial</option><option>Galpão / Barracão</option><option>Outro</option></select></div>
-          <div class="form-group"><label class="form-label">&#193;rea total (m&#178;)</label>
-          <input class="form-input" id="wi-area" type="number" placeholder="Ex: 65" min="0" step="0.01"/></div>
+          <div class="form-group"><label class="form-label">&#193;rea total aproximada (m&#178;)</label>
+          <input class="form-input" id="wi-area" type="number" placeholder="Ex: 65" min="0" step="0.01"/>
+          <span style="font-size:11px;color:#aab2bc">N&#227;o precisa ser exata</span></div>
         </div>
       </div>
       <div class="form-card">
@@ -3233,6 +3234,39 @@ window.addEventListener('resize', () => {
     if (c && signaturePads[p]) resizeCanvas(c, signaturePads[p]);
   });
 });
+
+  // ViaCEP auto-fill
+  (function() {
+    var cepInput = document.getElementById('wi-cep');
+    if (!cepInput) return;
+    function fetchCep(cep) {
+      cep = cep.replace(/\D/g, '');
+      if (cep.length !== 8) return;
+      fetch('https://viacep.com.br/ws/' + cep + '/json/')
+        .then(function(r) { return r.json(); })
+        .then(function(d) {
+          if (d.erro) {
+            toast('CEP n\u00e3o encontrado', 'error');
+            return;
+          }
+          var addr = document.getElementById('wi-address');
+          if (addr && !addr.value.trim()) addr.value = d.logradouro || '';
+          var bairro = document.getElementById('wi-bairro');
+          if (bairro) bairro.value = d.bairro || '';
+          var cidade = document.getElementById('wi-cidade');
+          if (cidade) cidade.value = d.localidade || '';
+          var estado = document.getElementById('wi-estado');
+          if (estado) estado.value = d.uf || '';
+        })
+        .catch(function() { toast('Erro ao buscar CEP', 'error'); });
+    }
+    cepInput.addEventListener('blur', function() { fetchCep(this.value); });
+    cepInput.addEventListener('input', function() {
+      var v = this.value.replace(/\D/g, '');
+      if (v.length === 8) fetchCep(v);
+    });
+  })();
+
 </script>
 </body>
 </html>
