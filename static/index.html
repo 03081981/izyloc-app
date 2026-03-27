@@ -3319,6 +3319,27 @@ window.addEventListener('resize', () => {
       var next = nextMap[step];
       if (next !== undefined) {
         gotoWStep(next);
+        if (next === 3) {
+          // Init default rooms based on property type
+          (function() {
+            var list = document.getElementById('room-check-list');
+            if (!list || list.children.length > 0) return;
+            var tipo = (document.getElementById('wi-prop-type') || {}).value || '';
+            var comercial = ['Sala comercial','Loja comercial','Prédio comercial','Galpão / Barracão'];
+            var rooms = comercial.indexOf(tipo) >= 0
+              ? ['Recepção','Salas','Banheiros','Copa/Cozinha','Depósito','Estacionamento','Área técnica']
+              : ['Sala','Cozinha','Dormítório','Banheiro','Lavanderia','Garagem','Varanda'];
+            wizard.selectedRooms = [];
+            rooms.forEach(function(name) {
+              wizard.selectedRooms.push(name);
+              var el = document.createElement('div');
+              el.className = 'room-check-item checked';
+              el.onclick = function() { toggleRoomCheck(this, name); };
+              el.innerHTML = '<div class="check-box checked">✓</div><span class="room-check-label">' + name + '</span>';
+              list.appendChild(el);
+            });
+          })();
+        }
       }
     };
 
@@ -3415,25 +3436,6 @@ window.addEventListener('resize', () => {
         var ws3 = document.getElementById('wstep-3');
         if (ws3) ws3.style.display = 'block';
         window.scrollTo(0, 0);
-        // Init default rooms based on property type
-        (function() {
-          var list = document.getElementById('room-check-list');
-          if (!list || list.children.length > 0) return;
-          var tipo = (document.getElementById('wi-prop-type') || {}).value || '';
-          var comercial = ['Sala comercial','Loja comercial','Prédio comercial','Galpão / Barracão'];
-          var rooms = comercial.indexOf(tipo) >= 0
-            ? ['Recepção','Salas','Banheiros','Copa/Cozinha','Depósito','Estacionamento','Área técnica']
-            : ['Sala','Cozinha','Dormítório','Banheiro','Lavanderia','Garagem','Varanda'];
-          wizard.selectedRooms = [];
-          rooms.forEach(function(name) {
-            wizard.selectedRooms.push(name);
-            var el = document.createElement('div');
-            el.className = 'room-check-item checked';
-            el.onclick = function() { toggleRoomCheck(this, name); };
-            el.innerHTML = '<div class="check-box checked">✓</div><span class="room-check-label">' + name + '</span>';
-            list.appendChild(el);
-          });
-        })();
       } else {
         return _origNext(step);
       }
