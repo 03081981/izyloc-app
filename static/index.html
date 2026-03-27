@@ -3904,7 +3904,7 @@ btn.classList.add('sel');
 
 // ─── REVISÃO FINAL ──────────────────────────────────────────────────────────
 
-async window.initRevisaoFinal = function() {
+window.initRevisaoFinal = async function() {
   const insp = currentInspection;
   if (!insp) return;
   const tipo  = (insp.type || '').toUpperCase();
