@@ -3267,6 +3267,127 @@ window.addEventListener('resize', () => {
     });
   })();
 
+
+
+  // === ETAPA 4 FIXES (stepper, add persons, corretor visibility, next button) ===
+  (function() {
+    var locadorCount = 1;
+    var locatarioCount = 1;
+
+    // FIX 1: Override gotoWStep stepper index mapping
+    var _orig = gotoWStep;
+    gotoWStep = function(step) {
+      wizard.step = step;
+      // Map code step to visual stepper circle index
+      // code 0=Tipo(sc0), 1=Imovel(sc2), 2=Partes(sc3), 3=Ambientes(sc4), 4=Itens(sc5), 5=Revisao(sc6)
+      var si = step;
+      if (step >= 2) si = step + 1;
+      for (var i = 0; i <= 8; i++) {
+        var c = document.getElementById('sc-' + i);
+        if (!c) continue;
+        c.classList.remove('active', 'done');
+        if (i < si) c.classList.add('done');
+        else if (i === si) c.classList.add('active');
+      }
+      // Note: w-step-* divs don't exist, wstep-* managed manually
+      window.scrollTo(0, 0);
+    };
+
+    // FIX 2: addLocador / addLocatario
+    function mkBlock(prefix, idx, label, removable) {
+      var d = document.createElement('div');
+      d.className = 'person-block';
+      d.id = prefix + '-block-' + idx;
+      var h = '<div class="person-block-header"><span class="person-block-title">' + label + ' ' + (idx+1) + '</span>';
+      if (removable) h += '<button onclick="this.closest(\'.person-block\').remove()" style="background:none;border:none;color:#e74c3c;cursor:pointer;font-size:20px;font-weight:bold;padding:0 6px" title="Remover">\u00d7</button>';
+      h += '</div>';
+      h += '<div class="form-row"><div class="form-group"><label class="form-label">Nome</label><input class="form-input" id="'+prefix+'-name-'+idx+'" type="text" placeholder="Nome completo"/></div><div class="form-group"><label class="form-label">CPF</label><input class="form-input" id="'+prefix+'-cpf-'+idx+'" type="text" placeholder="000.000.000-00"/></div></div>';
+      h += '<div class="form-row"><div class="form-group"><label class="form-label">Telefone</label><input class="form-input" id="'+prefix+'-phone-'+idx+'" type="text" placeholder="(00) 00000-0000"/></div><div class="form-group" style="flex:1"><label class="form-label">E-mail</label><input class="form-input" id="'+prefix+'-email-'+idx+'" type="email" placeholder="email@exemplo.com"/></div></div>';
+      d.innerHTML = h;
+      return d;
+    }
+
+    window.addLocador = function() {
+      var c = document.getElementById('locadores-container');
+      if (c) { c.appendChild(mkBlock('loc', locadorCount, 'Locador', true)); locadorCount++; }
+    };
+    window.addLocatario = function() {
+      var c = document.getElementById('locatarios-container');
+      if (c) { c.appendChild(mkBlock('ten', locatarioCount, 'Locat\u00e1rio', true)); locatarioCount++; }
+    };
+
+    // FIX 3: corretor visibility on entering step 2
+    function updateCorretorVisibility() {
+      var cb = document.getElementById('corretor-block');
+      if (cb) cb.style.display = (wizard.realizador === 'proprietario') ? 'none' : 'block';
+    }
+
+    // FIX 4: Override wizardNext for step 2
+    var _origNext = wizardNext;
+    wizardNext = async function(step) {
+      if (step === 2) {
+        showLoading('Salvando...');
+        var locadores = [];
+        document.querySelectorAll('#locadores-container .person-block').forEach(function(b) {
+          var idx = b.id.replace('loc-block-', '');
+          locadores.push({
+            name: (b.querySelector('[id=loc-name-'+idx+']') || {}).value || '',
+            cpf: (b.querySelector('[id=loc-cpf-'+idx+']') || {}).value || '',
+            phone: (b.querySelector('[id=loc-phone-'+idx+']') || {}).value || '',
+            email: (b.querySelector('[id=loc-email-'+idx+']') || {}).value || ''
+          });
+        });
+        var locatarios = [];
+        document.querySelectorAll('#locatarios-container .person-block').forEach(function(b) {
+          var idx = b.id.replace('ten-block-', '');
+          locatarios.push({
+            name: (b.querySelector('[id=ten-name-'+idx+']') || {}).value || '',
+            cpf: (b.querySelector('[id=ten-cpf-'+idx+']') || {}).value || '',
+            phone: (b.querySelector('[id=ten-phone-'+idx+']') || {}).value || '',
+            email: (b.querySelector('[id=ten-email-'+idx+']') || {}).value || ''
+          });
+        });
+        var data = {
+          locador_name: locadores[0] ? locadores[0].name : '',
+          locador_cpf: locadores[0] ? locadores[0].cpf : '',
+          locador_phone: locadores[0] ? locadores[0].phone : '',
+          locador_email: locadores[0] ? locadores[0].email : '',
+          locatario_name: locatarios[0] ? locatarios[0].name : '',
+          locatario_cpf: locatarios[0] ? locatarios[0].cpf : '',
+          locatario_phone: locatarios[0] ? locatarios[0].phone : '',
+          locatario_email: locatarios[0] ? locatarios[0].email : '',
+          locadores_json: JSON.stringify(locadores),
+          locatarios_json: JSON.stringify(locatarios),
+          corretor_name: v('wi-corr-name'), corretor_creci: v('wi-corr-creci'),
+          corretor_phone: v('wi-corr-phone'), corretor_email: v('wi-corr-email')
+        };
+        var r = await api('PUT', '/api/inspections/' + wizard.inspectionId, data);
+        hideLoading();
+        if (!r || !r.ok) return toast((r && r.error) || 'Erro ao salvar', 'error');
+        currentInspection = r;
+        // Navigate to step 3 (Ambientes)
+        gotoWStep(3);
+        document.querySelectorAll('[id^=wstep-]').forEach(function(el) { el.style.display = 'none'; });
+        var ws3 = document.getElementById('wstep-3');
+        if (ws3) ws3.style.display = 'block';
+        window.scrollTo(0, 0);
+      } else {
+        return _origNext(step);
+      }
+    };
+
+    // Auto-update corretor visibility when wstep-2 becomes visible
+    var obs = new MutationObserver(function(muts) {
+      muts.forEach(function(m) {
+        if (m.target.id === 'wstep-2' && m.target.style.display === 'block') {
+          updateCorretorVisibility();
+        }
+      });
+    });
+    var ws2 = document.getElementById('wstep-2');
+    if (ws2) obs.observe(ws2, { attributes: true, attributeFilter: ['style'] });
+  })();
+
 </script>
 </body>
 </html>
