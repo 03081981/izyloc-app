@@ -3311,7 +3311,7 @@ window.addEventListener('resize', () => {
       };
       var next = nextMap[step];
       if (next !== undefined) {
-        if (typeof wizardNext === 'function') {
+        if (step === 2 && typeof wizardNext === 'function') {
           wizardNext(step);
         } else {
           gotoWStep(next);
