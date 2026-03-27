@@ -1460,6 +1460,28 @@ canvas { display: block; }
   .tipo-img-wrap { height: 160px; }
   .tc-photo { height: 160px; }
 }
+  /* === Ambientes grid (wstep-3) === */
+  .ambientes-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 20px; }
+  .ambiente-item { border: 1.5px solid #dce3ed; border-radius: 12px; padding: 16px 10px 12px; text-align: center; cursor: pointer; transition: all 0.15s; background: #fff; user-select: none; }
+  .ambiente-item:hover { border-color: #90b8e8; background: #f8faff; }
+  .ambiente-item.selected { border-color: #2d7dd2; background: #f0f6ff; }
+  .ambiente-icon { font-size: 26px; margin-bottom: 6px; display: block; }
+  .ambiente-name { font-size: 12px; font-weight: 500; color: #1a2d45; margin-bottom: 8px; }
+  .env-qty-ctrl { display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 6px; }
+  .env-btn { width: 22px; height: 22px; border-radius: 50%; border: 1.5px solid #ccc; background: #fff; font-size: 14px; line-height: 1; cursor: pointer; display: flex; align-items: center; justify-content: center; color: #2d7dd2; font-weight: 600; padding: 0; transition: all 0.15s; }
+  .ambiente-item.selected .env-btn { border-color: #2d7dd2; }
+  .env-btn:hover { background: #e8f0fb; border-color: #2d7dd2; }
+  .env-qty-val { font-size: 13px; font-weight: 600; color: #1a2d45; min-width: 14px; text-align: center; }
+  .ambiente-check { width: 18px; height: 18px; border-radius: 50%; border: 1.5px solid #ccc; margin: 0 auto; display: flex; align-items: center; justify-content: center; }
+  .ambiente-item.selected .ambiente-check { background: #2d7dd2; border-color: #2d7dd2; }
+  .ambiente-item.selected .ambiente-check::after { content: ''; display: block; width: 4px; height: 7px; border: 1.5px solid #fff; border-top: none; border-left: none; transform: rotate(45deg) translate(-1px,-1px); }
+  .amb-custom-row { display: flex; gap: 10px; margin-top: 4px; }
+  .amb-custom-row input { background: #f8fafc; border: 0.5px solid #dce3ed; border-radius: 8px; padding: 10px 12px; font-size: 13px; color: #1a2d45; flex: 1; outline: none; }
+  .amb-custom-row input:focus { border-color: #2d7dd2; }
+  .amb-custom-row button { background: #2d7dd2; color: #fff; border: none; border-radius: 8px; padding: 10px 16px; font-size: 13px; cursor: pointer; white-space: nowrap; }
+  .amb-selected-list { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; min-height: 28px; }
+  .amb-selected-tag { display: flex; align-items: center; gap: 5px; background: #e8f0fb; border: 0.5px solid #b5d4f4; color: #185fa5; font-size: 12px; padding: 4px 10px; border-radius: 20px; }
+  @media(max-width:600px){ .ambientes-grid { grid-template-columns: repeat(2,1fr); } }
 </style>
 </head>
 <body>
@@ -2176,13 +2198,216 @@ canvas { display: block; }
       <div class="wstep-title">Selecionar ambientes</div>
       <div class="wstep-sub">Escolha os cômodos que serão vistoriados.</div>
       <div class="form-card">
-        <div id="room-check-list"></div>
-        <div class="custom-room-row">
-          <input class="form-input" id="custom-room" type="text" placeholder="Adicionar ambiente personalizado..." style="flex:1"/>
-          <button class="btn btn-primary" style="height:44px;padding:0 16px" onclick="addCustomRoom ? addCustomRoom() : null">Adicionar</button>
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px;">
+          <div style="width:40px;height:40px;border-radius:10px;background:#e8f0fb;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;">🏡</div>
+          <div>
+            <div style="font-size:15px;font-weight:500;color:#1a2d45;">Selecione os ambientes</div>
+            <div style="font-size:12px;color:#8a95a3;margin-top:2px;">Escolha todos os cômodos que serão vistoriados</div>
+          </div>
         </div>
+        <div class="ambientes-grid" id="amb-grid-residencial">
+      <div class="ambiente-item selected" id="env-sala" onclick="toggleEnv('sala')">
+        <span class="ambiente-icon">🛋️</span>
+        <div class="ambiente-name">Sala</div>
+        <div class="env-qty-ctrl">
+          <button class="env-btn" onclick="decEnv(event,'sala')">&#8722;</button>
+          <span class="env-qty-val" id="qty-sala">1</span>
+          <button class="env-btn" onclick="incEnv(event,'sala')">+</button>
+        </div>
+        <div class="ambiente-check"></div>
       </div>
-      <div id="v6-temporada"></div>
+      <div class="ambiente-item selected" id="env-cozinha" onclick="toggleEnv('cozinha')">
+        <span class="ambiente-icon">🍳</span>
+        <div class="ambiente-name">Cozinha</div>
+        <div class="env-qty-ctrl">
+          <button class="env-btn" onclick="decEnv(event,'cozinha')">&#8722;</button>
+          <span class="env-qty-val" id="qty-cozinha">1</span>
+          <button class="env-btn" onclick="incEnv(event,'cozinha')">+</button>
+        </div>
+        <div class="ambiente-check"></div>
+      </div>
+      <div class="ambiente-item selected" id="env-dormitorio" onclick="toggleEnv('dormitorio')">
+        <span class="ambiente-icon">🛏️</span>
+        <div class="ambiente-name">Dormítório</div>
+        <div class="env-qty-ctrl">
+          <button class="env-btn" onclick="decEnv(event,'dormitorio')">&#8722;</button>
+          <span class="env-qty-val" id="qty-dormitorio">1</span>
+          <button class="env-btn" onclick="incEnv(event,'dormitorio')">+</button>
+        </div>
+        <div class="ambiente-check"></div>
+      </div>
+      <div class="ambiente-item selected" id="env-banheiro" onclick="toggleEnv('banheiro')">
+        <span class="ambiente-icon">🚿</span>
+        <div class="ambiente-name">Banheiro</div>
+        <div class="env-qty-ctrl">
+          <button class="env-btn" onclick="decEnv(event,'banheiro')">&#8722;</button>
+          <span class="env-qty-val" id="qty-banheiro">1</span>
+          <button class="env-btn" onclick="incEnv(event,'banheiro')">+</button>
+        </div>
+        <div class="ambiente-check"></div>
+      </div>
+      <div class="ambiente-item" id="env-lavanderia" onclick="toggleEnv('lavanderia')">
+        <span class="ambiente-icon">👕</span>
+        <div class="ambiente-name">Lavanderia</div>
+        <div class="env-qty-ctrl">
+          <button class="env-btn" onclick="decEnv(event,'lavanderia')">&#8722;</button>
+          <span class="env-qty-val" id="qty-lavanderia">0</span>
+          <button class="env-btn" onclick="incEnv(event,'lavanderia')">+</button>
+        </div>
+        <div class="ambiente-check"></div>
+      </div>
+      <div class="ambiente-item" id="env-garagem" onclick="toggleEnv('garagem')">
+        <span class="ambiente-icon">🚗</span>
+        <div class="ambiente-name">Garagem</div>
+        <div class="env-qty-ctrl">
+          <button class="env-btn" onclick="decEnv(event,'garagem')">&#8722;</button>
+          <span class="env-qty-val" id="qty-garagem">0</span>
+          <button class="env-btn" onclick="incEnv(event,'garagem')">+</button>
+        </div>
+        <div class="ambiente-check"></div>
+      </div>
+      <div class="ambiente-item" id="env-varanda" onclick="toggleEnv('varanda')">
+        <span class="ambiente-icon">🌿</span>
+        <div class="ambiente-name">Varanda</div>
+        <div class="env-qty-ctrl">
+          <button class="env-btn" onclick="decEnv(event,'varanda')">&#8722;</button>
+          <span class="env-qty-val" id="qty-varanda">0</span>
+          <button class="env-btn" onclick="incEnv(event,'varanda')">+</button>
+        </div>
+        <div class="ambiente-check"></div>
+      </div>
+      <div class="ambiente-item" id="env-suite" onclick="toggleEnv('suite')">
+        <span class="ambiente-icon">🛁</span>
+        <div class="ambiente-name">Suíte</div>
+        <div class="env-qty-ctrl">
+          <button class="env-btn" onclick="decEnv(event,'suite')">&#8722;</button>
+          <span class="env-qty-val" id="qty-suite">0</span>
+          <button class="env-btn" onclick="incEnv(event,'suite')">+</button>
+        </div>
+        <div class="ambiente-check"></div>
+      </div>
+      <div class="ambiente-item" id="env-escritorio" onclick="toggleEnv('escritorio')">
+        <span class="ambiente-icon">💼</span>
+        <div class="ambiente-name">Escritório</div>
+        <div class="env-qty-ctrl">
+          <button class="env-btn" onclick="decEnv(event,'escritorio')">&#8722;</button>
+          <span class="env-qty-val" id="qty-escritorio">0</span>
+          <button class="env-btn" onclick="incEnv(event,'escritorio')">+</button>
+        </div>
+        <div class="ambiente-check"></div>
+      </div>
+      <div class="ambiente-item" id="env-deposito" onclick="toggleEnv('deposito')">
+        <span class="ambiente-icon">📦</span>
+        <div class="ambiente-name">Depósito</div>
+        <div class="env-qty-ctrl">
+          <button class="env-btn" onclick="decEnv(event,'deposito')">&#8722;</button>
+          <span class="env-qty-val" id="qty-deposito">0</span>
+          <button class="env-btn" onclick="incEnv(event,'deposito')">+</button>
+        </div>
+        <div class="ambiente-check"></div>
+      </div>
+      <div class="ambiente-item" id="env-copa" onclick="toggleEnv('copa')">
+        <span class="ambiente-icon">🍽️</span>
+        <div class="ambiente-name">Copa/Jantar</div>
+        <div class="env-qty-ctrl">
+          <button class="env-btn" onclick="decEnv(event,'copa')">&#8722;</button>
+          <span class="env-qty-val" id="qty-copa">0</span>
+          <button class="env-btn" onclick="incEnv(event,'copa')">+</button>
+        </div>
+        <div class="ambiente-check"></div>
+      </div>
+      <div class="ambiente-item" id="env-area-ext" onclick="toggleEnv('area-ext')">
+        <span class="ambiente-icon">🏠</span>
+        <div class="ambiente-name">Área ext.</div>
+        <div class="env-qty-ctrl">
+          <button class="env-btn" onclick="decEnv(event,'area-ext')">&#8722;</button>
+          <span class="env-qty-val" id="qty-area-ext">0</span>
+          <button class="env-btn" onclick="incEnv(event,'area-ext')">+</button>
+        </div>
+        <div class="ambiente-check"></div>
+      </div>
+        </div>
+        <div class="ambientes-grid" id="amb-grid-comercial" style="display:none;">
+      <div class="ambiente-item selected" id="env-recepcao" onclick="toggleEnv('recepcao')">
+        <span class="ambiente-icon">📂</span>
+        <div class="ambiente-name">Recepção</div>
+        <div class="env-qty-ctrl">
+          <button class="env-btn" onclick="decEnv(event,'recepcao')">&#8722;</button>
+          <span class="env-qty-val" id="qty-recepcao">1</span>
+          <button class="env-btn" onclick="incEnv(event,'recepcao')">+</button>
+        </div>
+        <div class="ambiente-check"></div>
+      </div>
+      <div class="ambiente-item selected" id="env-salas" onclick="toggleEnv('salas')">
+        <span class="ambiente-icon">💼</span>
+        <div class="ambiente-name">Salas</div>
+        <div class="env-qty-ctrl">
+          <button class="env-btn" onclick="decEnv(event,'salas')">&#8722;</button>
+          <span class="env-qty-val" id="qty-salas">1</span>
+          <button class="env-btn" onclick="incEnv(event,'salas')">+</button>
+        </div>
+        <div class="ambiente-check"></div>
+      </div>
+      <div class="ambiente-item selected" id="env-banheiros-c" onclick="toggleEnv('banheiros-c')">
+        <span class="ambiente-icon">🚿</span>
+        <div class="ambiente-name">Banheiros</div>
+        <div class="env-qty-ctrl">
+          <button class="env-btn" onclick="decEnv(event,'banheiros-c')">&#8722;</button>
+          <span class="env-qty-val" id="qty-banheiros-c">1</span>
+          <button class="env-btn" onclick="incEnv(event,'banheiros-c')">+</button>
+        </div>
+        <div class="ambiente-check"></div>
+      </div>
+      <div class="ambiente-item selected" id="env-copa-c" onclick="toggleEnv('copa-c')">
+        <span class="ambiente-icon">🍳</span>
+        <div class="ambiente-name">Copa/Cozinha</div>
+        <div class="env-qty-ctrl">
+          <button class="env-btn" onclick="decEnv(event,'copa-c')">&#8722;</button>
+          <span class="env-qty-val" id="qty-copa-c">1</span>
+          <button class="env-btn" onclick="incEnv(event,'copa-c')">+</button>
+        </div>
+        <div class="ambiente-check"></div>
+      </div>
+      <div class="ambiente-item" id="env-deposito-c" onclick="toggleEnv('deposito-c')">
+        <span class="ambiente-icon">📦</span>
+        <div class="ambiente-name">Depósito</div>
+        <div class="env-qty-ctrl">
+          <button class="env-btn" onclick="decEnv(event,'deposito-c')">&#8722;</button>
+          <span class="env-qty-val" id="qty-deposito-c">0</span>
+          <button class="env-btn" onclick="incEnv(event,'deposito-c')">+</button>
+        </div>
+        <div class="ambiente-check"></div>
+      </div>
+      <div class="ambiente-item" id="env-estac" onclick="toggleEnv('estac')">
+        <span class="ambiente-icon">🚗</span>
+        <div class="ambiente-name">Estacionamento</div>
+        <div class="env-qty-ctrl">
+          <button class="env-btn" onclick="decEnv(event,'estac')">&#8722;</button>
+          <span class="env-qty-val" id="qty-estac">0</span>
+          <button class="env-btn" onclick="incEnv(event,'estac')">+</button>
+        </div>
+        <div class="ambiente-check"></div>
+      </div>
+      <div class="ambiente-item" id="env-area-tec" onclick="toggleEnv('area-tec')">
+        <span class="ambiente-icon">🔧</span>
+        <div class="ambiente-name">Área téc.</div>
+        <div class="env-qty-ctrl">
+          <button class="env-btn" onclick="decEnv(event,'area-tec')">&#8722;</button>
+          <span class="env-qty-val" id="qty-area-tec">0</span>
+          <button class="env-btn" onclick="incEnv(event,'area-tec')">+</button>
+        </div>
+        <div class="ambiente-check"></div>
+      </div>
+        </div>
+        <div style="font-size:12px;color:#8a95a3;margin-bottom:8px;font-weight:500;margin-top:4px;">Ambiente personalizado</div>
+        <div class="amb-custom-row">
+          <input type="text" id="amb-custom-input" placeholder="Ex: Churrasqueira, Piscina, Hall de entrada..." />
+          <button onclick="addAmbCustom()">+ Adicionar</button>
+        </div>
+        <div id="amb-custom-list"></div>
+        <div style="font-size:12px;color:#5a6a7e;font-weight:500;margin-top:20px;margin-bottom:8px;">Ambientes selecionados:</div>
+        <div class="amb-selected-list" id="amb-selected-list"></div>
+      </div>
       <div class="wiz-nav">
         <button class="btn-wiz-back-sm" onclick="prevWizStep ? prevWizStep() : null">Voltar</button>
         <button class="btn-wiz-next" onclick="nextWizStep ? nextWizStep() : null">Continuar <svg viewBox="0 0 20 20" fill="currentColor" width="16" height="16"><path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z"/></svg></button>
@@ -3320,25 +3545,7 @@ window.addEventListener('resize', () => {
       if (next !== undefined) {
         gotoWStep(next);
         if (next === 3) {
-          // Init default rooms based on property type
-          (function() {
-            var list = document.getElementById('room-check-list');
-            if (!list || list.children.length > 0) return;
-            var tipo = (document.getElementById('wi-prop-type') || {}).value || '';
-            var comercial = ['Sala comercial','Loja comercial','Prédio comercial','Galpão / Barracão'];
-            var rooms = comercial.indexOf(tipo) >= 0
-              ? ['Recepção','Salas','Banheiros','Copa/Cozinha','Depósito','Estacionamento','Área técnica']
-              : ['Sala','Cozinha','Dormítório','Banheiro','Lavanderia','Garagem','Varanda'];
-            wizard.selectedRooms = [];
-            rooms.forEach(function(name) {
-              wizard.selectedRooms.push(name);
-              var el = document.createElement('div');
-              el.className = 'room-check-item checked';
-              el.onclick = function() { toggleRoomCheck(this, name); };
-              el.innerHTML = '<div class="check-box checked">✓</div><span class="room-check-label">' + name + '</span>';
-              list.appendChild(el);
-            });
-          })();
+if (typeof initAmbientes === 'function') initAmbientes();
         }
       }
     };
@@ -3453,6 +3660,136 @@ window.addEventListener('resize', () => {
     if (ws2) obs.observe(ws2, { attributes: true, attributeFilter: ['style'] });
   })();
 
-</script>
+
+    // ── Ambientes (wstep-3) ──────────────────────────────────
+    var _ambConfig = {
+      residencial: [
+        {key:'sala',       icon:'🛋️', label:'Sala',              qty:1},
+        {key:'cozinha',    icon:'🍳',        label:'Cozinha',           qty:1},
+        {key:'dormitorio', icon:'🛏️',  label:'Dormítório', qty:1},
+        {key:'banheiro',   icon:'🚿',        label:'Banheiro',          qty:1},
+        {key:'lavanderia', icon:'👕',        label:'Lavanderia',        qty:0},
+        {key:'garagem',    icon:'🚗',        label:'Garagem',           qty:0},
+        {key:'varanda',    icon:'🌿',        label:'Varanda',           qty:0},
+        {key:'suite',      icon:'🛁',        label:'Suíte',        qty:0},
+        {key:'escritorio', icon:'💼',        label:'Escritório',   qty:0},
+        {key:'deposito',   icon:'📦',        label:'Depósito',     qty:0},
+        {key:'copa',       icon:'🍽️',  label:'Copa/Jantar',       qty:0},
+        {key:'area-ext',   icon:'🏠',        label:'Área ext.',    qty:0}
+      ],
+      comercial: [
+        {key:'recepcao',   icon:'📂', label:'Recepção',    qty:1},
+        {key:'salas',      icon:'💼', label:'Salas',                  qty:1},
+        {key:'banheiros-c',icon:'🚿', label:'Banheiros',              qty:1},
+        {key:'copa-c',     icon:'🍳', label:'Copa/Cozinha',           qty:1},
+        {key:'deposito-c', icon:'📦', label:'Depósito',          qty:0},
+        {key:'estac',      icon:'🚗', label:'Estacionamento',         qty:0},
+        {key:'area-tec',   icon:'🔧', label:'Área téc.',    qty:0}
+      ]
+    };
+    var _ambState = {};
+
+    function initAmbientes() {
+      var tipo = (document.getElementById('wi-prop-type')||{}).value||'';
+      var isComercial = ['Sala comercial','Loja comercial','Prédio comercial','Galpão / Barracão'].indexOf(tipo) >= 0;
+      var gridRes = document.getElementById('amb-grid-residencial');
+      var gridCom = document.getElementById('amb-grid-comercial');
+      if (!gridRes) return;
+      if (isComercial) { gridRes.style.display='none'; if(gridCom) gridCom.style.display=''; }
+      else { gridRes.style.display=''; if(gridCom) gridCom.style.display='none'; }
+      var cfg = isComercial ? _ambConfig.comercial : _ambConfig.residencial;
+      _ambState = {};
+      cfg.forEach(function(a) {
+        _ambState[a.key] = {qty: a.qty, label: a.label, icon: a.icon};
+        var el  = document.getElementById('env-' + a.key);
+        var qEl = document.getElementById('qty-' + a.key);
+        if (el)  { if (a.qty>0) el.classList.add('selected'); else el.classList.remove('selected'); }
+        if (qEl) qEl.textContent = a.qty;
+      });
+      var cl = document.getElementById('amb-custom-list');
+      if (cl) cl.innerHTML = '';
+      _ambUpdateSelected();
+    }
+
+    function _ambUpdateSelected() {
+      var list = document.getElementById('amb-selected-list');
+      if (!list) return;
+      var html = '';
+      Object.keys(_ambState).forEach(function(k) {
+        var v = _ambState[k];
+        if (v.qty <= 0) return;
+        var label = v.qty > 1 ? v.qty + '× ' + v.label : v.label;
+        html += '<div class="amb-selected-tag">' + v.icon + ' ' + label + '</div>';
+      });
+      list.innerHTML = html || '<span style="font-size:12px;color:#aab2bc;">Nenhum ambiente selecionado</span>';
+      var rooms = [];
+      Object.keys(_ambState).forEach(function(k) {
+        var v = _ambState[k];
+        for (var i=0; i<v.qty; i++) rooms.push(v.qty>1 ? v.label+' '+(i+1) : v.label);
+      });
+      wizard.selectedRooms = rooms;
+    }
+
+    function toggleEnv(key) {
+      if (!_ambState[key]) return;
+      var newQty = _ambState[key].qty > 0 ? 0 : 1;
+      _ambState[key].qty = newQty;
+      var el = document.getElementById('env-'+key);
+      var qEl = document.getElementById('qty-'+key);
+      if (el)  { if (newQty>0) el.classList.add('selected'); else el.classList.remove('selected'); }
+      if (qEl) qEl.textContent = newQty;
+      _ambUpdateSelected();
+    }
+
+    function incEnv(evt, key) {
+      evt.stopPropagation();
+      if (!_ambState[key]) return;
+      _ambState[key].qty++;
+      var el = document.getElementById('env-'+key);
+      var qEl = document.getElementById('qty-'+key);
+      if (el) el.classList.add('selected');
+      if (qEl) qEl.textContent = _ambState[key].qty;
+      _ambUpdateSelected();
+    }
+
+    function decEnv(evt, key) {
+      evt.stopPropagation();
+      if (!_ambState[key] || _ambState[key].qty <= 0) return;
+      _ambState[key].qty--;
+      var el = document.getElementById('env-'+key);
+      var qEl = document.getElementById('qty-'+key);
+      if (el)  { if (_ambState[key].qty>0) el.classList.add('selected'); else el.classList.remove('selected'); }
+      if (qEl) qEl.textContent = _ambState[key].qty;
+      _ambUpdateSelected();
+    }
+
+    function addAmbCustom() {
+      var inp = document.getElementById('amb-custom-input');
+      var val = inp ? inp.value.trim() : '';
+      if (!val) return;
+      var key = 'custom-' + Date.now();
+      _ambState[key] = {qty:1, label:val, icon:'🏠'};
+      var list = document.getElementById('amb-custom-list');
+      if (list) {
+        var wrap = document.createElement('div');
+        wrap.style.marginTop = '8px';
+        var safeKey = key.replace(/'/g,"\\'");
+        wrap.innerHTML =
+          '<div class="ambiente-item selected" id="env-'+key+'" onclick="toggleEnv(\'' + safeKey + '\')">' +
+          '<span class="ambiente-icon">🏠</span>' +
+          '<div class="ambiente-name">'+val+'</div>' +
+          '<div class="env-qty-ctrl">' +
+          '<button class="env-btn" onclick="decEnv(event,\''+safeKey+'\')">&#8722;</button>' +
+          '<span class="env-qty-val" id="qty-'+key+'">1</span>' +
+          '<button class="env-btn" onclick="incEnv(event,\''+safeKey+'\')">+</button>' +
+          '</div><div class="ambiente-check"></div></div>';
+        list.appendChild(wrap);
+      }
+      if (inp) inp.value = '';
+      _ambUpdateSelected();
+    }
+    // ── End Ambientes ────────────────────────────────────────
+
+  </script>
 </body>
 </html>
