@@ -1916,8 +1916,7 @@ canvas { display: block; }
         <div class="step-item" id="sc-4"><div class="step-circle" id="sl-4">5</div><div class="step-label" id="sl-lbl-4">Ambientes</div></div>
         <div class="step-item" id="sc-5"><div class="step-circle" id="sl-5">6</div><div class="step-label" id="sl-lbl-5">Itens e fotos</div></div>
         <div class="step-item" id="sc-6"><div class="step-circle" id="sl-6">7</div><div class="step-label" id="sl-lbl-6">Revisão</div></div>
-        <div class="step-item" id="sc-7"><div class="step-circle" id="sl-7">8</div><div class="step-label" id="sl-lbl-7">Assinaturas</div></div>
-        <div class="step-item" id="sc-8"><div class="step-circle" id="sl-8">9</div><div class="step-label" id="sl-lbl-8">PDF</div></div>
+        <div class="step-item" id="sc-7"><div class="step-circle" id="sl-7">8</div><div class="step-label" id="sl-lbl-7">PDF</div></div>
       </div>
     </div>
   <div class="page-content page-scroll">
@@ -3281,8 +3280,7 @@ window.addEventListener('resize', () => {
       // Map code step to visual stepper circle index
       // code 0=Tipo(sc0), 1=Imovel(sc2), 2=Partes(sc3), 3=Ambientes(sc4), 4=Itens(sc5), 5=Revisao(sc6)
       var si = step;
-      if (step >= 2) si = step + 1;
-      for (var i = 0; i <= 8; i++) {
+      for (var i = 0; i <= 7; i++) {
         var c = document.getElementById('sc-' + i);
         if (!c) continue;
         c.classList.remove('active', 'done');
@@ -3291,7 +3289,7 @@ window.addEventListener('resize', () => {
       }
       // Centralized hide/show for all wstep-* divs
       document.querySelectorAll('[id^=wstep-]').forEach(function(el) { el.style.display = 'none'; });
-      var stepDivMap = {0:'wstep-0',1:'wstep-1',2:'wstep-2',3:'wstep-3',4:'wstep-4',5:'wstep-rev',6:'wstep-5'};
+      var stepDivMap = {0:'wstep-0',1:'wstep-quem',2:'wstep-1',3:'wstep-2',4:'wstep-3',5:'wstep-itf',6:'wstep-rev',7:'wstep-5'};
       var targetId = stepDivMap[step];
       if (targetId) { var t = document.getElementById(targetId); if (t) t.style.display = 'block'; }
       window.scrollTo(0, 0);
@@ -3311,7 +3309,7 @@ window.addEventListener('resize', () => {
       };
       var next = nextMap[step];
       if (next !== undefined) {
-        if (step === 2 && typeof wizardNext === 'function') {
+        if (step === 3 && typeof wizardNext === 'function') {
           wizardNext(step);
         } else {
           gotoWStep(next);
@@ -3366,7 +3364,7 @@ window.addEventListener('resize', () => {
     // FIX 4: Override wizardNext for step 2
     var _origNext = wizardNext;
     wizardNext = async function(step) {
-      if (step === 2) {
+      if (step === 3) {
         showLoading('Salvando...');
         var locadores = [];
         document.querySelectorAll('#locadores-container .person-block').forEach(function(b) {
@@ -3406,8 +3404,8 @@ window.addEventListener('resize', () => {
         hideLoading();
         if (!r || !r.ok) return toast((r && r.error) || 'Erro ao salvar', 'error');
         currentInspection = r;
-        // Navigate to step 3 (Ambientes)
-        gotoWStep(3);
+        // Navigate to step 4 (Ambientes)
+        gotoWStep(4);
         document.querySelectorAll('[id^=wstep-]').forEach(function(el) { el.style.display = 'none'; });
         var ws3 = document.getElementById('wstep-3');
         if (ws3) ws3.style.display = 'block';
