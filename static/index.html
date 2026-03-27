@@ -3289,7 +3289,11 @@ window.addEventListener('resize', () => {
         if (i < si) c.classList.add('done');
         else if (i === si) c.classList.add('active');
       }
-      // Note: w-step-* divs don't exist, wstep-* managed manually
+      // Centralized hide/show for all wstep-* divs
+      document.querySelectorAll('[id^=wstep-]').forEach(function(el) { el.style.display = 'none'; });
+      var stepDivMap = {0:'wstep-0',1:'wstep-1',2:'wstep-2',3:'wstep-3',4:'wstep-4',5:'wstep-rev',6:'wstep-5'};
+      var targetId = stepDivMap[step];
+      if (targetId) { var t = document.getElementById(targetId); if (t) t.style.display = 'block'; }
       window.scrollTo(0, 0);
     };
 
