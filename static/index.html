@@ -3292,6 +3292,8 @@ window.addEventListener('resize', () => {
       var stepDivMap = {0:'wstep-0',1:'wstep-quem',2:'wstep-1',3:'wstep-2',4:'wstep-3',5:'wstep-4',6:'wstep-rev',7:'wstep-5'};
       var targetId = stepDivMap[step];
       if (targetId) { var t = document.getElementById(targetId); if (t) t.style.display = 'block'; }
+      var lbl = document.getElementById('wiz-step-label');
+      if (lbl) lbl.textContent = 'Etapa ' + (step + 1) + ' de 8';
       window.scrollTo(0, 0);
     };
 
