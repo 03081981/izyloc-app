@@ -2854,14 +2854,15 @@ function selectTipoCard(card) {
 function gotoWStep(step) {
   wizard.step = step;
   // Stepper visual
+  var si = (step === 4) ? 5 : step;
   for (let i=0; i<=7; i++) {
     const c = document.getElementById(`sc-${i}`);
     if (!c) continue;
     c.classList.remove('active','done');
-    if (i < step) c.classList.add('done');
-    else if (i === step) c.classList.add('active');
+    if (i < si) c.classList.add('done');
+    else if (i === si) c.classList.add('active');
     const l = document.getElementById(`sl-${i}`);
-    if (l) { l.classList.toggle('done', i < step); }
+    if (l) { l.classList.toggle('done', i < si); }
   }
   // Show/hide steps including wstep-0 (Tipo) and wstep-quem
   [0,1,2,3,4].forEach(n => {
