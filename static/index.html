@@ -2855,7 +2855,7 @@ function selectTipoCard(card) {
 function gotoWStep(step) {
   wizard.step = step;
   // Stepper visual
-  var si = (step === 4) ? 5 : step;
+  var si = (step >= 4) ? step + 1 : step;
   for (let i=0; i<=7; i++) {
     const c = document.getElementById(`sc-${i}`);
     if (!c) continue;
@@ -3904,7 +3904,7 @@ btn.classList.add('sel');
 
 // ─── REVISÃO FINAL ──────────────────────────────────────────────────────────
 
-window.initRevisaoFinal = async function() {
+async function initRevisaoFinal() {
   const insp = currentInspection;
   if (!insp) return;
   const tipo  = (insp.type || '').toUpperCase();
