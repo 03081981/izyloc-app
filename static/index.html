@@ -2441,14 +2441,16 @@ textarea.obs-geral{width:100%;background:#f8fafc;border:.5px solid #dce3ed;borde
 
     <!-- STEP 4: VISTORIA (fotos por ambiente) -->
     <div id="wstep-4" style="display:none">
-      <div class="wstep-title" id="step4-header">Itens e fotos</div>
-      <div class="wstep-sub">Fotografe e descreva o estado de cada ambiente selecionado.</div>
-      <div id="amb-tabs" class="ambientes-tabs"></div>
-      <div id="amb-progress" class="ambientes-progress"></div>
-      <div id="amb-card"></div>
+      <div class="wstep-title" id="step4-header">Vistoria dos ambientes</div>
+      <div class="wstep-sub">Fotografe e descreva o estado de cada ambiente.</div>
+      <div id="rooms-list"></div>
+      <div class="form-card">
+        <div class="form-card-title">Observações gerais</div>
+        <textarea class="form-input" id="wi-obs" rows="4" placeholder="Observações adicionais sobre a vistoria..." style="height:auto;padding-top:10px;padding-bottom:10px;resize:vertical"></textarea>
+      </div>
       <div class="wiz-nav">
         <button class="btn-wiz-back-sm" onclick="prevWizStep ? prevWizStep() : null">Voltar</button>
-        <button class="btn-wiz-next" id="btn-concluir-revisar" onclick="showReviewStep ? showReviewStep() : null">Concluir e revisar →</button>
+        <button class="btn-wiz-next" onclick="showReviewStep ? showReviewStep() : null">Revisar <svg viewBox="0 0 20 20" fill="currentColor" width="16" height="16"><path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z"/></svg></button>
       </div>
     </div>
 
