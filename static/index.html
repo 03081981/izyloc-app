@@ -1482,6 +1482,69 @@ canvas { display: block; }
   .resumo-title { font-size: 12px; font-weight: 600; color: #5a6a7e; margin-bottom: 10px; }
   .resumo-tags { display: flex; flex-wrap: wrap; gap: 8px; }
   .resumo-tag { display: flex; align-items: center; gap: 5px; background: #e8f0fb; border: 0.5px solid #b5d4f4; color: #185fa5; font-size: 12px; padding: 4px 10px; border-radius: 20px; }
+
+/* === Etapa 6 — Itens e Fotos === */
+.ambientes-tabs{display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap}
+.tab{padding:8px 16px;border-radius:20px;font-size:13px;cursor:pointer;border:1.5px solid #dce3ed;background:#fff;color:#5a6a7e;transition:all .2s}
+.tab.active{background:#2d7dd2;border-color:#2d7dd2;color:#fff;font-weight:500}
+.tab.done{border-color:#2e7d32;color:#2e7d32;background:#e8f4eb}
+.ambientes-progress{display:flex;align-items:center;gap:8px;margin-bottom:20px}
+.prog-bar{flex:1;height:6px;background:#e8edf3;border-radius:3px;overflow:hidden}
+.prog-fill{height:100%;background:#2d7dd2;border-radius:3px;transition:width .3s}
+.prog-text{font-size:12px;color:#8a95a3;white-space:nowrap}
+#amb-card .card{background:#fff;border-radius:14px;border:.5px solid #dce3ed;padding:24px;margin-bottom:16px}
+#amb-card .card-header{display:flex;align-items:center;gap:12px;margin-bottom:20px}
+#amb-card .card-icon{width:40px;height:40px;border-radius:10px;background:#e8f0fb;display:flex;align-items:center;justify-content:center;font-size:20px}
+#amb-card .card-title{font-size:15px;font-weight:500;color:#1a2d45}
+#amb-card .card-sub{font-size:12px;color:#8a95a3;margin-top:2px}
+.section-label{font-size:11px;font-weight:600;color:#8a95a3;text-transform:uppercase;letter-spacing:.8px;margin-bottom:12px}
+.divider{height:1px;background:#f0f3f7;margin:20px 0}
+.info-obrig{background:#fff5f5;border:.5px solid #f09595;border-radius:8px;padding:10px 14px;font-size:12px;color:#a32d2d;margin-bottom:16px}
+.item-block{border:.5px solid #dce3ed;border-radius:12px;margin-bottom:12px;overflow:hidden}
+.item-block.ativo{border-color:#2d7dd2}
+.item-header{display:flex;align-items:center;justify-content:space-between;padding:11px 16px;background:#f8fafc;border-bottom:.5px solid #dce3ed}
+.item-header.condicional-header{background:#fff}
+.item-left{display:flex;align-items:center;gap:10px}
+.item-badge-obrig{font-size:10px;background:#e8edf3;color:#5a6a7e;padding:2px 8px;border-radius:20px}
+.item-badge-cond{font-size:10px;background:#fff8e8;color:#854f0b;padding:2px 8px;border-radius:20px}
+.item-name{font-size:13px;font-weight:500;color:#1a2d45}
+.item-estado-sel{font-size:11px;padding:3px 10px;border-radius:20px;border:.5px solid #dce3ed;background:#fff;cursor:pointer;color:#5a6a7e;outline:none}
+.toggle-possui{position:relative;width:36px;height:20px;display:inline-block}
+.toggle-possui input{opacity:0;width:0;height:0}
+.toggle-possui .slider{position:absolute;cursor:pointer;top:0;left:0;right:0;bottom:0;background:#dce3ed;border-radius:20px;transition:.2s}
+.toggle-possui .slider:before{position:absolute;content:"";height:14px;width:14px;left:3px;bottom:3px;background:white;border-radius:50%;transition:.2s}
+.toggle-possui input:checked+.slider{background:#2d7dd2}
+.toggle-possui input:checked+.slider:before{transform:translateX(16px)}
+.item-body{padding:14px 16px}
+.item-foto-row{display:grid;grid-template-columns:110px 1fr;gap:14px}
+.foto-thumb{width:110px;height:90px;object-fit:cover;border-radius:8px;display:block}
+.foto-add-box{width:110px;height:90px;border:2px dashed #e24b4a;border-radius:8px;background:#fff5f5;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;cursor:pointer;color:#e24b4a;font-size:10px}
+.foto-add-box.ok{border-color:#b5d4f4;background:#f0f6ff;color:#2d7dd2}
+.foto-obrig-label{font-size:10px;text-align:center;margin-top:4px;color:#e24b4a;font-weight:500}
+.foto-obrig-label.ok{color:#2d7dd2}
+.desc-col{display:flex;flex-direction:column;gap:8px}
+.ia-mini{background:#f0f6ff;border:.5px solid #b5d4f4;border-radius:8px;padding:8px 10px}
+.ia-mini-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:5px}
+.ia-badge-sm{background:#2d7dd2;color:#fff;font-size:10px;padding:2px 8px;border-radius:20px;font-weight:500}
+.btn-regen-sm{background:transparent;border:1px solid #b5d4f4;color:#185fa5;border-radius:5px;padding:2px 8px;font-size:10px;cursor:pointer}
+.ia-desc{font-size:11px;color:#5a6a7e;line-height:1.5;font-style:italic}
+.ia-pending{font-size:11px;color:#aab2bc;font-style:italic}
+textarea.item-obs{width:100%;background:#f8fafc;border:.5px solid #dce3ed;border-radius:6px;padding:7px 10px;font-size:12px;color:#1a2d45;outline:none;resize:none;height:42px;font-family:inherit}
+.verif-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.verif-item{border:.5px solid #dce3ed;border-radius:10px;padding:12px 14px;background:#f8fafc}
+.verif-name{font-size:13px;font-weight:500;color:#1a2d45;margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.verif-options{display:flex;flex-wrap:wrap;gap:6px}
+.verif-btn{padding:4px 10px;border-radius:20px;border:1.5px solid #dce3ed;background:#fff;font-size:11px;color:#5a6a7e;cursor:pointer}
+.verif-btn.ok{border-color:#2e7d32;background:#e8f4eb;color:#2e7d32;font-weight:500}
+.verif-btn.warn{border-color:#e65100;background:#fff3e0;color:#e65100;font-weight:500}
+.verif-btn.bad{border-color:#a32d2d;background:#fce8e8;color:#a32d2d;font-weight:500}
+.verif-btn.nt{border-color:#8a95a3;background:#e8edf3;color:#5a6a7e;font-weight:500}
+textarea.obs-geral{width:100%;background:#f8fafc;border:.5px solid #dce3ed;border-radius:8px;padding:12px;font-size:13px;color:#1a2d45;outline:none;resize:vertical;min-height:70px;font-family:inherit}
+.nav-ambiente{display:flex;justify-content:space-between;align-items:center;margin-top:20px}
+.btn-nav{background:transparent;border:1px solid #dce3ed;border-radius:8px;padding:8px 16px;font-size:13px;color:#5a6a7e;cursor:pointer}
+.btn-nav-next{background:#2d7dd2;color:#fff;border:none;border-radius:8px;padding:8px 16px;font-size:13px;cursor:pointer}
+/* === End Etapa 6 CSS === */
+
 </style>
 </head>
 <body>
