@@ -3927,52 +3927,77 @@ if (typeof initAmbientes === 'function') initAmbientes();
           if (!row._fotos) row._fotos = [];
           row._fotos.push(ev.target.result);
           var n = row._fotos.length;
-          var wrap = document.createElement("div");
-          wrap.style.cssText = "display:inline-flex;flex-direction:column;align-items:center;margin-right:8px;";
-          var img = document.createElement("img");
-          img.src = ev.target.result;
-          img.className = "foto-thumb";
-          img.style.cssText = "width:120px;height:90px;object-fit:cover;border-radius:8px;border:2px solid #16a34a;";
-          wrap.appendChild(img);
-          var lbl = document.createElement("div");
-          lbl.style.cssText = "color:#16a34a;font-size:11px;margin-top:4px;font-weight:600;";
-          lbl.textContent = "\u2713 Foto " + n;
-          wrap.appendChild(lbl);
-          btn.parentElement.insertBefore(wrap, btn);
-          var oldLbl = row.querySelector(".foto-obrig-label");
-          if (oldLbl) { oldLbl.textContent = "\u2713 " + n + " foto(s)"; oldLbl.style.color = "#16a34a"; }
-          btn.querySelector("span:last-child").textContent = "+ Foto " + (n + 1);
-          btn.style.width = "100px"; btn.style.height = "75px";
-          btn.style.borderColor = "#94a3b8";
-          // Call AI analysis
-          var iaPending = row.querySelector(".ia-pending");
-          var iaBadgeSm = row.querySelector(".ia-badge-sm");
-          if (iaPending) { iaPending.textContent = "\u2699 Analisando..."; iaPending.style.color = "#d97706"; }
-          var iaWrap = row.querySelector(".ia-mini");
-          if (iaWrap) { iaWrap.style.opacity = "1"; }
           var itemName = row.getAttribute("data-item") || "Item";
           var ambName = row.getAttribute("data-amb") || "Ambiente";
+          /* --- foto block with its own IA section --- */
+          var block = document.createElement("div");
+          block.className = "foto-block";
+          block.style.cssText = "display:flex;gap:10px;align-items:flex-start;margin-bottom:10px;padding:8px;background:#f8fafc;border-radius:10px;border:1px solid #e2e8f0;";
+          /* thumbnail */
+          var img = document.createElement("img");
+          img.src = ev.target.result;
+          img.style.cssText = "width:100px;height:75px;object-fit:cover;border-radius:8px;border:2px solid #16a34a;flex-shrink:0;";
+          block.appendChild(img);
+          /* right side: label + badge + description */
+          var right = document.createElement("div");
+          right.style.cssText = "flex:1;min-width:0;";
+          var topLine = document.createElement("div");
+          topLine.style.cssText = "display:flex;align-items:center;gap:8px;margin-bottom:4px;";
+          var fotoLabel = document.createElement("span");
+          fotoLabel.style.cssText = "font-weight:600;font-size:13px;color:#334155;";
+          fotoLabel.textContent = "Foto " + n;
+          topLine.appendChild(fotoLabel);
+          var badge = document.createElement("span");
+          badge.className = "ia-badge-foto";
+          badge.style.cssText = "font-size:11px;padding:2px 8px;border-radius:8px;background:#fbbf24;color:#000;font-weight:600;";
+          badge.textContent = "\u2699 Analisando...";
+          topLine.appendChild(badge);
+          right.appendChild(topLine);
+          var desc = document.createElement("div");
+          desc.className = "ia-desc-foto";
+          desc.style.cssText = "font-size:12px;color:#64748b;font-style:italic;";
+          desc.textContent = "Aguardando resposta da IA...";
+          right.appendChild(desc);
+          block.appendChild(right);
+          /* insert block before the add-foto button */
+          btn.parentElement.insertBefore(block, btn);
+          /* update button text */
+          btn.querySelector("span:last-child").textContent = "+ Foto " + (n + 1);
+          btn.style.width = "100px"; btn.style.height = "60px";
+          btn.style.borderColor = "#94a3b8";
+          /* update original ia-pending on first photo */
+          if (n === 1) {
+            var iaPending = row.querySelector(".ia-pending");
+            if (iaPending) iaPending.style.display = "none";
+            var iaWrap = row.querySelector(".ia-mini");
+            if (iaWrap) iaWrap.style.display = "none";
+          }
+          /* update foto-obrig label */
+          var oldLbl = row.querySelector(".foto-obrig-label");
+          if (oldLbl) { oldLbl.textContent = "\u2713 " + n + " foto(s)"; oldLbl.style.color = "#16a34a"; }
+          /* --- call AI --- */
           fetch("/api/analyze-photo", {
             method: "POST",
             headers: {"Content-Type": "application/json"},
             body: JSON.stringify({image: ev.target.result, item: itemName, ambiente: ambName})
           }).then(function(r) { return r.json(); }).then(function(res) {
-            if (iaBadgeSm) {
-              iaBadgeSm.textContent = "\u2713 IA: " + (res.estado || "Bom");
-              iaBadgeSm.style.background = res.estado === "Ruim" ? "#ef4444" : res.estado === "Regular" ? "#f59e0b" : "#22c55e";
-              iaBadgeSm.style.color = "#fff";
-              iaBadgeSm.style.padding = "2px 8px";
-              iaBadgeSm.style.borderRadius = "8px";
+            var estado = res.estado || "Bom";
+            badge.textContent = "\u2713 IA: " + estado;
+            badge.style.background = estado === "Ruim" ? "#ef4444" : estado === "Regular" ? "#f59e0b" : "#22c55e";
+            badge.style.color = "#fff";
+            desc.textContent = res.description || "Analisado";
+            desc.style.color = "#475569";
+            desc.style.fontStyle = "normal";
+            /* auto-select estado on first photo only */
+            if (n === 1) {
+              var selEstado = row.querySelector(".estado-select");
+              if (selEstado) selEstado.value = estado;
             }
-            if (iaPending) {
-              iaPending.textContent = res.description || "Analisado";
-              iaPending.style.color = "#16a34a";
-              iaPending.style.fontSize = "12px";
-            }
-            var selEstado = row.querySelector(".estado-select");
-            if (selEstado && res.estado) { selEstado.value = res.estado; }
           }).catch(function(err) {
-            if (iaPending) { iaPending.textContent = "\u26A0 IA indispon\u00edvel"; iaPending.style.color = "#94a3b8"; }
+            badge.textContent = "\u26A0 IA indispon\u00edvel";
+            badge.style.background = "#94a3b8"; badge.style.color = "#fff";
+            desc.textContent = "Erro ao analisar foto";
+            desc.style.color = "#ef4444";
           });
         };
         reader.readAsDataURL(inp.files[0]);
