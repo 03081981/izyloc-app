@@ -3989,7 +3989,9 @@ if (typeof initAmbientes === 'function') initAmbientes();
       rc.innerHTML = h;
     };
 
-window._addFoto = function(idx, btn, useCamera) {
+if (!window._fotoStore) window._fotoStore = {};
+
+    window._addFoto = function(idx, btn, useCamera) {
   var input = document.createElement('input');
   input.type = 'file';
   input.accept = 'image/*';
@@ -4066,6 +4068,8 @@ window._addFoto = function(idx, btn, useCamera) {
         badge.style.color = estado === 'Ruim' ? '#c62828' : estado === 'Regular' ? '#854f0b' : '#2e7d32';
         desc.textContent = (d.description || '').replace(/\n/g, ' ').trim();
         desc.style.color = '#1e3a5f';
+        if (!window._fotoStore[amb]) window._fotoStore[amb] = [];
+        window._fotoStore[amb].push({src: dataUrl, item: item, estado: estado, desc: (d.description||'').replace(/\n/g,' ').trim()});
       }).catch(function() {
         badge.textContent = '\u26A0 IA indispon\u00edvel';
         badge.style.background = '#e2e8f0';
