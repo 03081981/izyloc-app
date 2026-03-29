@@ -3552,8 +3552,8 @@ window.addEventListener('resize', () => {
       };
       var next = nextMap[step];
       if (next !== undefined) {
-        var nextActions = {2: function(){ wizardNext(1); }, 3: function(){ wizardNext(2); }};
-        if (nextActions[step]) { nextActions[step](); return; }
+        if (step === 2) { wizardNext(1).catch(function(e){ console.error('wizardNext(1) error:', e); }); }
+        if (step === 3) { wizardNext(2).catch(function(e){ console.error('wizardNext(2) error:', e); }); }
         gotoWStep(next);
         if (next === 3) {
 if (typeof initAmbientes === 'function') initAmbientes();
