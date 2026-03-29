@@ -2982,7 +2982,7 @@ async function wizardNext(step) {
     hideLoading();
     if (!r.ok) return toast(r.error || 'Erro ao criar vistoria', 'error');
     wizard.inspectionId = r.id; currentInspection = r;
-    gotoWStep(2);
+    gotoWStep(3);
   }
   else if (step === 2) {
     showLoading('Salvando...');
