@@ -3955,7 +3955,7 @@ if (typeof initAmbientes === 'function') initAmbientes();
           right.appendChild(topLine);
           var desc = document.createElement("div");
           desc.className = "ia-desc-foto";
-          desc.style.cssText = "font-size:12px;color:#64748b;font-style:italic;";
+          desc.style.cssText = "font-size:11px;color:#5a6a7e;line-height:1.5;font-style:italic;display:block;white-space:normal;word-wrap:break-word;";
           desc.textContent = "Aguardando resposta da IA...";
           right.appendChild(desc);
           block.appendChild(right);
@@ -3986,8 +3986,7 @@ if (typeof initAmbientes === 'function') initAmbientes();
             badge.style.background = estado === "Ruim" ? "#ef4444" : estado === "Regular" ? "#f59e0b" : "#22c55e";
             badge.style.color = "#fff";
             desc.textContent = (res.description || "Analisado").replace(/\n/g, " ").trim();
-            desc.style.color = "#475569";
-            desc.style.fontStyle = "normal";
+            desc.style.cssText = "font-size:11px;color:#475569;line-height:1.5;display:block;white-space:normal;word-wrap:break-word;";
             /* auto-select estado on first photo only */
             if (n === 1) {
               var selEstado = row.querySelector(".estado-select");
