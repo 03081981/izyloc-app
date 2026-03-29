@@ -3958,30 +3958,57 @@ if (typeof initAmbientes === 'function') initAmbientes();
       h += '<div class="rev-card"><div class="rev-card-title">Partes envolvidas</div>';
       var locBlocks = document.querySelectorAll('[id^="loc-block-"]');
       locBlocks.forEach(function(bl) {
-        var idx = bl.id.replace('loc-block-','');
-        var nm = (document.getElementById('loc-name-'+idx) || {}).value || '-';
-        var em = (document.getElementById('loc-email-'+idx) || {}).value || '-';
-        h += '<div class="rev-row"><span class="rev-label">Locador:</span><span class="rev-val">' + nm + ' (' + em + ')</span></div>';
+        var x = bl.id.replace('loc-block-','');
+        var nm = (document.getElementById('loc-name-'+x)||{}).value||'-';
+        var cpf = (document.getElementById('loc-cpf-'+x)||{}).value||'-';
+        var ph = (document.getElementById('loc-phone-'+x)||{}).value||'-';
+        var em = (document.getElementById('loc-email-'+x)||{}).value||'-';
+        h += '<div style="padding:6px 0;border-bottom:1px solid #f0f0f0">';
+        h += '<div class="rev-row"><span class="rev-label">Locador:</span><span class="rev-val">' + nm + '</span></div>';
+        h += '<div class="rev-row"><span class="rev-label">CPF:</span><span class="rev-val">' + cpf + '</span></div>';
+        h += '<div class="rev-row"><span class="rev-label">Telefone:</span><span class="rev-val">' + ph + '</span></div>';
+        h += '<div class="rev-row"><span class="rev-label">E-mail:</span><span class="rev-val">' + em + '</span></div>';
+        h += '</div>';
       });
       var locatBlocks = document.querySelectorAll('[id^="locat-block-"]');
       locatBlocks.forEach(function(bl) {
-        var idx = bl.id.replace('locat-block-','');
-        var nm = (document.getElementById('locat-name-'+idx) || {}).value || '-';
-        var em = (document.getElementById('locat-email-'+idx) || {}).value || '-';
-        h += '<div class="rev-row"><span class="rev-label">Locatario:</span><span class="rev-val">' + nm + ' (' + em + ')</span></div>';
+        var x = bl.id.replace('locat-block-','');
+        var nm = (document.getElementById('locat-name-'+x)||{}).value||'-';
+        var cpf = (document.getElementById('locat-cpf-'+x)||{}).value||'-';
+        var ph = (document.getElementById('locat-phone-'+x)||{}).value||'-';
+        var em = (document.getElementById('locat-email-'+x)||{}).value||'-';
+        h += '<div style="padding:6px 0;border-bottom:1px solid #f0f0f0">';
+        h += '<div class="rev-row"><span class="rev-label">Locat\u00e1rio:</span><span class="rev-val">' + nm + '</span></div>';
+        h += '<div class="rev-row"><span class="rev-label">CPF:</span><span class="rev-val">' + cpf + '</span></div>';
+        h += '<div class="rev-row"><span class="rev-label">Telefone:</span><span class="rev-val">' + ph + '</span></div>';
+        h += '<div class="rev-row"><span class="rev-label">E-mail:</span><span class="rev-val">' + em + '</span></div>';
+        h += '</div>';
       });
       h += '</div>';
 
       // Card 4: Ambientes vistoriados
       h += '<div class="rev-card"><div class="rev-card-title">Ambientes vistoriados</div>';
-      if (typeof _ambData === 'object' && _ambData) {
-        var keys = Object.keys(_ambData);
-        keys.forEach(function(k) {
-          if (_ambData[k] && _ambData[k].val > 0) {
-            var label = k.charAt(0).toUpperCase() + k.slice(1).replace(/_/g,' ');
-            var fotos = document.querySelectorAll('.amb-panel[data-amb="'+k+'"] .foto-item').length || 0;
-            h += '<div class="rev-row"><span class="rev-label">' + label + ':</span><span class="rev-val">' + fotos + ' foto(s)</span></div>';
-          }
+      var fs = window._fotoStore || {};
+      var ambKeys = Object.keys(fs);
+      if (ambKeys.length === 0) {
+        h += '<div style="color:#94a3b8;font-size:13px;font-style:italic">Nenhuma foto registrada</div>';
+      } else {
+        ambKeys.forEach(function(ambNome) {
+          var fotos = fs[ambNome];
+          h += '<div style="margin-bottom:12px;padding-bottom:10px;border-bottom:1px solid #e2e8f0">';
+          h += '<div style="font-weight:600;font-size:14px;margin-bottom:6px">' + ambNome + ' <span style="color:#64748b;font-weight:400;font-size:12px">(' + fotos.length + ' foto' + (fotos.length>1?'s':'') + ')</span></div>';
+          fotos.forEach(function(f) {
+            var ec = f.estado==='Ruim'?'#c62828':f.estado==='Regular'?'#854f0b':'#2e7d32';
+            var eb = f.estado==='Ruim'?'#fde8e8':f.estado==='Regular'?'#fff8e8':'#e8f4eb';
+            h += '<div style="display:flex;gap:10px;margin-bottom:8px;align-items:flex-start">';
+            h += '<img src="'+f.src+'" style="width:60px;height:45px;object-fit:cover;border-radius:6px;flex-shrink:0">';
+            h += '<div style="flex:1;min-width:0">';
+            h += '<div style="font-size:13px;font-weight:500">' + (f.item||'') + '</div>';
+            if (f.estado) h += '<span style="display:inline-block;padding:1px 8px;border-radius:10px;font-size:11px;font-weight:600;background:'+eb+';color:'+ec+';margin:2px 0">' + f.estado + '</span>';
+            if (f.desc) h += '<div style="font-size:12px;color:#475569;margin-top:2px;word-break:break-word">' + f.desc + '</div>';
+            h += '</div></div>';
+          });
+          h += '</div>';
         });
       }
       h += '</div>';
