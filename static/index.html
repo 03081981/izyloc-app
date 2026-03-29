@@ -2477,7 +2477,7 @@ textarea.obs-geral{width:100%;background:#f8fafc;border:.5px solid #dce3ed;borde
         <div style="font-size:16px;font-weight:600;color:#1e293b;margin-bottom:4px">Laudo gerado com sucesso</div>
         <div style="font-size:13px;color:#64748b;margin-bottom:20px">Revise o documento e escolha uma opção abaixo</div>
         <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
-          <button class="btn-wiz-next" style="min-width:180px" onclick="window.gerarPDF()">Baixar PDF</button>
+          <button class="btn-wiz-next" style="min-width:180px" onclick="generatePDF()">Baixar PDF</button>
           <button class="btn-wiz-next" style="min-width:180px;background:#7c3aed" onclick="alert('Envio para assinatura em breve')">Enviar para assinar</button>
         </div>
       </div>
@@ -3362,14 +3362,16 @@ async function saveSig(party) {
   toast(`Assinatura confirmada!`, 'success');
 }
 
-async function generatePDF() {
+async function generatePDF(id) {
+  var iid = id || iid || (currentInspection && currentInspection.id);
+  if (!iid) { alert('Inspe\u00e7\u00e3o n\u00e3o encontrada.'); return; }
   showLoading('📄 Gerando laudo PDF...');
-  const r = await api('GET', `/api/inspections/${wizard.inspectionId}/pdf`);
+  const r = await api('GET', `/api/inspections/${iid}/pdf`);
   hideLoading();
   if (r.blob) {
     const url = URL.createObjectURL(r.blob);
     const a = document.createElement('a');
-    a.href = url; a.download = `iZYlOC_Laudo_${wizard.inspectionId.substring(0,8).toUpperCase()}.pdf`;
+    a.href = url; a.download = `iZYlOC_Laudo_${iid.substring(0,8).toUpperCase()}.pdf`;
     document.body.appendChild(a); a.click();
     document.body.removeChild(a); URL.revokeObjectURL(url);
     toast('✅ Laudo gerado com sucesso!', 'success');
