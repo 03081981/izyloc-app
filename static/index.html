@@ -3574,6 +3574,7 @@ window.addEventListener('resize', () => {
         gotoWStep(next);
         if (next === 3) {
 if (typeof initAmbientes === 'function') initAmbientes();
+      if (next === 5 && typeof initItensEtapa === 'function') initItensEtapa();
         }
       }
     };
@@ -3787,7 +3788,139 @@ if (typeof initAmbientes === 'function') initAmbientes();
       }
       if (inp) inp.value = '';
     }
-    // ── End Ambientes ────────────────────────────────────────
+    
+  // ── Itens e Fotos (wstep-4) ──
+  window.initItensEtapa = function() {
+    var rooms = wizard.selectedRooms || [];
+    if (!rooms.length) return;
+
+    var condItems = {
+      'Dormitório': ['Armário/Guarda-roupa','Cama/Box','Ar-condicionado','TV'],
+      'Dorm. / Quarto': ['Armário/Guarda-roupa','Cama/Box','Ar-condicionado','TV'],
+      'Sala': ['Sofá','TV/Rack','Ar-condicionado','Mesa de jantar'],
+      'Cozinha': ['Fogão','Geladeira','Micro-ondas','Armários','Pia/Torneira'],
+      'Banheiro': ['Vaso sanitário','Pia/Torneira','Chuveiro','Box','Espelho'],
+      'Lavanderia': ['Tanque','Máquina de lavar'],
+      'Garagem': ['Portão','Box demarcado'],
+      'Varanda': ['Guarda-corpo','Churrasqueira']
+    };
+
+    var obrigItems = ['Paredes','Piso','Teto / Iluminação','Porta','Janela'];
+
+    var verificacoes = [
+      {nome:'💡 Iluminação', opts:['Funcionando','Lâmpada queimada','Não funciona','Não testado']},
+      {nome:'🔌 Tomadas', opts:['Funcionando','Não funciona','Não testado']},
+      {nome:'🚰 Água/Encanamento', opts:['Sem vazamentos','Vazamento','Pressão baixa','Não testado']},
+      {nome:'❄️ Ar-condicionado', opts:['Funcionando','Com defeito','Não funciona','Não testado']},
+      {nome:'🚪 Portas/Fechaduras', opts:['Funcionando','Com defeito','Não funciona','Não testado']}
+    ];
+
+    wizard.itensData = {};
+    var current = 0;
+
+    function renderTab(idx) {
+      current = idx;
+      var tabs = document.getElementById('amb-tabs');
+      var card = document.getElementById('amb-card');
+      if (!tabs || !card) return;
+
+      tabs.innerHTML = rooms.map(function(r,i) {
+        var cls = i===idx ? 'tab active' : (wizard.itensData[i] && wizard.itensData[i].done ? 'tab done' : 'tab');
+        return '<button class="'+cls+'" onclick="window._ambGoTo('+i+')">'+r+'</button>';
+      }).join('');
+
+      var nome = rooms[idx];
+      var baseNome = nome.replace(/\s*\d+$/,'');
+      var cond = condItems[baseNome] || condItems[nome] || [];
+
+      var h = '<div class="card"><div class="card-header"><div class="card-icon">🏠</div><div><div class="card-title">'+nome+'</div><div class="card-sub">Fotografe cada item e indique os condicionais</div></div></div>';
+      h += '<div class="info-obrig">📷 Itens obrigatórios exigem foto.</div>';
+      h += '<div class="section-label">Itens obrigatórios</div>';
+
+      obrigItems.forEach(function(item) {
+        h += '<div class="item-block"><div class="item-header"><div class="item-left"><span class="item-badge-obrig">Obrigatório</span><span class="item-name">'+item+'</span></div>';
+        h += '<select class="item-estado-sel"><option>Bom</option><option>Regular</option><option>Ruim</option></select></div>';
+        h += '<div class="item-body"><div class="item-foto-row"><div>';
+        h += '<div class="foto-add-box" onclick="window._addFoto('+idx+',this)"><span style="font-size:20px">📷</span><span>Foto obrigatória</span></div>';
+        h += '<div class="foto-obrig-label">⚠ Sem foto</div></div>';
+        h += '<div class="desc-col"><div class="ia-mini" style="opacity:0.4"><div class="ia-mini-top"><span class="ia-badge-sm">✦ IA</span></div><div class="ia-pending">Aguardando foto...</div></div>';
+        h += '<textarea class="item-obs" placeholder="Observação..."></textarea></div></div></div></div>';
+      });
+
+      if (cond.length) {
+        h += '<div class="divider"></div><div class="section-label">Itens condicionais — possui neste ambiente?</div>';
+        cond.forEach(function(item,ci) {
+          var safeId = 'cond-'+idx+'-'+ci;
+          h += '<div class="item-block condicional"><div class="item-header condicional-header"><div class="item-left"><span class="item-badge-cond">Se houver</span><span class="item-name">'+item+'</span></div>';
+          h += '<div style="display:flex;align-items:center;gap:10px"><span style="font-size:12px;color:#5a6a7e">Possui</span>';
+          h += '<label class="toggle-possui"><input type="checkbox" onchange="window._toggleCond(this,\''+safeId+'\')"><span class="slider"></span></label></div></div>';
+          h += '<div class="item-body" id="'+safeId+'" style="display:none"><div class="item-foto-row"><div>';
+          h += '<div class="foto-add-box ok" onclick="window._addFoto('+idx+',this)"><span style="font-size:20px">📷</span><span>Tirar foto</span></div></div>';
+          h += '<div class="desc-col"><div class="ia-mini" style="opacity:0.4"><div class="ia-mini-top"><span class="ia-badge-sm">✦ IA</span></div><div class="ia-pending">Aguardando foto...</div></div>';
+          h += '<textarea class="item-obs" placeholder="Observação..."></textarea></div></div></div></div>';
+        });
+      }
+
+      h += '<div class="divider"></div><div class="section-label">Verificações técnicas</div><div class="verif-grid">';
+      verificacoes.forEach(function(v) {
+        h += '<div class="verif-item"><div class="verif-name">'+v.nome+'</div><div class="verif-options">';
+        v.opts.forEach(function(o) { h += '<button class="verif-btn" onclick="window._selVerif(this)">'+o+'</button>'; });
+        h += '</div></div>';
+      });
+      h += '</div>';
+
+      h += '<div class="divider"></div><div class="section-label">Observações gerais do ambiente</div>';
+      h += '<textarea class="obs-geral" placeholder="Alguma observação adicional sobre este ambiente?"></textarea>';
+
+      h += '<div class="nav-ambiente">';
+      if (idx > 0) h += '<button class="btn-nav" onclick="window._ambGoTo('+(idx-1)+')">\u2190 Anterior</button>';
+      else h += '<button class="btn-nav" disabled style="opacity:0.4">\u2190 Anterior</button>';
+      h += '<span style="font-size:12px;color:#8a95a3">Ambiente '+(idx+1)+' de '+rooms.length+'</span>';
+      if (idx < rooms.length-1) h += '<button class="btn-nav-next" onclick="window._ambGoTo('+(idx+1)+')">'+rooms[idx+1]+' \u2192</button>';
+      else h += '<button class="btn-nav-next" onclick="window._ambGoTo(0)">Revisar \u2192</button>';
+      h += '</div>';
+
+      h += '</div>';
+      card.innerHTML = h;
+
+      var prog = document.getElementById('amb-progress');
+      if (prog) prog.style.display = 'flex';
+      var fill = document.getElementById('amb-prog-fill');
+      var txt = document.getElementById('amb-prog-text');
+      var done = Object.keys(wizard.itensData).filter(function(k){return wizard.itensData[k] && wizard.itensData[k].done;}).length;
+      if (fill) fill.style.width = (rooms.length > 0 ? done/rooms.length*100 : 0)+'%';
+      if (txt) txt.textContent = done+' de '+rooms.length+' conclu\u00eddos';
+    }
+
+    window._ambGoTo = function(idx) { renderTab(idx); };
+
+    window._toggleCond = function(el, safeId) {
+      var body = document.getElementById(safeId);
+      if (body) body.style.display = el.checked ? 'block' : 'none';
+      var block = el.closest('.item-block');
+      if (block) { if (el.checked) block.classList.add('ativo'); else block.classList.remove('ativo'); }
+    };
+
+    window._selVerif = function(btn) {
+      btn.parentElement.querySelectorAll('.verif-btn').forEach(function(b){ b.className = 'verif-btn'; });
+      btn.classList.add('ok');
+    };
+
+    window._addFoto = function(idx, el) {
+      var input = document.createElement('input');
+      input.type = 'file'; input.accept = 'image/*';
+      input.onchange = function(e) {
+        var file = e.target.files[0]; if (!file) return;
+        console.log('Foto adicionada para ambiente', rooms[idx]);
+      };
+      input.click();
+    };
+
+    renderTab(0);
+  };
+  // ── End Itens e Fotos ──
+
+  // ── End Ambientes ────────────────────────────────────────
 
   </script>
 </body>
