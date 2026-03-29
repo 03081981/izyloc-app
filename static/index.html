@@ -3576,7 +3576,7 @@ window.addEventListener('resize', () => {
 if (typeof initAmbientes === 'function') initAmbientes();
         }
         if (next === 5 && typeof initItensEtapa === 'function') initItensEtapa();
-        if (next === 6 && typeof initRevisao === 'function') initRevisao();
+        if (next === 6 && typeof window.initRevisao === 'function') window.initRevisao();
       }
     };
 
@@ -3917,7 +3917,7 @@ if (typeof initAmbientes === 'function') initAmbientes();
     };
 
     
-    var initRevisao = function() {
+    window.initRevisao = function() {
       var rc = document.getElementById('rev-content');
       if (!rc) return;
       var h = '';
