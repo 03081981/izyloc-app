@@ -3916,99 +3916,67 @@ if (typeof initAmbientes === 'function') initAmbientes();
     };
 
     window._addFoto = function(idx, btn) {
-      var inp = document.createElement("input");
-      inp.type = "file"; inp.accept = "image/*"; inp.capture = "environment";
-      inp.onchange = function() {
-        if (!inp.files || !inp.files[0]) return;
+      var input = document.createElement('input');
+      input.type = 'file';
+      input.accept = 'image/*';
+      input.onchange = function(e) {
+        var file = e.target.files[0];
+        if (!file) return;
         var reader = new FileReader();
         reader.onload = function(ev) {
-          var row = btn.closest(".item-foto-row");
-          if (!row) return;
-          if (!row._fotos) row._fotos = [];
-          row._fotos.push(ev.target.result);
-          var n = row._fotos.length;
-          var itemName = row.getAttribute("data-item") || "Item";
-          var ambName = row.getAttribute("data-amb") || "Ambiente";
-          /* --- foto block with its own IA section --- */
-          var block = document.createElement("div");
-          block.className = "foto-block";
-          block.style.cssText = "display:flex;flex-direction:row;align-items:flex-start;gap:10px;padding:8px 0;width:100%;min-width:0;";
-          /* thumbnail */
-          var img = document.createElement("img");
-          img.src = ev.target.result;
-          img.style.cssText = "width:100px;height:75px;object-fit:cover;border-radius:8px;border:2px solid #16a34a;flex-shrink:0;";
-          block.appendChild(img);
-          /* right side: label + badge + description */
-          var right = document.createElement("div");
-          right.style.cssText = "flex:1;min-width:0;overflow:hidden;";
-          var topLine = document.createElement("div");
-          topLine.style.cssText = "display:flex;align-items:center;gap:8px;margin-bottom:4px;";
-          var fotoLabel = document.createElement("span");
-          fotoLabel.style.cssText = "font-weight:600;font-size:13px;color:#334155;";
-          fotoLabel.textContent = "Foto " + n;
-          topLine.appendChild(fotoLabel);
-          var badge = document.createElement("span");
-          badge.className = "ia-badge-foto";
-          badge.style.cssText = "font-size:11px;padding:2px 8px;border-radius:8px;background:#fbbf24;color:#000;font-weight:600;";
-          badge.textContent = "\u2699 Analisando...";
-          topLine.appendChild(badge);
-          right.appendChild(topLine);
-          var desc = document.createElement("div");
-          desc.className = "ia-desc-foto";
-          desc.style.cssText = "font-size:11px;color:#5a6a7e;font-style:italic;line-height:1.5;white-space:normal;word-break:break-word;min-width:200px;max-width:600px;width:100%;display:block;overflow-wrap:break-word;";
-          desc.textContent = "Aguardando resposta da IA...";
-          right.appendChild(desc);
-          block.appendChild(right);
-          /* insert block before the add-foto button */
-          var fotosContainer = row.querySelector(".fotos-container");
-          if (!fotosContainer) {
-            fotosContainer = document.createElement("div");
-            fotosContainer.className = "fotos-container";
-            fotosContainer.style.cssText = "display:flex;flex-direction:column;gap:8px;width:100%;margin-top:8px;";
-            row.appendChild(fotosContainer);
+          var dataUrl = ev.target.result;
+          var rowEl = btn.closest('.item-foto-row') || btn.closest('.item-body') || btn.parentElement;
+          var blockEl = btn.closest('.item-block');
+          var item = blockEl ? (blockEl.querySelector('.item-name') || {}).textContent || 'Item' : 'Item';
+          var ambTab = document.querySelector('.amb-tab.active');
+          var amb = ambTab ? ambTab.textContent.trim() : 'Ambiente';
+          var container = rowEl.querySelector('.fotos-lista');
+          if (!container) {
+            container = document.createElement('div');
+            container.className = 'fotos-lista';
+            container.style.cssText = 'width:100%;';
+            rowEl.appendChild(container);
           }
-          fotosContainer.appendChild(block);
-          /* update button text */
-          btn.querySelector("span:last-child").textContent = "+ Foto " + (n + 1);
-          btn.style.width = "100px"; btn.style.height = "60px";
-          btn.style.borderColor = "#94a3b8";
-          /* update original ia-pending on first photo */
-          if (n === 1) {
-            var iaPending = row.querySelector(".ia-pending");
-            if (iaPending) iaPending.style.display = "none";
-            var iaWrap = row.querySelector(".ia-mini");
-            if (iaWrap) iaWrap.style.display = "none";
+          var fotoNum = container.querySelectorAll('.foto-item').length + 1;
+          var fotoDiv = document.createElement('div');
+          fotoDiv.className = 'foto-item';
+          fotoDiv.style.cssText = 'display:flex;gap:12px;margin-bottom:12px;padding:10px;background:#f8fafc;border-radius:8px;width:100%;box-sizing:border-box;';
+          var img = document.createElement('img');
+          img.src = dataUrl;
+          img.style.cssText = 'width:100px;height:75px;object-fit:cover;border-radius:6px;flex-shrink:0;';
+          var info = document.createElement('div');
+          info.style.cssText = 'flex:1;min-width:0;overflow:hidden;';
+          info.innerHTML = '<div style="font-size:12px;font-weight:500;margin-bottom:4px;">Foto ' + fotoNum + '</div><div class="ia-status" style="display:inline-block;font-size:11px;padding:2px 8px;border-radius:8px;background:#fbbf24;color:#000;font-weight:600;margin-bottom:6px;">\u2699 Analisando...</div><p class="desc-ia" style="font-size:12px;color:#5a6a7e;font-style:italic;line-height:1.6;margin:0;white-space:normal;word-break:break-word;overflow-wrap:break-word;"></p>';
+          fotoDiv.appendChild(img);
+          fotoDiv.appendChild(info);
+          container.appendChild(fotoDiv);
+          btn.querySelector('span:last-child').textContent = '+ Foto ' + (fotoNum + 1);
+          if (fotoNum === 1) {
+            var iaPending = rowEl.querySelector('.ia-pending');
+            if (iaPending) iaPending.style.display = 'none';
+            var iaMini = rowEl.querySelector('.ia-mini');
+            if (iaMini) iaMini.style.display = 'none';
           }
-          /* update foto-obrig label */
-          var oldLbl = row.querySelector(".foto-obrig-label");
-          if (oldLbl) { oldLbl.textContent = "\u2713 " + n + " foto(s)"; oldLbl.style.color = "#16a34a"; }
-          /* --- call AI --- */
-          fetch("/api/analyze-photo", {
-            method: "POST",
-            headers: {"Content-Type": "application/json"},
-            body: JSON.stringify({image: ev.target.result, item: itemName, ambiente: ambName})
-          }).then(function(r) { return r.json(); }).then(function(res) {
-            var estado = res.estado || "Bom";
-            badge.textContent = "\u2713 IA: " + estado;
-            badge.style.background = estado === "Ruim" ? "#ef4444" : estado === "Regular" ? "#f59e0b" : "#22c55e";
-            badge.style.color = "#fff";
-            desc.textContent = (res.description || "Analisado").replace(/\n/g, " ").trim();
-            desc.style.cssText = "font-size:11px;color:#475569;line-height:1.5;white-space:normal;word-break:break-word;min-width:200px;max-width:600px;width:100%;display:block;overflow-wrap:break-word;";
-            /* auto-select estado on first photo only */
-            if (n === 1) {
-              var selEstado = row.querySelector(".estado-select");
-              if (selEstado) selEstado.value = estado;
-            }
-          }).catch(function(err) {
-            badge.textContent = "\u26A0 IA indispon\u00edvel";
-            badge.style.background = "#94a3b8"; badge.style.color = "#fff";
-            desc.textContent = "Erro ao analisar foto";
-            desc.style.color = "#ef4444";
+          var descEl = info.querySelector('.desc-ia');
+          var badgeEl = info.querySelector('.ia-status');
+          fetch('/api/analyze-photo', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({image: dataUrl, item: item, ambiente: amb})
+          }).then(function(r) { return r.json(); }).then(function(d) {
+            badgeEl.textContent = '\u2713 IA: ' + (d.estado || 'Bom');
+            badgeEl.style.background = d.estado === 'Ruim' ? '#fde8e8' : d.estado === 'Regular' ? '#fff8e8' : '#e8f4eb';
+            badgeEl.style.color = d.estado === 'Ruim' ? '#c62828' : d.estado === 'Regular' ? '#854f0b' : '#2e7d32';
+            descEl.textContent = (d.description || '').replace(/\n/g, ' ').trim();
+          }).catch(function() {
+            badgeEl.textContent = '\u26A0 IA indispon\u00edvel';
+            badgeEl.style.background = '#e2e8f0';
+            badgeEl.style.color = '#64748b';
           });
         };
-        reader.readAsDataURL(inp.files[0]);
+        reader.readAsDataURL(file);
       };
-      inp.click();
+      input.click();
     };
 
     renderTab(0);
