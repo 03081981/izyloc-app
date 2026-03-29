@@ -3932,7 +3932,7 @@ if (typeof initAmbientes === 'function') initAmbientes();
           /* --- foto block with its own IA section --- */
           var block = document.createElement("div");
           block.className = "foto-block";
-          block.style.cssText = "display:flex;gap:10px;align-items:flex-start;margin-bottom:10px;padding:8px;background:#f8fafc;border-radius:10px;border:1px solid #e2e8f0;";
+          block.style.cssText = "display:flex;gap:10px;align-items:flex-start;margin-bottom:10px;padding:8px;background:#f8fafc;border-radius:10px;border:1px solid #e2e8f0;width:100%;box-sizing:border-box;flex-shrink:0;";
           /* thumbnail */
           var img = document.createElement("img");
           img.src = ev.target.result;
@@ -3960,7 +3960,14 @@ if (typeof initAmbientes === 'function') initAmbientes();
           right.appendChild(desc);
           block.appendChild(right);
           /* insert block before the add-foto button */
-          btn.parentElement.insertBefore(block, btn);
+          var fotosContainer = row.querySelector(".fotos-container");
+          if (!fotosContainer) {
+            fotosContainer = document.createElement("div");
+            fotosContainer.className = "fotos-container";
+            fotosContainer.style.cssText = "display:flex;flex-direction:column;gap:8px;width:100%;margin-top:8px;";
+            row.appendChild(fotosContainer);
+          }
+          fotosContainer.appendChild(block);
           /* update button text */
           btn.querySelector("span:last-child").textContent = "+ Foto " + (n + 1);
           btn.style.width = "100px"; btn.style.height = "60px";
