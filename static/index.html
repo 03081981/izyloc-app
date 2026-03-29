@@ -3919,7 +3919,7 @@ if (typeof initAmbientes === 'function') initAmbientes();
   var input = document.createElement('input');
   input.type = 'file';
   input.accept = 'image/*';
-      if (useCamera) input.setAttribute('capture', 'environment');
+  if (useCamera) input.setAttribute('capture', 'environment');
   input.onchange = function(e) {
     var file = e.target.files[0];
     if (!file) return;
@@ -3939,13 +3939,20 @@ if (typeof initAmbientes === 'function') initAmbientes();
         container.style.cssText = 'width:100%;margin-top:8px;grid-column:1/-1;';
         rowEl.appendChild(container);
       }
+      var btnWrap = btn.closest('.foto-btns-wrap') || btn.parentElement;
+      if (!btnWrap.classList.contains('foto-btns-wrap')) {
+        btnWrap.classList.add('foto-btns-wrap');
+      }
+      if (btnWrap.parentElement !== container) {
+        container.appendChild(btnWrap);
+      }
       var fotoNum = container.querySelectorAll('.foto-item').length + 1;
       var fotoDiv = document.createElement('div');
       fotoDiv.className = 'foto-item';
       fotoDiv.style.cssText = 'display:flex;flex-direction:row;align-items:flex-start;gap:12px;margin-bottom:8px;width:100%;';
       var img = document.createElement('img');
       img.src = dataUrl;
-      img.style.cssText = 'width:110px;height:85px;object-fit:cover;border-radius:8px;';
+      img.style.cssText = 'width:110px;height:85px;object-fit:cover;border-radius:8px;flex-shrink:0;';
       fotoDiv.appendChild(img);
       var col = document.createElement('div');
       col.style.cssText = 'flex:1;min-width:0;width:100%;';
@@ -3968,12 +3975,11 @@ if (typeof initAmbientes === 'function') initAmbientes();
       iaMini.appendChild(desc);
       col.appendChild(iaMini);
       fotoDiv.appendChild(col);
-      container.appendChild(fotoDiv);
-      var btnSpan = btn.querySelector('span:last-child');
-      if (btnSpan) btnSpan.textContent = '+ Foto ' + (fotoNum + 1);
+      container.insertBefore(fotoDiv, btnWrap);
       if (fotoNum === 1) {
         var ip = rowEl.querySelector('.ia-pending'); if (ip) ip.style.display = 'none';
         var imOld = rowEl.querySelector('.ia-mini'); if (imOld && imOld !== iaMini) imOld.style.display = 'none';
+        var fLabel = rowEl.querySelector('.foto-obrig-label'); if (fLabel) fLabel.style.display = 'none';
       }
       fetch('/api/analyze-photo', {
         method: 'POST',
