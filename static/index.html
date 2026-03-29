@@ -3574,8 +3574,8 @@ window.addEventListener('resize', () => {
         gotoWStep(next);
         if (next === 3) {
 if (typeof initAmbientes === 'function') initAmbientes();
-      if (next === 5 && typeof initItensEtapa === 'function') setTimeout(initItensEtapa, 100);
         }
+        if (next === 5 && typeof initItensEtapa === 'function') initItensEtapa();
       }
     };
 
