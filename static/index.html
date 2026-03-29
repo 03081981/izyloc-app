@@ -2470,38 +2470,19 @@ textarea.obs-geral{width:100%;background:#f8fafc;border:.5px solid #dce3ed;borde
 
     <!-- STEP 5: ASSINATURAS -->
     <div id="wstep-5" style="display:none">
-      <div class="wstep-title">Assinaturas</div>
-      <div class="wstep-sub">Colete as assinaturas das partes envolvidas.</div>
-      <div class="sig-card">
-        <div class="sig-name" id="signame-locador">Locador</div>
-        <div class="sig-canvas-wrap"><canvas id="canvas-locador" width="560" height="140"></canvas></div>
-        <div class="sig-status" id="sigstatus-locador">Aguardando assinatura</div>
-        <div class="sig-actions">
-          <button class="btn btn-ghost" style="height:36px;font-size:13px" onclick="clearSig ? clearSig('locador') : null">Limpar</button>
-        </div>
-      </div>
-      <div class="sig-card">
-        <div class="sig-name" id="signame-locatario">Locatário</div>
-        <div class="sig-canvas-wrap"><canvas id="canvas-locatario" width="560" height="140"></canvas></div>
-        <div class="sig-status" id="sigstatus-locatario">Aguardando assinatura</div>
-        <div class="sig-actions">
-          <button class="btn btn-ghost" style="height:36px;font-size:13px" onclick="clearSig ? clearSig('locatario') : null">Limpar</button>
-        </div>
-      </div>
-      <div class="sig-card" id="corretor-sig-block">
-        <div class="sig-name" id="signame-corretor">Corretor</div>
-        <div class="sig-canvas-wrap"><canvas id="canvas-corretor" width="560" height="140"></canvas></div>
-        <div class="sig-status" id="sigstatus-corretor">Aguardando assinatura</div>
-        <div class="sig-actions">
-          <button class="btn btn-ghost" style="height:36px;font-size:13px" onclick="clearSig ? clearSig('corretor') : null">Limpar</button>
+      <div class="wstep-title">Laudo de vistoria</div>
+      <div class="wstep-sub">Seu laudo está pronto. Baixe o PDF ou envie para assinatura digital.</div>
+      <div style="background:#fff;border-radius:12px;box-shadow:0 1px 4px rgba(0,0,0,.08);padding:24px;margin:16px 0;text-align:center">
+        <div style="font-size:48px;margin-bottom:12px">📄</div>
+        <div style="font-size:16px;font-weight:600;color:#1e293b;margin-bottom:4px">Laudo gerado com sucesso</div>
+        <div style="font-size:13px;color:#64748b;margin-bottom:20px">Revise o documento e escolha uma opção abaixo</div>
+        <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+          <button class="btn-wiz-next" style="min-width:180px" onclick="window.gerarPDF ? window.gerarPDF() : alert('PDF em breve')">Baixar PDF</button>
+          <button class="btn-wiz-next" style="min-width:180px;background:#7c3aed" onclick="alert('Envio para assinatura em breve')">Enviar para assinar</button>
         </div>
       </div>
       <div class="wiz-nav">
-        <button class="btn-wiz-back-sm" onclick="prevWizStep ? prevWizStep() : null">Voltar</button>
-        <button class="btn-wiz-next" id="btn-gen-pdf" onclick="generatePDF ? generatePDF() : null">
-          <svg viewBox="0 0 20 20" fill="currentColor" width="16" height="16"><path fill-rule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z"/></svg>
-          Gerar laudo PDF
-        </button>
+        <button class="btn-wiz-back-sm" onclick="prevWizStep ? prevWizStep() : null">← Voltar</button>
       </div>
     </div>
 
