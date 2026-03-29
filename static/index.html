@@ -3791,7 +3791,16 @@ if (typeof initAmbientes === 'function') initAmbientes();
     
   // ── Itens e Fotos (wstep-4) ──
   window.initItensEtapa = function() {
-    var rooms = wizard.selectedRooms || [];
+    var rooms = [];
+    var ambData = (typeof _ambData !== 'undefined' && typeof _ambMode !== 'undefined') ? (_ambData[_ambMode] || {}) : {};
+    Object.keys(ambData).forEach(function(k) {
+      var item = ambData[k];
+      if (item && item.val > 0) {
+        for (var i = 0; i < item.val; i++) {
+          rooms.push((item.label || k) + (item.val > 1 ? ' ' + (i+1) : ''));
+        }
+      }
+    });
     if (!rooms.length) return;
 
     var condItems = {
