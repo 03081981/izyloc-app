@@ -16,6 +16,7 @@ import hashlib
 import secrets
 from datetime import datetime, timedelta
 from pathlib import Path
+import base64
 from dotenv import load_dotenv
 
 from database import get_conn, init_db
@@ -984,6 +985,45 @@ class RoomItemHandler(BaseHandler):
 
 # ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ FOTO UPLOAD + ANÃÂÃÂÃÂÃÂLISE IA ÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂ
 
+# ── Analyze Photo (IA) ──────────────────────────────────
+class AnalyzePhotoHandler(BaseHandler):
+    def post(self):
+        try:
+            data = tornado.escape.json_decode(self.request.body)
+            image_b64 = data.get("image", "")
+            item_name = data.get("item", "Item")
+            room_name = data.get("ambiente", "Ambiente")
+
+            if not image_b64:
+                self.set_status(400)
+                self.write({"error": "Imagem não enviada"})
+                return
+
+            # Remove data URL prefix if present
+            if "," in image_b64:
+                image_b64 = image_b64.split(",", 1)[1]
+
+            # Save to temp file
+            import tempfile
+            tmp = tempfile.NamedTemporaryFile(suffix=".jpg", delete=False)
+            tmp.write(base64.b64decode(image_b64))
+            tmp.close()
+
+            try:
+                result = analyze_photo(tmp.name, item_name, room_name)
+                estado_map = {"bom": "Bom", "regular": "Regular", "ruim": "Ruim"}
+                estado = estado_map.get(result.get("condition", "").lower(), "Bom")
+                self.write({
+                    "description": result.get("description", ""),
+                    "estado": estado
+                })
+            finally:
+                os.unlink(tmp.name)
+
+        except Exception as e:
+            self.set_status(500)
+            self.write({"error": str(e)})
+
 class PhotoUploadHandler(BaseHandler):
     def set_default_headers(self):
         self.set_header("Access-Control-Allow-Origin", "*")
@@ -1317,6 +1357,8 @@ def make_app():
         (r'/api/items/([^/]+)/photos/([^/]+)', PhotoDeleteHandler),
         # Signatures
         (r'/api/inspections/([^/]+)/signatures', SignaturesHandler),
+        # AI Photo Analysis
+        (r'/api/analyze-photo', AnalyzePhotoHandler),
         # PDF
         (r'/api/inspections/([^/]+)/pdf', GeneratePDFHandler),
         # Static files
