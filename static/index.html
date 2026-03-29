@@ -3935,7 +3935,7 @@ if (typeof initAmbientes === 'function') initAmbientes();
       if (!container) {
         container = document.createElement('div');
         container.className = 'fotos-lista';
-        container.style.cssText = 'width:100%;margin-top:8px;';
+        container.style.cssText = 'width:100%;margin-top:8px;grid-column:1/-1;';
         rowEl.appendChild(container);
       }
       var fotoNum = container.querySelectorAll('.foto-item').length + 1;
