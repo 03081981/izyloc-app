@@ -3850,7 +3850,7 @@ if (typeof initAmbientes === 'function') initAmbientes();
         h += '<div class="item-block"><div class="item-header"><div class="item-left"><span class="item-badge-obrig">Obrigatório</span><span class="item-name">'+item+'</span></div>';
         h += '</div>';
         h += '<div class="item-body"><div class="item-foto-row"><div>';
-        h += '<div class="foto-add-box" onclick="window._addFoto('+idx+',this)"><span style="font-size:20px">📷</span><span>Foto obrigatória</span></div>';
+        h += '<div style="display:flex;gap:8px;"><div class="foto-add-box" onclick="window._addFoto('+idx+',this,true)"><span style="font-size:18px">\ud83d\udcf7</span><span>Tirar foto</span></div><div class="foto-add-box" onclick="window._addFoto('+idx+',this,false)"><span style="font-size:18px">\ud83d\uddbc\ufe0f</span><span>Galeria</span></div></div>';
         h += '<div class="foto-obrig-label">⚠ Sem foto</div></div>';
         h += '<div class="desc-col"><div class="ia-mini" style="opacity:0.4"><div class="ia-mini-top"><span class="ia-badge-sm">✦ IA</span></div><div class="ia-pending">Aguardando foto...</div></div>';
         h += '<textarea class="item-obs" placeholder="Observação..."></textarea></div></div></div></div>';
@@ -3915,10 +3915,11 @@ if (typeof initAmbientes === 'function') initAmbientes();
       btn.classList.add('ok');
     };
 
-    window._addFoto = function(idx, btn) {
+    window._addFoto = function(idx, btn, useCamera) {
   var input = document.createElement('input');
   input.type = 'file';
   input.accept = 'image/*';
+      if (useCamera) input.setAttribute('capture', 'environment');
   input.onchange = function(e) {
     var file = e.target.files[0];
     if (!file) return;
