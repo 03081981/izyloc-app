@@ -3916,68 +3916,80 @@ if (typeof initAmbientes === 'function') initAmbientes();
     };
 
     window._addFoto = function(idx, btn) {
-      var input = document.createElement('input');
-      input.type = 'file';
-      input.accept = 'image/*';
-      input.onchange = function(e) {
-        var file = e.target.files[0];
-        if (!file) return;
-        var reader = new FileReader();
-        reader.onload = function(ev) {
-          var dataUrl = ev.target.result;
-          var rowEl = btn.closest('.item-foto-row') || btn.closest('.item-body') || btn.parentElement;
-          var blockEl = btn.closest('.item-block');
-          var item = blockEl ? (blockEl.querySelector('.item-name') || {}).textContent || 'Item' : 'Item';
-          var ambTab = document.querySelector('.amb-tab.active');
-          var amb = ambTab ? ambTab.textContent.trim() : 'Ambiente';
-          var container = rowEl.querySelector('.fotos-lista');
-          if (!container) {
-            container = document.createElement('div');
-            container.className = 'fotos-lista';
-            container.style.cssText = 'width:100%;';
-            rowEl.appendChild(container);
-          }
-          var fotoNum = container.querySelectorAll('.foto-item').length + 1;
-          var fotoDiv = document.createElement('div');
-          fotoDiv.className = 'foto-item';
-          fotoDiv.style.cssText = 'display:flex;gap:12px;margin-bottom:12px;padding:10px;background:#f8fafc;border-radius:8px;width:100%;box-sizing:border-box;';
-          var img = document.createElement('img');
-          img.src = dataUrl;
-          img.style.cssText = 'width:100px;height:75px;object-fit:cover;border-radius:6px;flex-shrink:0;';
-          var info = document.createElement('div');
-          info.style.cssText = 'flex:1;min-width:0;overflow:hidden;';
-          info.innerHTML = '<div style="font-size:12px;font-weight:500;margin-bottom:4px;">Foto ' + fotoNum + '</div><div class="ia-status" style="display:inline-block;font-size:11px;padding:2px 8px;border-radius:8px;background:#fbbf24;color:#000;font-weight:600;margin-bottom:6px;">\u2699 Analisando...</div><p class="desc-ia" style="font-size:12px;color:#5a6a7e;font-style:italic;line-height:1.6;margin:0;white-space:normal;word-break:break-word;overflow-wrap:break-word;"></p>';
-          fotoDiv.appendChild(img);
-          fotoDiv.appendChild(info);
-          container.appendChild(fotoDiv);
-          btn.querySelector('span:last-child').textContent = '+ Foto ' + (fotoNum + 1);
-          if (fotoNum === 1) {
-            var iaPending = rowEl.querySelector('.ia-pending');
-            if (iaPending) iaPending.style.display = 'none';
-            var iaMini = rowEl.querySelector('.ia-mini');
-            if (iaMini) iaMini.style.display = 'none';
-          }
-          var descEl = info.querySelector('.desc-ia');
-          var badgeEl = info.querySelector('.ia-status');
-          fetch('/api/analyze-photo', {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({image: dataUrl, item: item, ambiente: amb})
-          }).then(function(r) { return r.json(); }).then(function(d) {
-            badgeEl.textContent = '\u2713 IA: ' + (d.estado || 'Bom');
-            badgeEl.style.background = d.estado === 'Ruim' ? '#fde8e8' : d.estado === 'Regular' ? '#fff8e8' : '#e8f4eb';
-            badgeEl.style.color = d.estado === 'Ruim' ? '#c62828' : d.estado === 'Regular' ? '#854f0b' : '#2e7d32';
-            descEl.textContent = (d.description || '').replace(/\n/g, ' ').trim();
-          }).catch(function() {
-            badgeEl.textContent = '\u26A0 IA indispon\u00edvel';
-            badgeEl.style.background = '#e2e8f0';
-            badgeEl.style.color = '#64748b';
-          });
-        };
-        reader.readAsDataURL(file);
-      };
-      input.click();
+  var input = document.createElement('input');
+  input.type = 'file';
+  input.accept = 'image/*';
+  input.onchange = function(e) {
+    var file = e.target.files[0];
+    if (!file) return;
+    var reader = new FileReader();
+    reader.onload = function(ev) {
+      var dataUrl = ev.target.result;
+      var rowEl = btn.closest('.item-foto-row') || btn.closest('.item-body') || btn.parentElement;
+      var blockEl = btn.closest('.item-block');
+      var itemSpan = blockEl ? blockEl.querySelector('.item-name') : null;
+      var item = itemSpan ? itemSpan.textContent : 'Item';
+      var ambTab = document.querySelector('.amb-tab.active');
+      var amb = ambTab ? ambTab.textContent.trim() : 'Ambiente';
+      var container = rowEl.querySelector('.fotos-lista');
+      if (!container) {
+        container = document.createElement('div');
+        container.className = 'fotos-lista';
+        container.style.cssText = 'width:100%;margin-top:8px;';
+        rowEl.appendChild(container);
+      }
+      var fotoNum = container.querySelectorAll('.foto-item').length + 1;
+      var fotoDiv = document.createElement('div');
+      fotoDiv.className = 'foto-item';
+      fotoDiv.style.cssText = 'display:flex;gap:12px;margin-bottom:12px;padding:10px;background:#f8fafc;border-radius:8px;width:100%;box-sizing:border-box;';
+      var img = document.createElement('img');
+      img.src = dataUrl;
+      img.style.cssText = 'width:100px;height:75px;object-fit:cover;border-radius:6px;flex-shrink:0;';
+      fotoDiv.appendChild(img);
+      var info = document.createElement('div');
+      info.style.cssText = 'flex:1;min-width:0;';
+      var titleEl = document.createElement('div');
+      titleEl.style.cssText = 'font-size:12px;font-weight:500;margin-bottom:4px;';
+      titleEl.textContent = 'Foto ' + fotoNum;
+      info.appendChild(titleEl);
+      var badgeEl = document.createElement('span');
+      badgeEl.style.cssText = 'display:inline-block;font-size:11px;padding:2px 8px;border-radius:8px;background:#fbbf24;color:#000;font-weight:600;margin-bottom:6px;';
+      badgeEl.textContent = '\u2699 Analisando...';
+      info.appendChild(badgeEl);
+      var descEl = document.createElement('p');
+      descEl.style.cssText = 'font-size:12px;color:#5a6a7e;font-style:italic;line-height:1.6;margin:4px 0 0 0;white-space:normal;word-break:break-word;';
+      descEl.textContent = '';
+      info.appendChild(descEl);
+      fotoDiv.appendChild(info);
+      container.appendChild(fotoDiv);
+      var btnSpan = btn.querySelector('span:last-child');
+      if (btnSpan) btnSpan.textContent = '+ Foto ' + (fotoNum + 1);
+      if (fotoNum === 1) {
+        var ip = rowEl.querySelector('.ia-pending'); if (ip) ip.style.display = 'none';
+        var im = rowEl.querySelector('.ia-mini'); if (im) im.style.display = 'none';
+      }
+      fetch('/api/analyze-photo', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({image: dataUrl, item: item, ambiente: amb})
+      }).then(function(r) { return r.json(); }).then(function(d) {
+        var estado = d.estado || 'Bom';
+        badgeEl.textContent = '\u2713 IA: ' + estado;
+        badgeEl.style.background = estado === 'Ruim' ? '#fde8e8' : estado === 'Regular' ? '#fff8e8' : '#e8f4eb';
+        badgeEl.style.color = estado === 'Ruim' ? '#c62828' : estado === 'Regular' ? '#854f0b' : '#2e7d32';
+        descEl.textContent = (d.description || '').replace(/\n/g, ' ').trim();
+        descEl.style.fontStyle = 'normal';
+        descEl.style.color = '#334155';
+      }).catch(function() {
+        badgeEl.textContent = '\u26A0 IA indispon\u00edvel';
+        badgeEl.style.background = '#e2e8f0';
+        badgeEl.style.color = '#64748b';
+      });
     };
+    reader.readAsDataURL(file);
+  };
+  input.click();
+};
 
     renderTab(0);
   };
