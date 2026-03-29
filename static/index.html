@@ -2464,7 +2464,7 @@ textarea.obs-geral{width:100%;background:#f8fafc;border:.5px solid #dce3ed;borde
       <div id="rev-content"></div>
       <div class="wiz-nav">
         <button class="btn-wiz-back-sm" onclick="prevWizStep ? prevWizStep() : null">Voltar</button>
-        <button class="btn-wiz-next" onclick="gerarLaudo()">Gerar laudo → <svg viewBox="0 0 20 20" fill="currentColor" width="16" height="16"><path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z"/></svg></button>
+        <button class="btn-wiz-next" onclick="nextWizStep ? nextWizStep() : null">Gerar laudo → <svg viewBox="0 0 20 20" fill="currentColor" width="16" height="16"><path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z"/></svg></button>
       </div>
     </div>
 
@@ -3362,23 +3362,7 @@ async function saveSig(party) {
   toast(`Assinatura confirmada!`, 'success');
 }
 
-async async function gerarLaudo() {
-  var tipo = document.getElementById('wi-type').value || 'entrada';
-  var address = document.getElementById('wi-address').value;
-  var r = await api('POST', '/api/inspections', {
-    type: tipo,
-    property_address: address,
-    property_type: document.getElementById('wi-prop-type').value,
-    inspection_date: document.getElementById('wi-date').value
-  });
-  if (r && r.id) {
-    wizard.inspectionId = r.id;
-    currentInspection = r;
-  }
-  nextWizStep();
-}
-
-function generatePDF(id) {
+async function generatePDF(id) {
   var iid = id || iid || (currentInspection && currentInspection.id);
   if (!iid) { alert('Inspe\u00e7\u00e3o n\u00e3o encontrada.'); return; }
   showLoading('📄 Gerando laudo PDF...');
