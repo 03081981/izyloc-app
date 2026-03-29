@@ -4033,7 +4033,7 @@ if (!window._fotoStore) window._fotoStore = {};
       var blockEl = btn.closest('.item-block');
       var itemSpan = blockEl ? blockEl.querySelector('.item-name') : null;
       var item = itemSpan ? itemSpan.textContent : 'Item';
-      var ambTab = document.querySelector('.amb-tab.active');
+      var ambTab = document.querySelector('.tab.active');
       var amb = ambTab ? ambTab.textContent.trim() : 'Ambiente';
       var container = rowEl.querySelector('.fotos-lista');
       if (!container) {
