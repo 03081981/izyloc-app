@@ -3552,6 +3552,8 @@ window.addEventListener('resize', () => {
       };
       var next = nextMap[step];
       if (next !== undefined) {
+        var nextActions = {2: function(){ wizardNext(1); }, 3: function(){ wizardNext(2); }};
+        if (nextActions[step]) { nextActions[step](); return; }
         gotoWStep(next);
         if (next === 3) {
 if (typeof initAmbientes === 'function') initAmbientes();
