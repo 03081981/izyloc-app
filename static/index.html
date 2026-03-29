@@ -4047,6 +4047,21 @@ if (typeof initAmbientes === 'function') initAmbientes();
             if (f.desc) h += '<div style="font-size:12px;color:#475569;margin-top:2px;word-break:break-word">' + f.desc + '</div>';
             h += '</div></div>';
           });
+          // Verificacoes e obs do _ambStore
+          var _as = (window._ambStore && window._ambStore[ambNome]) ? window._ambStore[ambNome] : null;
+          if (_as) {
+            var vk = Object.keys(_as.verificacoes || {});
+            if (vk.length > 0) {
+              h += '<div style="margin-top:6px;font-size:12px;color:#334155"><strong>Verifica\u00e7\u00f5es:</strong></div>';
+              vk.forEach(function(vn) {
+                h += '<div style="font-size:12px;color:#475569;padding:2px 0">' + vn + ': <strong>' + _as.verificacoes[vn] + '</strong></div>';
+              });
+            }
+            if (_as.obs) {
+              h += '<div style="margin-top:6px;font-size:12px;color:#334155"><strong>Observa\u00e7\u00f5es:</strong></div>';
+              h += '<div style="font-size:12px;color:#475569;font-style:italic;padding:2px 0">' + _as.obs + '</div>';
+            }
+          }
           h += '</div>';
         });
       }
