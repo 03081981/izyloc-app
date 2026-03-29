@@ -3892,6 +3892,35 @@ if (typeof initAmbientes === 'function') initAmbientes();
 
       h += '</div>';
       card.innerHTML = h;
+      var _obsTA = card.querySelector('.obs-geral');
+      if (_obsTA) {
+        var _curTab = document.querySelector('.tab.active');
+        var _curNm = _curTab ? _curTab.textContent.trim() : '';
+        if (_curNm && window._ambStore && window._ambStore[_curNm] && window._ambStore[_curNm].obs) _obsTA.value = window._ambStore[_curNm].obs;
+        _obsTA.addEventListener('input', function() {
+          var t = document.querySelector('.tab.active');
+          var nm = t ? t.textContent.trim() : '';
+          if (nm) {
+            if (!window._ambStore) window._ambStore = {};
+            if (!window._ambStore[nm]) window._ambStore[nm] = {verificacoes:{}, obs:''};
+            window._ambStore[nm].obs = this.value;
+          }
+        });
+      }
+      // Restore verif selections from _ambStore
+      if (_curNm && window._ambStore && window._ambStore[_curNm]) {
+        var _sv = window._ambStore[_curNm].verificacoes;
+        Object.keys(_sv).forEach(function(vn) {
+          card.querySelectorAll('.verif-item').forEach(function(vi) {
+            var vLabel = vi.querySelector('.verif-name');
+            if (vLabel && vLabel.textContent.trim() === vn) {
+              vi.querySelectorAll('.verif-btn').forEach(function(b) {
+                if (b.textContent.trim() === _sv[vn]) b.classList.add('ok');
+              });
+            }
+          });
+        });
+      }
 
       var prog = document.getElementById('amb-progress');
       if (prog) prog.style.display = 'flex';
@@ -3911,9 +3940,19 @@ if (typeof initAmbientes === 'function') initAmbientes();
       if (block) { if (el.checked) block.classList.add('ativo'); else block.classList.remove('ativo'); }
     };
 
+    if (!window._ambStore) window._ambStore = {};
+
     window._selVerif = function(btn) {
       btn.parentElement.querySelectorAll('.verif-btn').forEach(function(b){ b.className = 'verif-btn'; });
       btn.classList.add('ok');
+      var _ambTab = document.querySelector('.tab.active');
+      var _ambNm = _ambTab ? _ambTab.textContent.trim() : '';
+      if (_ambNm) {
+        if (!window._ambStore[_ambNm]) window._ambStore[_ambNm] = {verificacoes:{}, obs:''};
+        var vItem = btn.closest('.verif-item');
+        var vName = vItem ? vItem.querySelector('.verif-name').textContent.trim() : '';
+        if (vName) window._ambStore[_ambNm].verificacoes[vName] = btn.textContent.trim();
+      }
     };
 
     
