@@ -2936,6 +2936,7 @@ function showWstepQuem() {
 function selectTipoCard(card) {
   document.querySelectorAll('.tipo-card').forEach(c => c.classList.remove('selected'));
   card.classList.add('selected');
+  document.getElementById('wi-type').value = card.dataset.tipo;
 }
 
 function gotoWStep(step) {
