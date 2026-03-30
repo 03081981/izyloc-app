@@ -1,9 +1,9 @@
 # ============================================================
 import base64
-# izyLAUDO â PDF SERVICE
+# izyLAUDO Ã¢ÂÂ PDF SERVICE
 # Gera laudos em PDF usando os templates oficiais.
 # ============================================================
-# MantÃ©m a assinatura: generate_pdf(inspection_data, rooms_data,
+# MantÃÂ©m a assinatura: generate_pdf(inspection_data, rooms_data,
 #                                    signatures_data, output_path) -> bool
 # ============================================================
 
@@ -22,7 +22,7 @@ from datetime import datetime
 
 logger = logging.getLogger(__name__)
 
-# âââ CORES ââââââââââââââââââââââââââââââââââââââââââââââââââ
+# Ã¢ÂÂÃ¢ÂÂÃ¢ÂÂ CORES Ã¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂ
 AZUL  = HexColor('#2d7dd2')
 PRETO = HexColor('#1a1a1a')
 CINZA = HexColor('#666666')
@@ -33,7 +33,7 @@ W, H = A4
 ML, MR, MT, MB = 3*cm, 2*cm, 3*cm, 2*cm
 TW = W - ML - MR
 
-# âââ ESTILOS ââââââââââââââââââââââââââââââââââââââââââââââââ
+# Ã¢ÂÂÃ¢ÂÂÃ¢ÂÂ ESTILOS Ã¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂ
 def mk_styles():
     return {
         'normal': ParagraphStyle('normal',
@@ -110,7 +110,7 @@ def maiusculo(v):
     """Converte para CAIXA ALTA exceto e-mails e URLs."""
     return v if ('@' in v or 'http' in v) else v.upper()
 
-# âââ COMPONENTES ââââââââââââââââââââââââââââââââââââââââââââ
+# Ã¢ÂÂÃ¢ÂÂÃ¢ÂÂ COMPONENTES Ã¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂ
 
 def add_cabecalho(story, s, titulo_doc, numero_doc):
     logo = Paragraph(
@@ -181,8 +181,8 @@ def add_foto_item(story, s, item, numero_inicio=1):
 
     story.append(hr(4, 4, 0.3))
 
-def add_ambientes(story, s, ambientes):
-    add_parte(story, s, u'Parte 2 \u2014 Vistoria dos Ambientes')
+def add_ambientes(story, s, ambientes, titulo=None):
+    add_parte(story, s, titulo or u'Parte 2 \u2014 Vistoria dos Ambientes')
 
     if not ambientes:
         story.append(Paragraph(
@@ -410,6 +410,7 @@ def add_clausulas_temporada(story, s, email_contestacao, is_imobiliaria=False, c
     story.append(Paragraph(u'<b>2.3</b> Itens n\u00e3o constantes neste invent\u00e1rio s\u00e3o presumidos como inexistentes no im\u00f3vel na data do check-in.', s['normal']))
 
     story.append(Paragraph(u'Cl\u00e1usula 3 \u2014 Prazo de Manifesta\u00e7\u00e3o do H\u00f3spede', s['clausula_titulo']))
+    story.append(Paragraph(u'\u26a0\ufe0f O h\u00f3spede tem 24 (vinte e quatro) horas ap\u00f3s o check-in para contestar diverg\u00eancias.', s['destaque']))
     story.append(Paragraph(u'<b>3.1</b> O h\u00f3spede/ocupante ter\u00e1 o prazo de 24 (vinte e quatro) horas, contadas do momento do check-in, para apresentar por escrito qualquer contesta\u00e7\u00e3o sobre itens n\u00e3o observados, omitidos ou divergentes do estado registrado.', s['normal']))
     story.append(Paragraph(f'<b>3.2</b> A manifesta\u00e7\u00e3o dever\u00e1 ser enviada ao e-mail \u2014 <b>{email_contestacao}</b> \u2014 com descri\u00e7\u00e3o clara e, preferencialmente, registro fotogr\u00e1fico.', s['normal']))
     story.append(Paragraph(u'<b>3.3</b> Decorrido o prazo sem manifesta\u00e7\u00e3o, este laudo ser\u00e1 considerado aceito integralmente, constituindo prova plena do estado do im\u00f3vel e do invent\u00e1rio no momento do check-in.', s['normal']))
@@ -468,7 +469,7 @@ def add_rodape(story, s):
         u'Documento gerado pelo sistema izyLAUDO \u2014 Vistorias Imobili\u00e1rias \u00b7 '
         u'Assinatura digital via Autentique \u00b7 Lei n\u00ba 14.063/2020', s['rodape']))
 
-# âââ FUN\u00c7\u00c3O DO TEMPLATE âââââââââââââââââââââââââââââââââââââ
+# Ã¢ÂÂÃ¢ÂÂÃ¢ÂÂ FUN\u00c7\u00c3O DO TEMPLATE Ã¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂ
 def gerar_laudo_entrada_proprietario(dados_imovel, dados_locador,
                                       dados_locatario, dados_corretor, dados_imobiliaria,
                                       ambientes, local_data, output_path):
@@ -549,7 +550,7 @@ def gerar_laudo_entrada_proprietario(dados_imovel, dados_locador,
     doc.build(story)
 
 
-# âââ HELPERS DE MAPEAMENTO ââââââââââââââââââââââââââââââââââ
+# Ã¢ÂÂÃ¢ÂÂÃ¢ÂÂ HELPERS DE MAPEAMENTO Ã¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂ
 
 MESES_PT = {
     1: 'JANEIRO', 2: 'FEVEREIRO', 3: u'MAR\u00c7O', 4: 'ABRIL',
@@ -811,6 +812,10 @@ def gerar_laudo_modelo5(dados_imovel, dados_locador, dados_locatario,
     add_campo(story, s, u'Tipo do im\u00f3vel', dados_imovel['tipo'])
     add_campo(story, s, u'\u00c1rea aproximada', dados_imovel['area'])
     add_campo(story, s, 'Data da vistoria', dados_imovel['data_hora'])
+    add_campo(story, s, 'Check-in', dados_imovel.get('check_in', u'\u2014'))
+    add_campo(story, s, 'Check-out', dados_imovel.get('check_out', u'\u2014'))
+    add_campo(story, s, u'N\u00ba de h\u00f3spedes', dados_imovel.get('num_hospedes', u'\u2014'))
+    add_campo(story, s, 'Plataforma', dados_imovel.get('plataforma', u'\u2014'))
 
     story.append(Paragraph(u'1.2 Imobili\u00e1ria / Corretor', s['secao']))
     if dados_imobiliaria.get('nome'):
@@ -838,7 +843,7 @@ def gerar_laudo_modelo5(dados_imovel, dados_locador, dados_locatario,
     add_campo(story, s, 'Telefone', dados_locatario['telefone'])
     add_campo(story, s, 'E-mail', dados_locatario['email'])
 
-    add_ambientes(story, s, ambientes)
+    add_ambientes(story, s, ambientes, titulo=u'Parte 2 \u2014 Invent\u00e1rio e Vistoria dos Ambientes')
 
     email_cont = dados_imobiliaria.get('email', '') or dados_corretor.get('email', '') or ''
     creci_val = dados_corretor.get('creci', '')
@@ -886,6 +891,10 @@ def gerar_laudo_modelo6(dados_imovel, dados_locador, dados_locatario,
     add_campo(story, s, u'Tipo do im\u00f3vel', dados_imovel['tipo'])
     add_campo(story, s, u'\u00c1rea aproximada', dados_imovel['area'])
     add_campo(story, s, 'Data da vistoria', dados_imovel['data_hora'])
+    add_campo(story, s, 'Check-in', dados_imovel.get('check_in', u'\u2014'))
+    add_campo(story, s, 'Check-out', dados_imovel.get('check_out', u'\u2014'))
+    add_campo(story, s, u'N\u00ba de h\u00f3spedes', dados_imovel.get('num_hospedes', u'\u2014'))
+    add_campo(story, s, 'Plataforma', dados_imovel.get('plataforma', u'\u2014'))
 
     story.append(Paragraph(u'1.2 Locador / Anfitri\u00e3o \u2014 Propriet\u00e1rio', s['secao']))
     add_campo(story, s, 'Nome completo', dados_locador['nome'])
@@ -910,7 +919,7 @@ def gerar_laudo_modelo6(dados_imovel, dados_locador, dados_locatario,
         if dados_corretor.get('creci'):
             add_campo(story, s, 'CRECI', dados_corretor['creci'])
 
-    add_ambientes(story, s, ambientes)
+    add_ambientes(story, s, ambientes, titulo=u'Parte 2 \u2014 Invent\u00e1rio e Vistoria dos Ambientes')
     add_clausulas_temporada(story, s, dados_locador['email'], is_imobiliaria=False)
 
     partes_sig = [
@@ -1028,7 +1037,7 @@ def _build_ambientes(rooms_data):
 
 def _generate_numero_laudo(inspection_data):
     tipo = (inspection_data.get('type') or 'entrada').lower()
-    prefixo = 'VE' if tipo == 'entrada' else 'VS'
+    prefixo = 'VE' if tipo == 'entrada' else ('VT' if tipo == 'temporada' else 'VS')
     dt = _parse_date(inspection_data.get('inspection_date'))
     ano = dt.year
     insp_id = inspection_data.get('id', '0000')
@@ -1036,7 +1045,7 @@ def _generate_numero_laudo(inspection_data):
     return f'{prefixo}-{ano}-{seq}'
 
 
-# âââ FUN\u00c7\u00c3O PRINCIPAL (mant\u00e9m assinatura compat\u00edvel) ââââââââ
+# Ã¢ÂÂÃ¢ÂÂÃ¢ÂÂ FUN\u00c7\u00c3O PRINCIPAL (mant\u00e9m assinatura compat\u00edvel) Ã¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂ
 
 def generate_pdf(inspection_data: dict, rooms_data: list,
                  signatures_data: list, output_path: str) -> bool:
@@ -1073,6 +1082,10 @@ def generate_pdf(inspection_data: dict, rooms_data: list,
             'area'        : _safe(insp.get('property_area'), u'\u2014'),
             'data_hora'   : date_display,
             'numero_laudo': _generate_numero_laudo(insp),
+            'check_in'    : _safe(insp.get('check_in'), u'\u2014'),
+            'check_out'   : _safe(insp.get('check_out'), u'\u2014'),
+            'num_hospedes': _safe(insp.get('num_hospedes'), u'\u2014'),
+            'plataforma'  : _safe(insp.get('plataforma'), u'\u2014'),
         }
 
         dados_locador = {
