@@ -381,10 +381,15 @@ def gerar_laudo_entrada_proprietario(dados_imovel, dados_locador,
     add_ambientes(story, s, ambientes)
     add_clausulas(story, s, dados_locador['email'])
 
-    add_assinaturas(story, s, [
+    partes_sig = [
         (dados_locador['nome'],    u'Locador / Propriet\u00e1rio', dados_locador['cpf']),
         (dados_locatario['nome'],  u'Locat\u00e1rio',              dados_locatario['cpf']),
-    ], local_data)
+    ]
+    if dados_imobiliaria.get('nome'):
+        partes_sig.append((dados_imobiliaria['nome'], u'Imobili\u00e1ria', dados_imobiliaria.get('cnpj', '')))
+    if dados_corretor.get('nome'):
+        partes_sig.append((dados_corretor['nome'], u'Corretor \u00b7 CRECI ' + dados_corretor.get('creci', ''), ''))
+    add_assinaturas(story, s, partes_sig, local_data)
 
     add_rodape(story, s)
     doc.build(story)
