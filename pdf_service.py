@@ -27,6 +27,7 @@ AZUL  = HexColor('#2d7dd2')
 PRETO = HexColor('#1a1a1a')
 CINZA = HexColor('#666666')
 FUNDO = HexColor('#f0f0f0')
+VERMELHO_BG = HexColor('#fff0f0')
 
 W, H = A4
 ML, MR, MT, MB = 3*cm, 2*cm, 3*cm, 2*cm
@@ -63,6 +64,12 @@ def mk_styles():
             leftIndent=10, rightIndent=10,
             spaceBefore=4, spaceAfter=6,
             backColor=FUNDO, borderPad=6),
+        'destaque_vermelho': ParagraphStyle('destaque_vermelho',
+            fontName='Helvetica-Bold', fontSize=11, textColor=PRETO,
+            leading=18, alignment=TA_JUSTIFY,
+            leftIndent=10, rightIndent=10,
+            spaceBefore=4, spaceAfter=6,
+            backColor=VERMELHO_BG, borderPad=6),
         'assinatura': ParagraphStyle('assinatura',
             fontName='Helvetica', fontSize=10, textColor=CINZA,
             leading=14, spaceAfter=20),
@@ -342,9 +349,10 @@ def add_clausulas_saida(story, s, email_contestacao, is_imobiliaria=False, creci
     story.append(Paragraph(u'<b>3.3</b> Os itens foram classificados como: Bom, Regular, Ruim e Danificado \u2014 este \u00faltimo indicando dano causado pelo locat\u00e1rio al\u00e9m do desgaste natural esperado.', s['normal']))
 
     story.append(Paragraph(u'Cl\u00e1usula 4 \u2014 Responsabilidade pelos Danos Identificados', s['clausula_titulo']))
+    story.append(Paragraph(u'\u26a0\ufe0f O locat\u00e1rio ter\u00e1 30 (trinta) dias para executar reparos ou ressarcir o locador.', s['destaque_vermelho']))
     story.append(Paragraph(u'<b>4.1</b> S\u00e3o de responsabilidade do locat\u00e1rio os danos que excedam o desgaste natural do uso normal, identificados pela compara\u00e7\u00e3o entre o laudo de entrada e este laudo de sa\u00edda, nos termos do art. 23, inciso III, da Lei n\u00ba 8.245/91.', s['normal']))
-    story.append(Paragraph(u'<b>4.2</b> O locat\u00e1rio ter\u00e1 o prazo de 30 (trinta) dias corridos, contados da assinatura deste laudo, para executar os reparos necess\u00e1rios ou ressarcir o locador pelo valor equivalente, mediante or\u00e7amento apresentado.', s['normal']))
-    story.append(Paragraph(u'<b>4.3</b> N\u00e3o sendo executados os reparos no prazo estipulado, o locador poder\u00e1 contratar os servi\u00e7os necess\u00e1rios e cobrar os custos do locat\u00e1rio, acrescidos de multa de 10% sobre o valor total.', s['normal']))
+    story.append(Paragraph(u'<b>4.2</b> O locat\u00e1rio ter\u00e1 o prazo de <b>30 (trinta) dias corridos</b>, contados da assinatura deste laudo, para executar os reparos necess\u00e1rios ou ressarcir o locador pelo valor equivalente, mediante or\u00e7amento apresentado.', s['normal']))
+    story.append(Paragraph(u'<b>4.3</b> N\u00e3o sendo executados os reparos no prazo estipulado, o locador poder\u00e1 contratar os servi\u00e7os necess\u00e1rios e cobrar os custos do locat\u00e1rio, acrescidos de <b>multa de 10%</b> sobre o valor total.', s['normal']))
     story.append(Paragraph(u'<b>4.4</b> O desgaste natural decorrente do uso normal \u00e9 de responsabilidade do locador, n\u00e3o podendo ser cobrado do locat\u00e1rio.', s['normal']))
 
     story.append(Paragraph(u'Cl\u00e1usula 5 \u2014 Dep\u00f3sito Cau\u00e7\u00e3o e Acerto Final', s['clausula_titulo']))
@@ -656,7 +664,9 @@ def gerar_laudo_modelo3(dados_imovel, dados_locador, dados_locatario,
     add_campo(story, s, 'CEP', dados_imovel['cep'])
     add_campo(story, s, u'Tipo do im\u00f3vel', dados_imovel['tipo'])
     add_campo(story, s, u'\u00c1rea aproximada', dados_imovel['area'])
-    add_campo(story, s, 'Data da vistoria', dados_imovel['data_hora'])
+    add_campo(story, s, u'Data da Vistoria de Sa\u00edda', dados_imovel['data_hora'])
+    add_campo(story, s, u'Data da Vistoria de Entrada', dados_imovel.get('data_entrada', u'\u2014'))
+    add_campo(story, s, u'Per\u00edodo de Loca\u00e7\u00e3o', dados_imovel.get('periodo_locacao', u'\u2014'))
 
     story.append(Paragraph(u'1.2 Imobili\u00e1ria / Corretor', s['secao']))
     if dados_imobiliaria.get('nome'):
