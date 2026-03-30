@@ -3364,17 +3364,27 @@ async function saveSig(party) {
 
 async function gerarLaudo() {
   var tipo = document.getElementById('wi-type').value || 'entrada';
-  var address = document.getElementById('wi-address').value;
-  var r = await api('POST', '/api/inspections', {
+  var body = {
     type: tipo,
-    property_address: address,
+    property_address: document.getElementById('wi-address').value,
     property_type: document.getElementById('wi-prop-type').value,
+    property_area: (document.getElementById('wi-area') || {}).value || '',
     inspection_date: document.getElementById('wi-date').value,
     bairro: (document.getElementById('wi-bairro') || {}).value || '',
     complemento: (document.getElementById('wi-complemento') || {}).value || '',
     cep: (document.getElementById('wi-cep') || {}).value || '',
     cidade: (document.getElementById('wi-cidade') || {}).value || '',
     estado: (document.getElementById('wi-estado') || {}).value || '',
+    locador_name: (document.getElementById('loc-name-0') || {}).value || '',
+    locador_cpf: (document.getElementById('loc-cpf-0') || {}).value || '',
+    locador_rg: (document.getElementById('loc-rg-0') || {}).value || '',
+    locador_phone: (document.getElementById('loc-phone-0') || {}).value || '',
+    locador_email: (document.getElementById('loc-email-0') || {}).value || '',
+    locatario_name: (document.getElementById('locat-name-0') || {}).value || '',
+    locatario_cpf: (document.getElementById('locat-cpf-0') || {}).value || '',
+    locatario_rg: (document.getElementById('locat-rg-0') || {}).value || '',
+    locatario_phone: (document.getElementById('locat-phone-0') || {}).value || '',
+    locatario_email: (document.getElementById('locat-email-0') || {}).value || '',
     imobiliaria_name: (document.getElementById('wi-imob-name') || {}).value || '',
     imobiliaria_cnpj: (document.getElementById('wi-imob-cnpj') || {}).value || '',
     imobiliaria_phone: (document.getElementById('wi-imob-phone') || {}).value || '',
@@ -3383,13 +3393,20 @@ async function gerarLaudo() {
     corretor_creci: (document.getElementById('wi-corr-creci') || {}).value || '',
     corretor_phone: (document.getElementById('wi-corr-phone') || {}).value || '',
     corretor_email: (document.getElementById('wi-corr-email') || {}).value || ''
-  });
-  if (r && r.id) {
-    wizard.inspectionId = r.id;
-    currentInspection = r;
+  };
+  var r;
+  if (wizard.inspectionId) {
+    r = await api('PUT', '/api/inspections/' + wizard.inspectionId, body);
+  } else {
+    r = await api('POST', '/api/inspections', body);
+    if (r && r.id) {
+      wizard.inspectionId = r.id;
+      currentInspection = r;
+    }
   }
   nextWizStep();
 }
+
 
 async function generatePDF(id) {
   var iid = id || iid || (currentInspection && currentInspection.id);
