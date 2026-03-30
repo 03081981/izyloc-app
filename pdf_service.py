@@ -316,8 +316,8 @@ def add_rodape(story, s):
 
 # âââ FUN\u00c7\u00c3O DO TEMPLATE âââââââââââââââââââââââââââââââââââââ
 def gerar_laudo_entrada_proprietario(dados_imovel, dados_locador,
-                                      dados_locatario, ambientes,
-                                      local_data, output_path):
+                                      dados_locatario, dados_corretor, dados_imobiliaria,
+                                      ambientes, local_data, output_path):
     doc = SimpleDocTemplate(
         output_path, pagesize=A4,
         topMargin=MT, leftMargin=ML,
@@ -355,6 +355,28 @@ def gerar_laudo_entrada_proprietario(dados_imovel, dados_locador,
     add_campo(story, s, 'CPF', dados_locatario['cpf'])
     add_campo(story, s, 'Telefone', dados_locatario['telefone'])
     add_campo(story, s, 'E-mail', dados_locatario['email'])
+
+    # 1.4 Imobiliaria (only if data exists)
+    if dados_imobiliaria.get('nome'):
+        story.append(Paragraph(u'1.4 Imobili\u00e1ria', s['secao']))
+        add_campo(story, s, 'Nome', dados_imobiliaria['nome'])
+        if dados_imobiliaria.get('cnpj'):
+            add_campo(story, s, 'CNPJ', dados_imobiliaria['cnpj'])
+        if dados_imobiliaria.get('telefone'):
+            add_campo(story, s, 'Telefone', dados_imobiliaria['telefone'])
+        if dados_imobiliaria.get('endereco'):
+            add_campo(story, s, u'Endere\u00e7o', dados_imobiliaria['endereco'])
+
+    # 1.5 Corretor (only if data exists)
+    if dados_corretor.get('nome'):
+        story.append(Paragraph(u'1.5 Corretor', s['secao']))
+        add_campo(story, s, 'Nome', dados_corretor['nome'])
+        if dados_corretor.get('creci'):
+            add_campo(story, s, 'CRECI', dados_corretor['creci'])
+        if dados_corretor.get('telefone'):
+            add_campo(story, s, 'Telefone', dados_corretor['telefone'])
+        if dados_corretor.get('email'):
+            add_campo(story, s, 'E-mail', dados_corretor['email'])
 
     add_ambientes(story, s, ambientes)
     add_clausulas(story, s, dados_locador['email'])
@@ -494,12 +516,27 @@ def generate_pdf(inspection_data: dict, rooms_data: list,
             'email'    : _safe(insp.get('locatario_email'), u'\u2014'),
         }
 
+        dados_corretor = {
+            'nome'     : _safe(insp.get('corretor_name'), ''),
+            'creci'    : _safe(insp.get('corretor_creci'), ''),
+            'telefone' : _safe(insp.get('corretor_phone'), ''),
+            'email'    : _safe(insp.get('corretor_email'), ''),
+        }
+
+        dados_imobiliaria = {
+            'nome'     : _safe(insp.get('imobiliaria_name'), ''),
+            'cnpj'     : _safe(insp.get('imobiliaria_cnpj'), ''),
+            'telefone' : _safe(insp.get('imobiliaria_phone'), ''),
+            'endereco' : _safe(insp.get('imobiliaria_address'), ''),
+        }
+
         ambientes = _build_ambientes(rooms_data)
 
         local_data = _format_date_extenso(dt)
 
         gerar_laudo_entrada_proprietario(
             dados_imovel, dados_locador, dados_locatario,
+            dados_corretor, dados_imobiliaria,
             ambientes, local_data, output_path
         )
 
