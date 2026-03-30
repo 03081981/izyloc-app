@@ -226,7 +226,7 @@ def add_ambientes(story, s, ambientes):
 
         story.append(Spacer(1, 8))
 
-def add_clausulas(story, s, email_locador):
+def add_clausulas_entrada(story, s, email_contestacao, is_imobiliaria=False, creci=''):
     add_parte(story, s, u'Parte 3 \u2014 Cl\u00e1usulas')
 
     story.append(Paragraph(u'Cl\u00e1usula 1 \u2014 Identifica\u00e7\u00e3o e Finalidade', s['clausula_titulo']))
@@ -236,10 +236,17 @@ def add_clausulas(story, s, email_locador):
         u'na data de realiza\u00e7\u00e3o da vistoria, servindo como instrumento de prova e refer\u00eancia '
         u'para compara\u00e7\u00e3o ao t\u00e9rmino do contrato de loca\u00e7\u00e3o, nos termos do art. 22, inciso V, '
         u'e art. 23, inciso III, da Lei n\u00ba 8.245/91.', s['normal']))
-    story.append(Paragraph(
-        u'Esta vistoria foi realizada diretamente pelo propriet\u00e1rio do im\u00f3vel, utilizando '
-        u'recursos fotogr\u00e1ficos e tecnol\u00f3gicos disponibilizados pelo sistema izyLAUDO, '
-        u'constituindo documento de valor jur\u00eddico entre as partes.', s['normal']))
+    if is_imobiliaria:
+        story.append(Paragraph(
+            u'Este laudo foi elaborado por vistoriador habilitado, com registro no CRECI n\u00ba '
+            + _safe(creci) +
+            u', utilizando recursos fotogr\u00e1ficos e tecnol\u00f3gicos, constituindo documento '
+            u'de valor jur\u00eddico entre as partes.', s['normal']))
+    else:
+        story.append(Paragraph(
+            u'Esta vistoria foi realizada diretamente pelo propriet\u00e1rio do im\u00f3vel, utilizando '
+            u'recursos fotogr\u00e1ficos e tecnol\u00f3gicos disponibilizados pelo sistema izyLAUDO, '
+            u'constituindo documento de valor jur\u00eddico entre as partes.', s['normal']))
 
     story.append(Paragraph(u'Cl\u00e1usula 2 \u2014 Metodologia da Vistoria', s['clausula_titulo']))
     story.append(Paragraph(
@@ -250,7 +257,7 @@ def add_clausulas(story, s, email_locador):
     story.append(Paragraph(
         u'<b>2.2</b> Cada ambiente foi fotografado individualmente, com registro fotogr\u00e1fico '
         u'numerado. As descri\u00e7\u00f5es foram geradas com aux\u00edlio de intelig\u00eancia artificial '
-        u'(IA izyLAUDO) e revisadas pelo pr\u00f3prio propriet\u00e1rio, sendo de sua inteira '
+        u'(IA izyLAUDO) e revisadas pelo ' + (u'vistoriador respons\u00e1vel' if is_imobiliaria else u'pr\u00f3prio propriet\u00e1rio') + u', sendo de sua inteira '
         u'responsabilidade o conte\u00fado final deste documento.', s['normal']))
     story.append(Paragraph(u'<b>2.3</b> Os itens foram classificados segundo os seguintes estados de conserva\u00e7\u00e3o:', s['normal']))
     story.append(Paragraph(u'\u2022 <b>Bom:</b> item em perfeito estado, sem danos, desgastes ou necessidade de reparos;', s['item']))
@@ -265,7 +272,7 @@ def add_clausulas(story, s, email_locador):
     story.append(Paragraph(u'Cl\u00e1usula 4 \u2014 Prazo de Manifesta\u00e7\u00e3o do Locat\u00e1rio', s['clausula_titulo']))
     story.append(Paragraph(u'O locat\u00e1rio ter\u00e1 10 (dez) dias corridos, a partir da assinatura deste laudo, para apresentar qualquer contesta\u00e7\u00e3o por escrito.', s['destaque']))
     story.append(Paragraph(u'<b>4.1</b> O locat\u00e1rio ter\u00e1 o prazo de <b>10 (dez) dias corridos</b>, contados da data de assinatura deste laudo, para apresentar, por escrito, qualquer contesta\u00e7\u00e3o, ressalva ou apontamento sobre itens n\u00e3o observados, omitidos ou divergentes do estado de conserva\u00e7\u00e3o registrado.', s['normal']))
-    story.append(Paragraph(f'<b>4.2</b> A manifesta\u00e7\u00e3o dever\u00e1 ser enviada por escrito diretamente ao locador/propriet\u00e1rio pelo e-mail \u2014 <b>{email_locador}</b> \u2014 com descri\u00e7\u00e3o clara do item contestado e, preferencialmente, acompanhada de registro fotogr\u00e1fico.', s['normal']))
+    story.append(Paragraph(f'<b>4.2</b> A manifesta\u00e7\u00e3o dever\u00e1 ser enviada por escrito ao e-mail \u2014 <b>{email_contestacao}</b> \u2014 com descri\u00e7\u00e3o clara do item contestado e, preferencialmente, acompanhada de registro fotogr\u00e1fico.', s['normal']))
     story.append(Paragraph(u'<b>4.3</b> Decorrido o prazo sem manifesta\u00e7\u00e3o formal, este laudo ser\u00e1 considerado <b>aceito integralmente por ambas as partes</b>, constituindo prova plena do estado do im\u00f3vel na data da vistoria, para todos os fins legais e contratuais.', s['normal']))
     story.append(Paragraph(u'<b>4.4</b> Eventuais aditamentos aceitos pelas partes ser\u00e3o formalizados por escrito, assinados por todos os envolvidos, e passar\u00e3o a integrar este documento como anexo, com a mesma for\u00e7a jur\u00eddica do laudo original.', s['normal']))
 
@@ -273,7 +280,7 @@ def add_clausulas(story, s, email_locador):
     story.append(Paragraph(u'<b>5.1</b> O locat\u00e1rio declara ter ci\u00eancia do estado do im\u00f3vel e se compromete a:', s['normal']))
     story.append(Paragraph(u'a) Conservar o im\u00f3vel e devolv\u00ea-lo nas mesmas condi\u00e7\u00f5es, ressalvado o desgaste natural do uso normal, nos termos do art. 23, inciso III, da Lei n\u00ba 8.245/91;', s['item']))
     story.append(Paragraph(u'b) N\u00e3o realizar obras ou modifica\u00e7\u00f5es estruturais sem pr\u00e9via autoriza\u00e7\u00e3o escrita do locador;', s['item']))
-    story.append(Paragraph(u'c) Comunicar imediatamente ao locador qualquer dano ou necessidade de reparo que surja durante a loca\u00e7\u00e3o;', s['item']))
+    story.append(Paragraph(u'c) Comunicar imediatamente ao ' + (u'locador ou \u00e0 imobili\u00e1ria' if is_imobiliaria else u'locador') + u' qualquer dano ou necessidade de reparo que surja durante a loca\u00e7\u00e3o;', s['item']))
     story.append(Paragraph(u'd) Permitir a vistoria peri\u00f3dica mediante aviso pr\u00e9vio de 24 (vinte e quatro) horas.', s['item']))
     story.append(Paragraph(u'<b>5.2</b> Danos causados por mau uso, neglig\u00eancia ou imper\u00edcia do locat\u00e1rio, seus dependentes ou visitantes s\u00e3o de sua exclusiva responsabilidade.', s['normal']))
 
@@ -294,6 +301,141 @@ def add_clausulas(story, s, email_locador):
 
     story.append(Paragraph(u'Cl\u00e1usula 9 \u2014 Foro', s['clausula_titulo']))
     story.append(Paragraph(u'As partes elegem o foro da comarca onde se situa o im\u00f3vel locado para dirimir quaisquer controv\u00e9rsias, renunciando a qualquer outro foro, por mais privilegiado que seja.', s['normal']))
+
+
+def add_clausulas_saida(story, s, email_contestacao, is_imobiliaria=False, creci=''):
+    add_parte(story, s, u'Parte 3 \u2014 Cl\u00e1usulas')
+
+    story.append(Paragraph(u'Cl\u00e1usula 1 \u2014 Identifica\u00e7\u00e3o e Finalidade', s['clausula_titulo']))
+    story.append(Paragraph(
+        u'O presente Laudo de Vistoria de Sa\u00edda tem por finalidade registrar o estado de '
+        u'conserva\u00e7\u00e3o do im\u00f3vel na data de devolu\u00e7\u00e3o e encerramento da loca\u00e7\u00e3o, '
+        u'possibilitando a compara\u00e7\u00e3o com o Laudo de Vistoria de Entrada, nos termos do '
+        u'art. 23, inciso III, da Lei n\u00ba 8.245/91 e do art. 569 do C\u00f3digo Civil Brasileiro.', s['normal']))
+    if is_imobiliaria:
+        story.append(Paragraph(
+            u'Este laudo foi elaborado por vistoriador habilitado, com registro no CRECI n\u00ba '
+            + _safe(creci) +
+            u', utilizando recursos fotogr\u00e1ficos e tecnol\u00f3gicos, constituindo documento '
+            u'de valor jur\u00eddico entre as partes.', s['normal']))
+    else:
+        story.append(Paragraph(
+            u'Esta vistoria foi realizada diretamente pelo propriet\u00e1rio do im\u00f3vel, utilizando '
+            u'recursos fotogr\u00e1ficos e tecnol\u00f3gicos disponibilizados pelo sistema izyLAUDO, '
+            u'constituindo documento de valor jur\u00eddico entre as partes.', s['normal']))
+
+    story.append(Paragraph(u'Cl\u00e1usula 2 \u2014 Comparativo com o Laudo de Entrada', s['clausula_titulo']))
+    story.append(Paragraph(u'<b>2.1</b> Este laudo deve ser analisado em conjunto com o Laudo de Vistoria de Entrada, que registrou o estado original do im\u00f3vel no in\u00edcio da loca\u00e7\u00e3o.', s['normal']))
+    story.append(Paragraph(u'<b>2.2</b> S\u00e3o considerados danos indeniz\u00e1veis pelo locat\u00e1rio apenas aqueles que excedam o desgaste natural do uso normal, conforme compara\u00e7\u00e3o entre os dois laudos.', s['normal']))
+    story.append(Paragraph(u'<b>2.3</b> Itens classificados como "Regular" no laudo de entrada e que se apresentem em estado id\u00eantico ou melhor na sa\u00edda n\u00e3o poder\u00e3o ser objeto de cobran\u00e7a.', s['normal']))
+
+    story.append(Paragraph(u'Cl\u00e1usula 3 \u2014 Metodologia da Vistoria', s['clausula_titulo']))
+    story.append(Paragraph(u'<b>3.1</b> A vistoria foi realizada de forma presencial na data de devolu\u00e7\u00e3o, com inspe\u00e7\u00e3o visual detalhada de todos os ambientes, itens e instala\u00e7\u00f5es.', s['normal']))
+    story.append(Paragraph(
+        u'<b>3.2</b> Cada ambiente foi fotografado com registro numerado. As descri\u00e7\u00f5es foram '
+        u'geradas com aux\u00edlio de intelig\u00eancia artificial (IA izyLAUDO) e revisadas pelo '
+        + (u'vistoriador respons\u00e1vel' if is_imobiliaria else u'pr\u00f3prio propriet\u00e1rio')
+        + u'.', s['normal']))
+    story.append(Paragraph(u'<b>3.3</b> Os itens foram classificados como: Bom, Regular, Ruim e Danificado \u2014 este \u00faltimo indicando dano causado pelo locat\u00e1rio al\u00e9m do desgaste natural esperado.', s['normal']))
+
+    story.append(Paragraph(u'Cl\u00e1usula 4 \u2014 Responsabilidade pelos Danos Identificados', s['clausula_titulo']))
+    story.append(Paragraph(u'<b>4.1</b> S\u00e3o de responsabilidade do locat\u00e1rio os danos que excedam o desgaste natural do uso normal, identificados pela compara\u00e7\u00e3o entre o laudo de entrada e este laudo de sa\u00edda, nos termos do art. 23, inciso III, da Lei n\u00ba 8.245/91.', s['normal']))
+    story.append(Paragraph(u'<b>4.2</b> O locat\u00e1rio ter\u00e1 o prazo de 30 (trinta) dias corridos, contados da assinatura deste laudo, para executar os reparos necess\u00e1rios ou ressarcir o locador pelo valor equivalente, mediante or\u00e7amento apresentado.', s['normal']))
+    story.append(Paragraph(u'<b>4.3</b> N\u00e3o sendo executados os reparos no prazo estipulado, o locador poder\u00e1 contratar os servi\u00e7os necess\u00e1rios e cobrar os custos do locat\u00e1rio, acrescidos de multa de 10% sobre o valor total.', s['normal']))
+    story.append(Paragraph(u'<b>4.4</b> O desgaste natural decorrente do uso normal \u00e9 de responsabilidade do locador, n\u00e3o podendo ser cobrado do locat\u00e1rio.', s['normal']))
+
+    story.append(Paragraph(u'Cl\u00e1usula 5 \u2014 Dep\u00f3sito Cau\u00e7\u00e3o e Acerto Final', s['clausula_titulo']))
+    story.append(Paragraph(u'<b>5.1</b> Caso haja dep\u00f3sito cau\u00e7\u00e3o ou garantia locat\u00edcia, seu valor ser\u00e1 utilizado para cobrir eventuais danos identificados neste laudo, mediante acordo entre as partes.', s['normal']))
+    story.append(Paragraph(u'<b>5.2</b> N\u00e3o havendo danos indeniz\u00e1veis, o dep\u00f3sito cau\u00e7\u00e3o dever\u00e1 ser devolvido integralmente ao locat\u00e1rio no prazo previsto no contrato de loca\u00e7\u00e3o.', s['normal']))
+    story.append(Paragraph(u'<b>5.3</b> O valor do dep\u00f3sito cau\u00e7\u00e3o n\u00e3o limita a responsabilidade do locat\u00e1rio em caso de danos superiores ao seu montante.', s['normal']))
+
+    story.append(Paragraph(u'Cl\u00e1usula 6 \u2014 Declara\u00e7\u00e3o de Devolu\u00e7\u00e3o do Im\u00f3vel', s['clausula_titulo']))
+    story.append(Paragraph(u'<b>6.1</b> Pela assinatura deste laudo, o locat\u00e1rio declara formalmente que est\u00e1 devolvendo o im\u00f3vel ao locador na data indicada, encerrando a posse direta do bem.', s['normal']))
+    story.append(Paragraph(u'<b>6.2</b> A assinatura deste laudo pelo locador n\u00e3o implica quita\u00e7\u00e3o autom\u00e1tica de eventuais d\u00e9bitos pendentes, salvo declara\u00e7\u00e3o expressa em contr\u00e1rio.', s['normal']))
+    story.append(Paragraph(u'<b>6.3</b> O locador declara ter recebido o im\u00f3vel no estado descrito neste laudo, reservando-se o direito de exigir os reparos ou ressarcimentos identificados na Cl\u00e1usula 4.', s['normal']))
+
+    story.append(Paragraph(u'Cl\u00e1usula 7 \u2014 Integra\u00e7\u00e3o ao Contrato de Loca\u00e7\u00e3o', s['clausula_titulo']))
+    story.append(Paragraph(u'<b>7.1</b> Este Laudo de Vistoria de Sa\u00edda \u00e9 parte integrante e insepar\u00e1vel do contrato de loca\u00e7\u00e3o, devendo ser lido em conjunto com o Laudo de Entrada e o contrato de loca\u00e7\u00e3o.', s['normal']))
+    story.append(Paragraph(u'<b>7.2</b> Este laudo encerra o ciclo documental da loca\u00e7\u00e3o, juntamente com o Laudo de Entrada, constituindo o conjunto probat\u00f3rio completo do per\u00edodo de uso do im\u00f3vel.', s['normal']))
+    story.append(Paragraph(u'<b>7.3</b> Ambos os laudos dever\u00e3o ser arquivados pelas partes pelo prazo prescricional aplic\u00e1vel ap\u00f3s o t\u00e9rmino da loca\u00e7\u00e3o.', s['normal']))
+
+    story.append(Paragraph(u'Cl\u00e1usula 8 \u2014 Validade Jur\u00eddica e Assinaturas', s['clausula_titulo']))
+    story.append(Paragraph(u'<b>8.1</b> Este laudo constitui documento de valor jur\u00eddico, nos termos do art. 406 do C\u00f3digo Civil e da Lei n\u00ba 14.063/2020 (Lei de Assinatura Eletr\u00f4nica).', s['normal']))
+    story.append(Paragraph(u'<b>8.2</b> As assinaturas digitais realizadas por meio da plataforma Autentique t\u00eam validade jur\u00eddica equivalente \u00e0 assinatura manuscrita, conforme a Lei n\u00ba 14.063/2020 e o Decreto n\u00ba 10.278/2020.', s['normal']))
+    story.append(Paragraph(u'<b>8.3</b> O documento ser\u00e1 considerado v\u00e1lido ap\u00f3s a aposi\u00e7\u00e3o da assinatura digital de todas as partes indicadas na Parte 4.', s['normal']))
+
+    story.append(Paragraph(u'Cl\u00e1usula 9 \u2014 Foro', s['clausula_titulo']))
+    story.append(Paragraph(u'As partes elegem o foro da comarca onde se situa o im\u00f3vel locado para dirimir quaisquer controv\u00e9rsias, renunciando a qualquer outro foro, por mais privilegiado que seja.', s['normal']))
+
+
+
+def add_clausulas_temporada(story, s, email_contestacao, is_imobiliaria=False, creci=''):
+    add_parte(story, s, u'Parte 3 \u2014 Cl\u00e1usulas')
+
+    story.append(Paragraph(u'Cl\u00e1usula 1 \u2014 Identifica\u00e7\u00e3o e Finalidade', s['clausula_titulo']))
+    story.append(Paragraph(
+        u'O presente Laudo de Vistoria de Temporada tem por finalidade registrar de forma '
+        u'detalhada o estado de conserva\u00e7\u00e3o e o invent\u00e1rio completo de m\u00f3veis, utens\u00edlios '
+        u'e equipamentos do im\u00f3vel na data do check-in, servindo como instrumento de prova '
+        u'para eventual compara\u00e7\u00e3o ao t\u00e9rmino da estadia.', s['normal']))
+    if is_imobiliaria:
+        story.append(Paragraph(
+            u'Este laudo foi elaborado por vistoriador habilitado, com registro no CRECI n\u00ba '
+            + _safe(creci) +
+            u', utilizando recursos fotogr\u00e1ficos e tecnol\u00f3gicos do sistema izyLAUDO.', s['normal']))
+    else:
+        story.append(Paragraph(
+            u'Esta vistoria foi realizada diretamente pelo anfitri\u00e3o/propriet\u00e1rio do im\u00f3vel, '
+            u'utilizando recursos fotogr\u00e1ficos e tecnol\u00f3gicos disponibilizados pelo sistema izyLAUDO.', s['normal']))
+
+    story.append(Paragraph(u'Cl\u00e1usula 2 \u2014 Invent\u00e1rio Completo', s['clausula_titulo']))
+    story.append(Paragraph(u'<b>2.1</b> Por tratar-se de im\u00f3vel para loca\u00e7\u00e3o de temporada, este laudo contempla invent\u00e1rio detalhado de todos os itens presentes, incluindo:', s['normal']))
+    story.append(Paragraph(u'\u2022 M\u00f3veis e equipamentos de cada ambiente;', s['item']))
+    story.append(Paragraph(u'\u2022 Eletrodom\u00e9sticos e eletr\u00f4nicos;', s['item']))
+    story.append(Paragraph(u'\u2022 Utens\u00edlios de cozinha (talheres, pratos, copos, panelas e demais itens);', s['item']))
+    story.append(Paragraph(u'\u2022 Roupas de cama, banho e demais itens de enxoval;', s['item']))
+    story.append(Paragraph(u'\u2022 Itens decorativos e de uso comum.', s['item']))
+    story.append(Paragraph(u'<b>2.2</b> O invent\u00e1rio completo com quantidade, estado e registro fotogr\u00e1fico est\u00e1 na Parte 2 deste laudo.', s['normal']))
+    story.append(Paragraph(u'<b>2.3</b> Itens n\u00e3o constantes neste invent\u00e1rio s\u00e3o presumidos como inexistentes no im\u00f3vel na data do check-in.', s['normal']))
+
+    story.append(Paragraph(u'Cl\u00e1usula 3 \u2014 Prazo de Manifesta\u00e7\u00e3o do H\u00f3spede', s['clausula_titulo']))
+    story.append(Paragraph(u'<b>3.1</b> O h\u00f3spede/ocupante ter\u00e1 o prazo de 24 (vinte e quatro) horas, contadas do momento do check-in, para apresentar por escrito qualquer contesta\u00e7\u00e3o sobre itens n\u00e3o observados, omitidos ou divergentes do estado registrado.', s['normal']))
+    story.append(Paragraph(f'<b>3.2</b> A manifesta\u00e7\u00e3o dever\u00e1 ser enviada ao e-mail \u2014 <b>{email_contestacao}</b> \u2014 com descri\u00e7\u00e3o clara e, preferencialmente, registro fotogr\u00e1fico.', s['normal']))
+    story.append(Paragraph(u'<b>3.3</b> Decorrido o prazo sem manifesta\u00e7\u00e3o, este laudo ser\u00e1 considerado aceito integralmente, constituindo prova plena do estado do im\u00f3vel e do invent\u00e1rio no momento do check-in.', s['normal']))
+
+    story.append(Paragraph(u'Cl\u00e1usula 4 \u2014 Responsabilidades do H\u00f3spede', s['clausula_titulo']))
+    story.append(Paragraph(u'<b>4.1</b> O h\u00f3spede/ocupante recebe o im\u00f3vel no estado descrito neste laudo e se compromete a:', s['normal']))
+    story.append(Paragraph(u'a) Zelar pelo im\u00f3vel, seus m\u00f3veis, utens\u00edlios e equipamentos durante toda a estadia;', s['item']))
+    story.append(Paragraph(u'b) N\u00e3o realizar qualquer modifica\u00e7\u00e3o no im\u00f3vel sem autoriza\u00e7\u00e3o expressa do anfitri\u00e3o;', s['item']))
+    story.append(Paragraph(u'c) Comunicar imediatamente ao anfitri\u00e3o qualquer dano acidental ocorrido durante a estadia;', s['item']))
+    story.append(Paragraph(u'd) Respeitar o n\u00famero m\u00e1ximo de ocupantes indicado no contrato de reserva;', s['item']))
+    story.append(Paragraph(u'e) Devolver o im\u00f3vel na data e hora do check-out nas mesmas condi\u00e7\u00f5es em que o recebeu.', s['item']))
+    story.append(Paragraph(u'<b>4.2</b> Danos causados por mau uso, neglig\u00eancia ou imper\u00edcia do h\u00f3spede, seus acompanhantes ou animais de estima\u00e7\u00e3o s\u00e3o de sua exclusiva responsabilidade.', s['normal']))
+    story.append(Paragraph(u'<b>4.3</b> A quebra, extravio ou dano de qualquer item do invent\u00e1rio ser\u00e1 cobrada pelo valor de reposi\u00e7\u00e3o ou reparo do item.', s['normal']))
+
+    story.append(Paragraph(u'Cl\u00e1usula 5 \u2014 Danos Durante a Estadia', s['clausula_titulo']))
+    story.append(Paragraph(u'<b>5.1</b> Ao t\u00e9rmino da estadia ser\u00e1 realizada vistoria de sa\u00edda comparando o estado atual com o registrado neste laudo de check-in.', s['normal']))
+    story.append(Paragraph(u'<b>5.2</b> Danos identificados na vistoria de sa\u00edda e ausentes neste laudo ser\u00e3o de responsabilidade do h\u00f3spede.', s['normal']))
+    story.append(Paragraph(u'<b>5.3</b> O h\u00f3spede autoriza expressamente o d\u00e9bito do valor dos danos na cau\u00e7\u00e3o ou garantia fornecida na reserva, caso exista.', s['normal']))
+    story.append(Paragraph(u'<b>5.4</b> N\u00e3o havendo cau\u00e7\u00e3o suficiente, o h\u00f3spede se compromete a ressarcir o anfitri\u00e3o no prazo de 5 (cinco) dias \u00fateis ap\u00f3s o check-out.', s['normal']))
+
+    story.append(Paragraph(u'Cl\u00e1usula 6 \u2014 Regras de Uso e Condi\u00e7\u00f5es da Estadia', s['clausula_titulo']))
+    story.append(Paragraph(u'<b>6.1</b> O uso do im\u00f3vel, suas instala\u00e7\u00f5es, m\u00f3veis e equipamentos pelo h\u00f3spede/ocupante dever\u00e1 observar estritamente as regras e condi\u00e7\u00f5es estabelecidas no contrato de reserva celebrado entre as partes, seja por plataforma digital (Airbnb, Booking, etc.) ou diretamente entre anfitri\u00e3o e h\u00f3spede.', s['normal']))
+    story.append(Paragraph(u'<b>6.2</b> O h\u00f3spede declara ter lido, compreendido e concordado com todas as regras de uso definidas no contrato de reserva, incluindo mas n\u00e3o se limitando a: capacidade m\u00e1xima de ocupantes, pol\u00edtica de animais de estima\u00e7\u00e3o, regras de sil\u00eancio, pol\u00edtica de cancelamento e demais condi\u00e7\u00f5es espec\u00edficas do im\u00f3vel.', s['normal']))
+    story.append(Paragraph(u'<b>6.3</b> O descumprimento de qualquer regra prevista no contrato de reserva poder\u00e1 ensejar a rescis\u00e3o imediata da estadia, sem direito a reembolso, al\u00e9m da responsabiliza\u00e7\u00e3o pelos danos causados.', s['normal']))
+
+    story.append(Paragraph(u'Cl\u00e1usula 7 \u2014 Integra\u00e7\u00e3o ao Contrato de Reserva', s['clausula_titulo']))
+    story.append(Paragraph(u'<b>7.1</b> Este laudo \u00e9 parte integrante do contrato de reserva celebrado entre as partes, seja por plataforma digital ou diretamente entre anfitri\u00e3o e h\u00f3spede.', s['normal']))
+    story.append(Paragraph(u'<b>7.2</b> Em caso de diverg\u00eancia entre o contrato de reserva e este laudo no que se refere ao estado do im\u00f3vel e invent\u00e1rio, prevalecer\u00e3o as disposi\u00e7\u00f5es deste laudo.', s['normal']))
+
+    story.append(Paragraph(u'Cl\u00e1usula 8 \u2014 Validade Jur\u00eddica e Assinaturas', s['clausula_titulo']))
+    story.append(Paragraph(u'<b>8.1</b> Este laudo constitui documento de valor jur\u00eddico, nos termos do art. 406 do C\u00f3digo Civil e da Lei n\u00ba 14.063/2020 (Lei de Assinatura Eletr\u00f4nica).', s['normal']))
+    story.append(Paragraph(u'<b>8.2</b> As assinaturas digitais realizadas por meio da plataforma Autentique t\u00eam validade jur\u00eddica equivalente \u00e0 assinatura manuscrita, conforme a Lei n\u00ba 14.063/2020 e o Decreto n\u00ba 10.278/2020.', s['normal']))
+    story.append(Paragraph(u'<b>8.3</b> O documento ser\u00e1 considerado v\u00e1lido ap\u00f3s a aposi\u00e7\u00e3o da assinatura digital de todas as partes indicadas na Parte 4.', s['normal']))
+
+    story.append(Paragraph(u'Cl\u00e1usula 9 \u2014 Foro', s['clausula_titulo']))
+    story.append(Paragraph(u'As partes elegem o foro da comarca onde se situa o im\u00f3vel locado para dirimir quaisquer controv\u00e9rsias, renunciando a qualquer outro foro, por mais privilegiado que seja.', s['normal']))
+
 
 def add_assinaturas(story, s, partes, local_data):
     add_parte(story, s, u'Parte 4 \u2014 Declara\u00e7\u00e3o e Assinaturas')
@@ -380,7 +522,7 @@ def gerar_laudo_entrada_proprietario(dados_imovel, dados_locador,
             add_campo(story, s, 'E-mail', dados_corretor['email'])
 
     add_ambientes(story, s, ambientes)
-    add_clausulas(story, s, dados_locador['email'])
+    add_clausulas_entrada(story, s, dados_locador['email'], is_imobiliaria=False)
 
     partes_sig = [
         (dados_locador['nome'],    u'Locador / Propriet\u00e1rio', dados_locador['cpf']),
@@ -403,6 +545,374 @@ MESES_PT = {
     5: 'MAIO', 6: 'JUNHO', 7: 'JULHO', 8: 'AGOSTO',
     9: 'SETEMBRO', 10: 'OUTUBRO', 11: 'NOVEMBRO', 12: 'DEZEMBRO',
 }
+
+# Alias: Modelo 2 = Entrada + Proprietario (already defined above)
+gerar_laudo_modelo2 = gerar_laudo_entrada_proprietario
+
+def gerar_laudo_modelo1(dados_imovel, dados_locador, dados_locatario,
+                        dados_corretor, dados_imobiliaria,
+                        ambientes, local_data, output_path):
+    doc = SimpleDocTemplate(
+        output_path, pagesize=A4,
+        topMargin=MT, leftMargin=ML,
+        bottomMargin=MB, rightMargin=MR,
+        title=u'Laudo de Vistoria de Entrada \u2014 Imobili\u00e1ria/Corretor',
+        author='izyLAUDO'
+    )
+    s = mk_styles()
+    story = []
+
+    add_cabecalho(story, s,
+        'LAUDO DE VISTORIA DE ENTRADA',
+        f'N\u00ba {dados_imovel["numero_laudo"]} \u00b7 Imobili\u00e1ria/Corretor')
+
+    add_parte(story, s, u'Parte 1 \u2014 Qualifica\u00e7\u00e3o')
+
+    story.append(Paragraph(u'1.1 Dados do Im\u00f3vel', s['secao']))
+    add_campo(story, s, u'Endere\u00e7o', dados_imovel['endereco'])
+    add_campo(story, s, 'Complemento', dados_imovel['complemento'])
+    add_campo(story, s, 'Bairro', dados_imovel['bairro'])
+    add_campo(story, s, 'Cidade / UF', dados_imovel['cidade_uf'])
+    add_campo(story, s, 'CEP', dados_imovel['cep'])
+    add_campo(story, s, u'Tipo do im\u00f3vel', dados_imovel['tipo'])
+    add_campo(story, s, u'\u00c1rea aproximada', dados_imovel['area'])
+    add_campo(story, s, 'Data da vistoria', dados_imovel['data_hora'])
+
+    story.append(Paragraph(u'1.2 Imobili\u00e1ria / Corretor', s['secao']))
+    if dados_imobiliaria.get('nome'):
+        add_campo(story, s, 'Nome', dados_imobiliaria['nome'])
+        if dados_imobiliaria.get('cnpj'):
+            add_campo(story, s, 'CNPJ', dados_imobiliaria['cnpj'])
+        if dados_imobiliaria.get('telefone'):
+            add_campo(story, s, 'Telefone', dados_imobiliaria['telefone'])
+    if dados_corretor.get('nome'):
+        add_campo(story, s, 'Corretor', dados_corretor['nome'])
+        if dados_corretor.get('creci'):
+            add_campo(story, s, 'CRECI', dados_corretor['creci'])
+        if dados_corretor.get('telefone'):
+            add_campo(story, s, 'Telefone', dados_corretor['telefone'])
+        if dados_corretor.get('email'):
+            add_campo(story, s, 'E-mail', dados_corretor['email'])
+
+    story.append(Paragraph(u'1.3 Locador(es)', s['secao']))
+    add_campo(story, s, 'Nome completo', dados_locador['nome'])
+    add_campo(story, s, 'CPF', dados_locador['cpf'])
+    add_campo(story, s, 'Telefone', dados_locador['telefone'])
+    add_campo(story, s, 'E-mail', dados_locador['email'])
+
+    story.append(Paragraph(u'1.4 Locat\u00e1rio(s)', s['secao']))
+    add_campo(story, s, 'Nome completo', dados_locatario['nome'])
+    add_campo(story, s, 'CPF', dados_locatario['cpf'])
+    add_campo(story, s, 'Telefone', dados_locatario['telefone'])
+    add_campo(story, s, 'E-mail', dados_locatario['email'])
+
+    add_ambientes(story, s, ambientes)
+
+    email_cont = dados_imobiliaria.get('email', '') or dados_corretor.get('email', '') or ''
+    creci_val = dados_corretor.get('creci', '')
+    add_clausulas_entrada(story, s, email_cont, is_imobiliaria=True, creci=creci_val)
+
+    partes_sig = [
+        (dados_locador['nome'], u'Locador', dados_locador['cpf']),
+        (dados_locatario['nome'], u'Locat\u00e1rio', dados_locatario['cpf']),
+    ]
+    if dados_imobiliaria.get('nome'):
+        partes_sig.append((dados_imobiliaria['nome'], u'Imobili\u00e1ria', dados_imobiliaria.get('cnpj', '')))
+    if dados_corretor.get('nome'):
+        partes_sig.append((dados_corretor['nome'], u'Corretor \u00b7 CRECI ' + dados_corretor.get('creci', ''), ''))
+    add_assinaturas(story, s, partes_sig, local_data)
+
+    add_rodape(story, s)
+    doc.build(story)
+
+
+def gerar_laudo_modelo3(dados_imovel, dados_locador, dados_locatario,
+                        dados_corretor, dados_imobiliaria,
+                        ambientes, local_data, output_path):
+    doc = SimpleDocTemplate(
+        output_path, pagesize=A4,
+        topMargin=MT, leftMargin=ML,
+        bottomMargin=MB, rightMargin=MR,
+        title=u'Laudo de Vistoria de Sa\u00edda \u2014 Imobili\u00e1ria/Corretor',
+        author='izyLAUDO'
+    )
+    s = mk_styles()
+    story = []
+
+    add_cabecalho(story, s,
+        u'LAUDO DE VISTORIA DE SA\u00cdDA',
+        f'N\u00ba {dados_imovel["numero_laudo"]} \u00b7 Imobili\u00e1ria/Corretor')
+
+    add_parte(story, s, u'Parte 1 \u2014 Qualifica\u00e7\u00e3o')
+
+    story.append(Paragraph(u'1.1 Dados do Im\u00f3vel', s['secao']))
+    add_campo(story, s, u'Endere\u00e7o', dados_imovel['endereco'])
+    add_campo(story, s, 'Complemento', dados_imovel['complemento'])
+    add_campo(story, s, 'Bairro', dados_imovel['bairro'])
+    add_campo(story, s, 'Cidade / UF', dados_imovel['cidade_uf'])
+    add_campo(story, s, 'CEP', dados_imovel['cep'])
+    add_campo(story, s, u'Tipo do im\u00f3vel', dados_imovel['tipo'])
+    add_campo(story, s, u'\u00c1rea aproximada', dados_imovel['area'])
+    add_campo(story, s, 'Data da vistoria', dados_imovel['data_hora'])
+
+    story.append(Paragraph(u'1.2 Imobili\u00e1ria / Corretor', s['secao']))
+    if dados_imobiliaria.get('nome'):
+        add_campo(story, s, 'Nome', dados_imobiliaria['nome'])
+        if dados_imobiliaria.get('cnpj'):
+            add_campo(story, s, 'CNPJ', dados_imobiliaria['cnpj'])
+        if dados_imobiliaria.get('telefone'):
+            add_campo(story, s, 'Telefone', dados_imobiliaria['telefone'])
+    if dados_corretor.get('nome'):
+        add_campo(story, s, 'Corretor', dados_corretor['nome'])
+        if dados_corretor.get('creci'):
+            add_campo(story, s, 'CRECI', dados_corretor['creci'])
+        if dados_corretor.get('email'):
+            add_campo(story, s, 'E-mail', dados_corretor['email'])
+
+    story.append(Paragraph(u'1.3 Locador(es)', s['secao']))
+    add_campo(story, s, 'Nome completo', dados_locador['nome'])
+    add_campo(story, s, 'CPF', dados_locador['cpf'])
+    add_campo(story, s, 'Telefone', dados_locador['telefone'])
+    add_campo(story, s, 'E-mail', dados_locador['email'])
+
+    story.append(Paragraph(u'1.4 Locat\u00e1rio(s)', s['secao']))
+    add_campo(story, s, 'Nome completo', dados_locatario['nome'])
+    add_campo(story, s, 'CPF', dados_locatario['cpf'])
+    add_campo(story, s, 'Telefone', dados_locatario['telefone'])
+    add_campo(story, s, 'E-mail', dados_locatario['email'])
+
+    add_ambientes(story, s, ambientes)
+
+    email_cont = dados_imobiliaria.get('email', '') or dados_corretor.get('email', '') or ''
+    creci_val = dados_corretor.get('creci', '')
+    add_clausulas_saida(story, s, email_cont, is_imobiliaria=True, creci=creci_val)
+
+    partes_sig = [
+        (dados_locador['nome'], u'Locador', dados_locador['cpf']),
+        (dados_locatario['nome'], u'Locat\u00e1rio', dados_locatario['cpf']),
+    ]
+    if dados_imobiliaria.get('nome'):
+        partes_sig.append((dados_imobiliaria['nome'], u'Imobili\u00e1ria', dados_imobiliaria.get('cnpj', '')))
+    if dados_corretor.get('nome'):
+        partes_sig.append((dados_corretor['nome'], u'Vistoriador/Corretor \u00b7 CRECI ' + dados_corretor.get('creci', ''), ''))
+    add_assinaturas(story, s, partes_sig, local_data)
+
+    add_rodape(story, s)
+    doc.build(story)
+
+
+def gerar_laudo_modelo4(dados_imovel, dados_locador, dados_locatario,
+                        dados_corretor, dados_imobiliaria,
+                        ambientes, local_data, output_path):
+    doc = SimpleDocTemplate(
+        output_path, pagesize=A4,
+        topMargin=MT, leftMargin=ML,
+        bottomMargin=MB, rightMargin=MR,
+        title=u'Laudo de Vistoria de Sa\u00edda \u2014 Propriet\u00e1rio Direto',
+        author='izyLAUDO'
+    )
+    s = mk_styles()
+    story = []
+
+    add_cabecalho(story, s,
+        u'LAUDO DE VISTORIA DE SA\u00cdDA',
+        f'N\u00ba {dados_imovel["numero_laudo"]} \u00b7 Propriet\u00e1rio Direto')
+
+    add_parte(story, s, u'Parte 1 \u2014 Qualifica\u00e7\u00e3o')
+
+    story.append(Paragraph(u'1.1 Dados do Im\u00f3vel', s['secao']))
+    add_campo(story, s, u'Endere\u00e7o', dados_imovel['endereco'])
+    add_campo(story, s, 'Complemento', dados_imovel['complemento'])
+    add_campo(story, s, 'Bairro', dados_imovel['bairro'])
+    add_campo(story, s, 'Cidade / UF', dados_imovel['cidade_uf'])
+    add_campo(story, s, 'CEP', dados_imovel['cep'])
+    add_campo(story, s, u'Tipo do im\u00f3vel', dados_imovel['tipo'])
+    add_campo(story, s, u'\u00c1rea aproximada', dados_imovel['area'])
+    add_campo(story, s, 'Data da vistoria', dados_imovel['data_hora'])
+
+    story.append(Paragraph(u'1.2 Locador(es) \u2014 Propriet\u00e1rio', s['secao']))
+    add_campo(story, s, 'Nome completo', dados_locador['nome'])
+    add_campo(story, s, 'CPF', dados_locador['cpf'])
+    add_campo(story, s, 'Telefone', dados_locador['telefone'])
+    add_campo(story, s, 'E-mail', dados_locador['email'])
+
+    story.append(Paragraph(u'1.3 Locat\u00e1rio(s)', s['secao']))
+    add_campo(story, s, 'Nome completo', dados_locatario['nome'])
+    add_campo(story, s, 'CPF', dados_locatario['cpf'])
+    add_campo(story, s, 'Telefone', dados_locatario['telefone'])
+    add_campo(story, s, 'E-mail', dados_locatario['email'])
+
+    if dados_imobiliaria.get('nome'):
+        story.append(Paragraph(u'1.4 Imobili\u00e1ria', s['secao']))
+        add_campo(story, s, 'Nome', dados_imobiliaria['nome'])
+        if dados_imobiliaria.get('cnpj'):
+            add_campo(story, s, 'CNPJ', dados_imobiliaria['cnpj'])
+    if dados_corretor.get('nome'):
+        story.append(Paragraph(u'1.5 Corretor', s['secao']))
+        add_campo(story, s, 'Nome', dados_corretor['nome'])
+        if dados_corretor.get('creci'):
+            add_campo(story, s, 'CRECI', dados_corretor['creci'])
+
+    add_ambientes(story, s, ambientes)
+    add_clausulas_saida(story, s, dados_locador['email'], is_imobiliaria=False)
+
+    partes_sig = [
+        (dados_locador['nome'], u'Locador / Propriet\u00e1rio', dados_locador['cpf']),
+        (dados_locatario['nome'], u'Locat\u00e1rio', dados_locatario['cpf']),
+    ]
+    if dados_imobiliaria.get('nome'):
+        partes_sig.append((dados_imobiliaria['nome'], u'Imobili\u00e1ria', dados_imobiliaria.get('cnpj', '')))
+    if dados_corretor.get('nome'):
+        partes_sig.append((dados_corretor['nome'], u'Corretor \u00b7 CRECI ' + dados_corretor.get('creci', ''), ''))
+    add_assinaturas(story, s, partes_sig, local_data)
+
+    add_rodape(story, s)
+    doc.build(story)
+
+
+def gerar_laudo_modelo5(dados_imovel, dados_locador, dados_locatario,
+                        dados_corretor, dados_imobiliaria,
+                        ambientes, local_data, output_path):
+    doc = SimpleDocTemplate(
+        output_path, pagesize=A4,
+        topMargin=MT, leftMargin=ML,
+        bottomMargin=MB, rightMargin=MR,
+        title=u'Laudo de Vistoria de Temporada \u2014 Imobili\u00e1ria/Corretor',
+        author='izyLAUDO'
+    )
+    s = mk_styles()
+    story = []
+
+    add_cabecalho(story, s,
+        'LAUDO DE VISTORIA DE TEMPORADA',
+        f'N\u00ba {dados_imovel["numero_laudo"]} \u00b7 Imobili\u00e1ria/Corretor')
+
+    add_parte(story, s, u'Parte 1 \u2014 Qualifica\u00e7\u00e3o')
+
+    story.append(Paragraph(u'1.1 Dados do Im\u00f3vel', s['secao']))
+    add_campo(story, s, u'Endere\u00e7o', dados_imovel['endereco'])
+    add_campo(story, s, 'Complemento', dados_imovel['complemento'])
+    add_campo(story, s, 'Bairro', dados_imovel['bairro'])
+    add_campo(story, s, 'Cidade / UF', dados_imovel['cidade_uf'])
+    add_campo(story, s, 'CEP', dados_imovel['cep'])
+    add_campo(story, s, u'Tipo do im\u00f3vel', dados_imovel['tipo'])
+    add_campo(story, s, u'\u00c1rea aproximada', dados_imovel['area'])
+    add_campo(story, s, 'Data da vistoria', dados_imovel['data_hora'])
+
+    story.append(Paragraph(u'1.2 Imobili\u00e1ria / Corretor', s['secao']))
+    if dados_imobiliaria.get('nome'):
+        add_campo(story, s, 'Nome', dados_imobiliaria['nome'])
+        if dados_imobiliaria.get('cnpj'):
+            add_campo(story, s, 'CNPJ', dados_imobiliaria['cnpj'])
+        if dados_imobiliaria.get('telefone'):
+            add_campo(story, s, 'Telefone', dados_imobiliaria['telefone'])
+    if dados_corretor.get('nome'):
+        add_campo(story, s, 'Corretor', dados_corretor['nome'])
+        if dados_corretor.get('creci'):
+            add_campo(story, s, 'CRECI', dados_corretor['creci'])
+        if dados_corretor.get('email'):
+            add_campo(story, s, 'E-mail', dados_corretor['email'])
+
+    story.append(Paragraph(u'1.3 Locador / Anfitri\u00e3o', s['secao']))
+    add_campo(story, s, 'Nome completo', dados_locador['nome'])
+    add_campo(story, s, 'CPF', dados_locador['cpf'])
+    add_campo(story, s, 'Telefone', dados_locador['telefone'])
+    add_campo(story, s, 'E-mail', dados_locador['email'])
+
+    story.append(Paragraph(u'1.4 H\u00f3spede(s) / Ocupante(s)', s['secao']))
+    add_campo(story, s, 'Nome completo', dados_locatario['nome'])
+    add_campo(story, s, 'CPF', dados_locatario['cpf'])
+    add_campo(story, s, 'Telefone', dados_locatario['telefone'])
+    add_campo(story, s, 'E-mail', dados_locatario['email'])
+
+    add_ambientes(story, s, ambientes)
+
+    email_cont = dados_imobiliaria.get('email', '') or dados_corretor.get('email', '') or ''
+    creci_val = dados_corretor.get('creci', '')
+    add_clausulas_temporada(story, s, email_cont, is_imobiliaria=True, creci=creci_val)
+
+    partes_sig = [
+        (dados_locador['nome'], u'Anfitri\u00e3o / Locador', dados_locador['cpf']),
+        (dados_locatario['nome'], u'H\u00f3spede / Ocupante', dados_locatario['cpf']),
+    ]
+    if dados_imobiliaria.get('nome'):
+        partes_sig.append((dados_imobiliaria['nome'], u'Imobili\u00e1ria', dados_imobiliaria.get('cnpj', '')))
+    if dados_corretor.get('nome'):
+        partes_sig.append((dados_corretor['nome'], u'Vistoriador/Corretor \u00b7 CRECI ' + dados_corretor.get('creci', ''), ''))
+    add_assinaturas(story, s, partes_sig, local_data)
+
+    add_rodape(story, s)
+    doc.build(story)
+
+
+def gerar_laudo_modelo6(dados_imovel, dados_locador, dados_locatario,
+                        dados_corretor, dados_imobiliaria,
+                        ambientes, local_data, output_path):
+    doc = SimpleDocTemplate(
+        output_path, pagesize=A4,
+        topMargin=MT, leftMargin=ML,
+        bottomMargin=MB, rightMargin=MR,
+        title=u'Laudo de Vistoria de Temporada \u2014 Propriet\u00e1rio Direto',
+        author='izyLAUDO'
+    )
+    s = mk_styles()
+    story = []
+
+    add_cabecalho(story, s,
+        'LAUDO DE VISTORIA DE TEMPORADA',
+        f'N\u00ba {dados_imovel["numero_laudo"]} \u00b7 Propriet\u00e1rio Direto')
+
+    add_parte(story, s, u'Parte 1 \u2014 Qualifica\u00e7\u00e3o')
+
+    story.append(Paragraph(u'1.1 Dados do Im\u00f3vel', s['secao']))
+    add_campo(story, s, u'Endere\u00e7o', dados_imovel['endereco'])
+    add_campo(story, s, 'Complemento', dados_imovel['complemento'])
+    add_campo(story, s, 'Bairro', dados_imovel['bairro'])
+    add_campo(story, s, 'Cidade / UF', dados_imovel['cidade_uf'])
+    add_campo(story, s, 'CEP', dados_imovel['cep'])
+    add_campo(story, s, u'Tipo do im\u00f3vel', dados_imovel['tipo'])
+    add_campo(story, s, u'\u00c1rea aproximada', dados_imovel['area'])
+    add_campo(story, s, 'Data da vistoria', dados_imovel['data_hora'])
+
+    story.append(Paragraph(u'1.2 Locador / Anfitri\u00e3o \u2014 Propriet\u00e1rio', s['secao']))
+    add_campo(story, s, 'Nome completo', dados_locador['nome'])
+    add_campo(story, s, 'CPF', dados_locador['cpf'])
+    add_campo(story, s, 'Telefone', dados_locador['telefone'])
+    add_campo(story, s, 'E-mail', dados_locador['email'])
+
+    story.append(Paragraph(u'1.3 H\u00f3spede(s) / Ocupante(s)', s['secao']))
+    add_campo(story, s, 'Nome completo', dados_locatario['nome'])
+    add_campo(story, s, 'CPF', dados_locatario['cpf'])
+    add_campo(story, s, 'Telefone', dados_locatario['telefone'])
+    add_campo(story, s, 'E-mail', dados_locatario['email'])
+
+    if dados_imobiliaria.get('nome'):
+        story.append(Paragraph(u'1.4 Imobili\u00e1ria', s['secao']))
+        add_campo(story, s, 'Nome', dados_imobiliaria['nome'])
+        if dados_imobiliaria.get('cnpj'):
+            add_campo(story, s, 'CNPJ', dados_imobiliaria['cnpj'])
+    if dados_corretor.get('nome'):
+        story.append(Paragraph(u'1.5 Corretor', s['secao']))
+        add_campo(story, s, 'Nome', dados_corretor['nome'])
+        if dados_corretor.get('creci'):
+            add_campo(story, s, 'CRECI', dados_corretor['creci'])
+
+    add_ambientes(story, s, ambientes)
+    add_clausulas_temporada(story, s, dados_locador['email'], is_imobiliaria=False)
+
+    partes_sig = [
+        (dados_locador['nome'], u'Anfitri\u00e3o / Locador / Propriet\u00e1rio', dados_locador['cpf']),
+        (dados_locatario['nome'], u'H\u00f3spede / Ocupante', dados_locatario['cpf']),
+    ]
+    if dados_imobiliaria.get('nome'):
+        partes_sig.append((dados_imobiliaria['nome'], u'Imobili\u00e1ria', dados_imobiliaria.get('cnpj', '')))
+    if dados_corretor.get('nome'):
+        partes_sig.append((dados_corretor['nome'], u'Corretor \u00b7 CRECI ' + dados_corretor.get('creci', ''), ''))
+    add_assinaturas(story, s, partes_sig, local_data)
+
+    add_rodape(story, s)
+    doc.build(story)
+
 
 def _parse_date(date_str):
     if not date_str:
@@ -588,11 +1098,28 @@ def generate_pdf(inspection_data: dict, rooms_data: list,
 
         local_data = _format_date_extenso(dt)
 
-        gerar_laudo_entrada_proprietario(
-            dados_imovel, dados_locador, dados_locatario,
-            dados_corretor, dados_imobiliaria,
-            ambientes, local_data, output_path
-        )
+        # ---- Selecao do modelo baseado em tipo x responsavel ----
+        tipo = _safe(insp.get('type', 'entrada')).lower().strip()
+        responsavel = _safe(insp.get('responsavel', 'proprietario')).lower().strip()
+
+        args = (dados_imovel, dados_locador, dados_locatario,
+                dados_corretor, dados_imobiliaria,
+                ambientes, local_data, output_path)
+
+        if tipo == 'entrada' and responsavel == 'imobiliaria':
+            gerar_laudo_modelo1(*args)
+        elif tipo == 'entrada':
+            gerar_laudo_modelo2(*args)
+        elif tipo == 'saida' and responsavel == 'imobiliaria':
+            gerar_laudo_modelo3(*args)
+        elif tipo == 'saida':
+            gerar_laudo_modelo4(*args)
+        elif tipo == 'temporada' and responsavel == 'imobiliaria':
+            gerar_laudo_modelo5(*args)
+        elif tipo == 'temporada':
+            gerar_laudo_modelo6(*args)
+        else:
+            gerar_laudo_modelo2(*args)  # fallback
 
         logger.info(f'PDF gerado com sucesso: {output_path}')
         return True
