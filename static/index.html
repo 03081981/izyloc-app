@@ -3019,6 +3019,7 @@ async function wizardNext(step) {
     if (v('wi-obs')) {
       await api('PUT', `/api/inspections/${wizard.inspectionId}`, { observations: v('wi-obs') });
     }
+    await buildRoomsList();
     gotoWStep(5);
     initSigPads();
   }
