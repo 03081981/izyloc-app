@@ -180,6 +180,7 @@ def init_db():
 
     # ââ rooms ââââââââââââââââââââââââââââââââââââââââââââââââ
     c.execute("""
+        "ALTER TABLE inspections ADD COLUMN IF NOT EXISTS ambientes_json TEXT",
         CREATE TABLE IF NOT EXISTS rooms (
             id TEXT PRIMARY KEY,
             inspection_id TEXT NOT NULL REFERENCES inspections(id) ON DELETE CASCADE,
