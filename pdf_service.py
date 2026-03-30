@@ -272,10 +272,7 @@ def add_clausulas_entrada(story, s, email_contestacao, is_imobiliaria=False, cre
     story.append(Paragraph(u'Cl\u00e1usula 4 \u2014 Prazo de Manifesta\u00e7\u00e3o do Locat\u00e1rio', s['clausula_titulo']))
     story.append(Paragraph(u'O locat\u00e1rio ter\u00e1 10 (dez) dias corridos, a partir da assinatura deste laudo, para apresentar qualquer contesta\u00e7\u00e3o por escrito.', s['destaque']))
     story.append(Paragraph(u'<b>4.1</b> O locat\u00e1rio ter\u00e1 o prazo de <b>10 (dez) dias corridos</b>, contados da data de assinatura deste laudo, para apresentar, por escrito, qualquer contesta\u00e7\u00e3o, ressalva ou apontamento sobre itens n\u00e3o observados, omitidos ou divergentes do estado de conserva\u00e7\u00e3o registrado.', s['normal']))
-      if is_imobiliaria:
-        story.append(Paragraph(f'<b>4.2</b> A manifesta\u00e7\u00e3o dever\u00e1 ser enviada por escrito ao e-mail da imobili\u00e1ria ou corretor respons\u00e1vel \u2014 <b>{email_contestacao}</b> \u2014 com descri\u00e7\u00e3o clara do item contestado e, preferencialmente, acompanhada de registro fotogr\u00e1fico.', s['normal']))
-    else:
-        story.append(Paragraph(f'<b>4.2</b> A manifesta\u00e7\u00e3o dever\u00e1 ser enviada por escrito diretamente ao locador/propriet\u00e1rio pelo e-mail \u2014 <b>{email_contestacao}</b> \u2014 com descri\u00e7\u00e3o clara do item contestado e, preferencialmente, acompanhada de registro fotogr\u00e1fico.', s['normal']))
+    story.append(Paragraph(f'<b>4.2</b> A manifesta\u00e7\u00e3o dever\u00e1 ser enviada por escrito ao e-mail \u2014 <b>{email_contestacao}</b> \u2014 com descri\u00e7\u00e3o clara do item contestado e, preferencialmente, acompanhada de registro fotogr\u00e1fico.', s['normal']))
     story.append(Paragraph(u'<b>4.3</b> Decorrido o prazo sem manifesta\u00e7\u00e3o formal, este laudo ser\u00e1 considerado <b>aceito integralmente por ambas as partes</b>, constituindo prova plena do estado do im\u00f3vel na data da vistoria, para todos os fins legais e contratuais.', s['normal']))
     story.append(Paragraph(u'<b>4.4</b> Eventuais aditamentos aceitos pelas partes ser\u00e3o formalizados por escrito, assinados por todos os envolvidos, e passar\u00e3o a integrar este documento como anexo, com a mesma for\u00e7a jur\u00eddica do laudo original.', s['normal']))
 
@@ -1091,7 +1088,6 @@ def generate_pdf(inspection_data: dict, rooms_data: list,
             'cnpj'     : _safe(insp.get('imobiliaria_cnpj'), ''),
             'telefone' : _safe(insp.get('imobiliaria_phone'), ''),
             'endereco' : _safe(insp.get('imobiliaria_address'), ''),
-            'email'    : _safe(insp.get('corretor_email'), ''),
         }
 
         amb_json = insp.get('ambientes_json', '')
