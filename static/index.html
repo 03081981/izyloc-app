@@ -3395,7 +3395,8 @@ async function gerarLaudo() {
     corretor_name: (document.getElementById('wi-corr-name') || {}).value || '',
     corretor_creci: (document.getElementById('wi-corr-creci') || {}).value || '',
     corretor_phone: (document.getElementById('wi-corr-phone') || {}).value || '',
-    corretor_email: (document.getElementById('wi-corr-email') || {}).value || ''
+    corretor_email: (document.getElementById('wi-corr-email') || {}).value || '',
+    responsavel: (typeof wizard !== 'undefined' && wizard.realizador) ? wizard.realizador : 'proprietario'
   };
     var ambArr = [];
     Object.keys(window._fotoStore || {}).forEach(function(amb) {
