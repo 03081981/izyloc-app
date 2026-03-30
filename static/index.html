@@ -3400,7 +3400,7 @@ async function gerarLaudo() {
     var ambArr = [];
     Object.keys(window._fotoStore || {}).forEach(function(amb) {
       var fotos = (window._fotoStore[amb] || []).map(function(f) {
-        return {item: f.item || '', estado: f.estado || '', desc: f.desc || ''};
+        return {item: f.item || '', estado: f.estado || '', desc: f.desc || '', src: f.src || ''};
       });
       var verifs = (window._ambStore && window._ambStore[amb]) ? window._ambStore[amb].verificacoes || {} : {};
       var obsAmb = (window._ambStore && window._ambStore[amb]) ? window._ambStore[amb].obs || '' : '';
