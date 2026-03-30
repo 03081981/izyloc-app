@@ -427,6 +427,33 @@ def _safe(val, fallback=u'\u2014'):
     v = str(val).strip()
     return v if v else fallback
 
+def _build_ambientes_from_json(json_str):
+    """Converte ambientes_json do frontend para formato esperado pelo PDF."""
+    import json as _json
+    try:
+        data = _json.loads(json_str)
+    except Exception:
+        return []
+    ambientes = []
+    for amb in data:
+        itens = []
+        for foto in amb.get('fotos', []):
+            itens.append({
+                'nome': _safe(foto.get('item', ''), 'Item'),
+                'estado': _safe(foto.get('estado', ''), u'N\u00e3o informado'),
+                'descricao_ia': _safe(foto.get('desc', ''), ''),
+                'observacao': '',
+                'fotos': [],
+            })
+        ambientes.append({
+            'nome': _safe(amb.get('nome', ''), 'Ambiente'),
+            'itens': itens,
+            'verificacoes': amb.get('verificacoes', {}),
+            'observacoes_gerais': _safe(amb.get('observacoes', ''), ''),
+        })
+    return ambientes
+
+
 def _build_ambientes(rooms_data):
     ambientes = []
     for room in rooms_data:
@@ -535,7 +562,11 @@ def generate_pdf(inspection_data: dict, rooms_data: list,
             'endereco' : _safe(insp.get('imobiliaria_address'), ''),
         }
 
-        ambientes = _build_ambientes(rooms_data)
+        amb_json = insp.get('ambientes_json', '')
+        if amb_json:
+            ambientes = _build_ambientes_from_json(amb_json)
+        else:
+            ambientes = _build_ambientes(rooms_data)
 
         local_data = _format_date_extenso(dt)
 
