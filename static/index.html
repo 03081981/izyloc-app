@@ -2600,10 +2600,12 @@ function switchTab(tab, el) {
 const API = '';
 let currentUser = null, currentToken = null, currentInspection = null;
 let pageHistory = [], signaturePads = {};
-let wizard = { step: 1, inspectionId: null, selectedRooms: [] };
+let wizard = { step: 1, inspectionId: null, selectedRooms: [], realizador: 'imobiliaria' };
 
 // ─── BOOT ─────────────────────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
+  var cardPadrao = document.querySelector('[data-realiza].selected');
+  if (cardPadrao) wizard.realizador = cardPadrao.dataset.realiza;
   const tok = localStorage.getItem('izylo_token');
   const usr = localStorage.getItem('izylo_user');
   if (tok && usr) {
@@ -2848,7 +2850,7 @@ function formatDate(str) {
 
 // ─── NEW INSPECTION WIZARD ────────────────────────────────────────────────────
 function showNewInspection() {
-  wizard = { step: 1, inspectionId: null, selectedRooms: [] };
+  wizard = { step: 1, inspectionId: null, selectedRooms: [], realizador: 'imobiliaria' };
   // Reset forms
   ['wi-address','wi-area','wi-imob-name','wi-imob-cnpj','wi-imob-phone','wi-imob-address',
    'wi-loc-name','wi-loc-cpf','wi-loc-rg','wi-loc-phone','wi-loc-email',
