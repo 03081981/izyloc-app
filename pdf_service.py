@@ -1,4 +1,5 @@
 # ============================================================
+import base64
 # izyLAUDO â PDF SERVICE
 # Gera laudos em PDF usando os templates oficiais.
 # ============================================================
@@ -427,6 +428,17 @@ def _safe(val, fallback=u'\u2014'):
     v = str(val).strip()
     return v if v else fallback
 
+def _foto_bytes(data_url):
+    """Converte data URL base64 para bytes."""
+    if not data_url:
+        return None
+    try:
+        header, b64 = data_url.split(',', 1)
+        return base64.b64decode(b64)
+    except Exception:
+        return None
+
+
 def _build_ambientes_from_json(json_str):
     """Converte ambientes_json do frontend para formato esperado pelo PDF."""
     import json as _json
@@ -438,12 +450,18 @@ def _build_ambientes_from_json(json_str):
     for amb in data:
         itens = []
         for foto in amb.get('fotos', []):
+            foto_bytes_list = []
+            src = foto.get('src', '')
+            if src:
+                fb = _foto_bytes(src)
+                if fb:
+                    foto_bytes_list.append(fb)
             itens.append({
                 'nome': _safe(foto.get('item', ''), 'Item'),
                 'estado': _safe(foto.get('estado', ''), u'N\u00e3o informado'),
                 'descricao_ia': _safe(foto.get('desc', ''), ''),
                 'observacao': '',
-                'fotos': [],
+                'fotos': foto_bytes_list,
             })
         ambientes.append({
             'nome': _safe(amb.get('nome', ''), 'Ambiente'),
