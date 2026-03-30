@@ -1110,7 +1110,7 @@ def generate_pdf(inspection_data: dict, rooms_data: list,
         else:
             ambientes = _build_ambientes(rooms_data)
 
-        local_data = _format_date_extenso(dt)
+        local_data = (cidade_raw.upper() + ', ' + _format_date_extenso(dt)) if cidade_raw else _format_date_extenso(dt)
 
         # ---- Selecao do modelo baseado em tipo x responsavel ----
         tipo = _safe(insp.get('type', 'entrada')).lower().strip()
