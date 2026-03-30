@@ -175,6 +175,7 @@ def init_db():
         "ALTER TABLE inspections ADD COLUMN IF NOT EXISTS observations TEXT",
         "ALTER TABLE inspections ADD COLUMN IF NOT EXISTS locadores_json TEXT",
         "ALTER TABLE inspections ADD COLUMN IF NOT EXISTS locatarios_json TEXT",
+        "ALTER TABLE inspections ADD COLUMN IF NOT EXISTS ambientes_json TEXT",
     ]:
         _run_migration(c, raw, sql)
 
