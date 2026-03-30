@@ -682,7 +682,7 @@ class InspectionsHandler(BaseHandler):
                 'locadores_json', 'locatarios_json',
                 'corretor_name', 'corretor_creci', 'corretor_phone', 'corretor_email',
                 'imobiliaria_name', 'imobiliaria_cnpj', 'imobiliaria_phone', 'imobiliaria_address',
-                'observations', 'ambientes_json', 'created_at', 'updated_at'
+                'observations', 'ambientes_json', 'responsavel', 'created_at', 'updated_at'
             ]
             values = [
                 insp_id, user['user_id'], data['type'], 'rascunho',
@@ -699,7 +699,7 @@ class InspectionsHandler(BaseHandler):
                 data.get('corretor_phone', ''), data.get('corretor_email', ''),
                 data.get('imobiliaria_name', ''), data.get('imobiliaria_cnpj', ''),
                 data.get('imobiliaria_phone', ''), data.get('imobiliaria_address', ''),
-                data.get('observations', ''), data.get('ambientes_json', ''), now, now
+                data.get('observations', ''), data.get('ambientes_json', ''), data.get('responsavel', 'proprietario'), now, now
             ]
             placeholders = ','.join(['?'] * len(fields))
             col_names = ','.join(fields)
@@ -771,7 +771,7 @@ class InspectionHandler(BaseHandler):
                 'locatario_name', 'locatario_cpf', 'locatario_rg', 'locatario_phone', 'locatario_email',
                 'corretor_name', 'corretor_creci', 'corretor_phone', 'corretor_email',
                 'imobiliaria_name', 'imobiliaria_cnpj', 'imobiliaria_phone', 'imobiliaria_address',
-                'observations', 'ambientes_json'
+                'observations', 'ambientes_json', 'responsavel'
             ]
             sets = []
             vals = []
