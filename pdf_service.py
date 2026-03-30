@@ -156,7 +156,7 @@ def add_foto_item(story, s, item, numero_inicio=1):
         n = numero_inicio + i
         story.append(Paragraph(f'Foto {n}', s['foto_num']))
         try:
-            img = Image(io.BytesIO(foto_bytes), width=TW*0.5, height=TW*0.3)
+            img = Image(io.BytesIO(foto_bytes), width=TW*1.0, height=TW*0.6)
             img.hAlign = 'LEFT'
             story.append(img)
         except Exception:
