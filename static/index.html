@@ -3615,7 +3615,7 @@ window.addEventListener('resize', () => {
       var next = nextMap[step];
       if (next !== undefined) {
         if (step === 2) { wizardNext(1).catch(function(e){ console.error('wizardNext(1) error:', e); }); }
-        if (step === 3) { wizardNext(2).catch(function(e){ console.error('wizardNext(2) error:', e); }); }
+        if (step === 3) { wizardNext(3).catch(function(e){ console.error('wizardNext(3) error:', e); }); }
         gotoWStep(next);
         if (next === 3) {
 if (typeof initAmbientes === 'function') initAmbientes();
