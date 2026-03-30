@@ -3369,7 +3369,15 @@ async function gerarLaudo() {
     type: tipo,
     property_address: address,
     property_type: document.getElementById('wi-prop-type').value,
-    inspection_date: document.getElementById('wi-date').value
+    inspection_date: document.getElementById('wi-date').value,
+    imobiliaria_name: (document.getElementById('wi-imob-name') || {}).value || '',
+    imobiliaria_cnpj: (document.getElementById('wi-imob-cnpj') || {}).value || '',
+    imobiliaria_phone: (document.getElementById('wi-imob-phone') || {}).value || '',
+    imobiliaria_address: (document.getElementById('wi-imob-address') || {}).value || '',
+    corretor_name: (document.getElementById('wi-corr-name') || {}).value || '',
+    corretor_creci: (document.getElementById('wi-corr-creci') || {}).value || '',
+    corretor_phone: (document.getElementById('wi-corr-phone') || {}).value || '',
+    corretor_email: (document.getElementById('wi-corr-email') || {}).value || ''
   });
   if (r && r.id) {
     wizard.inspectionId = r.id;
@@ -4020,9 +4028,17 @@ if (typeof initAmbientes === 'function') initAmbientes();
       var quem = '-';
       quemCards.forEach(function(el) { if (el.classList.contains('selected')) quem = el.getAttribute('data-realiza') === 'imobiliaria' ? 'Imobiliaria / Corretor' : 'Proprietario'; });
       var imobName = (document.getElementById('wi-imob-name') || {}).value || '';
+      var corrName = (document.getElementById('wi-corr-name') || {}).value || '';
+      var corrCreci = (document.getElementById('wi-corr-creci') || {}).value || '';
+      var corrPhone = (document.getElementById('wi-corr-phone') || {}).value || '';
+      var corrEmail = (document.getElementById('wi-corr-email') || {}).value || '';
       h += '<div class="rev-card"><div class="rev-card-title">Quem realiza</div>';
       h += '<div class="rev-row"><span class="rev-label">Responsavel:</span><span class="rev-val">' + quem + '</span></div>';
-      if (imobName) h += '<div class="rev-row"><span class="rev-label">Nome:</span><span class="rev-val">' + imobName + '</span></div>';
+      if (imobName) h += '<div class="rev-row"><span class="rev-label">Imobiliaria:</span><span class="rev-val">' + imobName + '</span></div>';
+      if (corrName) h += '<div class="rev-row"><span class="rev-label">Corretor:</span><span class="rev-val">' + corrName + '</span></div>';
+      if (corrCreci) h += '<div class="rev-row"><span class="rev-label">CRECI:</span><span class="rev-val">' + corrCreci + '</span></div>';
+      if (corrPhone) h += '<div class="rev-row"><span class="rev-label">Telefone:</span><span class="rev-val">' + corrPhone + '</span></div>';
+      if (corrEmail) h += '<div class="rev-row"><span class="rev-label">E-mail:</span><span class="rev-val">' + corrEmail + '</span></div>';
       h += '</div>';
 
       // Card 3: Partes envolvidas
