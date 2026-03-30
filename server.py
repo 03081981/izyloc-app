@@ -771,6 +771,7 @@ class InspectionHandler(BaseHandler):
                 'locatario_name', 'locatario_cpf', 'locatario_rg', 'locatario_phone', 'locatario_email',
                 'corretor_name', 'corretor_creci', 'corretor_phone', 'corretor_email',
                 'imobiliaria_name', 'imobiliaria_cnpj', 'imobiliaria_phone', 'imobiliaria_address',
+                'bairro', 'complemento', 'cep', 'cidade', 'estado',
                 'observations', 'ambientes_json', 'responsavel'
             ]
             sets = []
