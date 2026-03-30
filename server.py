@@ -676,6 +676,7 @@ class InspectionsHandler(BaseHandler):
             fields = [
                 'id', 'user_id', 'type', 'status', 'property_address', 'property_type',
                 'property_area', 'inspection_date',
+                'bairro', 'complemento', 'cep', 'cidade', 'estado',
                 'locador_name', 'locador_cpf', 'locador_rg', 'locador_phone', 'locador_email',
                 'locatario_name', 'locatario_cpf', 'locatario_rg', 'locatario_phone', 'locatario_email',
                 'locadores_json', 'locatarios_json',
@@ -687,6 +688,8 @@ class InspectionsHandler(BaseHandler):
                 insp_id, user['user_id'], data['type'], 'rascunho',
                 data.get('property_address', ''), data.get('property_type', ''),
                 data.get('property_area', ''), data.get('inspection_date', datetime.now().strftime('%d/%m/%Y')),
+                data.get('bairro', ''), data.get('complemento', ''),
+                data.get('cep', ''), data.get('cidade', ''), data.get('estado', ''),
                 data.get('locador_name', ''), data.get('locador_cpf', ''),
                 data.get('locador_rg', ''), data.get('locador_phone', ''), data.get('locador_email', ''),
                 data.get('locatario_name', ''), data.get('locatario_cpf', ''),
