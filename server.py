@@ -1,7 +1,4 @@
-'bairro', 'complemento', 'cep', 'cidade', 'estado',
-                'observations', 'ambientes_json'
-            ]
-03-18
+# deploy: 2026-03-18
 #!/usr/bin/env python3
 """
 IZYLO - Sistema de Vistoria de ImÃÂÃÂÃÂÃÂ³veis
@@ -685,7 +682,7 @@ class InspectionsHandler(BaseHandler):
                 'locadores_json', 'locatarios_json',
                 'corretor_name', 'corretor_creci', 'corretor_phone', 'corretor_email',
                 'imobiliaria_name', 'imobiliaria_cnpj', 'imobiliaria_phone', 'imobiliaria_address',
-                'observations', 'ambientes_json', 'created_at', 'updated_at'
+                'observations', 'created_at', 'updated_at'
             ]
             values = [
                 insp_id, user['user_id'], data['type'], 'rascunho',
@@ -702,7 +699,7 @@ class InspectionsHandler(BaseHandler):
                 data.get('corretor_phone', ''), data.get('corretor_email', ''),
                 data.get('imobiliaria_name', ''), data.get('imobiliaria_cnpj', ''),
                 data.get('imobiliaria_phone', ''), data.get('imobiliaria_address', ''),
-                data.get('observations', ''), data.get('ambientes_json', ''), now, now
+                data.get('observations', ''), now, now
             ]
             placeholders = ','.join(['?'] * len(fields))
             col_names = ','.join(fields)
