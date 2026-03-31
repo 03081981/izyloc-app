@@ -1,8 +1,3 @@
-
-class VersionHandler(BaseHandler):
-    def get(self):
-        self.ok({'version': 'debug-v2-20260331', 'has_build_person_blocos': hasattr(__import__('pdf_service'), '_build_person_blocos')})
-
 # deploy: 2026-03-18
 #!/usr/bin/env python3
 """
@@ -1337,8 +1332,7 @@ def make_app():
     upload_dir = UPLOAD_DIR
     return tornado.web.Application([
         # Auth
-        (r'/api/version', VersionHandler),
-            (r'/api/auth/register', RegisterHandler),
+        (r'/api/auth/register', RegisterHandler),
         (r'/api/auth/login', LoginHandler),
         (r'/api/auth/me', MeHandler),
         (r'/api/auth/forgot-password', PasswordResetRequestHandler),
