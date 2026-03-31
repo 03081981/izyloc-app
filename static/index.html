@@ -3709,6 +3709,15 @@ if (typeof initAmbientes === 'function') initAmbientes();
     var _origNext = wizardNext;
     wizardNext = async function(step) {
       if (step === 3) {
+        // Guard: restore inspectionId from localStorage if lost
+        if (!wizard.inspectionId) {
+            var saved = localStorage.getItem('izylo_current_inspection');
+            if (saved) wizard.inspectionId = saved;
+        }
+        if (!wizard.inspectionId) {
+            toast('Erro: inspecao nao encontrada. Volte ao inicio.', 'error');
+            return;
+        }
         showLoading('Salvando...');
         var locadores = [];
         document.querySelectorAll('#locadores-container .person-block').forEach(function(b) {
