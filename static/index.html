@@ -2604,6 +2604,8 @@ const API = '';
 let currentUser = null, currentToken = null, currentInspection = null;
 let pageHistory = [], signaturePads = {};
 let wizard = { step: 1, inspectionId: null, selectedRooms: [], realizador: 'imobiliaria' };
+    var _savedInspId = localStorage.getItem('izylo_current_inspection');
+    if (_savedInspId) wizard.inspectionId = _savedInspId;
 
 // ─── BOOT ─────────────────────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
@@ -2988,6 +2990,7 @@ async function wizardNext(step) {
     hideLoading();
     if (!r.ok) return toast(r.error || 'Erro ao criar vistoria', 'error');
     wizard.inspectionId = r.id; currentInspection = r;
+    localStorage.setItem('izylo_current_inspection', r.id);
     gotoWStep(3);
   }
   else if (step === 2) {
@@ -3421,6 +3424,7 @@ async function gerarLaudo() {
     if (r && r.id) {
       wizard.inspectionId = r.id;
       currentInspection = r;
+      localStorage.setItem('izylo_current_inspection', r.id);
     }
   }
   nextWizStep();
@@ -3440,6 +3444,7 @@ async function generatePDF(id) {
     document.body.appendChild(a); a.click();
     document.body.removeChild(a); URL.revokeObjectURL(url);
     toast('✅ Laudo gerado com sucesso!', 'success');
+      localStorage.removeItem('izylo_current_inspection');
     setTimeout(() => { showPage('page-dashboard',null,false); loadDashboard(); }, 2000);
   } else { toast(r.error||'Erro ao gerar PDF', 'error'); }
 }
@@ -4033,6 +4038,7 @@ if (typeof initAmbientes === 'function') initAmbientes();
         a.download = 'laudo-' + wizard.inspectionId + '.pdf';
         a.click();
         URL.revokeObjectURL(url);
+        localStorage.removeItem('izylo_current_inspection');
       } catch(e) {
         alert('Erro ao gerar PDF: ' + e.message);
       }
