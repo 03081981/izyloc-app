@@ -1,9 +1,9 @@
 # ============================================================
 import base64
-# izyLAUDO Ã¢ÂÂ PDF SERVICE
+# izyLAUDO ÃÂ¢ÃÂÃÂ PDF SERVICE
 # Gera laudos em PDF usando os templates oficiais.
 # ============================================================
-# MantÃÂ©m a assinatura: generate_pdf(inspection_data, rooms_data,
+# MantÃÂÃÂ©m a assinatura: generate_pdf(inspection_data, rooms_data,
 #                                    signatures_data, output_path) -> bool
 # ============================================================
 
@@ -22,7 +22,7 @@ from datetime import datetime
 
 logger = logging.getLogger(__name__)
 
-# Ã¢ÂÂÃ¢ÂÂÃ¢ÂÂ CORES Ã¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂ
+# ÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂ CORES ÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂ
 # === CORES ===
 AZUL       = HexColor('#2d7dd2')
 AZUL_CLARO = HexColor('#EAF2FB')
@@ -47,7 +47,7 @@ ML, MR, MT, MB = 3*cm, 2*cm, 3*cm, 2*cm
 TW = W - ML - MR
 
 FOTO_W = TW
-FOTO_H = 10*cm   # ~10 cm â aprovado
+FOTO_H = 10*cm   # ~10 cm Ã¢ÂÂ aprovado
 
 # === ESTILOS ===
 def mk_styles():
@@ -165,7 +165,7 @@ def _badge_estado(estado):
 # === COMPONENTES ===
 
 def add_cabecalho(story, s, titulo_doc, numero_doc):
-    """Logo esquerda + tÃ­tulo direita, separados por linha bold."""
+    """Logo esquerda + tÃÂ­tulo direita, separados por linha bold."""
     logo_cell = Paragraph(
         '<font face="Helvetica" size="18" color="#2d7dd2">izy</font>'
         '<font face="Helvetica-Bold" size="18">LAUDO</font>',
@@ -193,10 +193,10 @@ def add_cabecalho(story, s, titulo_doc, numero_doc):
                             spaceBefore=0, spaceAfter=10))
 
 def add_parte(story, s, texto):
-    """SeÃ§Ã£o numerada: cÃ­rculo preto + texto + linha."""
+    """SeÃÂ§ÃÂ£o numerada: cÃÂ­rculo preto + texto + linha."""
     num = texto.split()[1] if len(texto.split()) > 1 else '1'
     num = num.rstrip('\u2014').rstrip()
-    # Extrai sÃ³ o nÃºmero da parte
+    # Extrai sÃÂ³ o nÃÂºmero da parte
     import re
     m = re.search(r'\d+', texto)
     n = m.group() if m else '1'
@@ -250,13 +250,13 @@ def add_campo(story, s, label, valor):
     story.append(Paragraph(maiusculo(valor), s['campo_valor']))
 
 def add_campos_imovel_grid(story, s, dados_imovel):
-    """Campos do imÃ³vel em grid 2 colunas com linhas finas."""
+    """Campos do imÃÂ³vel em grid 2 colunas com linhas finas."""
     GAP = 8
     CW  = (TW - GAP) / 2
 
     story.append(Paragraph(u'Dados do Im\u00f3vel', s['sub']))
 
-    # EndereÃ§o â largura total
+    # EndereÃÂ§o Ã¢ÂÂ largura total
     t_end = Table([
         [Paragraph(u'ENDERE\u00c7O', s['campo_label'])],
         [Paragraph(maiusculo(dados_imovel.get('endereco', u'\u2014')), s['campo_valor'])],
@@ -301,7 +301,7 @@ def add_campos_imovel_grid(story, s, dados_imovel):
         story.append(t)
 
 def _parte_col(titulo, campos, s):
-    """Coluna de dados de uma parte (locador, locatÃ¡rio, etc)."""
+    """Coluna de dados de uma parte (locador, locatÃÂ¡rio, etc)."""
     linhas = [[Paragraph(titulo, s['parte_titulo'])]]
     for lbl, val in campos:
         is_email = '@' in val
@@ -309,6 +309,23 @@ def _parte_col(titulo, campos, s):
         linhas.append([Paragraph(lbl.upper(), s['parte_label'])])
         linhas.append([Paragraph(maiusculo(val) if not is_email else val, val_style)])
     return linhas
+
+
+def _build_person_blocos(persons, num_prefix, titulo_base):
+    blocos = []
+    for i, p in enumerate(persons):
+        suffix = u' (%d)' % (i + 1) if len(persons) > 1 else ''
+        blocos.append({
+            'titulo': u'%s %s%s' % (num_prefix, titulo_base, suffix),
+            'campos': [('Nome completo', p['nome']),
+                       ('CPF', p['cpf'])] +
+                      ([('RG', p['rg'])] if p.get('rg') else []) +
+                      [('Telefone', p['telefone']),
+                       ('E-mail', p['email'])],
+            'is_imob': False
+        })
+    return blocos
+
 
 def add_partes_cards(story, s, blocos):
     """Partes em 2 colunas separadas por linha vertical fina."""
@@ -345,7 +362,7 @@ def add_partes_cards(story, s, blocos):
         story.append(t)
 
 def add_card_imob_corretor(story, s, dados_imobiliaria, dados_corretor):
-    """Card ImobiliÃ¡ria/Corretor â coluna Ãºnica, campos em sequÃªncia."""
+    """Card ImobiliÃÂ¡ria/Corretor Ã¢ÂÂ coluna ÃÂºnica, campos em sequÃÂªncia."""
     story.append(Paragraph(u'Partes Envolvidas', s['sub']))
     nome  = dados_corretor.get('nome',  u'\u2014') or u'\u2014'
     creci = dados_corretor.get('creci', u'\u2014') or u'\u2014'
@@ -371,11 +388,11 @@ def add_card_imob_corretor(story, s, dados_imobiliaria, dados_corretor):
     story.append(t)
 
 def add_foto_item(story, s, item, numero_inicio=1):
-    """Item com badge estado + foto + descriÃ§Ã£o IA."""
+    """Item com badge estado + foto + descriÃÂ§ÃÂ£o IA."""
     estado  = item.get('estado', '')
     bg_cor, tx_cor = _badge_estado(estado)
 
-    # Header: nome Ã  esquerda, badge Ã  direita
+    # Header: nome ÃÂ  esquerda, badge ÃÂ  direita
     nome_p  = Paragraph(f'<b>{item["nome"]}</b>', s['item_nome'])
     badge_p = Paragraph(
         u'\u25cf ' + estado.upper() if estado else '',
@@ -779,10 +796,11 @@ def add_rodape(story, s):
         u'Documento gerado pelo sistema izyLAUDO \u2014 Vistorias Imobili\u00e1rias \u00b7 '
         u'Assinatura digital via Autentique \u00b7 Lei n\u00ba 14.063/2020', s['rodape']))
 
-# Ã¢ÂÂÃ¢ÂÂÃ¢ÂÂ FUN\u00c7\u00c3O DO TEMPLATE Ã¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂ
+# ÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂ FUN\u00c7\u00c3O DO TEMPLATE ÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂ
 def gerar_laudo_entrada_proprietario(dados_imovel, dados_locador,
                                       dados_locatario, dados_corretor, dados_imobiliaria,
-                                      ambientes, local_data, output_path):
+                                      ambientes, local_data, output_path,
+                                      locadores=None, locatarios=None):
     doc = SimpleDocTemplate(
         output_path, pagesize=A4,
         topMargin=MT, leftMargin=ML,
@@ -802,20 +820,10 @@ def gerar_laudo_entrada_proprietario(dados_imovel, dados_locador,
     add_campos_imovel_grid(story, s, dados_imovel)
     story.append(Spacer(1, 4))
     story.append(Paragraph(u'Partes envolvidas', s['secao']))
-    _blocos = [
-        {'titulo': u'1.2 Locador(es) \u2014 Propriet\u00e1rio',
-         'campos': [('Nome completo', dados_locador['nome']),
-                    ('CPF', dados_locador['cpf'])] +
-                   ([('RG', dados_locador['rg'])] if dados_locador.get('rg') else []) +
-                   [('Telefone', dados_locador['telefone']),
-                    ('E-mail', dados_locador['email'])], 'is_imob': False},
-        {'titulo': u'1.3 Locat\u00e1rio(s)',
-         'campos': [('Nome completo', dados_locatario['nome']),
-                    ('CPF', dados_locatario['cpf'])] +
-                   ([('RG', dados_locatario['rg'])] if dados_locatario.get('rg') else []) +
-                   [('Telefone', dados_locatario['telefone']),
-                    ('E-mail', dados_locatario['email'])], 'is_imob': False},
-    ]
+    locadores = locadores or [dados_locador]
+    locatarios = locatarios or [dados_locatario]
+    _blocos = _build_person_blocos(locadores, '1.2', u'Locador(es) \u2014 Propriet\u00e1rio') + \
+              _build_person_blocos(locatarios, '1.3', u'Locat\u00e1rio(s)')
     if dados_imobiliaria.get('nome'):
         _blocos.append({'titulo': u'1.4 Imobili\u00e1ria',
          'campos': [('Nome', dados_imobiliaria['nome']),
@@ -833,10 +841,11 @@ def gerar_laudo_entrada_proprietario(dados_imovel, dados_locador,
     add_ambientes(story, s, ambientes)
     add_clausulas_entrada(story, s, dados_locador['email'], is_imobiliaria=False)
 
-    partes_sig = [
-        (dados_locador['nome'],    u'Locador / Propriet\u00e1rio', dados_locador['cpf']),
-        (dados_locatario['nome'],  u'Locat\u00e1rio',              dados_locatario['cpf']),
-    ]
+    partes_sig = []
+    for _loc in locadores:
+        partes_sig.append((_loc['nome'], u'Locador / Propriet\u00e1rio', _loc['cpf']))
+    for _ten in locatarios:
+        partes_sig.append((_ten['nome'], u'Locat\u00e1rio', _ten['cpf']))
     if dados_imobiliaria.get('nome'):
         partes_sig.append((dados_imobiliaria['nome'], u'Imobili\u00e1ria', dados_imobiliaria.get('cnpj', '')))
     if dados_corretor.get('nome'):
@@ -847,7 +856,7 @@ def gerar_laudo_entrada_proprietario(dados_imovel, dados_locador,
     doc.build(story)
 
 
-# Ã¢ÂÂÃ¢ÂÂÃ¢ÂÂ HELPERS DE MAPEAMENTO Ã¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂ
+# ÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂ HELPERS DE MAPEAMENTO ÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂ
 
 MESES_PT = {
     1: 'JANEIRO', 2: 'FEVEREIRO', 3: u'MAR\u00c7O', 4: 'ABRIL',
@@ -860,7 +869,8 @@ gerar_laudo_modelo2 = gerar_laudo_entrada_proprietario
 
 def gerar_laudo_modelo1(dados_imovel, dados_locador, dados_locatario,
                         dados_corretor, dados_imobiliaria,
-                        ambientes, local_data, output_path):
+                        ambientes, local_data, output_path,
+                        locadores=None, locatarios=None):
     doc = SimpleDocTemplate(
         output_path, pagesize=A4,
         topMargin=MT, leftMargin=ML,
@@ -881,20 +891,10 @@ def gerar_laudo_modelo1(dados_imovel, dados_locador, dados_locatario,
     story.append(Spacer(1, 4))
     story.append(Paragraph(u'Partes envolvidas', s['secao']))
     add_card_imob_corretor(story, s, dados_imobiliaria, dados_corretor)
-    _blocos_locs = [
-        {'titulo': u'1.3 Locador(es)',
-         'campos': [('Nome completo', dados_locador['nome']),
-                    ('CPF', dados_locador['cpf'])] +
-                   ([('RG', dados_locador['rg'])] if dados_locador.get('rg') else []) +
-                   [('Telefone', dados_locador['telefone']),
-                    ('E-mail', dados_locador['email'])], 'is_imob': False},
-        {'titulo': u'1.4 Locat\u00e1rio(s)',
-         'campos': [('Nome completo', dados_locatario['nome']),
-                    ('CPF', dados_locatario['cpf'])] +
-                   ([('RG', dados_locatario['rg'])] if dados_locatario.get('rg') else []) +
-                   [('Telefone', dados_locatario['telefone']),
-                    ('E-mail', dados_locatario['email'])], 'is_imob': False},
-    ]
+    locadores = locadores or [dados_locador]
+    locatarios = locatarios or [dados_locatario]
+    _blocos_locs = _build_person_blocos(locadores, '1.3', u'Locador(es)') + \
+                   _build_person_blocos(locatarios, '1.4', u'Locat\u00e1rio(s)')
     add_partes_cards(story, s, _blocos_locs)
     add_ambientes(story, s, ambientes)
 
@@ -902,10 +902,11 @@ def gerar_laudo_modelo1(dados_imovel, dados_locador, dados_locatario,
     creci_val = dados_corretor.get('creci', '')
     add_clausulas_entrada(story, s, email_cont, is_imobiliaria=True, creci=creci_val)
 
-    partes_sig = [
-        (dados_locador['nome'], u'Locador', dados_locador['cpf']),
-        (dados_locatario['nome'], u'Locat\u00e1rio', dados_locatario['cpf']),
-    ]
+    partes_sig = []
+    for _loc in locadores:
+        partes_sig.append((_loc['nome'], u'Locador', _loc['cpf']))
+    for _ten in locatarios:
+        partes_sig.append((_ten['nome'], u'Locat\u00e1rio', _ten['cpf']))
     if dados_imobiliaria.get('nome'):
         partes_sig.append((dados_imobiliaria['nome'], u'Imobili\u00e1ria', dados_imobiliaria.get('cnpj', '')))
     if dados_corretor.get('nome'):
@@ -918,7 +919,8 @@ def gerar_laudo_modelo1(dados_imovel, dados_locador, dados_locatario,
 
 def gerar_laudo_modelo3(dados_imovel, dados_locador, dados_locatario,
                         dados_corretor, dados_imobiliaria,
-                        ambientes, local_data, output_path):
+                        ambientes, local_data, output_path,
+                        locadores=None, locatarios=None):
     doc = SimpleDocTemplate(
         output_path, pagesize=A4,
         topMargin=MT, leftMargin=ML,
@@ -939,20 +941,10 @@ def gerar_laudo_modelo3(dados_imovel, dados_locador, dados_locatario,
     story.append(Spacer(1, 4))
     story.append(Paragraph(u'Partes envolvidas', s['secao']))
     add_card_imob_corretor(story, s, dados_imobiliaria, dados_corretor)
-    _blocos_locs = [
-        {'titulo': u'1.3 Locador(es)',
-         'campos': [('Nome completo', dados_locador['nome']),
-                    ('CPF', dados_locador['cpf'])] +
-                   ([('RG', dados_locador['rg'])] if dados_locador.get('rg') else []) +
-                   [('Telefone', dados_locador['telefone']),
-                    ('E-mail', dados_locador['email'])], 'is_imob': False},
-        {'titulo': u'1.4 Locat\u00e1rio(s)',
-         'campos': [('Nome completo', dados_locatario['nome']),
-                    ('CPF', dados_locatario['cpf'])] +
-                   ([('RG', dados_locatario['rg'])] if dados_locatario.get('rg') else []) +
-                   [('Telefone', dados_locatario['telefone']),
-                    ('E-mail', dados_locatario['email'])], 'is_imob': False},
-    ]
+    locadores = locadores or [dados_locador]
+    locatarios = locatarios or [dados_locatario]
+    _blocos_locs = _build_person_blocos(locadores, '1.3', u'Locador(es)') + \
+                   _build_person_blocos(locatarios, '1.4', u'Locat\u00e1rio(s)')
     add_partes_cards(story, s, _blocos_locs)
     add_ambientes(story, s, ambientes)
 
@@ -960,10 +952,11 @@ def gerar_laudo_modelo3(dados_imovel, dados_locador, dados_locatario,
     creci_val = dados_corretor.get('creci', '')
     add_clausulas_saida(story, s, email_cont, is_imobiliaria=True, creci=creci_val)
 
-    partes_sig = [
-        (dados_locador['nome'], u'Locador', dados_locador['cpf']),
-        (dados_locatario['nome'], u'Locat\u00e1rio', dados_locatario['cpf']),
-    ]
+    partes_sig = []
+    for _loc in locadores:
+        partes_sig.append((_loc['nome'], u'Locador', _loc['cpf']))
+    for _ten in locatarios:
+        partes_sig.append((_ten['nome'], u'Locat\u00e1rio', _ten['cpf']))
     if dados_imobiliaria.get('nome'):
         partes_sig.append((dados_imobiliaria['nome'], u'Imobili\u00e1ria', dados_imobiliaria.get('cnpj', '')))
     if dados_corretor.get('nome'):
@@ -976,7 +969,8 @@ def gerar_laudo_modelo3(dados_imovel, dados_locador, dados_locatario,
 
 def gerar_laudo_modelo4(dados_imovel, dados_locador, dados_locatario,
                         dados_corretor, dados_imobiliaria,
-                        ambientes, local_data, output_path):
+                        ambientes, local_data, output_path,
+                        locadores=None, locatarios=None):
     doc = SimpleDocTemplate(
         output_path, pagesize=A4,
         topMargin=MT, leftMargin=ML,
@@ -996,20 +990,10 @@ def gerar_laudo_modelo4(dados_imovel, dados_locador, dados_locatario,
     add_campos_imovel_grid(story, s, dados_imovel)
     story.append(Spacer(1, 4))
     story.append(Paragraph(u'Partes envolvidas', s['secao']))
-    _blocos = [
-        {'titulo': u'1.2 Locador(es) \u2014 Propriet\u00e1rio',
-         'campos': [('Nome completo', dados_locador['nome']),
-                    ('CPF', dados_locador['cpf'])] +
-                   ([('RG', dados_locador['rg'])] if dados_locador.get('rg') else []) +
-                   [('Telefone', dados_locador['telefone']),
-                    ('E-mail', dados_locador['email'])], 'is_imob': False},
-        {'titulo': u'1.3 Locat\u00e1rio(s)',
-         'campos': [('Nome completo', dados_locatario['nome']),
-                    ('CPF', dados_locatario['cpf'])] +
-                   ([('RG', dados_locatario['rg'])] if dados_locatario.get('rg') else []) +
-                   [('Telefone', dados_locatario['telefone']),
-                    ('E-mail', dados_locatario['email'])], 'is_imob': False},
-    ]
+    locadores = locadores or [dados_locador]
+    locatarios = locatarios or [dados_locatario]
+    _blocos = _build_person_blocos(locadores, '1.2', u'Locador(es) \u2014 Propriet\u00e1rio') + \
+              _build_person_blocos(locatarios, '1.3', u'Locat\u00e1rio(s)')
     if dados_imobiliaria.get('nome'):
         _blocos.append({'titulo': u'1.4 Imobili\u00e1ria',
          'campos': [('Nome', dados_imobiliaria['nome']),
@@ -1027,10 +1011,11 @@ def gerar_laudo_modelo4(dados_imovel, dados_locador, dados_locatario,
     add_ambientes(story, s, ambientes)
     add_clausulas_saida(story, s, dados_locador['email'], is_imobiliaria=False)
 
-    partes_sig = [
-        (dados_locador['nome'], u'Locador / Propriet\u00e1rio', dados_locador['cpf']),
-        (dados_locatario['nome'], u'Locat\u00e1rio', dados_locatario['cpf']),
-    ]
+    partes_sig = []
+    for _loc in locadores:
+        partes_sig.append((_loc['nome'], u'Locador / Propriet\u00e1rio', _loc['cpf']))
+    for _ten in locatarios:
+        partes_sig.append((_ten['nome'], u'Locat\u00e1rio', _ten['cpf']))
     if dados_imobiliaria.get('nome'):
         partes_sig.append((dados_imobiliaria['nome'], u'Imobili\u00e1ria', dados_imobiliaria.get('cnpj', '')))
     if dados_corretor.get('nome'):
@@ -1043,7 +1028,8 @@ def gerar_laudo_modelo4(dados_imovel, dados_locador, dados_locatario,
 
 def gerar_laudo_modelo5(dados_imovel, dados_locador, dados_locatario,
                         dados_corretor, dados_imobiliaria,
-                        ambientes, local_data, output_path):
+                        ambientes, local_data, output_path,
+                        locadores=None, locatarios=None):
     doc = SimpleDocTemplate(
         output_path, pagesize=A4,
         topMargin=MT, leftMargin=ML,
@@ -1064,20 +1050,10 @@ def gerar_laudo_modelo5(dados_imovel, dados_locador, dados_locatario,
     story.append(Spacer(1, 4))
     story.append(Paragraph(u'Partes envolvidas', s['secao']))
     add_card_imob_corretor(story, s, dados_imobiliaria, dados_corretor)
-    _blocos_locs = [
-        {'titulo': u'1.3 Locador(es)',
-         'campos': [('Nome completo', dados_locador['nome']),
-                    ('CPF', dados_locador['cpf'])] +
-                   ([('RG', dados_locador['rg'])] if dados_locador.get('rg') else []) +
-                   [('Telefone', dados_locador['telefone']),
-                    ('E-mail', dados_locador['email'])], 'is_imob': False},
-        {'titulo': u'1.4 Locat\u00e1rio(s)',
-         'campos': [('Nome completo', dados_locatario['nome']),
-                    ('CPF', dados_locatario['cpf'])] +
-                   ([('RG', dados_locatario['rg'])] if dados_locatario.get('rg') else []) +
-                   [('Telefone', dados_locatario['telefone']),
-                    ('E-mail', dados_locatario['email'])], 'is_imob': False},
-    ]
+    locadores = locadores or [dados_locador]
+    locatarios = locatarios or [dados_locatario]
+    _blocos_locs = _build_person_blocos(locadores, '1.3', u'Locador(es)') + \
+                   _build_person_blocos(locatarios, '1.4', u'Locat\u00e1rio(s)')
     add_partes_cards(story, s, _blocos_locs)
     add_ambientes(story, s, ambientes)
 
@@ -1085,10 +1061,11 @@ def gerar_laudo_modelo5(dados_imovel, dados_locador, dados_locatario,
     creci_val = dados_corretor.get('creci', '')
     add_clausulas_temporada(story, s, email_cont, is_imobiliaria=True, creci=creci_val)
 
-    partes_sig = [
-        (dados_locador['nome'], u'Anfitri\u00e3o / Locador', dados_locador['cpf']),
-        (dados_locatario['nome'], u'H\u00f3spede / Ocupante', dados_locatario['cpf']),
-    ]
+    partes_sig = []
+    for _loc in locadores:
+        partes_sig.append((_loc['nome'], u'Anfitri\u00e3o / Locador', _loc['cpf']))
+    for _ten in locatarios:
+        partes_sig.append((_ten['nome'], u'H\u00f3spede / Ocupante', _ten['cpf']))
     if dados_imobiliaria.get('nome'):
         partes_sig.append((dados_imobiliaria['nome'], u'Imobili\u00e1ria', dados_imobiliaria.get('cnpj', '')))
     if dados_corretor.get('nome'):
@@ -1101,7 +1078,8 @@ def gerar_laudo_modelo5(dados_imovel, dados_locador, dados_locatario,
 
 def gerar_laudo_modelo6(dados_imovel, dados_locador, dados_locatario,
                         dados_corretor, dados_imobiliaria,
-                        ambientes, local_data, output_path):
+                        ambientes, local_data, output_path,
+                        locadores=None, locatarios=None):
     doc = SimpleDocTemplate(
         output_path, pagesize=A4,
         topMargin=MT, leftMargin=ML,
@@ -1121,20 +1099,10 @@ def gerar_laudo_modelo6(dados_imovel, dados_locador, dados_locatario,
     add_campos_imovel_grid(story, s, dados_imovel)
     story.append(Spacer(1, 4))
     story.append(Paragraph(u'Partes envolvidas', s['secao']))
-    _blocos = [
-        {'titulo': u'1.2 Locador(es) \u2014 Propriet\u00e1rio',
-         'campos': [('Nome completo', dados_locador['nome']),
-                    ('CPF', dados_locador['cpf'])] +
-                   ([('RG', dados_locador['rg'])] if dados_locador.get('rg') else []) +
-                   [('Telefone', dados_locador['telefone']),
-                    ('E-mail', dados_locador['email'])], 'is_imob': False},
-        {'titulo': u'1.3 Locat\u00e1rio(s)',
-         'campos': [('Nome completo', dados_locatario['nome']),
-                    ('CPF', dados_locatario['cpf'])] +
-                   ([('RG', dados_locatario['rg'])] if dados_locatario.get('rg') else []) +
-                   [('Telefone', dados_locatario['telefone']),
-                    ('E-mail', dados_locatario['email'])], 'is_imob': False},
-    ]
+    locadores = locadores or [dados_locador]
+    locatarios = locatarios or [dados_locatario]
+    _blocos = _build_person_blocos(locadores, '1.2', u'Locador(es) \u2014 Propriet\u00e1rio') + \
+              _build_person_blocos(locatarios, '1.3', u'Locat\u00e1rio(s)')
     if dados_imobiliaria.get('nome'):
         _blocos.append({'titulo': u'1.4 Imobili\u00e1ria',
          'campos': [('Nome', dados_imobiliaria['nome']),
@@ -1152,10 +1120,11 @@ def gerar_laudo_modelo6(dados_imovel, dados_locador, dados_locatario,
     add_ambientes(story, s, ambientes)
     add_clausulas_temporada(story, s, dados_locador['email'], is_imobiliaria=False)
 
-    partes_sig = [
-        (dados_locador['nome'], u'Anfitri\u00e3o / Locador / Propriet\u00e1rio', dados_locador['cpf']),
-        (dados_locatario['nome'], u'H\u00f3spede / Ocupante', dados_locatario['cpf']),
-    ]
+    partes_sig = []
+    for _loc in locadores:
+        partes_sig.append((_loc['nome'], u'Anfitri\u00e3o / Locador / Propriet\u00e1rio', _loc['cpf']))
+    for _ten in locatarios:
+        partes_sig.append((_ten['nome'], u'H\u00f3spede / Ocupante', _ten['cpf']))
     if dados_imobiliaria.get('nome'):
         partes_sig.append((dados_imobiliaria['nome'], u'Imobili\u00e1ria', dados_imobiliaria.get('cnpj', '')))
     if dados_corretor.get('nome'):
@@ -1275,7 +1244,7 @@ def _generate_numero_laudo(inspection_data):
     return f'{prefixo}-{ano}-{seq}'
 
 
-# Ã¢ÂÂÃ¢ÂÂÃ¢ÂÂ FUN\u00c7\u00c3O PRINCIPAL (mant\u00e9m assinatura compat\u00edvel) Ã¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂ
+# ÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂ FUN\u00c7\u00c3O PRINCIPAL (mant\u00e9m assinatura compat\u00edvel) ÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂ
 
 def generate_pdf(inspection_data: dict, rooms_data: list,
                  signatures_data: list, output_path: str) -> bool:
@@ -1314,21 +1283,43 @@ def generate_pdf(inspection_data: dict, rooms_data: list,
             'numero_laudo': _generate_numero_laudo(insp),
         }
 
-        dados_locador = {
-            'nome'     : _safe(insp.get('locador_name'), u'\u2014'),
-            'cpf'      : _safe(insp.get('locador_cpf'), u'\u2014'),
-            'rg'       : _safe(insp.get('locador_rg'), ''),
-            'telefone' : _safe(insp.get('locador_phone'), u'\u2014'),
-            'email'    : _safe(insp.get('locador_email'), u'\u2014'),
-        }
+        # --- Locadores (lista) ---
+        locadores_raw = insp.get('locadores_json', '')
+        try:
+            locadores_list = json.loads(locadores_raw) if locadores_raw else []
+        except Exception:
+            locadores_list = []
+        if not locadores_list:
+            locadores_list = [{'name': insp.get('locador_name', ''),
+                               'cpf': insp.get('locador_cpf', ''),
+                               'rg': insp.get('locador_rg', ''),
+                               'phone': insp.get('locador_phone', ''),
+                               'email': insp.get('locador_email', '')}]
+        locadores = [{'nome': _safe(loc.get('name', ''), u'\u2014'),
+                      'cpf': _safe(loc.get('cpf', ''), u'\u2014'),
+                      'rg': _safe(loc.get('rg', ''), ''),
+                      'telefone': _safe(loc.get('phone', ''), u'\u2014'),
+                      'email': _safe(loc.get('email', ''), u'\u2014')} for loc in locadores_list]
+        dados_locador = locadores[0]
 
-        dados_locatario = {
-            'nome'     : _safe(insp.get('locatario_name'), u'\u2014'),
-            'cpf'      : _safe(insp.get('locatario_cpf'), u'\u2014'),
-            'rg'       : _safe(insp.get('locatario_rg'), ''),
-            'telefone' : _safe(insp.get('locatario_phone'), u'\u2014'),
-            'email'    : _safe(insp.get('locatario_email'), u'\u2014'),
-        }
+        # --- Locatarios (lista) ---
+        locatarios_raw = insp.get('locatarios_json', '')
+        try:
+            locatarios_list = json.loads(locatarios_raw) if locatarios_raw else []
+        except Exception:
+            locatarios_list = []
+        if not locatarios_list:
+            locatarios_list = [{'name': insp.get('locatario_name', ''),
+                               'cpf': insp.get('locatario_cpf', ''),
+                               'rg': insp.get('locatario_rg', ''),
+                               'phone': insp.get('locatario_phone', ''),
+                               'email': insp.get('locatario_email', '')}]
+        locatarios = [{'nome': _safe(loc.get('name', ''), u'\u2014'),
+                       'cpf': _safe(loc.get('cpf', ''), u'\u2014'),
+                       'rg': _safe(loc.get('rg', ''), ''),
+                       'telefone': _safe(loc.get('phone', ''), u'\u2014'),
+                       'email': _safe(loc.get('email', ''), u'\u2014')} for loc in locatarios_list]
+        dados_locatario = locatarios[0]
 
         dados_corretor = {
             'nome'     : _safe(insp.get('corretor_name'), ''),
@@ -1358,7 +1349,8 @@ def generate_pdf(inspection_data: dict, rooms_data: list,
 
         args = (dados_imovel, dados_locador, dados_locatario,
                 dados_corretor, dados_imobiliaria,
-                ambientes, local_data, output_path)
+                ambientes, local_data, output_path,
+                locadores, locatarios)
 
         if tipo == 'entrada' and responsavel == 'imobiliaria':
             gerar_laudo_modelo1(*args)
