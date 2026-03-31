@@ -837,8 +837,7 @@ def gerar_laudo_entrada_proprietario(dados_imovel, dados_locador,
                     ('Telefone', dados_corretor.get('telefone', u'\u2014')),
                     ('E-mail', dados_corretor.get('email', u'\u2014'))],
          'is_imob': False})
-        story.append(Paragraph(u'DEBUG v2: locadores=%d, locatarios=%d, blocos=%d' % (len(locadores), len(locatarios), len(_blocos)), s['secao']))
-        add_partes_cards(story, s, _blocos)
+    add_partes_cards(story, s, _blocos)
     add_ambientes(story, s, ambientes)
     add_clausulas_entrada(story, s, dados_locador['email'], is_imobiliaria=False)
 
