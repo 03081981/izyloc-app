@@ -3691,16 +3691,18 @@ if (typeof initAmbientes === 'function') initAmbientes();
           });
         });
         var locatarios = [];
-        document.querySelectorAll('#locatarios-container .person-block').forEach(function(b) {
-          var idx = b.id.replace('ten-block-', '');
-          locatarios.push({
-            name: (b.querySelector('[id=ten-name-'+idx+']') || {}).value || '',
-            cpf: (b.querySelector('[id=ten-cpf-'+idx+']') || {}).value || '',
-            phone: (b.querySelector('[id=ten-phone-'+idx+']') || {}).value || '',
-            email: (b.querySelector('[id=ten-email-'+idx+']') || {}).value || ''
+          document.querySelectorAll('#locatarios-container .person-block').forEach(function(b) {
+              var prefix = b.id.indexOf('locat-block-') === 0 ? 'locat' : 'ten';
+              var idx = b.id.replace('locat-block-', '').replace('ten-block-', '');
+              locatarios.push({
+                  name: (document.getElementById(prefix+'-name-'+idx) || {}).value || '',
+                  cpf: (document.getElementById(prefix+'-cpf-'+idx) || {}).value || '',
+                  rg: (document.getElementById(prefix+'-rg-'+idx) || {}).value || '',
+                  phone: (document.getElementById(prefix+'-phone-'+idx) || {}).value || '',
+                  email: (document.getElementById(prefix+'-email-'+idx) || {}).value || ''
+              });
           });
-        });
-        var data = {
+          var data = {
           locador_name: locadores[0] ? locadores[0].name : '',
           locador_cpf: locadores[0] ? locadores[0].cpf : '',
           locador_phone: locadores[0] ? locadores[0].phone : '',
