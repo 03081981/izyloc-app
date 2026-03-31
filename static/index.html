@@ -3416,6 +3416,31 @@ async function gerarLaudo() {
       ambArr.push({nome: amb, fotos: fotos, verificacoes: verifs, observacoes: obsAmb});
     });
     body.ambientes_json = JSON.stringify(ambArr);
+    // Coletar todos locadores do DOM
+    var _locArr = [];
+    document.querySelectorAll('#locadores-container .person-block').forEach(function(b) {
+      var x = b.id.replace('loc-block-','');
+      _locArr.push({
+        name: (document.getElementById('loc-name-'+x)||{}).value||'',
+        cpf: (document.getElementById('loc-cpf-'+x)||{}).value||'',
+        phone: (document.getElementById('loc-phone-'+x)||{}).value||'',
+        email: (document.getElementById('loc-email-'+x)||{}).value||''
+      });
+    });
+    // Coletar todos locatarios do DOM
+    var _tenArr = [];
+    document.querySelectorAll('#locatarios-container .person-block').forEach(function(b) {
+      var prefix = b.id.indexOf('locat-block-') === 0 ? 'locat' : 'ten';
+      var x = b.id.replace('locat-block-','').replace('ten-block-','');
+      _tenArr.push({
+        name: (document.getElementById(prefix+'-name-'+x)||{}).value||'',
+        cpf: (document.getElementById(prefix+'-cpf-'+x)||{}).value||'',
+        phone: (document.getElementById(prefix+'-phone-'+x)||{}).value||'',
+        email: (document.getElementById(prefix+'-email-'+x)||{}).value||''
+      });
+    });
+    if (_locArr.length) body.locadores_json = JSON.stringify(_locArr);
+    if (_tenArr.length) body.locatarios_json = JSON.stringify(_tenArr);
     var r;
   if (wizard.inspectionId) {
     r = await api('PUT', '/api/inspections/' + wizard.inspectionId, body);
