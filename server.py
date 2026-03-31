@@ -722,7 +722,7 @@ class InspectionHandler(BaseHandler):
                 'SELECT * FROM inspections WHERE id=? AND user_id=?',
                 (insp_id, user['user_id'])).fetchone()
             if not insp:
-                return self.err('Vistoria nÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ£o encontrada', 404)
+                return self.err('Vistoria nao encontrada', 404)
             result = self.row_to_dict(insp)
 
             # Inclui ambientes + itens
@@ -763,7 +763,7 @@ class InspectionHandler(BaseHandler):
                 'SELECT id FROM inspections WHERE id=? AND user_id=?',
                 (insp_id, user['user_id'])).fetchone()
             if not insp:
-                return self.err('Vistoria nÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ£o encontrada', 404)
+                return self.err('Vistoria nao encontrada', 404)
 
             updatable = [
                 'property_address', 'property_type', 'property_area', 'inspection_date', 'status',
@@ -818,7 +818,7 @@ class RoomsHandler(BaseHandler):
                 'SELECT id FROM inspections WHERE id=? AND user_id=?',
                 (insp_id, user['user_id'])).fetchone()
             if not insp:
-                return self.err('Vistoria nÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ£o encontrada', 404)
+                return self.err('Vistoria nao encontrada', 404)
 
             # Conta ambientes existentes para order_num
             count = conn.execute('SELECT COUNT(*) FROM rooms WHERE inspection_id=?',
@@ -1178,7 +1178,7 @@ class PhotoDeleteHandler(BaseHandler):
                 'SELECT * FROM item_photos WHERE id=? AND item_id=?',
                 (photo_id, item_id)).fetchone()
             if not photo:
-                return self.err('Foto nÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ£o encontrada', 404)
+                return self.err('Foto nao encontrada', 404)
 
             # Remove o arquivo fÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ­sico
             try:
@@ -1227,7 +1227,7 @@ class SignaturesHandler(BaseHandler):
                 'SELECT id FROM inspections WHERE id=? AND user_id=?',
                 (insp_id, user['user_id'])).fetchone()
             if not insp:
-                return self.err('Vistoria nÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ£o encontrada', 404)
+                return self.err('Vistoria nao encontrada', 404)
 
             # Remove assinatura anterior desta parte (se houver)
             conn.execute('DELETE FROM signatures WHERE inspection_id=? AND party_type=?',
@@ -1263,7 +1263,7 @@ class GeneratePDFHandler(BaseHandler):
                 'SELECT * FROM inspections WHERE id=? AND user_id=?',
                 (insp_id, user['user_id'])).fetchone()
             if not insp:
-                return self.err('Vistoria nÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ£o encontrada', 404)
+                return self.err('Vistoria nao encontrada', 404)
 
             inspection_data = self.row_to_dict(insp)
 
