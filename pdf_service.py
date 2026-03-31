@@ -1,9 +1,9 @@
 # ============================================================
 import base64
-# izyLAUDO â PDF SERVICE
+# izyLAUDO Ã¢ÂÂ PDF SERVICE
 # Gera laudos em PDF usando os templates oficiais.
 # ============================================================
-# MantÃ©m a assinatura: generate_pdf(inspection_data, rooms_data,
+# MantÃÂ©m a assinatura: generate_pdf(inspection_data, rooms_data,
 #                                    signatures_data, output_path) -> bool
 # ============================================================
 
@@ -12,7 +12,7 @@ from reportlab.lib.units import cm
 from reportlab.lib.styles import ParagraphStyle
 from reportlab.lib.enums import TA_JUSTIFY, TA_LEFT, TA_CENTER, TA_RIGHT
 from reportlab.platypus import (SimpleDocTemplate, Paragraph, Spacer,
-                                 HRFlowable, Table, TableStyle, Image)
+                                 HRFlowable, Table, TableStyle, Image, KeepTogether, PageBreak)
 from reportlab.lib.colors import HexColor
 from reportlab.lib import colors
 import io
@@ -22,7 +22,7 @@ from datetime import datetime
 
 logger = logging.getLogger(__name__)
 
-# âââ CORES ââââââââââââââââââââââââââââââââââââââââââââââââââ
+# Ã¢ÂÂÃ¢ÂÂÃ¢ÂÂ CORES Ã¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂ
 # === CORES ===
 AZUL       = HexColor('#2d7dd2')
 AZUL_CLARO = HexColor('#EAF2FB')
@@ -47,7 +47,7 @@ ML, MR, MT, MB = 3*cm, 2*cm, 3*cm, 2*cm
 TW = W - ML - MR
 
 FOTO_W = TW
-FOTO_H = 10*cm   # ~10 cm — aprovado
+FOTO_H = 10*cm   # ~10 cm â aprovado
 
 # === ESTILOS ===
 def mk_styles():
@@ -165,7 +165,7 @@ def _badge_estado(estado):
 # === COMPONENTES ===
 
 def add_cabecalho(story, s, titulo_doc, numero_doc):
-    """Logo esquerda + título direita, separados por linha bold."""
+    """Logo esquerda + tÃ­tulo direita, separados por linha bold."""
     logo_cell = Paragraph(
         '<font face="Helvetica" size="18" color="#2d7dd2">izy</font>'
         '<font face="Helvetica-Bold" size="18">LAUDO</font>',
@@ -193,10 +193,10 @@ def add_cabecalho(story, s, titulo_doc, numero_doc):
                             spaceBefore=0, spaceAfter=10))
 
 def add_parte(story, s, texto):
-    """Seção numerada: círculo preto + texto + linha."""
+    """SeÃ§Ã£o numerada: cÃ­rculo preto + texto + linha."""
     num = texto.split()[1] if len(texto.split()) > 1 else '1'
     num = num.rstrip('\u2014').rstrip()
-    # Extrai só o número da parte
+    # Extrai sÃ³ o nÃºmero da parte
     import re
     m = re.search(r'\d+', texto)
     n = m.group() if m else '1'
@@ -250,13 +250,13 @@ def add_campo(story, s, label, valor):
     story.append(Paragraph(maiusculo(valor), s['campo_valor']))
 
 def add_campos_imovel_grid(story, s, dados_imovel):
-    """Campos do imóvel em grid 2 colunas com linhas finas."""
+    """Campos do imÃ³vel em grid 2 colunas com linhas finas."""
     GAP = 8
     CW  = (TW - GAP) / 2
 
     story.append(Paragraph(u'Dados do Im\u00f3vel', s['sub']))
 
-    # Endereço — largura total
+    # EndereÃ§o â largura total
     t_end = Table([
         [Paragraph(u'ENDERE\u00c7O', s['campo_label'])],
         [Paragraph(maiusculo(dados_imovel.get('endereco', u'\u2014')), s['campo_valor'])],
@@ -301,7 +301,7 @@ def add_campos_imovel_grid(story, s, dados_imovel):
         story.append(t)
 
 def _parte_col(titulo, campos, s):
-    """Coluna de dados de uma parte (locador, locatário, etc)."""
+    """Coluna de dados de uma parte (locador, locatÃ¡rio, etc)."""
     linhas = [[Paragraph(titulo, s['parte_titulo'])]]
     for lbl, val in campos:
         is_email = '@' in val
@@ -345,7 +345,7 @@ def add_partes_cards(story, s, blocos):
         story.append(t)
 
 def add_card_imob_corretor(story, s, dados_imobiliaria, dados_corretor):
-    """Card Imobiliária/Corretor — coluna única, campos em sequência."""
+    """Card ImobiliÃ¡ria/Corretor â coluna Ãºnica, campos em sequÃªncia."""
     story.append(Paragraph(u'Partes Envolvidas', s['sub']))
     nome  = dados_corretor.get('nome',  u'\u2014') or u'\u2014'
     creci = dados_corretor.get('creci', u'\u2014') or u'\u2014'
@@ -371,11 +371,11 @@ def add_card_imob_corretor(story, s, dados_imobiliaria, dados_corretor):
     story.append(t)
 
 def add_foto_item(story, s, item, numero_inicio=1):
-    """Item com badge estado + foto + descrição IA."""
+    """Item com badge estado + foto + descriÃ§Ã£o IA."""
     estado  = item.get('estado', '')
     bg_cor, tx_cor = _badge_estado(estado)
 
-    # Header: nome à esquerda, badge à direita
+    # Header: nome Ã  esquerda, badge Ã  direita
     nome_p  = Paragraph(f'<b>{item["nome"]}</b>', s['item_nome'])
     badge_p = Paragraph(
         u'\u25cf ' + estado.upper() if estado else '',
@@ -432,7 +432,7 @@ def add_foto_item(story, s, item, numero_inicio=1):
                 ('TOPPADDING',    (2,0), (-1,-1), 4),
                 ('BOTTOMPADDING', (-1,0),(-1,-1), 6),
             ]))
-            story.append(bloco)
+            story.append(KeepTogether(bloco))
         except Exception:
             story.append(Paragraph(
                 f'[Foto {n} \u2014 imagem n\u00e3o dispon\u00edvel]',
@@ -451,6 +451,7 @@ def add_foto_item(story, s, item, numero_inicio=1):
     story.append(Spacer(1, 3))
 
 def add_ambientes(story, s, ambientes):
+    story.append(PageBreak())
     add_parte(story, s, u'Parte 2 \u2014 Vistoria dos Ambientes')
 
     if not ambientes:
@@ -778,7 +779,7 @@ def add_rodape(story, s):
         u'Documento gerado pelo sistema izyLAUDO \u2014 Vistorias Imobili\u00e1rias \u00b7 '
         u'Assinatura digital via Autentique \u00b7 Lei n\u00ba 14.063/2020', s['rodape']))
 
-# âââ FUN\u00c7\u00c3O DO TEMPLATE âââââââââââââââââââââââââââââââââââââ
+# Ã¢ÂÂÃ¢ÂÂÃ¢ÂÂ FUN\u00c7\u00c3O DO TEMPLATE Ã¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂ
 def gerar_laudo_entrada_proprietario(dados_imovel, dados_locador,
                                       dados_locatario, dados_corretor, dados_imobiliaria,
                                       ambientes, local_data, output_path):
@@ -846,7 +847,7 @@ def gerar_laudo_entrada_proprietario(dados_imovel, dados_locador,
     doc.build(story)
 
 
-# âââ HELPERS DE MAPEAMENTO ââââââââââââââââââââââââââââââââââ
+# Ã¢ÂÂÃ¢ÂÂÃ¢ÂÂ HELPERS DE MAPEAMENTO Ã¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂ
 
 MESES_PT = {
     1: 'JANEIRO', 2: 'FEVEREIRO', 3: u'MAR\u00c7O', 4: 'ABRIL',
@@ -1274,7 +1275,7 @@ def _generate_numero_laudo(inspection_data):
     return f'{prefixo}-{ano}-{seq}'
 
 
-# âââ FUN\u00c7\u00c3O PRINCIPAL (mant\u00e9m assinatura compat\u00edvel) ââââââââ
+# Ã¢ÂÂÃ¢ÂÂÃ¢ÂÂ FUN\u00c7\u00c3O PRINCIPAL (mant\u00e9m assinatura compat\u00edvel) Ã¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂÃ¢ÂÂ
 
 def generate_pdf(inspection_data: dict, rooms_data: list,
                  signatures_data: list, output_path: str) -> bool:
