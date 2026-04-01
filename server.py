@@ -1340,8 +1340,28 @@ class DiagLocadoresHandler(BaseHandler):
             ten_list = _json.loads(locatarios_raw) if locatarios_raw else []
         except Exception:
             ten_list = []
+        # Try to generate PDF and capture debug log
+        from pdf_service import _pdf_debug_log, generate_pdf
+        _pdf_debug_log.clear()
+        import tempfile, os
+        tmp = tempfile.mktemp(suffix='.pdf')
+        try:
+            rooms = conn.execute('SELECT * FROM rooms WHERE inspection_id=?', (insp_id,)).fetchall()
+            rooms_data = [dict(zip([c[0] for c in rooms.description if rooms.description] if hasattr(rooms, 'description') else [], r)) for r in (rooms if rooms else [])]
+        except Exception:
+            rooms_data = []
+        try:
+            pdf_ok = generate_pdf(insp_id, tmp)
+        except Exception as e:
+            pdf_ok = False
+            _pdf_debug_log.append(f'generate_pdf exception: {e}')
+        if os.path.exists(tmp):
+            os.unlink(tmp)
+        debug_log = list(_pdf_debug_log)
         self.write({
             'inspection_id': insp_id,
+            'pdf_generated': pdf_ok,
+            'debug_log': debug_log,
             'locadores_count': len(loc_list),
             'locatarios_count': len(ten_list),
             'locadores_raw_len': len(locadores_raw) if locadores_raw else 0,

@@ -20,6 +20,10 @@ import os
 import logging
 from datetime import datetime
 
+# Debug collector for diagnostics
+_pdf_debug_log = []
+
+
 logger = logging.getLogger(__name__)
 
 # ÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂ CORES ÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂÃÂ¢ÃÂÃÂ
@@ -312,6 +316,7 @@ def _parte_col(titulo, campos, s):
 
 
 def _build_person_blocos(persons, num_prefix, titulo_base):
+    _pdf_debug_log.append(f'[PDF_DEBUG] _build_person_blocos: persons={len(persons)} prefix={num_prefix} titulo={titulo_base}')
     blocos = []
     for i, p in enumerate(persons):
         suffix = u' (%d)' % (i + 1) if len(persons) > 1 else ''
@@ -328,6 +333,7 @@ def _build_person_blocos(persons, num_prefix, titulo_base):
 
 
 def add_partes_cards(story, s, blocos):
+    _pdf_debug_log.append(f'[PDF_DEBUG] add_partes_cards: blocos={len(blocos)}')
     """Partes em 2 colunas separadas por linha vertical fina."""
     story.append(Paragraph(u'Partes Envolvidas', s['sub']))
     GAP = 8
@@ -1347,6 +1353,7 @@ def generate_pdf(inspection_data: dict, rooms_data: list,
         tipo = _safe(insp.get('type', 'entrada')).lower().strip()
         responsavel = _safe(insp.get('responsavel', 'proprietario')).lower().strip()
 
+        _pdf_debug_log.append(f'[PDF_DEBUG] locadores={len(locadores)} locatarios={len(locatarios)} tipo={tipo} resp={responsavel}')
         args = (dados_imovel, dados_locador, dados_locatario,
                 dados_corretor, dados_imobiliaria,
                 ambientes, local_data, output_path,
