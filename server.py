@@ -1320,8 +1320,9 @@ class PhotoHandler(tornado.web.StaticFileHandler):
 
 class DiagLocadoresHandler(BaseHandler):
     async def get(self, insp_id):
-        user = self.current_user_or_401()
-        if not user: return
+        user = self.require_auth()
+        if not user:
+            return
         conn = get_conn()
         insp = conn.execute('SELECT * FROM inspections WHERE id=? AND user_id=?',
                            (insp_id, user['user_id'])).fetchone()
