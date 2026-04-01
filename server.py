@@ -1345,13 +1345,25 @@ class DiagLocadoresHandler(BaseHandler):
         _pdf_debug_log.clear()
         import tempfile, os
         tmp = tempfile.mktemp(suffix='.pdf')
+        inspection_data = row
         try:
-            rooms = conn.execute('SELECT * FROM rooms WHERE inspection_id=?', (insp_id,)).fetchall()
-            rooms_data = [dict(zip([c[0] for c in rooms.description if rooms.description] if hasattr(rooms, 'description') else [], r)) for r in (rooms if rooms else [])]
+            rooms = conn.execute('SELECT * FROM rooms WHERE inspection_id=? ORDER BY order_num', (insp_id,)).fetchall()
+            rooms_list = []
+            for room in rooms:
+                room_dict = self.row_to_dict(room)
+                items = conn.execute('SELECT * FROM room_items WHERE room_id=? ORDER BY created_at', (room['id'],)).fetchall()
+                room_dict['items'] = self.rows_to_list(items)
+                rooms_list.append(room_dict)
+        except Exception as e:
+            rooms_list = []
+            _pdf_debug_log.append(f'rooms query error: {e}')
+        try:
+            sigs = conn.execute('SELECT * FROM signatures WHERE inspection_id=?', (insp_id,)).fetchall()
+            signatures_list = self.rows_to_list(sigs)
         except Exception:
-            rooms_data = []
+            signatures_list = []
         try:
-            pdf_ok = generate_pdf(insp_id, tmp)
+            pdf_ok = generate_pdf(inspection_data, rooms_list, signatures_list, tmp)
         except Exception as e:
             pdf_ok = False
             _pdf_debug_log.append(f'generate_pdf exception: {e}')
