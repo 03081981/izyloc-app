@@ -1598,6 +1598,19 @@ textarea.obs-geral{width:100%;background:#f8fafc;border:.5px solid #dce3ed;borde
 .db-como-divider{height:0.5px;background:rgba(255,255,255,0.1);margin:12px 0;position:relative;z-index:1}
 .db-btn-nova-sm{width:100%;background:#2d7dd2;color:#fff;border:none;border-radius:8px;padding:8px;font-size:12px;font-weight:700;cursor:pointer;box-shadow:0 4px 12px rgba(45,125,210,0.4);position:relative;z-index:1}
 .db-help-btn{position:fixed;bottom:24px;right:24px;width:44px;height:44px;border-radius:50%;background:#2d7dd2;color:#fff;border:none;font-size:18px;font-weight:700;cursor:pointer;box-shadow:0 4px 16px rgba(45,125,210,0.5);display:flex;align-items:center;justify-content:center;z-index:1000;line-height:1}
+
+/* SIDEBAR MELHORADA */
+.nav-section-label{font-size:10px;color:rgba(255,255,255,0.25);text-transform:uppercase;letter-spacing:0.8px;padding:8px 20px 4px;font-weight:600}
+.nav-item-cred{background:rgba(79,195,247,0.1);border-left:2px solid #4fc3f7!important}
+.sidebar-user{display:flex;align-items:center;gap:10px;cursor:pointer;margin-bottom:12px}
+.sidebar-avatar{width:32px;height:32px;border-radius:50%;background:#2d7dd2;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;flex-shrink:0}
+.sidebar-user-info{flex:1;min-width:0}
+.sidebar-user-name{font-size:12px;font-weight:600;color:#fff}
+.sidebar-user-plan{font-size:10px;color:rgba(255,255,255,0.4)}
+.sidebar-empresa{border-top:0.5px solid rgba(255,255,255,0.06);padding-top:10px}
+.sidebar-empresa-nome{font-size:9px;font-weight:600;color:rgba(255,255,255,0.4);line-height:1.5;text-transform:uppercase;letter-spacing:0.3px}
+.sidebar-empresa-cnpj{font-size:9px;color:rgba(255,255,255,0.22);margin-top:2px}
+.sidebar-empresa-email{font-size:9px;color:#4fc3f7;margin-top:4px}
 </style>
 </head>
 <body>
@@ -1741,30 +1754,56 @@ textarea.obs-geral{width:100%;background:#f8fafc;border:.5px solid #dce3ed;borde
 <div id="page-dashboard" class="page">
   <!-- SIDEBAR -->
   <aside class="sidebar">
-    <div class="sidebar-logo"><div style='padding: 20px 20px 16px;'><div style='font-size:20px; font-weight:700; line-height:1; letter-spacing:-0.5px;'><span style='color:#2d7dd2; font-weight:400;'>izy</span><span style='color:#fff; font-weight:700;'>LAUDO</span></div><div style='font-size:9px; color:rgba(255,255,255,0.4); letter-spacing:1px; text-transform:uppercase; margin-top:3px;'>Vistorias Imobiliárias</div></div></div>
-    <nav class="sidebar-nav">
-      <button class="nav-item active" id="nav-dash" onclick="switchTab('vistorias',this)"><span class="nav-icon-wrap"><svg viewBox="0 0 20 20" fill="currentColor"><path d="M3 4a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1H4a1 1 0 01-1-1V4zm0 8a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1H4a1 1 0 01-1-1v-4zm8-8a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1V4zm0 8a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1v-4z"/></svg></span>Dashboard</button>
-      <button class="nav-item" id="nav-nova" onclick="showNewInspection()"><span class="nav-icon-wrap"><svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"/></svg></span>Nova vistoria</button>
-      <div class="nav-divider"></div>
-      <button class="nav-item" id="nav-laudos" onclick="switchTab('vistorias',this)"><span class="nav-icon-wrap"><svg viewBox="0 0 20 20" fill="currentColor"><path d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z"/></svg></span>Meus laudos</button>
-      <button class="nav-item" id="nav-fotos" onclick="switchTab('estatisticas',this)"><span class="nav-icon-wrap"><svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z"/></svg></span>Fotos e consumo</button>
-      <button class="nav-item" id="nav-recarga" onclick="switchTab('estatisticas',this)"><span class="nav-icon-wrap"><svg viewBox="0 0 20 20" fill="currentColor"><path d="M4 4a2 2 0 00-2 2v1h16V6a2 2 0 00-2-2H4zM2 11v3a2 2 0 002 2h12a2 2 0 002-2v-3H2zm9 2a1 1 0 100-2H9a1 1 0 100 2h2z"/></svg></span>Recarga de créditos</button>
-      <button class="nav-item" id="nav-extrato" onclick="switchTab('estatisticas',this)"><span class="nav-icon-wrap"><svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 3a1 1 0 000 2v8a2 2 0 002 2h2.586l-1.293 1.293a1 1 0 101.414 1.414L10 15.414l2.293 2.293a1 1 0 001.414-1.414L12.414 15H15a2 2 0 002-2V5a1 1 0 100-2H3zm11 4a1 1 0 10-2 0v4a1 1 0 102 0V7zm-3 1a1 1 0 10-2 0v3a1 1 0 102 0V8zM8 9a1 1 0 00-2 0v2a1 1 0 102 0V9z"/></svg></span>Extrato financeiro</button>
-    </nav>
-    <div class="sidebar-bottom">
-      <button class="nav-item" id="nav-config" onclick="switchTab('perfil',this)"><span class="nav-icon-wrap"><svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z"/></svg></span>Configurações</button>
-      <div class="sidebar-user" onclick="switchTab('perfil',document.getElementById('nav-config'))">
-        <div class="sidebar-avatar" id="profile-avatar-letter">M</div>
-        <div class="sidebar-user-info">
-          <div class="sidebar-user-name" id="profile-name">Usuário</div>
-          <div class="sidebar-user-sub" id="profile-company">Empresa</div>
-        </div>
-      </div>
-      <button class="nav-item" onclick="if(confirm('Sair da conta?')){logout()}">
-        <span class="nav-icon-wrap"><svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 3a1 1 0 00-1 1v12a1 1 0 102 0V4a1 1 0 00-1-1zm10.293 9.293a1 1 0 001.414 1.414l3-3a1 1 0 000-1.414l-3-3a1 1 0 10-1.414 1.414L14.586 9H7a1 1 0 100 2h7.586l-1.293 1.293z"/></svg></span>Sair
-      </button>
+
+  <!-- LOGO -->
+  <div class="sidebar-logo">
+    <div>
+      <span style="font-size:20px;font-weight:400;color:#2d7dd2;font-family:Helvetica,Arial,sans-serif">izy</span><span style="font-size:20px;font-weight:900;color:#fff;font-family:Helvetica,Arial,sans-serif">LAUDO</span>
     </div>
-  </aside>
+    <div style="font-size:7px;color:rgba(255,255,255,0.28);letter-spacing:2px;text-transform:uppercase;margin-top:2px;font-weight:400">Vistorias Imobiliarias</div>
+  </div>
+
+  <!-- NAV PRINCIPAL -->
+  <nav class="sidebar-nav">
+    <div class="nav-item active" id="nav-dash" onclick="switchTab('vistorias',this)">Painel</div>
+    <div class="nav-item" id="nav-laudos" onclick="switchTab('vistorias',this)">Meus laudos</div>
+
+    <div class="nav-divider"></div>
+    <div class="nav-section-label">Fotos e creditos</div>
+    <div class="nav-item nav-item-cred" id="nav-fotos" onclick="switchTab('estatisticas',this)">
+      <span id="nav-saldo-fotos" style="color:#4fc3f7;font-weight:600">Fotos restantes</span>
+    </div>
+    <div class="nav-item" id="nav-recarga" onclick="switchTab('estatisticas',this)">+ Adicionar creditos</div>
+    <div class="nav-item" id="nav-extrato" onclick="switchTab('estatisticas',this)">Extrato de uso</div>
+
+    <div class="nav-divider"></div>
+    <div class="nav-section-label">Ajuda</div>
+    <div class="nav-item" id="nav-manual" onclick="showManual()">Manual do usuario</div>
+
+    <div class="nav-divider"></div>
+    <div class="nav-section-label">Conta</div>
+    <div class="nav-item" id="nav-config" onclick="switchTab('perfil',this)">Configuracoes</div>
+    <div class="nav-item" onclick="if(confirm('Sair da conta?')){logout()}">Sair</div>
+  </nav>
+
+  <!-- RODAPE SIDEBAR -->
+  <div class="sidebar-bottom">
+    <div class="sidebar-user" onclick="switchTab('perfil',null)">
+      <div class="sidebar-avatar" id="profile-avatar-letter">?</div>
+      <div class="sidebar-user-info">
+        <div class="sidebar-user-name" id="profile-name">Carregando...</div>
+        <div id="profile-company" style="display:none"></div>
+        <div class="sidebar-user-plan">Plano Profissional</div>
+      </div>
+    </div>
+    <div class="sidebar-empresa">
+      <div class="sidebar-empresa-nome">izyLOC Sistema de Gestao de Carteiras de Locacoes e Cobrancas Ltda</div>
+      <div class="sidebar-empresa-cnpj">CNPJ 57.552.013/0001-90</div>
+      <div class="sidebar-empresa-email">izylaudo@izylaudo.com.br</div>
+    </div>
+  </div>
+
+</aside>
 
   <!-- MAIN WRAPPER -->
   <div class="dash-main-wrapper">
