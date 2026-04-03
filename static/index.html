@@ -1408,6 +1408,8 @@ canvas { display: block; }
   .tipo-cards { grid-template-columns: 1fr; }
   .tc-photo { height: 140px; }
   .fab { display: flex; }
+    .db-help-btn { bottom: 80px; right: 16px; width: 40px; height: 40px; font-size: 16px; }
+    .fab { bottom: 24px; right: 16px; }
   .dash-topbar { padding: 0 16px; }
   .dash-tab-content { padding: 16px; }
   .auth-card { padding: 28px 20px; }
@@ -4393,7 +4395,47 @@ if (!window._fotoStore) window._fotoStore = {};
 
   // ── End Ambientes ────────────────────────────────────────
 
-  </script>
+  
+// — Como funciona modal —
+function showManual() {
+  var m = document.getElementById('modal-como-funciona');
+  if (m) { m.style.display = 'flex'; document.body.style.overflow = 'hidden'; }
+}
+function fecharComoFunciona() {
+  var m = document.getElementById('modal-como-funciona');
+  if (m) { m.style.display = 'none'; document.body.style.overflow = ''; }
+}
+document.addEventListener('DOMContentLoaded', function() {
+  var m = document.getElementById('modal-como-funciona');
+  if (m) m.addEventListener('click', function(e) { if(e.target === m) fecharComoFunciona(); });
+});
+</script>
 <button class="db-help-btn" onclick="showManual()" title="Manual do usuario">?</button>
+
+<!-- MODAL COMO FUNCIONA -->
+<div id="modal-como-funciona" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;z-index:9999;background:rgba(0,0,0,0.5);align-items:flex-end;justify-content:center">
+  <div style="background:#f4f6fa;width:100%;max-height:90vh;border-radius:16px 16px 0 0;overflow-y:auto;padding:20px 16px 32px">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+      <div>
+        <span style="font-size:16px;font-weight:400;color:#2d7dd2;font-family:Helvetica,Arial,sans-serif">izy</span><span style="font-size:16px;font-weight:900;color:#1a2540;font-family:Helvetica,Arial,sans-serif">LAUDO</span>
+        <div style="font-size:6px;color:#8898aa;letter-spacing:2px;text-transform:uppercase;margin-top:1px">Vistorias Imobiliarias</div>
+      </div>
+      <button onclick="fecharComoFunciona()" style="width:32px;height:32px;border-radius:50%;border:none;background:#e2e8f0;color:#4a5568;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center">✕</button>
+    </div>
+    <div style="font-size:11px;font-weight:700;color:#8898aa;text-transform:uppercase;letter-spacing:0.8px;margin-bottom:14px">Passo a passo</div>
+    <div id="modal-passos">
+      <div style="display:flex;gap:10px;margin-bottom:12px"><div style="display:flex;flex-direction:column;align-items:center;flex-shrink:0"><div style="width:24px;height:24px;border-radius:50%;background:#2d7dd2;color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center">1</div><div style="width:1.5px;flex:1;background:#e2e8f0;margin:4px auto;min-height:16px"></div></div><div style="padding-bottom:12px"><div style="font-size:13px;font-weight:600;color:#1a2540">Clique em + Nova vistoria</div><div style="font-size:11px;color:#8898aa;margin-top:2px">Inicie um novo laudo a qualquer momento</div></div></div>
+      <div style="display:flex;gap:10px;margin-bottom:12px"><div style="display:flex;flex-direction:column;align-items:center;flex-shrink:0"><div style="width:24px;height:24px;border-radius:50%;background:#2d7dd2;color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center">2</div><div style="width:1.5px;flex:1;background:#e2e8f0;margin:4px auto;min-height:16px"></div></div><div style="padding-bottom:12px"><div style="font-size:13px;font-weight:600;color:#1a2540">Escolha o tipo de vistoria</div><div style="font-size:11px;color:#8898aa;margin-top:2px">Entrada, Saida ou Temporada</div></div></div>
+      <div style="display:flex;gap:10px;margin-bottom:12px"><div style="display:flex;flex-direction:column;align-items:center;flex-shrink:0"><div style="width:24px;height:24px;border-radius:50%;background:#2d7dd2;color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center">3</div><div style="width:1.5px;flex:1;background:#e2e8f0;margin:4px auto;min-height:16px"></div></div><div style="padding-bottom:12px"><div style="font-size:13px;font-weight:600;color:#1a2540">Informe quem realiza</div><div style="font-size:11px;color:#8898aa;margin-top:2px">Imobiliaria, corretor ou proprietario</div></div></div>
+      <div style="display:flex;gap:10px;margin-bottom:12px"><div style="display:flex;flex-direction:column;align-items:center;flex-shrink:0"><div style="width:24px;height:24px;border-radius:50%;background:#2d7dd2;color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center">4</div><div style="width:1.5px;flex:1;background:#e2e8f0;margin:4px auto;min-height:16px"></div></div><div style="padding-bottom:12px"><div style="font-size:13px;font-weight:600;color:#1a2540">Preencha os dados do imovel</div><div style="font-size:11px;color:#8898aa;margin-top:2px">CEP busca o endereco automaticamente</div></div></div>
+      <div style="display:flex;gap:10px;margin-bottom:12px"><div style="display:flex;flex-direction:column;align-items:center;flex-shrink:0"><div style="width:24px;height:24px;border-radius:50%;background:#2d7dd2;color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center">5</div><div style="width:1.5px;flex:1;background:#e2e8f0;margin:4px auto;min-height:16px"></div></div><div style="padding-bottom:12px"><div style="font-size:13px;font-weight:600;color:#1a2540">Cadastre as partes envolvidas</div><div style="font-size:11px;color:#8898aa;margin-top:2px">Locador, locatario e corretor</div></div></div>
+      <div style="display:flex;gap:10px;margin-bottom:12px"><div style="display:flex;flex-direction:column;align-items:center;flex-shrink:0"><div style="width:24px;height:24px;border-radius:50%;background:#2d7dd2;color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center">6</div><div style="width:1.5px;flex:1;background:#e2e8f0;margin:4px auto;min-height:16px"></div></div><div style="padding-bottom:12px"><div style="font-size:13px;font-weight:600;color:#1a2540">Selecione os ambientes</div><div style="font-size:11px;color:#8898aa;margin-top:2px">Defina os comodos a vistoriar</div></div></div>
+      <div style="display:flex;gap:10px;margin-bottom:12px"><div style="display:flex;flex-direction:column;align-items:center;flex-shrink:0"><div style="width:24px;height:24px;border-radius:50%;background:#2d7dd2;color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center">7</div><div style="width:1.5px;flex:1;background:#e2e8f0;margin:4px auto;min-height:16px"></div></div><div style="padding-bottom:12px"><div style="font-size:13px;font-weight:600;color:#1a2540">Fotografe e registre os itens</div><div style="font-size:11px;color:#8898aa;margin-top:2px">A IA descreve cada foto automaticamente</div></div></div>
+      <div style="display:flex;gap:10px"><div style="display:flex;flex-direction:column;align-items:center;flex-shrink:0"><div style="width:24px;height:24px;border-radius:50%;background:#059669;color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center">8</div></div><div><div style="font-size:13px;font-weight:600;color:#1a2540">Gere o PDF do laudo</div><div style="font-size:11px;color:#8898aa;margin-top:2px">Pronto para baixar e assinar digitalmente</div></div></div>
+    </div>
+    <div style="height:0.5px;background:#e2e8f0;margin:16px 0"></div>
+    <button onclick="showNewInspection();fecharComoFunciona();" style="width:100%;background:#2d7dd2;color:#fff;border:none;border-radius:8px;padding:12px;font-size:13px;font-weight:700;cursor:pointer;box-shadow:0 4px 12px rgba(45,125,210,0.4)">+ Iniciar nova vistoria</button>
+  </div>
+</div>
 </body>
 </html>
