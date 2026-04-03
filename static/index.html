@@ -2840,6 +2840,22 @@ async function loadDashboard() {
 
   // Perfil
   document.getElementById('profile-name').textContent = currentUser.name;
+      // Sync avatar e greeting
+      (function() {
+        var nm = currentUser.name || '';
+        if (!nm) return;
+        var letter = nm.charAt(0).toUpperCase();
+        var el;
+        el = document.getElementById('profile-avatar-letter'); if(el) el.textContent = letter;
+        el = document.getElementById('topbar-avatar-letter'); if(el) el.textContent = letter;
+        el = document.getElementById('topbar-user-name'); if(el) el.textContent = nm;
+        el = document.getElementById('db-greeting');
+        if(el) {
+          var hr = new Date().getHours();
+          var sau = hr<12?'Bom dia':hr<18?'Boa tarde':'Boa noite';
+          el.textContent = sau + ', ' + nm.split(' ')[0] + '!';
+        }
+      })();
   document.getElementById('profile-company').textContent = currentUser.company_name || '';
   document.getElementById('profile-email').textContent = currentUser.email;
 
