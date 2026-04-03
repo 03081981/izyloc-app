@@ -2912,7 +2912,11 @@ async function loadDashboard() {
 
   container.innerHTML = list.slice(0,30).map(i => {
     const tipo = i.type === 'entrada' ? 'Entrada' : 'Saída';
-    const icon = i.type === 'entrada' ? '🔑' : '📦';
+    const icon = i.type === 'entrada'
+      ? `<svg width="32" height="26" viewBox="0 0 56 44" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="10" y="4" width="26" height="36" rx="2" fill="#dbeafe" stroke="#2d7dd2" stroke-width="1.5"/><path d="M36 4 Q46 14 46 22 Q46 30 36 40" fill="#bfdbfe" stroke="#2d7dd2" stroke-width="1.5"/><circle cx="33" cy="22" r="2.5" fill="#2d7dd2"/><circle cx="46" cy="10" r="4" fill="none" stroke="#2d7dd2" stroke-width="1.5"/><line x1="46" y1="14" x2="46" y2="24" stroke="#2d7dd2" stroke-width="1.5" stroke-linecap="round"/><line x1="46" y1="20" x2="49" y2="20" stroke="#2d7dd2" stroke-width="1.5" stroke-linecap="round"/><line x1="46" y1="23" x2="49" y2="23" stroke="#2d7dd2" stroke-width="1.5" stroke-linecap="round"/></svg>`
+      : i.type === 'saida'
+      ? `<svg width="32" height="26" viewBox="0 0 56 44" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="14" y="4" width="26" height="36" rx="2" fill="#dbeafe" stroke="#2d7dd2" stroke-width="1.5"/><circle cx="36" cy="22" r="2.5" fill="#2d7dd2"/><line x1="42" y1="22" x2="52" y2="22" stroke="#2d7dd2" stroke-width="2" stroke-linecap="round"/><polyline points="48,18 52,22 48,26" fill="none" stroke="#2d7dd2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><rect x="2" y="28" width="10" height="10" rx="1" fill="#93c5fd" stroke="#2d7dd2" stroke-width="1"/></svg>`
+      : `<svg width="32" height="26" viewBox="0 0 56 44" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="6" y="8" width="36" height="30" rx="3" fill="#dbeafe" stroke="#2d7dd2" stroke-width="1.5"/><rect x="6" y="8" width="36" height="10" rx="3" fill="#2d7dd2"/><line x1="16" y1="4" x2="16" y2="14" stroke="#2d7dd2" stroke-width="2" stroke-linecap="round"/><line x1="32" y1="4" x2="32" y2="14" stroke="#2d7dd2" stroke-width="2" stroke-linecap="round"/><circle cx="16" cy="26" r="2" fill="#2d7dd2"/><circle cx="24" cy="26" r="2" fill="#2d7dd2"/><circle cx="32" cy="26" r="2" fill="#93c5fd"/><circle cx="46" cy="10" r="5" fill="#fbbf24"/></svg>`;
     const statusLabel = i.status === 'concluido' ? 'Concluída'
       : i.status === 'rascunho' ? 'Em andamento'
       : i.status === 'assinado' ? 'Assinado'
@@ -2923,7 +2927,7 @@ async function loadDashboard() {
       : 'badge-andamento';
     const date = i.inspection_date || formatDate(i.created_at);
     return `<div class="insp-card" onclick="openInspection('${i.id}')">
-      <div class="insp-thumb"><span style="font-size:22px">${icon}</span></div>
+      <div class="insp-thumb" style="background:#eef4ff;border-radius:8px;width:48px;height:48px;display:flex;align-items:center;justify-content:center;flex-shrink:0">${icon}</div>
       <div class="insp-info">
         <div class="insp-address">${i.property_address || 'Endereço não informado'}</div>
         <div class="insp-meta">
