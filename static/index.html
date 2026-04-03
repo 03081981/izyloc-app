@@ -1641,6 +1641,10 @@ textarea.obs-geral{width:100%;background:#f8fafc;border:.5px solid #dce3ed;borde
 .sidebar-empresa-nome{font-size:9px;font-weight:600;color:rgba(255,255,255,0.4);line-height:1.5;text-transform:uppercase;letter-spacing:0.3px}
 .sidebar-empresa-cnpj{font-size:9px;color:rgba(255,255,255,0.22);margin-top:2px}
 .sidebar-empresa-email{font-size:9px;color:#4fc3f7;margin-top:4px}
+
+    .tipo-card.selected { border-color:#2d7dd2!important; background:#f0f7ff!important; box-shadow:0 0 0 3px rgba(45,125,210,.12)!important; }
+    .tipo-card.selected .tc-checkmark { display:flex!important; }
+    .tipo-card:hover { border-color:#2d7dd2; transform:translateY(-2px); }
 </style>
 </head>
 <body>
@@ -2111,65 +2115,45 @@ textarea.obs-geral{width:100%;background:#f8fafc;border:.5px solid #dce3ed;borde
 
     <!-- STEP 0: TIPO DE VISTORIA -->
     <div id="wstep-0">
-      <div class="wiz-section-title">Escolha a modalidade do laudo</div>
-      <div class="wiz-section-sub">Defina o tipo de vistoria para aplicar a estrutura correta ao documento.</div>
+      <div class="wiz-section-title">Qual o tipo de vistoria?</div>
+      <div class="wiz-section-sub">Selecione o tipo para gerar o modelo correto do laudo.</div>
 
-      <div class="tipo-cards">
-        <div class="tipo-card selected" data-tipo="entrada" onclick="selectTipoCard(this)">
-          <div class="tc-photo" style="background-image:url('https://images.unsplash.com/photo-1484154218962-a197022b5858?w=400&h=260&fit=crop&q=80')">
-            <div class="tc-tag tc-tag-entrada">Entrada</div>
-            <div class="tc-checkmark"><svg viewBox="0 0 12 12" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 6l3 3 5-5"/></svg></div>
+      <div class="tipo-cards" style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:24px">
+
+        <div class="tipo-card selected" data-tipo="entrada" onclick="selectTipoCard(this)" style="border-radius:12px;overflow:hidden;border:1.5px solid #e2e8f0;cursor:pointer;background:#fff;position:relative;text-align:center;padding:20px 14px;transition:all .2s">
+          <div style="position:absolute;top:10px;right:10px;width:20px;height:20px;border-radius:50%;background:#2d7dd2;color:#fff;font-size:10px;display:none;align-items:center;justify-content:center;font-weight:700" class="tc-checkmark">✓</div>
+          <div style="width:64px;height:50px;margin:0 auto 12px;display:flex;align-items:center;justify-content:center">
+            <svg width="64" height="50" viewBox="0 0 56 44" fill="none"><rect x="10" y="4" width="26" height="36" rx="2" fill="#dbeafe" stroke="#2d7dd2" stroke-width="1.5"/><path d="M36 4 Q46 14 46 22 Q46 30 36 40" fill="#bfdbfe" stroke="#2d7dd2" stroke-width="1.5"/><circle cx="33" cy="22" r="2.5" fill="#2d7dd2"/><circle cx="46" cy="10" r="4" fill="none" stroke="#2d7dd2" stroke-width="1.5"/><line x1="46" y1="14" x2="46" y2="24" stroke="#2d7dd2" stroke-width="1.5" stroke-linecap="round"/><line x1="46" y1="20" x2="49" y2="20" stroke="#2d7dd2" stroke-width="1.5" stroke-linecap="round"/><line x1="46" y1="23" x2="49" y2="23" stroke="#2d7dd2" stroke-width="1.5" stroke-linecap="round"/></svg>
           </div>
-          <div class="tc-footer">
-            <div class="tc-label">Laudo de Entrada</div>
-            <div class="tc-sub">Registro inicial do imóvel</div>
-          </div>
+          <div style="font-size:14px;font-weight:600;color:#1a2540">Entrada</div>
+          <div style="font-size:12px;color:#8898aa;margin-top:4px;line-height:1.4">Inicio de locacao — estado inicial do imovel</div>
         </div>
 
-        <div class="tipo-card" data-tipo="saida" onclick="selectTipoCard(this)">
-          <div class="tc-photo" style="background-image:url('https://images.unsplash.com/photo-1581578731548-c64695cc6952?w=400&h=260&fit=crop&q=80')">
-            <div class="tc-tag tc-tag-saida">Saída</div>
-            <div class="tc-checkmark"><svg viewBox="0 0 12 12" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 6l3 3 5-5"/></svg></div>
+        <div class="tipo-card" data-tipo="saida" onclick="selectTipoCard(this)" style="border-radius:12px;overflow:hidden;border:1.5px solid #e2e8f0;cursor:pointer;background:#fff;position:relative;text-align:center;padding:20px 14px;transition:all .2s">
+          <div style="position:absolute;top:10px;right:10px;width:20px;height:20px;border-radius:50%;background:#2d7dd2;color:#fff;font-size:10px;display:none;align-items:center;justify-content:center;font-weight:700" class="tc-checkmark">✓</div>
+          <div style="width:64px;height:50px;margin:0 auto 12px;display:flex;align-items:center;justify-content:center">
+            <svg width="64" height="50" viewBox="0 0 56 44" fill="none"><rect x="14" y="4" width="26" height="36" rx="2" fill="#dbeafe" stroke="#2d7dd2" stroke-width="1.5"/><circle cx="36" cy="22" r="2.5" fill="#2d7dd2"/><line x1="42" y1="22" x2="52" y2="22" stroke="#2d7dd2" stroke-width="2" stroke-linecap="round"/><polyline points="48,18 52,22 48,26" fill="none" stroke="#2d7dd2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><rect x="2" y="28" width="10" height="10" rx="1" fill="#93c5fd" stroke="#2d7dd2" stroke-width="1"/></svg>
           </div>
-          <div class="tc-footer">
-            <div class="tc-label">Laudo de Saída</div>
-            <div class="tc-sub">Comparação na devolução</div>
-          </div>
+          <div style="font-size:14px;font-weight:600;color:#1a2540">Saida</div>
+          <div style="font-size:12px;color:#8898aa;margin-top:4px;line-height:1.4">Fim de locacao — comparativo com entrada</div>
         </div>
 
-        <div class="tipo-card" data-tipo="temporada" onclick="selectTipoCard(this)">
-          <div class="tc-photo" style="background-image:url('https://images.unsplash.com/photo-1499793983690-e29da59ef1c2?w=400&h=260&fit=crop&q=80')">
-            <div class="tc-tag tc-tag-temporada">Temporada</div>
-            <div class="tc-checkmark"><svg viewBox="0 0 12 12" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 6l3 3 5-5"/></svg></div>
+        <div class="tipo-card" data-tipo="temporada" onclick="selectTipoCard(this)" style="border-radius:12px;overflow:hidden;border:1.5px solid #e2e8f0;cursor:pointer;background:#fff;position:relative;text-align:center;padding:20px 14px;transition:all .2s">
+          <div style="position:absolute;top:10px;right:10px;width:20px;height:20px;border-radius:50%;background:#2d7dd2;color:#fff;font-size:10px;display:none;align-items:center;justify-content:center;font-weight:700" class="tc-checkmark">✓</div>
+          <div style="width:64px;height:50px;margin:0 auto 12px;display:flex;align-items:center;justify-content:center">
+            <svg width="64" height="50" viewBox="0 0 56 44" fill="none"><rect x="6" y="8" width="36" height="30" rx="3" fill="#dbeafe" stroke="#2d7dd2" stroke-width="1.5"/><rect x="6" y="8" width="36" height="10" rx="3" fill="#2d7dd2"/><line x1="16" y1="4" x2="16" y2="14" stroke="#2d7dd2" stroke-width="2" stroke-linecap="round"/><line x1="32" y1="4" x2="32" y2="14" stroke="#2d7dd2" stroke-width="2" stroke-linecap="round"/><circle cx="16" cy="26" r="2" fill="#2d7dd2"/><circle cx="24" cy="26" r="2" fill="#2d7dd2"/><circle cx="32" cy="26" r="2" fill="#93c5fd"/><circle cx="46" cy="10" r="5" fill="#fbbf24"/></svg>
           </div>
-          <div class="tc-footer">
-            <div class="tc-label">Temporada / Airbnb</div>
-            <div class="tc-sub">Controle de itens e mobília</div>
-          </div>
+          <div style="font-size:14px;font-weight:600;color:#1a2540">Temporada</div>
+          <div style="font-size:12px;color:#8898aa;margin-top:4px;line-height:1.4">Locacao por periodo — check-in e check-out</div>
         </div>
+
       </div>
 
-      <div id="temporada-subchoice">
-        <div class="wstep-sub" style="margin-bottom:10px">Tipo de movimentação:</div>
-        <div class="subchoice-row">
-          <button class="subchoice-btn active" id="btn-checkin" onclick="document.querySelectorAll('.subchoice-btn').forEach(b=>b.classList.remove('active'));this.classList.add('active')">Check-in</button>
-          <button class="subchoice-btn" id="btn-checkout" onclick="document.querySelectorAll('.subchoice-btn').forEach(b=>b.classList.remove('active'));this.classList.add('active')">Check-out</button>
-        </div>
-      </div>
-
-      <div class="wiz-info-box">
-        <span class="wiz-info-icon"><svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"/></svg></span>
-        <span><strong>Importante:</strong> O tipo de vistoria define automaticamente as cláusulas e estrutura do laudo.</span>
-      </div>
-
-      <div class="wiz-nav">
-        <div></div>
-        <div class="wiz-nav-right">
-          <button class="btn-wiz-next" id="btn-tipo-next" onclick="showWstepQuem()">
-            Próximo
-            <svg viewBox="0 0 20 20" fill="currentColor" width="16" height="16"><path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z"/></svg>
-          </button>
-        </div>
+      <!-- BARRA DE NAVEGACAO -->
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:16px 20px;background:#fff;border-radius:10px;border:0.5px solid #e2e8f0;box-shadow:0 2px 8px rgba(0,0,0,0.04)">
+        <button onclick="showPage('page-dashboard')" style="padding:10px 20px;border-radius:8px;border:0.5px solid #e2e8f0;background:#fff;font-size:13px;color:#4a5568;cursor:pointer">← Cancelar</button>
+        <span style="font-size:12px;color:#8898aa">Etapa 1 de 8</span>
+        <button onclick="showWstepQuem()" style="padding:10px 28px;border-radius:8px;background:#2d7dd2;color:#fff;font-size:14px;font-weight:700;border:none;cursor:pointer;box-shadow:0 4px 14px rgba(45,125,210,0.4)">Continuar →</button>
       </div>
     </div>
 
