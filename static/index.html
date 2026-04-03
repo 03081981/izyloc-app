@@ -1913,10 +1913,16 @@ textarea.obs-geral{width:100%;background:#f8fafc;border:.5px solid #dce3ed;borde
           <div style="width:30px;height:30px;border-radius:7px;background:rgba(255,255,255,0.2);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0">+</div>
           <div><div style="font-size:12px;font-weight:600;color:#fff">Nova vistoria</div><div style="font-size:10px;color:rgba(255,255,255,0.7);margin-top:1px">Iniciar laudo</div></div>
         </div>
-        <div style="background:#fff;border-radius:10px;padding:14px;cursor:pointer;display:flex;align-items:center;gap:8px;border:0.5px solid #e2e8f0" onclick="switchTab('laudos',null)">
+        <div style="background:#fff;border-radius:10px;padding:14px;cursor:pointer;display:flex;align-items:center;gap:8px;border:0.5px solid #e2e8f0" onclick="mostrarLaudosMobile()">
           <div style="width:30px;height:30px;border-radius:7px;background:#eef4ff;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0">📋</div>
           <div><div style="font-size:12px;font-weight:600;color:#1a2540">Meus laudos</div><div style="font-size:10px;color:#8898aa;margin-top:1px">Acesse seus laudos</div></div>
         </div>
+      </div>
+
+      <!-- BOTAO VOLTAR MOBILE -->
+      <div id="db-voltar-mobile" style="display:none;align-items:center;gap:8px;margin-bottom:12px;cursor:pointer" onclick="voltarDashboardMobile()">
+        <div style="width:32px;height:32px;border-radius:8px;background:#fff;border:0.5px solid #e2e8f0;display:flex;align-items:center;justify-content:center;font-size:14px">←</div>
+        <div style="font-size:14px;font-weight:600;color:#1a2540">Meus laudos</div>
       </div>
 
       <!-- GRID PRINCIPAL -->
@@ -4449,6 +4455,27 @@ document.addEventListener('DOMContentLoaded', function() {
   var m = document.getElementById('modal-como-funciona');
   if (m) m.addEventListener('click', function(e) { if(e.target === m) fecharComoFunciona(); });
 });
+
+// — Meus laudos mobile —
+function mostrarLaudosMobile() {
+  var col = document.querySelector('.db-col-main');
+  if (col) {
+    col.style.display = 'block';
+    col.scrollIntoView({behavior: 'smooth'});
+  }
+  var acoes = document.querySelector('.db-acoes-mobile');
+  if (acoes) acoes.style.display = 'none';
+  var voltar = document.getElementById('db-voltar-mobile');
+  if (voltar) voltar.style.display = 'flex';
+}
+function voltarDashboardMobile() {
+  var col = document.querySelector('.db-col-main');
+  if (col) col.style.display = 'none';
+  var acoes = document.querySelector('.db-acoes-mobile');
+  if (acoes) acoes.style.display = 'grid';
+  var voltar = document.getElementById('db-voltar-mobile');
+  if (voltar) voltar.style.display = 'none';
+}
 </script>
 <button class="db-help-btn" onclick="showManual()" title="Manual do usuario">?</button>
 
