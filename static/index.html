@@ -1645,6 +1645,10 @@ textarea.obs-geral{width:100%;background:#f8fafc;border:.5px solid #dce3ed;borde
     .tipo-card.selected { border-color:#2d7dd2!important; background:#f0f7ff!important; box-shadow:0 0 0 3px rgba(45,125,210,.12)!important; }
     .tipo-card.selected .tc-checkmark { display:flex!important; }
     .tipo-card:hover { border-color:#2d7dd2; transform:translateY(-2px); }
+
+    .realiza-card.selected{border-color:#2d7dd2!important;background:#f0f7ff!important;box-shadow:0 0 0 3px rgba(45,125,210,.12)!important}
+    .realiza-card.selected .realiza-ck{display:flex!important}
+    .realiza-card:hover{border-color:#2d7dd2;transform:translateY(-2px)}
 </style>
 </head>
 <body>
@@ -2159,55 +2163,38 @@ textarea.obs-geral{width:100%;background:#f8fafc;border:.5px solid #dce3ed;borde
 
     <!-- STEP QUEM: QUEM REALIZA A VISTORIA -->
     <div id="wstep-quem" style="display:none">
-      <div class="wstep-title">Quem realiza a vistoria?</div>
-      <div class="wstep-sub">Selecione o responsável pela execução da vistoria do imóvel.</div>
+      <div class="wiz-section-title">Quem realiza a vistoria?</div>
+      <div class="wiz-section-sub">Isso define o modelo do laudo e os campos de assinatura.</div>
 
-      <div class="realiza-cards">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:24px">
 
-        <!-- Card 1: Imobiliária / Corretor -->
-        <div class="tipo-card realiza-card selected" data-realiza="imobiliaria" onclick="selectRealizaCard(this)">
-          <div class="tc-photo" style="background-image:url('https://images.unsplash.com/photo-1600880292203-757bb62b4baf?w=500&h=360&fit=crop&q=80')">
-            <div class="tc-tag tc-tag-entrada">Profissional</div>
-            <div class="tc-checkmark"><svg viewBox="0 0 12 12" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 6l3 3 5-5"/></svg></div>
+        <div class="realiza-card selected" data-realiza="imobiliaria" onclick="selectRealizaCard(this)" style="border-radius:12px;border:1.5px solid #2d7dd2;cursor:pointer;background:#f0f7ff;position:relative;text-align:center;padding:20px 14px;transition:all .2s">
+          <div style="position:absolute;top:10px;right:10px;width:20px;height:20px;border-radius:50%;background:#2d7dd2;color:#fff;font-size:10px;display:flex;align-items:center;justify-content:center;font-weight:700">✓</div>
+          <div style="width:64px;height:50px;margin:0 auto 12px;display:flex;align-items:center;justify-content:center">
+            <svg width="64" height="50" viewBox="0 0 56 44" fill="none"><rect x="8" y="6" width="40" height="34" rx="2" fill="#dbeafe" stroke="#2d7dd2" stroke-width="1.5"/><rect x="8" y="6" width="40" height="10" rx="2" fill="#2d7dd2"/><rect x="12" y="20" width="7" height="6" rx="1" fill="#93c5fd" stroke="#2d7dd2" stroke-width="0.8"/><rect x="24" y="20" width="7" height="6" rx="1" fill="#93c5fd" stroke="#2d7dd2" stroke-width="0.8"/><rect x="36" y="20" width="7" height="6" rx="1" fill="#93c5fd" stroke="#2d7dd2" stroke-width="0.8"/><rect x="22" y="30" width="12" height="10" rx="1" fill="#2d7dd2"/><circle cx="32" cy="35" r="1" fill="#fff"/><circle cx="50" cy="12" r="3" fill="#fff" stroke="#2d7dd2" stroke-width="1"/><path d="M46 20c0-2.2 1.8-4 4-4s4 1.8 4 4" fill="#dbeafe" stroke="#2d7dd2" stroke-width="1"/></svg>
           </div>
-          <div class="tc-footer">
-            <div class="tc-label">Imobiliária / Corretor</div>
-            <div class="tc-sub">Vistoria profissional com CRECI</div>
-          </div>
+          <div style="font-size:14px;font-weight:600;color:#1a2540">Imobiliaria / Corretor</div>
+          <div style="font-size:12px;color:#8898aa;margin-top:4px;line-height:1.4">Profissional habilitado realiza a vistoria</div>
         </div>
 
-        <!-- Card 2: Proprietário -->
-        <div class="tipo-card realiza-card" data-realiza="proprietario" onclick="selectRealizaCard(this)">
-          <div class="tc-photo" style="background-image:url('/static/proprietario.jpg')">
-            <div class="tc-tag tc-tag-temporada">Proprietário</div>
-            <div class="tc-checkmark"><svg viewBox="0 0 12 12" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 6l3 3 5-5"/></svg></div>
+        <div class="realiza-card" data-realiza="proprietario" onclick="selectRealizaCard(this)" style="border-radius:12px;border:1.5px solid #e2e8f0;cursor:pointer;background:#fff;position:relative;text-align:center;padding:20px 14px;transition:all .2s">
+          <div style="position:absolute;top:10px;right:10px;width:20px;height:20px;border-radius:50%;background:#2d7dd2;color:#fff;font-size:10px;display:none;align-items:center;justify-content:center;font-weight:700" class="realiza-ck">✓</div>
+          <div style="width:64px;height:50px;margin:0 auto 12px;display:flex;align-items:center;justify-content:center">
+            <svg width="64" height="50" viewBox="0 0 56 50" fill="none"><circle cx="28" cy="12" r="9" fill="#dbeafe" stroke="#2d7dd2" stroke-width="1.5"/><circle cx="25" cy="11" r="1.2" fill="#2d7dd2"/><circle cx="31" cy="11" r="1.2" fill="#2d7dd2"/><path d="M25 15 Q28 17.5 31 15" stroke="#2d7dd2" stroke-width="1.2" stroke-linecap="round" fill="none"/><path d="M12 44 C12 34 18 30 28 30 C38 30 44 34 44 44" fill="#dbeafe" stroke="#2d7dd2" stroke-width="1.5" stroke-linecap="round"/><path d="M26 30 L28 36 L30 30" fill="#2d7dd2" stroke="#2d7dd2" stroke-width="0.5" stroke-linejoin="round"/><circle cx="44" cy="36" r="3.5" fill="none" stroke="#2d7dd2" stroke-width="1.5"/><line x1="44" y1="39.5" x2="44" y2="47" stroke="#2d7dd2" stroke-width="1.5" stroke-linecap="round"/><line x1="44" y1="44" x2="47" y2="44" stroke="#2d7dd2" stroke-width="1.5" stroke-linecap="round"/><line x1="44" y1="46" x2="47" y2="46" stroke="#2d7dd2" stroke-width="1.5" stroke-linecap="round"/></svg>
           </div>
-          <div class="tc-footer">
-            <div class="tc-label">Proprietário</div>
-            <div class="tc-sub">Vistoria direta pelo dono do imóvel</div>
-          </div>
+          <div style="font-size:14px;font-weight:600;color:#1a2540">Proprietario direto</div>
+          <div style="font-size:12px;color:#8898aa;margin-top:4px;line-height:1.4">O proprio dono realiza a vistoria</div>
         </div>
 
       </div>
 
-      <!-- Info box -->
-      <div class="wiz-info-box" style="background:#f0f6ff; border:1px solid #b5d4f4; color:#1a4a8a; margin-bottom:28px;">
-        <span class="wiz-info-icon"><svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"/></svg></span>
-        <span>O tipo selecionado define automaticamente as cláusulas e a estrutura do laudo.</span>
+      <!-- BARRA DE NAVEGACAO -->
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:16px 20px;background:#fff;border-radius:10px;border:0.5px solid #e2e8f0;box-shadow:0 2px 8px rgba(0,0,0,0.04)">
+        <button onclick="gotoWStep(0)" style="padding:10px 20px;border-radius:8px;border:0.5px solid #e2e8f0;background:#fff;font-size:13px;color:#4a5568;cursor:pointer">← Voltar</button>
+        <span style="font-size:12px;color:#8898aa">Etapa 2 de 8</span>
+        <button onclick="nextWizStep()" style="padding:10px 28px;border-radius:8px;background:#2d7dd2;color:#fff;font-size:14px;font-weight:700;border:none;cursor:pointer;box-shadow:0 4px 14px rgba(45,125,210,0.4)">Continuar →</button>
       </div>
-
-      <!-- Navigation -->
-      <div class="wiz-nav-bar">
-        <button class="btn-wiz-voltar" onclick="gotoWStep(0)">
-          <svg viewBox="0 0 20 20" fill="currentColor" width="16" height="16"><path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z"/></svg>
-          Voltar
-        </button>
-        <button class="btn-wiz-next" onclick="nextWizStep()">
-          Próximo
-          <svg viewBox="0 0 20 20" fill="currentColor" width="16" height="16"><path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z"/></svg>
-        </button>
-      </div>
-    </div>
+</div>
 
     <!-- STEP RESP (response/loading) -->
     <div id="wstep-resp" style="display:none">
