@@ -294,7 +294,7 @@ body {
 
 .sidebar-logo {
   padding: 24px 20px 20px;
-  display: flex; align-items: center; gap: 10px;
+  display: flex; flex-direction: column; align-items: flex-start;
   border-bottom: 1px solid rgba(255,255,255,.07);
   flex-shrink: 0;
 }
@@ -2021,7 +2021,7 @@ textarea.obs-geral{width:100%;background:#f8fafc;border:.5px solid #dce3ed;borde
 <!-- ══════════════ PAGE: WIZARD ══════════════ -->
 <div id="page-wizard" class="page">
   <aside class="sidebar">
-    <div class="sidebar-logo"><div style='padding: 20px 20px 16px;'><div style='font-size:20px; font-weight:700; line-height:1; letter-spacing:-0.5px;'><span style='color:#2d7dd2; font-weight:400;'>izy</span><span style='color:#fff; font-weight:700;'>LAUDO</span></div><div style='font-size:9px; color:rgba(255,255,255,0.4); letter-spacing:1px; text-transform:uppercase; margin-top:3px;'>Vistorias Imobiliárias</div></div></div>
+    <div class="sidebar-logo"><div><span style="font-size:20px;font-weight:400;color:#2d7dd2;font-family:Helvetica,Arial,sans-serif">izy</span><span style="font-size:20px;font-weight:900;color:#fff;font-family:Helvetica,Arial,sans-serif">LAUDO</span></div><div style="font-size:7px;color:rgba(255,255,255,0.28);letter-spacing:2px;text-transform:uppercase;margin-top:2px;font-weight:400">Vistorias Imobiliarias</div></div>
     <nav class="sidebar-nav">
       <button class="nav-item" onclick="showPage('page-dashboard')"><span class="nav-icon-wrap"><svg viewBox="0 0 20 20" fill="currentColor"><path d="M3 4a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1H4a1 1 0 01-1-1V4zm0 8a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1H4a1 1 0 01-1-1v-4zm8-8a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1V4zm0 8a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1v-4z"/></svg></span>Dashboard</button>
       <button class="nav-item active"><span class="nav-icon-wrap"><svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"/></svg></span>Nova vistoria</button>
