@@ -1791,7 +1791,7 @@ textarea.obs-geral{width:100%;background:#f8fafc;border:.5px solid #dce3ed;borde
     <div class="sidebar-user" onclick="switchTab('perfil',null)">
       <div class="sidebar-avatar" id="profile-avatar-letter">?</div>
       <div class="sidebar-user-info">
-        <div class="sidebar-user-name" id="profile-name">Carregando...</div>
+        <div class="sidebar-user-name" id="profile-name"></div>
         <div id="profile-company" style="display:none"></div>
         <div class="sidebar-user-plan">Plano Profissional</div>
       </div>
@@ -2607,7 +2607,7 @@ function switchTab(tab, el) {
       var sa2 = document.getElementById('stat-andamento-2');
       var sa  = document.getElementById('stat-andamento');
       if (sa2 && sa && sa2.textContent) sa.textContent = sa2.textContent;
-    }, 300);
+    }, 800);
   };
 })();
 </script>
