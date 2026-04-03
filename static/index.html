@@ -2575,53 +2575,57 @@ function switchTab(tab, el) {
 
 // ── Sync profile fields across tabs ──
 (function() {
+  function syncProfile() {
+    var n = document.getElementById('profile-name');
+    if (!n || !n.textContent || n.textContent.trim() === '') return;
+    var nm = n.textContent.trim();
+
+    // Distribui nome
+    ['profile-name-header','profile-name-val','topbar-user-name'].forEach(function(id) {
+      var el = document.getElementById(id);
+      if (el) el.textContent = nm;
+    });
+
+    // Avatar letter
+    var letter = nm.charAt(0).toUpperCase();
+    ['topbar-avatar-letter','profile-avatar-lg','profile-avatar-letter'].forEach(function(id) {
+      var el = document.getElementById(id);
+      if (el) el.textContent = letter;
+    });
+
+    // Greeting
+    var greet = document.getElementById('db-greeting');
+    if (greet) {
+      var hr = new Date().getHours();
+      var sau = hr < 12 ? 'Bom dia' : hr < 18 ? 'Boa tarde' : 'Boa noite';
+      greet.textContent = sau + ', ' + nm.split(' ')[0] + '!';
+    }
+
+    // Sync stat-andamento
+    var sa = document.getElementById('stat-andamento');
+    var sa2 = document.getElementById('stat-andamento-2');
+    if (sa && sa2) sa2.textContent = sa.textContent;
+  }
+
+  // Observa mudancas no profile-name
+  function watchProfileName() {
+    var n = document.getElementById('profile-name');
+    if (!n) return;
+    var obs = new MutationObserver(function() {
+      if (n.textContent && n.textContent.trim() !== '') {
+        syncProfile();
+        obs.disconnect();
+      }
+    });
+    obs.observe(n, { childList: true, characterData: true, subtree: true });
+    // Tenta imediatamente caso ja esteja populado
+    syncProfile();
+  }
+
   var orig = window.loadDashboard;
   window.loadDashboard = function() {
     if (orig) orig.apply(this, arguments);
-    setTimeout(function() {
-      var n = document.getElementById('profile-name');
-      var c = document.getElementById('profile-company');
-      var e = document.getElementById('profile-email');
-      var al = document.getElementById('profile-avatar-letter');
-      if (n && n.textContent && n.textContent.trim() !== '') {
-        var nm = n.textContent;
-        if (document.getElementById('profile-name-header')) document.getElementById('profile-name-header').textContent = nm;
-        if (document.getElementById('profile-name-val')) document.getElementById('profile-name-val').textContent = nm;
-        if (document.getElementById('topbar-user-name')) document.getElementById('topbar-user-name').textContent = nm;
-        var letter = nm.charAt(0).toUpperCase();
-        if (document.getElementById('topbar-avatar-letter')) document.getElementById('topbar-avatar-letter').textContent = letter;
-        if (document.getElementById('profile-avatar-lg')) document.getElementById('profile-avatar-lg').textContent = letter;
-        if (document.getElementById('profile-avatar-letter')) document.getElementById('profile-avatar-letter').textContent = letter;
-        // Dashboard greeting
-        var greet = document.getElementById('db-greeting');
-        if (greet) {
-          var hr = new Date().getHours();
-          var saudacao = hr < 12 ? 'Bom dia' : hr < 18 ? 'Boa tarde' : 'Boa noite';
-          var firstName = nm.split(' ')[0];
-          greet.textContent = saudacao + ', ' + firstName + '!';
-        }
-      } else {
-  setTimeout(function() {
-    var n2 = document.getElementById('profile-name');
-    if (n2 && n2.textContent && n2.textContent.trim() !== '') {
-      var nm2 = n2.textContent;
-      var letter2 = nm2.charAt(0).toUpperCase();
-      if (document.getElementById('profile-avatar-letter')) document.getElementById('profile-avatar-letter').textContent = letter2;
-      var greet2 = document.getElementById('db-greeting');
-      var hr2 = new Date().getHours();
-      var sau2 = hr2 < 12 ? 'Bom dia' : hr2 < 18 ? 'Boa tarde' : 'Boa noite';
-      var fn2 = nm2.split(' ')[0];
-      if (greet2) greet2.textContent = sau2 + ', ' + fn2 + '!';
-    }
-  }, 2000);
-}
-      if (c && document.getElementById('profile-company-val')) document.getElementById('profile-company-val').textContent = c.textContent;
-      if (e && document.getElementById('profile-email')) document.getElementById('profile-email').textContent = e.textContent;
-      // sync stat-andamento-2 into stat-andamento if needed
-      var sa2 = document.getElementById('stat-andamento-2');
-      var sa  = document.getElementById('stat-andamento');
-      if (sa2 && sa && sa2.textContent) sa.textContent = sa2.textContent;
-    }, 2000);
+    watchProfileName();
   };
 })();
 </script>
