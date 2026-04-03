@@ -1545,7 +1545,60 @@ textarea.obs-geral{width:100%;background:#f8fafc;border:.5px solid #dce3ed;borde
 .btn-nav-next{background:#2d7dd2;color:#fff;border:none;border-radius:8px;padding:8px 16px;font-size:13px;cursor:pointer}
 /* === End Etapa 6 CSS === */
 
-.rev-card{background:#fff;border-radius:12px;box-shadow:0 1px 4px rgba(0,0,0,.08);padding:16px 18px;margin-bottom:14px}.rev-card-title{font-weight:700;font-size:15px;color:#1e293b;margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid #e2e8f0}.rev-row{display:flex;gap:8px;padding:5px 0;font-size:14px;flex-wrap:wrap}.rev-label{color:#64748b;min-width:100px;flex-shrink:0}.rev-val{color:#1e293b;font-weight:500;flex:1;min-width:0;word-break:break-word}</style>
+.rev-card{background:#fff;border-radius:12px;box-shadow:0 1px 4px rgba(0,0,0,.08);padding:16px 18px;margin-bottom:14px}.rev-card-title{font-weight:700;font-size:15px;color:#1e293b;margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid #e2e8f0}.rev-row{display:flex;gap:8px;padding:5px 0;font-size:14px;flex-wrap:wrap}.rev-label{color:#64748b;min-width:100px;flex-shrink:0}.rev-val{color:#1e293b;font-weight:500;flex:1;min-width:0;word-break:break-word}
+/* ===== NOVO DASHBOARD LAYOUT ===== */
+.db-hero{display:flex;align-items:center;justify-content:space-between;padding:16px 0 20px}
+.db-greeting{font-size:22px;font-weight:700;color:#1a2540}
+.db-subtitle{font-size:13px;color:#8898aa;margin-top:2px}
+.db-btn-nova{background:#2d7dd2;color:#fff;border:none;border-radius:10px;padding:10px 20px;font-size:13px;font-weight:700;cursor:pointer;box-shadow:0 4px 14px rgba(45,125,210,0.4)}
+.db-creditos-banner{background:linear-gradient(135deg,#0f2a4a 0%,#1565c0 100%);border-radius:16px;padding:22px 28px;margin-bottom:22px;display:flex;align-items:center;justify-content:space-between;position:relative;overflow:hidden}
+.db-creditos-banner::before{content:'';position:absolute;top:-40px;right:-40px;width:180px;height:180px;border-radius:50%;background:rgba(255,255,255,0.04)}
+.db-cred-left{position:relative;z-index:1}
+.db-cred-label{font-size:11px;font-weight:600;color:rgba(255,255,255,0.6);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:6px}
+.db-cred-count{display:flex;align-items:baseline;gap:6px}
+.db-cred-num{font-size:40px;font-weight:700;color:#fff;line-height:1}
+.db-cred-unit{font-size:13px;color:rgba(255,255,255,0.6)}
+.db-cred-sub{font-size:12px;color:rgba(255,255,255,0.5);margin-top:4px}
+.db-cred-bar-wrap{margin-top:10px;width:260px}
+.db-cred-bar-bg{height:6px;background:rgba(255,255,255,0.15);border-radius:3px}
+.db-cred-bar-fill{height:6px;background:#4fc3f7;border-radius:3px;width:0%}
+.db-cred-bar-label{display:flex;justify-content:space-between;margin-top:4px}
+.db-cred-bar-label span{font-size:10px;color:rgba(255,255,255,0.4)}
+.db-cred-right{position:relative;z-index:1;display:flex;flex-direction:column;align-items:flex-end;gap:8px}
+.db-btn-adicionar{background:#009ee3;color:#ffffff;border:none;border-radius:10px;padding:11px 18px;font-size:13px;font-weight:700;cursor:pointer;box-shadow:0 4px 14px rgba(0,158,227,0.4);display:flex;align-items:center;gap:8px}
+.db-mp-badge{background:rgba(255,255,255,0.2);border-radius:5px;padding:2px 7px;font-size:9px;font-weight:700;color:#fff;border:0.5px solid rgba(255,255,255,0.3)}
+.db-btn-extrato{background:rgba(255,255,255,0.1);color:rgba(255,255,255,0.8);border:0.5px solid rgba(255,255,255,0.2);border-radius:8px;padding:8px 14px;font-size:12px;cursor:pointer}
+.db-custo-info{font-size:10px;color:rgba(255,255,255,0.4);text-align:right}
+.db-metrics-row{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:22px}
+.db-metric-card{background:#fff;border-radius:12px;border:0.5px solid #e2e8f0;padding:16px 18px}
+.db-metric-label{font-size:11px;color:#8898aa;font-weight:500;margin-bottom:6px}
+.db-metric-val{font-size:26px;font-weight:700;color:#1a2540;line-height:1}
+.db-metric-warn{color:#f59e0b!important}
+.db-metric-sub{font-size:11px;color:#8898aa;margin-top:4px}
+.db-metric-trend{font-size:11px;font-weight:600;color:#059669;margin-top:4px}
+.db-main-grid{display:grid;grid-template-columns:2fr 1fr;gap:18px}
+.db-section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;font-size:15px;font-weight:600;color:#1a2540}
+.db-section-link{font-size:12px;color:#2d7dd2;cursor:pointer;font-weight:400}
+.db-como-card{background:linear-gradient(160deg,#0f2a4a 0%,#1e40af 100%);border-radius:12px;padding:18px;position:relative;overflow:hidden}
+.db-como-card::before{content:'';position:absolute;top:-30px;right:-30px;width:100px;height:100px;border-radius:50%;background:rgba(255,255,255,0.04)}
+.db-logo-izy{font-size:14px;font-weight:400;color:#4fc3f7;font-family:Helvetica,Arial,sans-serif}
+.db-logo-laudo{font-size:14px;font-weight:900;color:#fff;font-family:Helvetica,Arial,sans-serif}
+.db-logo-sub{font-size:5px;color:rgba(255,255,255,0.28);letter-spacing:2px;text-transform:uppercase;margin-top:2px;display:block;font-weight:400}
+.db-como-title{font-size:10px;font-weight:700;color:rgba(255,255,255,0.45);text-transform:uppercase;letter-spacing:0.8px;margin:10px 0 10px;position:relative;z-index:1}
+.db-passos{display:flex;flex-direction:column;position:relative;z-index:1}
+.db-passo{display:flex;align-items:flex-start;gap:8px}
+.db-passo-l{display:flex;flex-direction:column;align-items:center;flex-shrink:0}
+.db-passo-num{width:20px;height:20px;border-radius:50%;background:#2d7dd2;color:#fff;font-size:9px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 0 0 2px rgba(45,125,210,0.3)}
+.db-passo-num-ok{background:#059669!important;box-shadow:0 0 0 2px rgba(5,150,105,0.3)!important}
+.db-passo-line{width:1.5px;height:20px;background:rgba(255,255,255,0.12);margin:3px auto}
+.db-passo-info{padding-bottom:12px}
+.db-passo-last .db-passo-info{padding-bottom:0}
+.db-passo-title{font-size:11px;font-weight:600;color:#fff;line-height:1.3}
+.db-passo-desc{font-size:10px;color:rgba(255,255,255,0.45);margin-top:2px}
+.db-como-divider{height:0.5px;background:rgba(255,255,255,0.1);margin:12px 0;position:relative;z-index:1}
+.db-btn-nova-sm{width:100%;background:#2d7dd2;color:#fff;border:none;border-radius:8px;padding:8px;font-size:12px;font-weight:700;cursor:pointer;box-shadow:0 4px 12px rgba(45,125,210,0.4);position:relative;z-index:1}
+.db-help-btn{position:fixed;bottom:24px;right:24px;width:44px;height:44px;border-radius:50%;background:#2d7dd2;color:#fff;border:none;font-size:18px;font-weight:700;cursor:pointer;box-shadow:0 4px 16px rgba(45,125,210,0.5);display:flex;align-items:center;justify-content:center;z-index:1000;line-height:1}
+</style>
 </head>
 <body>
 
@@ -1727,142 +1780,102 @@ textarea.obs-geral{width:100%;background:#f8fafc;border:.5px solid #dce3ed;borde
     <!-- TAB: VISTORIAS (main dashboard) -->
     <div id="dash-tab-vistorias" class="dash-tab-content active">
 
-      <!-- DASHBOARD HEADER -->
+      <!-- TOPBAR -->
       <div class="db-hero">
         <div class="db-hero-left">
-          <div class="db-greeting" id="db-greeting">Olá, bem-vindo!</div>
-          <div class="db-subtitle">Aqui está o resumo da sua operação hoje.</div>
+          <div class="db-greeting" id="db-greeting">Bom dia!</div>
+          <div class="db-subtitle">Quinta-feira, 3 de abril de 2026</div>
         </div>
-        <button class="db-btn-nova" onclick="showNewInspection()">
-          <svg viewBox="0 0 20 20" fill="currentColor" width="16" height="16"><path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"/></svg>
-          Nova vistoria
-        </button>
+        <button class="db-btn-nova" onclick="showNewInspection()">+ Nova vistoria</button>
       </div>
 
-      <!-- STAT CARDS ROW -->
-      <div class="db-cards-row">
-        <div class="db-card db-card-blue">
-          <div class="db-card-icon">
-            <svg viewBox="0 0 20 20" fill="currentColor"><path d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z"/></svg>
+      <!-- BANNER CREDITOS -->
+      <div class="db-creditos-banner">
+        <div class="db-cred-left">
+          <div class="db-cred-label">&#x1F4F8; Saldo de fotos disponiveis</div>
+          <div class="db-cred-count">
+            <span class="db-cred-num" id="db-saldo-display">--</span>
+            <span class="db-cred-unit">fotos restantes</span>
           </div>
-          <div class="db-card-value" id="stat-total">0</div>
-          <div class="db-card-label">Total de vistorias</div>
+          <div class="db-cred-sub">Cada foto analisada pela IA consome 1 credito &middot; <span id="db-preco-display">R$ 0,50</span></div>
+          <div class="db-cred-bar-wrap">
+            <div class="db-cred-bar-bg"><div class="db-cred-bar-fill" id="db-cred-bar-fill"></div></div>
+            <div class="db-cred-bar-label">
+              <span id="db-cred-usadas">-- usadas</span>
+              <span id="db-cred-restantes">-- restantes</span>
+            </div>
+          </div>
         </div>
-        <div class="db-card db-card-green">
-          <div class="db-card-icon">
-            <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"/></svg>
-          </div>
-          <div class="db-card-value" id="stat-concluido">0</div>
-          <div class="db-card-label">Concluídas</div>
-        </div>
-        <div class="db-card db-card-warn">
-          <div class="db-card-icon">
-            <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z"/></svg>
-          </div>
-          <div class="db-card-value" id="stat-andamento">0</div>
-          <div class="db-card-label">Em andamento</div>
-        </div>
-        <div class="db-card db-card-purple">
-          <div class="db-card-icon">
-            <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z"/></svg>
-          </div>
-          <div class="db-card-value" id="stat-mes">—</div>
-          <div class="db-card-label">Este mês</div>
-        </div>
-        <div class="db-card db-card-gray">
-          <div class="db-card-icon">
-            <svg viewBox="0 0 20 20" fill="currentColor"><path d="M4 4a2 2 0 00-2 2v1h16V6a2 2 0 00-2-2H4zM2 11v3a2 2 0 002 2h12a2 2 0 002-2v-3H2zm9 2a1 1 0 100-2H9a1 1 0 100 2h2z"/></svg>
-          </div>
-          <div class="db-card-value" id="stat-saldo">—</div>
-          <div class="db-card-label">Saldo (fotos)</div>
+        <div class="db-cred-right">
+          <button class="db-btn-adicionar" onclick="showRecarga()">+ Adicionar creditos <span class="db-mp-badge">Mercado Pago</span></button>
+          <button class="db-btn-extrato" onclick="showExtrato()">&#x1F4CB; Ver extrato de uso</button>
+          <div class="db-custo-info">20 fotos R$ 10,00 &middot; 50 fotos R$ 25,00 &middot; 100 fotos R$ 50,00 &middot; 200 fotos R$ 100,00</div>
         </div>
       </div>
 
-      <!-- MAIN CONTENT GRID -->
+      <!-- METRICAS -->
+      <div class="db-metrics-row">
+        <div class="db-metric-card">
+          <div class="db-metric-label">Laudos este mes</div>
+          <div class="db-metric-val" id="stat-mes">--</div>
+          <div class="db-metric-trend" id="stat-mes-trend"></div>
+        </div>
+        <div class="db-metric-card">
+          <div class="db-metric-label">Total de laudos</div>
+          <div class="db-metric-val" id="stat-total">--</div>
+          <div class="db-metric-sub">Desde o inicio</div>
+        </div>
+        <div class="db-metric-card">
+          <div class="db-metric-label">Fotos usadas</div>
+          <div class="db-metric-val" id="stat-saldo">--</div>
+          <div class="db-metric-sub">Este mes</div>
+        </div>
+        <div class="db-metric-card">
+          <div class="db-metric-label">Em andamento</div>
+          <div class="db-metric-val db-metric-warn" id="stat-andamento">--</div>
+          <div class="db-metric-sub">Nao concluidos</div>
+        </div>
+      </div>
+
+      <!-- GRID PRINCIPAL -->
       <div class="db-main-grid">
 
-        <!-- LEFT: últimas vistorias -->
+        <!-- LAUDOS RECENTES -->
         <div class="db-col-main">
           <div class="db-section-header">
-            <span class="db-section-title">Últimas vistorias</span>
-            <span class="db-section-link" onclick="loadDashboard && loadDashboard()">
-              <svg viewBox="0 0 20 20" fill="currentColor" width="13" height="13"><path fill-rule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z"/></svg>
-              Atualizar
-            </span>
+            <span>Laudos recentes</span>
+            <span class="db-section-link" onclick="showTab('laudos')">Ver todos &#x2192;</span>
           </div>
           <div id="inspections-list"></div>
         </div>
 
-        <!-- RIGHT COLUMN -->
+        <!-- COMO FUNCIONA -->
         <div class="db-col-side">
-
-          <!-- SALDO E CONTA -->
-          <div class="db-panel">
-            <div class="db-panel-header">
-              <span class="db-panel-title">Conta e consumo</span>
-              <span class="db-section-link" onclick="switchTab('estatisticas',document.getElementById('nav-extrato'))">Ver extrato</span>
-            </div>
-            <div class="db-balance-block">
-              <div class="db-balance-row">
-                <div>
-                  <div class="db-balance-label">Saldo disponível</div>
-                  <div class="db-balance-value" id="db-saldo-display">— fotos</div>
-                </div>
-                <div class="db-balance-badge">
-                  <svg viewBox="0 0 20 20" fill="currentColor" width="18" height="18"><path d="M4 4a2 2 0 00-2 2v1h16V6a2 2 0 00-2-2H4zM2 11v3a2 2 0 002 2h12a2 2 0 002-2v-3H2zm9 2a1 1 0 100-2H9a1 1 0 100 2h2z"/></svg>
-                </div>
-              </div>
-              <div class="db-price-row">
-                <span class="db-price-label">Valor por foto processada</span>
-                <span class="db-price-val" id="db-preco-display">—</span>
-              </div>
-            </div>
-            <table class="db-extrato-table">
-              <thead>
-                <tr><th>Data</th><th>Tipo</th><th>Fotos</th></tr>
-              </thead>
-              <tbody id="extrato-list">
-                <tr><td colspan="3" style="text-align:center;color:var(--text-3);padding:20px 0;font-size:12px">Carregando...</td></tr>
-              </tbody>
-            </table>
+          <div class="db-section-header">
+            <span>Como funciona</span>
           </div>
-
-          <!-- AÇÕES RÁPIDAS -->
-          <div class="db-panel">
-            <div class="db-panel-header">
-              <span class="db-panel-title">Ações rápidas</span>
+          <div class="db-como-card">
+            <div class="db-como-logo">
+              <span class="db-logo-izy">izy</span><span class="db-logo-laudo">LAUDO</span>
+              <span class="db-logo-sub">Vistorias Imobiliarias</span>
             </div>
-            <div class="db-quick-actions">
-              <button class="db-qa-btn" onclick="showNewInspection()">
-                <div class="db-qa-icon db-qa-blue">
-                  <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"/></svg>
-                </div>
-                <span>Nova vistoria</span>
-              </button>
-              <button class="db-qa-btn" onclick="switchTab('vistorias',document.getElementById('nav-laudos'))">
-                <div class="db-qa-icon db-qa-green">
-                  <svg viewBox="0 0 20 20" fill="currentColor"><path d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z"/></svg>
-                </div>
-                <span>Histórico</span>
-              </button>
-              <button class="db-qa-btn" onclick="switchTab('estatisticas',document.getElementById('nav-extrato'))">
-                <div class="db-qa-icon db-qa-warn">
-                  <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 3a1 1 0 000 2v8a2 2 0 002 2h2.586l-1.293 1.293a1 1 0 101.414 1.414L10 15.414l2.293 2.293a1 1 0 001.414-1.414L12.414 15H15a2 2 0 002-2V5a1 1 0 100-2H3zm11 4a1 1 0 10-2 0v4a1 1 0 102 0V7zm-3 1a1 1 0 10-2 0v3a1 1 0 102 0V8zM8 9a1 1 0 00-2 0v2a1 1 0 102 0V9z"/></svg>
-                </div>
-                <span>Extrato</span>
-              </button>
-              <button class="db-qa-btn" onclick="switchTab('estatisticas',document.getElementById('nav-recarga'))">
-                <div class="db-qa-icon db-qa-purple">
-                  <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z"/></svg>
-                </div>
-                <span>Recarga</span>
-              </button>
+            <div class="db-como-title">Passo a passo</div>
+            <div class="db-passos">
+              <div class="db-passo"><div class="db-passo-l"><div class="db-passo-num">1</div><div class="db-passo-line"></div></div><div class="db-passo-info"><div class="db-passo-title">Clique em + Nova vistoria</div><div class="db-passo-desc">Inicie um novo laudo a qualquer momento</div></div></div>
+              <div class="db-passo"><div class="db-passo-l"><div class="db-passo-num">2</div><div class="db-passo-line"></div></div><div class="db-passo-info"><div class="db-passo-title">Escolha o tipo de vistoria</div><div class="db-passo-desc">Entrada, Saida ou Temporada</div></div></div>
+              <div class="db-passo"><div class="db-passo-l"><div class="db-passo-num">3</div><div class="db-passo-line"></div></div><div class="db-passo-info"><div class="db-passo-title">Informe quem realiza</div><div class="db-passo-desc">Imobiliaria, corretor ou proprietario</div></div></div>
+              <div class="db-passo"><div class="db-passo-l"><div class="db-passo-num">4</div><div class="db-passo-line"></div></div><div class="db-passo-info"><div class="db-passo-title">Preencha os dados do imovel</div><div class="db-passo-desc">CEP busca o endereco automaticamente</div></div></div>
+              <div class="db-passo"><div class="db-passo-l"><div class="db-passo-num">5</div><div class="db-passo-line"></div></div><div class="db-passo-info"><div class="db-passo-title">Cadastre as partes envolvidas</div><div class="db-passo-desc">Locador, locatario e corretor</div></div></div>
+              <div class="db-passo"><div class="db-passo-l"><div class="db-passo-num">6</div><div class="db-passo-line"></div></div><div class="db-passo-info"><div class="db-passo-title">Selecione os ambientes</div><div class="db-passo-desc">Defina os comodos a vistoriar</div></div></div>
+              <div class="db-passo"><div class="db-passo-l"><div class="db-passo-num">7</div><div class="db-passo-line"></div></div><div class="db-passo-info"><div class="db-passo-title">Fotografe e registre os itens</div><div class="db-passo-desc">A IA descreve cada foto automaticamente</div></div></div>
+              <div class="db-passo db-passo-last"><div class="db-passo-l"><div class="db-passo-num db-passo-num-ok">8</div></div><div class="db-passo-info"><div class="db-passo-title">Gere o PDF do laudo</div><div class="db-passo-desc">Pronto para baixar e assinar digitalmente</div></div></div>
             </div>
+            <div class="db-como-divider"></div>
+            <button class="db-btn-nova-sm" onclick="showNewInspection()">+ Iniciar nova vistoria</button>
           </div>
-
         </div>
+
       </div>
-    </div>
 
     <!-- TAB: ESTATISTICAS -->
     <div id="dash-tab-estatisticas" class="dash-tab-content">
@@ -4301,5 +4314,6 @@ if (!window._fotoStore) window._fotoStore = {};
   // ── End Ambientes ────────────────────────────────────────
 
   </script>
+<button class="db-help-btn" onclick="showManual()" title="Manual do usuario">?</button>
 </body>
 </html>
