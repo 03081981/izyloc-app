@@ -1425,11 +1425,21 @@ canvas { display: block; }
     .db-metrics-row { grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 14px; }
     .db-main-grid { grid-template-columns: 1fr; gap: 14px; }
     .db-col-side { display: none; }
+    .db-col-main { width: 100%; }
+    #inspections-list { width: 100%; }
     .db-hero { padding: 12px 0 16px; }
     .db-greeting { font-size: 18px; }
     .db-btn-nova { padding: 8px 16px; font-size: 12px; }
     /* Acoes rapidas mobile */
     .db-acoes-mobile { display: grid !important; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 14px; }
+    /* Laudos recentes mobile */
+    .insp-card { flex-direction: column; align-items: flex-start; gap: 8px; padding: 12px; }
+    .insp-thumb { width: 40px; height: 40px; }
+    .insp-info { width: 100%; }
+    .insp-address { font-size: 14px; white-space: normal; overflow: visible; text-overflow: unset; }
+    .insp-meta { font-size: 12px; gap: 8px; }
+    .insp-right { width: 100%; flex-direction: row; align-items: center; justify-content: space-between; margin-top: 4px; }
+    .insp-badge { font-size: 11px; padding: 4px 12px; }
 }
 @media (max-width: 480px) {
   .stat-cards-row { grid-template-columns: 1fr; }
