@@ -2078,21 +2078,42 @@ textarea.obs-geral{width:100%;background:#f8fafc;border:.5px solid #dce3ed;borde
 <!-- ══════════════ PAGE: WIZARD ══════════════ -->
 <div id="page-wizard" class="page">
   <aside class="sidebar">
-    <div class="sidebar-logo"><div><span style="font-size:20px;font-weight:400;color:#2d7dd2;font-family:Helvetica,Arial,sans-serif">izy</span><span style="font-size:20px;font-weight:900;color:#fff;font-family:Helvetica,Arial,sans-serif">LAUDO</span></div><div style="font-size:7px;color:rgba(255,255,255,0.28);letter-spacing:2px;text-transform:uppercase;margin-top:2px;font-weight:400">Vistorias Imobiliarias</div></div>
-    <nav class="sidebar-nav">
-      <button class="nav-item" onclick="showPage('page-dashboard')"><span class="nav-icon-wrap"><svg viewBox="0 0 20 20" fill="currentColor"><path d="M3 4a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1H4a1 1 0 01-1-1V4zm0 8a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1H4a1 1 0 01-1-1v-4zm8-8a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1V4zm0 8a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1v-4z"/></svg></span>Dashboard</button>
-      <button class="nav-item active"><span class="nav-icon-wrap"><svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"/></svg></span>Nova vistoria</button>
-      <div class="nav-divider"></div>
-      <button class="nav-item" onclick="showPage('page-dashboard')"><span class="nav-icon-wrap"><svg viewBox="0 0 20 20" fill="currentColor"><path d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z"/></svg></span>Meus laudos</button>
-      <button class="nav-item" onclick="showPage('page-dashboard')"><span class="nav-icon-wrap"><svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z"/></svg></span>Fotos e consumo</button>
-      <button class="nav-item" onclick="showPage('page-dashboard')"><span class="nav-icon-wrap"><svg viewBox="0 0 20 20" fill="currentColor"><path d="M4 4a2 2 0 00-2 2v1h16V6a2 2 0 00-2-2H4zM2 11v3a2 2 0 002 2h12a2 2 0 002-2v-3H2zm9 2a1 1 0 100-2H9a1 1 0 100 2h2z"/></svg></span>Recarga de créditos</button>
-      <button class="nav-item" onclick="showPage('page-dashboard')"><span class="nav-icon-wrap"><svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 3a1 1 0 000 2v8a2 2 0 002 2h2.586l-1.293 1.293a1 1 0 101.414 1.414L10 15.414l2.293 2.293a1 1 0 001.414-1.414L12.414 15H15a2 2 0 002-2V5a1 1 0 100-2H3zm11 4a1 1 0 10-2 0v4a1 1 0 102 0V7zm-3 1a1 1 0 10-2 0v3a1 1 0 102 0V8zM8 9a1 1 0 00-2 0v2a1 1 0 102 0V9z"/></svg></span>Extrato financeiro</button>
-    </nav>
-    <div class="sidebar-bottom">
-      <button class="nav-item" onclick="showPage('page-dashboard')"><span class="nav-icon-wrap"><svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z"/></svg></span>Configurações</button>
-      <button class="nav-item" onclick="if(confirm('Sair da conta?')){logout()}"><span class="nav-icon-wrap"><svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 3a1 1 0 00-1 1v12a1 1 0 102 0V4a1 1 0 00-1-1zm10.293 9.293a1 1 0 001.414 1.414l3-3a1 1 0 000-1.414l-3-3a1 1 0 10-1.414 1.414L14.586 9H7a1 1 0 100 2h7.586l-1.293 1.293z"/></svg></span>Sair</button>
-    </div>
-  </aside>
+      <div class="sidebar-logo">
+        <div><span style="font-size:20px;font-weight:400;color:#2d7dd2;font-family:Helvetica,Arial,sans-serif">izy</span><span style="font-size:20px;font-weight:900;color:#fff;font-family:Helvetica,Arial,sans-serif">LAUDO</span></div>
+        <div style="font-size:7px;color:rgba(255,255,255,0.28);letter-spacing:2px;text-transform:uppercase;margin-top:2px;font-weight:400">Vistorias Imobiliarias</div>
+      </div>
+      <nav class="sidebar-nav">
+        <div class="nav-item" onclick="showPage('page-dashboard')">Painel</div>
+        <div class="nav-item active">+ Nova vistoria</div>
+        <div class="nav-item" onclick="showPage('page-dashboard')">Meus laudos</div>
+        <div class="nav-divider"></div>
+        <div class="nav-section-label">Fotos e creditos</div>
+        <div class="nav-item nav-item-cred"><span id="wiz-nav-saldo" style="color:#4fc3f7;font-weight:600">📸 Fotos restantes</span></div>
+        <div class="nav-item" onclick="showPage('page-dashboard')">+ Adicionar creditos</div>
+        <div class="nav-item" onclick="showPage('page-dashboard')">📋 Extrato de uso</div>
+        <div class="nav-divider"></div>
+        <div class="nav-section-label">Ajuda</div>
+        <div class="nav-item" onclick="showManual()">📖 Manual do usuario</div>
+        <div class="nav-divider"></div>
+        <div class="nav-section-label">Conta</div>
+        <div class="nav-item" onclick="showPage('page-dashboard')">Configuracoes</div>
+        <div class="nav-item" onclick="if(confirm('Sair da conta?')){logout()}">Sair</div>
+      </nav>
+      <div class="sidebar-bottom">
+        <div class="sidebar-user" onclick="showPage('page-dashboard')">
+          <div class="sidebar-avatar" id="wiz-avatar-letter">?</div>
+          <div class="sidebar-user-info">
+            <div class="sidebar-user-name" id="wiz-profile-name"></div>
+            <div class="sidebar-user-plan">Plano Profissional</div>
+          </div>
+        </div>
+        <div class="sidebar-empresa">
+          <div class="sidebar-empresa-nome">izyLOC Sistema de Gestao de Carteiras de Locacoes e Cobrancas Ltda</div>
+          <div class="sidebar-empresa-cnpj">CNPJ 57.552.013/0001-90</div>
+          <div class="sidebar-empresa-email">izylaudo@izylaudo.com.br</div>
+        </div>
+      </div>
+    </aside>
   <!-- WIZARD MAIN -->
   <div class="wiz-main-wrapper">
     <div class="wiz-topbar">
@@ -2988,6 +3009,7 @@ function showNewInspection() {
   document.getElementById('rooms-list').innerHTML = '';
   gotoWStep(0);
   showPage('page-wizard', 'Nova Vistoria');
+  syncWizSidebar();
 }
 
 function selectRealizaCard(card) {
@@ -4469,6 +4491,18 @@ function mostrarTodosLaudos() {
     var date = i.inspection_date || formatDate(i.created_at);
     return '<div class="insp-card" onclick="openInspection(\''+ i.id +'\')"><div class="insp-thumb" style="background:#eef4ff;border-radius:8px;width:48px;height:48px;display:flex;align-items:center;justify-content:center;flex-shrink:0">' + icon + '</div><div class="insp-info"><div class="insp-address">' + (i.property_address || 'Endereco nao informado') + '</div><div class="insp-meta"><span>' + tipo + '</span><span>' + date + '</span></div></div><div class="insp-right"><span class="insp-badge ' + badgeClass + '">' + statusLabel + '</span></div></div>';
   }).join('');
+}
+
+// Sync wizard sidebar com dados do usuario
+function syncWizSidebar() {
+  var n = document.getElementById('profile-name');
+  var wn = document.getElementById('wiz-profile-name');
+  var wa = document.getElementById('wiz-avatar-letter');
+  var ws = document.getElementById('wiz-nav-saldo');
+  var ds = document.getElementById('nav-saldo-fotos');
+  if (n && wn) wn.textContent = n.textContent;
+  if (n && wa && n.textContent) wa.textContent = n.textContent.charAt(0).toUpperCase();
+  if (ds && ws) ws.textContent = ds.textContent;
 }
 </script>
 <button class="db-help-btn" onclick="showManual()" title="Manual do usuario">?</button>
