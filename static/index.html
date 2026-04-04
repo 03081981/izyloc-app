@@ -2540,208 +2540,7 @@ textarea.obs-geral{width:100%;background:#f8fafc;border:.5px solid #dce3ed;borde
   <span>A vistoria seguir&#225; a ordem natural de caminhada pelo im&#243;vel &#8212; da entrada at&#233; os quartos. Ajuste as quantidades conforme o im&#243;vel.</span>
 </div>
 
-<!-- SEÇÃO 1: EXTERIOR -->
-<div style="font-size:11px;font-weight:700;color:#8898aa;text-transform:uppercase;letter-spacing:0.5px;margin:0 0 8px;display:flex;align-items:center;gap:8px">
-  <div style="width:20px;height:20px;border-radius:50%;background:#2d7dd2;color:#fff;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0">1</div>
-  Exterior
-</div>
-<div style="background:#fff;border-radius:12px;border:0.5px solid #e2e8f0;padding:4px 0;margin-bottom:12px" id="secao-exterior">
-  <div class="counter-row" id="row-fachada" style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:0.5px solid #f5f7fa;gap:12px">
-    <div style="display:flex;align-items:center;gap:10px;flex:1">
-      <div style="width:36px;height:36px;border-radius:8px;background:#eef4ff;display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="22" height="22" viewBox="0 0 56 44" fill="none"><polygon points="28,4 54,22 2,22" fill="#2d7dd2"/><rect x="6" y="22" width="44" height="18" rx="1" fill="#dbeafe" stroke="#2d7dd2" stroke-width="1.5"/><rect x="22" y="28" width="12" height="12" rx="1" fill="#2d7dd2"/></svg></div>
-      <div><div style="font-size:13px;font-weight:600;color:#1a2540">Fachada / &#193;rea externa</div><div style="font-size:11px;color:#8898aa;margin-top:1px">Frente e &#225;rea externa do im&#243;vel</div></div>
-    </div>
-    <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
-      <button onclick="decAmb('fachada')" style="width:28px;height:28px;border-radius:50%;border:0.5px solid #e2e8f0;background:#f8fafc;font-size:16px;cursor:pointer;color:#4a5568;display:flex;align-items:center;justify-content:center">&#8722;</button>
-      <span id="val-fachada" style="font-size:15px;font-weight:700;color:#2d7dd2;min-width:20px;text-align:center">1</span>
-      <button onclick="incAmb('fachada')" style="width:28px;height:28px;border-radius:50%;border:0.5px solid #e2e8f0;background:#f8fafc;font-size:16px;cursor:pointer;color:#4a5568;display:flex;align-items:center;justify-content:center">+</button>
-    </div>
-  </div>
-  <div class="counter-row" id="row-garagem" style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:0.5px solid #f5f7fa;gap:12px">
-    <div style="display:flex;align-items:center;gap:10px;flex:1">
-      <div style="width:36px;height:36px;border-radius:8px;background:#eef4ff;display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="22" height="22" viewBox="0 0 56 44" fill="none"><rect x="2" y="32" width="52" height="8" rx="1" fill="#e2e8f0" stroke="#2d7dd2" stroke-width="1"/><rect x="8" y="16" width="40" height="16" rx="1" fill="#dbeafe" stroke="#2d7dd2" stroke-width="1.5"/><circle cx="18" cy="24" r="4" fill="#2d7dd2"/><circle cx="38" cy="24" r="4" fill="#2d7dd2"/></svg></div>
-      <div><div style="font-size:13px;font-weight:600;color:#1a2540">Garagem / Vaga</div><div style="font-size:11px;color:#8898aa;margin-top:1px">Vagas cobertas ou descobertas</div></div>
-    </div>
-    <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
-      <button onclick="decAmb('garagem')" style="width:28px;height:28px;border-radius:50%;border:0.5px solid #e2e8f0;background:#f8fafc;font-size:16px;cursor:pointer;color:#4a5568;display:flex;align-items:center;justify-content:center">&#8722;</button>
-      <span id="val-garagem" style="font-size:15px;font-weight:700;color:#8898aa;min-width:20px;text-align:center">0</span>
-      <button onclick="incAmb('garagem')" style="width:28px;height:28px;border-radius:50%;border:0.5px solid #e2e8f0;background:#f8fafc;font-size:16px;cursor:pointer;color:#4a5568;display:flex;align-items:center;justify-content:center">+</button>
-    </div>
-  </div>
-  <div class="counter-row" id="row-lazer" style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:0.5px solid #f5f7fa;gap:12px">
-    <div style="display:flex;align-items:center;gap:10px;flex:1">
-      <div style="width:36px;height:36px;border-radius:8px;background:#eef4ff;display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="22" height="22" viewBox="0 0 56 44" fill="none"><rect x="2" y="28" width="52" height="12" rx="1" fill="#86efac"/><ellipse cx="28" cy="28" rx="20" ry="6" fill="#dbeafe" stroke="#2d7dd2" stroke-width="1.5"/><line x1="28" y1="4" x2="28" y2="22" stroke="#2d7dd2" stroke-width="2" stroke-linecap="round"/></svg></div>
-      <div><div style="font-size:13px;font-weight:600;color:#1a2540">&#193;rea de lazer / Quintal</div><div style="font-size:11px;color:#8898aa;margin-top:1px">Piscina, churrasqueira, jardim</div></div>
-    </div>
-    <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
-      <button onclick="decAmb('lazer')" style="width:28px;height:28px;border-radius:50%;border:0.5px solid #e2e8f0;background:#f8fafc;font-size:16px;cursor:pointer;color:#4a5568;display:flex;align-items:center;justify-content:center">&#8722;</button>
-      <span id="val-lazer" style="font-size:15px;font-weight:700;color:#8898aa;min-width:20px;text-align:center">0</span>
-      <button onclick="incAmb('lazer')" style="width:28px;height:28px;border-radius:50%;border:0.5px solid #e2e8f0;background:#f8fafc;font-size:16px;cursor:pointer;color:#4a5568;display:flex;align-items:center;justify-content:center">+</button>
-    </div>
-  </div>
-  <div id="custom-exterior" style="padding:4px 0"></div>
-  <div style="padding:10px 16px">
-    <button onclick="adicionarOutro('exterior','secao-exterior','custom-exterior')" style="display:flex;align-items:center;gap:6px;padding:8px 14px;border-radius:8px;border:1.5px dashed #2d7dd2;background:#f0f7ff;color:#2d7dd2;font-size:12px;font-weight:500;cursor:pointer;width:100%">+ Outro ambiente externo</button>
-  </div>
-</div>
-
-<!-- SEÇÃO 2: ENTRADA E CIRCULAÇÃO -->
-<div style="font-size:11px;font-weight:700;color:#8898aa;text-transform:uppercase;letter-spacing:0.5px;margin:0 0 8px;display:flex;align-items:center;gap:8px">
-  <div style="width:20px;height:20px;border-radius:50%;background:#2d7dd2;color:#fff;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0">2</div>
-  Entrada e circula&#231;&#227;o
-</div>
-<div style="background:#fff;border-radius:12px;border:0.5px solid #e2e8f0;padding:4px 0;margin-bottom:12px" id="secao-entrada">
-  <div class="counter-row" id="row-hall" style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:0.5px solid #f5f7fa;gap:12px">
-    <div style="display:flex;align-items:center;gap:10px;flex:1">
-      <div style="width:36px;height:36px;border-radius:8px;background:#eef4ff;display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="22" height="22" viewBox="0 0 56 44" fill="none"><rect x="4" y="4" width="48" height="36" rx="2" fill="#dbeafe" stroke="#2d7dd2" stroke-width="1.5"/><rect x="4" y="4" width="48" height="8" rx="2" fill="#2d7dd2"/><rect x="10" y="18" width="8" height="14" rx="1" fill="#fff" stroke="#93c5fd" stroke-width="1"/><rect x="24" y="18" width="8" height="14" rx="1" fill="#fff" stroke="#93c5fd" stroke-width="1"/><rect x="38" y="18" width="8" height="14" rx="1" fill="#fff" stroke="#93c5fd" stroke-width="1"/></svg></div>
-      <div><div style="font-size:13px;font-weight:600;color:#1a2540">Hall / Corredor / Entrada</div><div style="font-size:11px;color:#8898aa;margin-top:1px">&#193;rea de circula&#231;&#227;o interna</div></div>
-    </div>
-    <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
-      <button onclick="decAmb('hall')" style="width:28px;height:28px;border-radius:50%;border:0.5px solid #e2e8f0;background:#f8fafc;font-size:16px;cursor:pointer;color:#4a5568;display:flex;align-items:center;justify-content:center">&#8722;</button>
-      <span id="val-hall" style="font-size:15px;font-weight:700;color:#8898aa;min-width:20px;text-align:center">0</span>
-      <button onclick="incAmb('hall')" style="width:28px;height:28px;border-radius:50%;border:0.5px solid #e2e8f0;background:#f8fafc;font-size:16px;cursor:pointer;color:#4a5568;display:flex;align-items:center;justify-content:center">+</button>
-    </div>
-  </div>
-  <div class="counter-row" id="row-varanda" style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:0.5px solid #f5f7fa;gap:12px">
-    <div style="display:flex;align-items:center;gap:10px;flex:1">
-      <div style="width:36px;height:36px;border-radius:8px;background:#eef4ff;display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="22" height="22" viewBox="0 0 56 44" fill="none"><rect x="4" y="20" width="48" height="20" rx="1" fill="#dbeafe" stroke="#2d7dd2" stroke-width="1.5"/><path d="M4 20 Q28 6 52 20" fill="#2d7dd2" stroke="#2d7dd2" stroke-width="1"/><rect x="10" y="24" width="12" height="10" rx="1" fill="#fff" stroke="#93c5fd" stroke-width="1"/></svg></div>
-      <div><div style="font-size:13px;font-weight:600;color:#1a2540">Varanda / Sacada</div><div style="font-size:11px;color:#8898aa;margin-top:1px">&#193;rea externa coberta</div></div>
-    </div>
-    <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
-      <button onclick="decAmb('varanda')" style="width:28px;height:28px;border-radius:50%;border:0.5px solid #e2e8f0;background:#f8fafc;font-size:16px;cursor:pointer;color:#4a5568;display:flex;align-items:center;justify-content:center">&#8722;</button>
-      <span id="val-varanda" style="font-size:15px;font-weight:700;color:#8898aa;min-width:20px;text-align:center">0</span>
-      <button onclick="incAmb('varanda')" style="width:28px;height:28px;border-radius:50%;border:0.5px solid #e2e8f0;background:#f8fafc;font-size:16px;cursor:pointer;color:#4a5568;display:flex;align-items:center;justify-content:center">+</button>
-    </div>
-  </div>
-  <div id="custom-entrada" style="padding:4px 0"></div>
-  <div style="padding:10px 16px">
-    <button onclick="adicionarOutro('entrada','secao-entrada','custom-entrada')" style="display:flex;align-items:center;gap:6px;padding:8px 14px;border-radius:8px;border:1.5px dashed #2d7dd2;background:#f0f7ff;color:#2d7dd2;font-size:12px;font-weight:500;cursor:pointer;width:100%">+ Outro ambiente de entrada</button>
-  </div>
-</div>
-
-<!-- SEÇÃO 3: ÁREAS SOCIAIS -->
-<div style="font-size:11px;font-weight:700;color:#8898aa;text-transform:uppercase;letter-spacing:0.5px;margin:0 0 8px;display:flex;align-items:center;gap:8px">
-  <div style="width:20px;height:20px;border-radius:50%;background:#2d7dd2;color:#fff;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0">3</div>
-  &#193;reas sociais
-</div>
-<div style="background:#fff;border-radius:12px;border:0.5px solid #e2e8f0;padding:4px 0;margin-bottom:12px" id="secao-social">
-  <div class="counter-row" id="row-sala" style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:0.5px solid #f5f7fa;gap:12px">
-    <div style="display:flex;align-items:center;gap:10px;flex:1">
-      <div style="width:36px;height:36px;border-radius:8px;background:#eef4ff;display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="22" height="22" viewBox="0 0 56 44" fill="none"><rect x="4" y="8" width="48" height="32" rx="2" fill="#dbeafe" stroke="#2d7dd2" stroke-width="1.5"/><rect x="10" y="20" width="36" height="12" rx="1" fill="#fff" stroke="#2d7dd2" stroke-width="1"/><rect x="12" y="14" width="6" height="6" rx="1" fill="#93c5fd" stroke="#2d7dd2" stroke-width="0.8"/><rect x="22" y="14" width="6" height="6" rx="1" fill="#93c5fd" stroke="#2d7dd2" stroke-width="0.8"/></svg></div>
-      <div><div style="font-size:13px;font-weight:600;color:#1a2540">Sala de estar / Living</div><div style="font-size:11px;color:#8898aa;margin-top:1px">Sala principal</div></div>
-    </div>
-    <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
-      <button onclick="decAmb('sala')" style="width:28px;height:28px;border-radius:50%;border:0.5px solid #e2e8f0;background:#f8fafc;font-size:16px;cursor:pointer;color:#4a5568;display:flex;align-items:center;justify-content:center">&#8722;</button>
-      <span id="val-sala" style="font-size:15px;font-weight:700;color:#2d7dd2;min-width:20px;text-align:center">1</span>
-      <button onclick="incAmb('sala')" style="width:28px;height:28px;border-radius:50%;border:0.5px solid #e2e8f0;background:#f8fafc;font-size:16px;cursor:pointer;color:#4a5568;display:flex;align-items:center;justify-content:center">+</button>
-    </div>
-  </div>
-  <div class="counter-row" id="row-salajantar" style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:0.5px solid #f5f7fa;gap:12px">
-    <div style="display:flex;align-items:center;gap:10px;flex:1">
-      <div style="width:36px;height:36px;border-radius:8px;background:#eef4ff;display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="22" height="22" viewBox="0 0 56 44" fill="none"><rect x="4" y="8" width="48" height="32" rx="2" fill="#dbeafe" stroke="#2d7dd2" stroke-width="1.5"/><rect x="10" y="20" width="36" height="12" rx="1" fill="#fff" stroke="#2d7dd2" stroke-width="1"/><line x1="28" y1="8" x2="28" y2="40" stroke="#e2e8f0" stroke-width="1"/></svg></div>
-      <div><div style="font-size:13px;font-weight:600;color:#1a2540">Sala de jantar</div><div style="font-size:11px;color:#8898aa;margin-top:1px">Ambiente de refei&#231;&#245;es</div></div>
-    </div>
-    <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
-      <button onclick="decAmb('salajantar')" style="width:28px;height:28px;border-radius:50%;border:0.5px solid #e2e8f0;background:#f8fafc;font-size:16px;cursor:pointer;color:#4a5568;display:flex;align-items:center;justify-content:center">&#8722;</button>
-      <span id="val-salajantar" style="font-size:15px;font-weight:700;color:#8898aa;min-width:20px;text-align:center">0</span>
-      <button onclick="incAmb('salajantar')" style="width:28px;height:28px;border-radius:50%;border:0.5px solid #e2e8f0;background:#f8fafc;font-size:16px;cursor:pointer;color:#4a5568;display:flex;align-items:center;justify-content:center">+</button>
-    </div>
-  </div>
-  <div id="custom-social" style="padding:4px 0"></div>
-  <div style="padding:10px 16px">
-    <button onclick="adicionarOutro('social','secao-social','custom-social')" style="display:flex;align-items:center;gap:6px;padding:8px 14px;border-radius:8px;border:1.5px dashed #2d7dd2;background:#f0f7ff;color:#2d7dd2;font-size:12px;font-weight:500;cursor:pointer;width:100%">+ Outro ambiente social</button>
-  </div>
-</div>
-
-<!-- SEÇÃO 4: COZINHA E SERVIÇO -->
-<div style="font-size:11px;font-weight:700;color:#8898aa;text-transform:uppercase;letter-spacing:0.5px;margin:0 0 8px;display:flex;align-items:center;gap:8px">
-  <div style="width:20px;height:20px;border-radius:50%;background:#2d7dd2;color:#fff;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0">4</div>
-  Cozinha e servi&#231;o
-</div>
-<div style="background:#fff;border-radius:12px;border:0.5px solid #e2e8f0;padding:4px 0;margin-bottom:12px" id="secao-cozinha">
-  <div class="counter-row" id="row-cozinha" style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:0.5px solid #f5f7fa;gap:12px">
-    <div style="display:flex;align-items:center;gap:10px;flex:1">
-      <div style="width:36px;height:36px;border-radius:8px;background:#eef4ff;display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="22" height="22" viewBox="0 0 56 44" fill="none"><rect x="4" y="8" width="48" height="32" rx="2" fill="#dbeafe" stroke="#2d7dd2" stroke-width="1.5"/><rect x="8" y="16" width="18" height="12" rx="1" fill="#fff" stroke="#2d7dd2" stroke-width="1"/><circle cx="14" cy="20" r="2" fill="#2d7dd2"/><circle cx="20" cy="20" r="2" fill="#93c5fd"/><rect x="30" y="12" width="18" height="10" rx="1" fill="#93c5fd" stroke="#2d7dd2" stroke-width="1"/></svg></div>
-      <div><div style="font-size:13px;font-weight:600;color:#1a2540">Cozinha / Copa</div><div style="font-size:11px;color:#8898aa;margin-top:1px">&#193;rea de preparo de alimentos</div></div>
-    </div>
-    <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
-      <button onclick="decAmb('cozinha')" style="width:28px;height:28px;border-radius:50%;border:0.5px solid #e2e8f0;background:#f8fafc;font-size:16px;cursor:pointer;color:#4a5568;display:flex;align-items:center;justify-content:center">&#8722;</button>
-      <span id="val-cozinha" style="font-size:15px;font-weight:700;color:#2d7dd2;min-width:20px;text-align:center">1</span>
-      <button onclick="incAmb('cozinha')" style="width:28px;height:28px;border-radius:50%;border:0.5px solid #e2e8f0;background:#f8fafc;font-size:16px;cursor:pointer;color:#4a5568;display:flex;align-items:center;justify-content:center">+</button>
-    </div>
-  </div>
-  <div class="counter-row" id="row-lavanderia" style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:0.5px solid #f5f7fa;gap:12px">
-    <div style="display:flex;align-items:center;gap:10px;flex:1">
-      <div style="width:36px;height:36px;border-radius:8px;background:#eef4ff;display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="22" height="22" viewBox="0 0 56 44" fill="none"><rect x="4" y="8" width="48" height="32" rx="2" fill="#dbeafe" stroke="#2d7dd2" stroke-width="1.5"/><circle cx="20" cy="22" r="8" fill="#fff" stroke="#2d7dd2" stroke-width="1.5"/><circle cx="20" cy="22" r="4" fill="#dbeafe" stroke="#2d7dd2" stroke-width="1"/><rect x="30" y="16" width="14" height="18" rx="2" fill="#93c5fd" stroke="#2d7dd2" stroke-width="1"/></svg></div>
-      <div><div style="font-size:13px;font-weight:600;color:#1a2540">Lavanderia / &#193;rea de servi&#231;o</div><div style="font-size:11px;color:#8898aa;margin-top:1px">&#193;rea para lavagem de roupas</div></div>
-    </div>
-    <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
-      <button onclick="decAmb('lavanderia')" style="width:28px;height:28px;border-radius:50%;border:0.5px solid #e2e8f0;background:#f8fafc;font-size:16px;cursor:pointer;color:#4a5568;display:flex;align-items:center;justify-content:center">&#8722;</button>
-      <span id="val-lavanderia" style="font-size:15px;font-weight:700;color:#8898aa;min-width:20px;text-align:center">0</span>
-      <button onclick="incAmb('lavanderia')" style="width:28px;height:28px;border-radius:50%;border:0.5px solid #e2e8f0;background:#f8fafc;font-size:16px;cursor:pointer;color:#4a5568;display:flex;align-items:center;justify-content:center">+</button>
-    </div>
-  </div>
-  <div id="custom-cozinha" style="padding:4px 0"></div>
-  <div style="padding:10px 16px">
-    <button onclick="adicionarOutro('cozinha','secao-cozinha','custom-cozinha')" style="display:flex;align-items:center;gap:6px;padding:8px 14px;border-radius:8px;border:1.5px dashed #2d7dd2;background:#f0f7ff;color:#2d7dd2;font-size:12px;font-weight:500;cursor:pointer;width:100%">+ Outro ambiente de servi&#231;o</button>
-  </div>
-</div>
-
-<!-- SEÇÃO 5: DORMITÓRIOS E BANHEIROS -->
-<div style="font-size:11px;font-weight:700;color:#8898aa;text-transform:uppercase;letter-spacing:0.5px;margin:0 0 8px;display:flex;align-items:center;gap:8px">
-  <div style="width:20px;height:20px;border-radius:50%;background:#2d7dd2;color:#fff;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0">5</div>
-  Dormit&#243;rios e banheiros
-</div>
-<div style="background:#fff;border-radius:12px;border:0.5px solid #e2e8f0;padding:4px 0;margin-bottom:12px" id="secao-dormitorios">
-  <div class="counter-row" id="row-dormitorio" style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:0.5px solid #f5f7fa;gap:12px">
-    <div style="display:flex;align-items:center;gap:10px;flex:1">
-      <div style="width:36px;height:36px;border-radius:8px;background:#eef4ff;display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="22" height="22" viewBox="0 0 56 44" fill="none"><rect x="4" y="26" width="48" height="12" rx="2" fill="#dbeafe" stroke="#2d7dd2" stroke-width="1.5"/><rect x="4" y="18" width="8" height="20" rx="2" fill="#2d7dd2"/><rect x="14" y="22" width="10" height="6" rx="2" fill="#fff" stroke="#93c5fd" stroke-width="1"/><rect x="14" y="28" width="36" height="8" rx="2" fill="#93c5fd" stroke="#2d7dd2" stroke-width="1"/></svg></div>
-      <div><div style="font-size:13px;font-weight:600;color:#1a2540">Dormit&#243;rio / Quarto</div><div style="font-size:11px;color:#8898aa;margin-top:1px">Quartos simples</div></div>
-    </div>
-    <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
-      <button onclick="decAmb('dormitorio')" style="width:28px;height:28px;border-radius:50%;border:0.5px solid #e2e8f0;background:#f8fafc;font-size:16px;cursor:pointer;color:#4a5568;display:flex;align-items:center;justify-content:center">&#8722;</button>
-      <span id="val-dormitorio" style="font-size:15px;font-weight:700;color:#2d7dd2;min-width:20px;text-align:center">1</span>
-      <button onclick="incAmb('dormitorio')" style="width:28px;height:28px;border-radius:50%;border:0.5px solid #e2e8f0;background:#f8fafc;font-size:16px;cursor:pointer;color:#4a5568;display:flex;align-items:center;justify-content:center">+</button>
-    </div>
-  </div>
-  <div class="counter-row" id="row-suite" style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:0.5px solid #f5f7fa;gap:12px">
-    <div style="display:flex;align-items:center;gap:10px;flex:1">
-      <div style="width:36px;height:36px;border-radius:8px;background:#eef4ff;display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="22" height="22" viewBox="0 0 56 44" fill="none"><rect x="8" y="4" width="40" height="36" rx="2" fill="#dbeafe" stroke="#2d7dd2" stroke-width="1.5"/><rect x="14" y="10" width="10" height="8" rx="1" fill="#93c5fd" stroke="#2d7dd2" stroke-width="1"/><circle cx="24" cy="24" r="6" fill="#dbeafe" stroke="#2d7dd2" stroke-width="1.5"/><rect x="22" y="30" width="4" height="8" rx="1" fill="#2d7dd2"/><circle cx="38" cy="14" r="4" fill="#2d7dd2"/></svg></div>
-      <div><div style="font-size:13px;font-weight:600;color:#1a2540">Su&#237;te</div><div style="font-size:11px;color:#8898aa;margin-top:1px">Dormit&#243;rio com banheiro privativo</div></div>
-    </div>
-    <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
-      <button onclick="decAmb('suite')" style="width:28px;height:28px;border-radius:50%;border:0.5px solid #e2e8f0;background:#f8fafc;font-size:16px;cursor:pointer;color:#4a5568;display:flex;align-items:center;justify-content:center">&#8722;</button>
-      <span id="val-suite" style="font-size:15px;font-weight:700;color:#8898aa;min-width:20px;text-align:center">0</span>
-      <button onclick="incAmb('suite')" style="width:28px;height:28px;border-radius:50%;border:0.5px solid #e2e8f0;background:#f8fafc;font-size:16px;cursor:pointer;color:#4a5568;display:flex;align-items:center;justify-content:center">+</button>
-    </div>
-  </div>
-  <div class="counter-row" id="row-banheiro" style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:0.5px solid #f5f7fa;gap:12px">
-    <div style="display:flex;align-items:center;gap:10px;flex:1">
-      <div style="width:36px;height:36px;border-radius:8px;background:#eef4ff;display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="22" height="22" viewBox="0 0 56 44" fill="none"><rect x="8" y="4" width="40" height="36" rx="2" fill="#dbeafe" stroke="#2d7dd2" stroke-width="1.5"/><rect x="14" y="10" width="10" height="8" rx="1" fill="#93c5fd" stroke="#2d7dd2" stroke-width="1"/><circle cx="24" cy="24" r="6" fill="#dbeafe" stroke="#2d7dd2" stroke-width="1.5"/><rect x="22" y="30" width="4" height="8" rx="1" fill="#2d7dd2"/></svg></div>
-      <div><div style="font-size:13px;font-weight:600;color:#1a2540">Banheiro social</div><div style="font-size:11px;color:#8898aa;margin-top:1px">Banheiros de uso comum</div></div>
-    </div>
-    <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
-      <button onclick="decAmb('banheiro')" style="width:28px;height:28px;border-radius:50%;border:0.5px solid #e2e8f0;background:#f8fafc;font-size:16px;cursor:pointer;color:#4a5568;display:flex;align-items:center;justify-content:center">&#8722;</button>
-      <span id="val-banheiro" style="font-size:15px;font-weight:700;color:#2d7dd2;min-width:20px;text-align:center">1</span>
-      <button onclick="incAmb('banheiro')" style="width:28px;height:28px;border-radius:50%;border:0.5px solid #e2e8f0;background:#f8fafc;font-size:16px;cursor:pointer;color:#4a5568;display:flex;align-items:center;justify-content:center">+</button>
-    </div>
-  </div>
-  <div class="counter-row" id="row-escritorio" style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:0.5px solid #f5f7fa;gap:12px">
-    <div style="display:flex;align-items:center;gap:10px;flex:1">
-      <div style="width:36px;height:36px;border-radius:8px;background:#eef4ff;display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="22" height="22" viewBox="0 0 56 44" fill="none"><rect x="4" y="8" width="48" height="28" rx="2" fill="#dbeafe" stroke="#2d7dd2" stroke-width="1.5"/><rect x="10" y="14" width="36" height="16" rx="1" fill="#93c5fd" stroke="#2d7dd2" stroke-width="1"/><rect x="14" y="36" width="28" height="4" rx="1" fill="#2d7dd2"/></svg></div>
-      <div><div style="font-size:13px;font-weight:600;color:#1a2540">Escrit&#243;rio / Home office</div><div style="font-size:11px;color:#8898aa;margin-top:1px">Ambiente de trabalho</div></div>
-    </div>
-    <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
-      <button onclick="decAmb('escritorio')" style="width:28px;height:28px;border-radius:50%;border:0.5px solid #e2e8f0;background:#f8fafc;font-size:16px;cursor:pointer;color:#4a5568;display:flex;align-items:center;justify-content:center">&#8722;</button>
-      <span id="val-escritorio" style="font-size:15px;font-weight:700;color:#8898aa;min-width:20px;text-align:center">0</span>
-      <button onclick="incAmb('escritorio')" style="width:28px;height:28px;border-radius:50%;border:0.5px solid #e2e8f0;background:#f8fafc;font-size:16px;cursor:pointer;color:#4a5568;display:flex;align-items:center;justify-content:center">+</button>
-    </div>
-  </div>
-  <div id="custom-dormitorios" style="padding:4px 0"></div>
-  <div style="padding:10px 16px">
-    <button onclick="adicionarOutro('dormitorios','secao-dormitorios','custom-dormitorios')" style="display:flex;align-items:center;gap:6px;padding:8px 14px;border-radius:8px;border:1.5px dashed #2d7dd2;background:#f0f7ff;color:#2d7dd2;font-size:12px;font-weight:500;cursor:pointer;width:100%">+ Outro dormit&#243;rio ou banheiro</button>
-  </div>
-</div>
+<div id="amb-dynamic-sections"></div>
 
 <!-- RESUMO CAMINHADA -->
 <div style="background:#eef4ff;border-radius:10px;border:0.5px solid #bfdbfe;padding:14px 16px;margin-bottom:14px">
@@ -3337,7 +3136,8 @@ function gotoWStep(step) {
   if (wq) wq.style.display = 'none';
   window.scrollTo(0,0);
 
-  if(step===1) updateContextTag();}
+  if(step===1) updateContextTag();
+  if(step===3) renderAmbientesPorTipo();}
 
 async function wizardNext(step) {
   if (step === 1) {
@@ -4783,6 +4583,174 @@ function adicionarOutro(secao, containerId, customId) {
   div.style.cssText = 'display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-top:0.5px solid #f5f7fa;gap:12px';
   div.innerHTML = '<div style="display:flex;align-items:center;gap:10px;flex:1"><div style="width:36px;height:36px;border-radius:8px;background:#eef4ff;display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="22" height="22" viewBox="0 0 56 44" fill="none"><circle cx="28" cy="22" r="18" fill="#dbeafe" stroke="#2d7dd2" stroke-width="1.5" stroke-dasharray="3 2"/><text x="28" y="27" font-family="Arial" font-size="16" fill="#2d7dd2" text-anchor="middle" font-weight="700">+</text></svg></div><div><div style="font-size:13px;font-weight:600;color:#1a2540">' + nome + '</div><div style="font-size:11px;color:#8898aa;margin-top:1px">Ambiente personalizado</div></div></div><div style="display:flex;align-items:center;gap:8px;flex-shrink:0"><button onclick="var v=document.getElementById(\'val-' + key + '\');var n=parseInt(v.textContent)-1;if(n>=0){v.textContent=n;v.style.color=n>0?\'#2d7dd2\':\'#8898aa\';}" style="width:28px;height:28px;border-radius:50%;border:0.5px solid #e2e8f0;background:#f8fafc;font-size:16px;cursor:pointer;color:#4a5568;display:flex;align-items:center;justify-content:center">&#8722;</button><span id="val-' + key + '" style="font-size:15px;font-weight:700;color:#2d7dd2;min-width:20px;text-align:center">1</span><button onclick="var v=document.getElementById(\'val-' + key + '\');var n=parseInt(v.textContent)+1;v.textContent=n;v.style.color=\'#2d7dd2\';" style="width:28px;height:28px;border-radius:50%;border:0.5px solid #e2e8f0;background:#f8fafc;font-size:16px;cursor:pointer;color:#4a5568;display:flex;align-items:center;justify-content:center">+</button><button onclick="this.closest(\'[id^=row-]\').remove();" style="width:24px;height:24px;border-radius:50%;border:0.5px solid #fca5a5;background:#fff5f5;color:#dc2626;font-size:11px;cursor:pointer;display:flex;align-items:center;justify-content:center">&#10005;</button></div>';
   container.appendChild(div);
+  if (typeof updateAmbResumo === 'function') updateAmbResumo();
+}
+
+
+// Renderizar ambientes dinamicamente conforme tipo de imovel
+function renderAmbientesPorTipo() {
+  var container = document.getElementById('amb-dynamic-sections');
+  if (!container) return;
+  var tipo = (typeof wizard !== 'undefined' && wizard.propType) ? wizard.propType : 'Casa';
+
+  // Atualizar badge
+  var badge = document.getElementById('amb-tipo-badge');
+  if (badge) badge.innerHTML = '&#127968; ' + tipo + ' selecionado';
+
+  // Definir secoes por tipo
+  var secoes;
+  if (['Apartamento','Cobertura'].indexOf(tipo) !== -1) {
+    secoes = [
+      {num:1, titulo:'Entrada', id:'entrada', ambientes:[
+        {key:'entrada',nome:'Porta / Entrada',sub:'Acesso principal',val:1},
+        {key:'varanda',nome:'Varanda',sub:'Varanda ou sacada',val:0}
+      ]},
+      {num:2, titulo:'\u00c1reas sociais', id:'social', ambientes:[
+        {key:'sala',nome:'Sala de estar',sub:'Ambiente social principal',val:1},
+        {key:'jantar',nome:'Sala de jantar',sub:'Ambiente de refei\u00e7\u00f5es',val:0}
+      ]},
+      {num:3, titulo:'Cozinha e servi\u00e7o', id:'servico', ambientes:[
+        {key:'cozinha',nome:'Cozinha',sub:'Preparo de alimentos',val:1},
+        {key:'lavanderia',nome:'Lavanderia',sub:'\u00c1rea de servi\u00e7o',val:0}
+      ]},
+      {num:4, titulo:'Dormit\u00f3rios e banheiros', id:'dormitorios', ambientes:[
+        {key:'dormitorio',nome:'Dormit\u00f3rio',sub:'Quartos do im\u00f3vel',val:1},
+        {key:'suite',nome:'Su\u00edte',sub:'Dormit\u00f3rio com banheiro',val:0},
+        {key:'banheiro',nome:'Banheiro social',sub:'Banheiros de uso comum',val:1},
+        {key:'escritorio',nome:'Escrit\u00f3rio / Home office',sub:'Ambiente de trabalho',val:0}
+      ]},
+      {num:5, titulo:'Garagem', id:'garagem-sec', ambientes:[
+        {key:'garagem',nome:'Garagem / Vaga',sub:'Estacionamento coberto',val:0}
+      ]}
+    ];
+  } else if (['Sala comercial','Loja comercial','Predio comercial'].indexOf(tipo) !== -1) {
+    secoes = [
+      {num:1, titulo:'Exterior', id:'exterior', ambientes:[
+        {key:'fachada',nome:'Fachada',sub:'Frente do im\u00f3vel',val:1},
+        {key:'estacionamento',nome:'Estacionamento',sub:'Vagas externas',val:0}
+      ]},
+      {num:2, titulo:'Atendimento', id:'atendimento', ambientes:[
+        {key:'recepcao',nome:'Recep\u00e7\u00e3o',sub:'\u00c1rea de recebimento',val:0},
+        {key:'sala',nome:'Sala',sub:'Ambiente principal',val:1}
+      ]},
+      {num:3, titulo:'Apoio', id:'apoio', ambientes:[
+        {key:'banheiro',nome:'Banheiro',sub:'Banheiros de uso comum',val:1},
+        {key:'copa',nome:'Copa',sub:'\u00c1rea de alimenta\u00e7\u00e3o',val:0},
+        {key:'deposito',nome:'Dep\u00f3sito',sub:'Armazenamento',val:0}
+      ]}
+    ];
+  } else if (tipo === 'Galpao / Barracao') {
+    secoes = [
+      {num:1, titulo:'Exterior', id:'exterior', ambientes:[
+        {key:'fachada',nome:'Fachada',sub:'Frente do im\u00f3vel',val:1},
+        {key:'estacionamento',nome:'Estacionamento',sub:'Vagas externas',val:0}
+      ]},
+      {num:2, titulo:'Operacional', id:'operacional', ambientes:[
+        {key:'areaprincipal',nome:'\u00c1rea principal',sub:'Espa\u00e7o operacional',val:1}
+      ]},
+      {num:3, titulo:'Apoio', id:'apoio', ambientes:[
+        {key:'banheiro',nome:'Banheiro',sub:'Banheiros de uso comum',val:1},
+        {key:'escritorio',nome:'Escrit\u00f3rio',sub:'Ambiente administrativo',val:0},
+        {key:'deposito',nome:'Dep\u00f3sito',sub:'Armazenamento',val:0}
+      ]}
+    ];
+  } else {
+    // Casa, Chacara, Sitio, Studio / Kitnet, Outro
+    secoes = [
+      {num:1, titulo:'Exterior', id:'exterior', ambientes:[
+        {key:'fachada',nome:'Fachada',sub:'Frente do im\u00f3vel',val:1},
+        {key:'garagem',nome:'Garagem',sub:'Estacionamento coberto',val:0},
+        {key:'lazer',nome:'\u00c1rea de lazer',sub:'Piscina, churrasqueira, etc.',val:0}
+      ]},
+      {num:2, titulo:'Entrada e circula\u00e7\u00e3o', id:'entrada', ambientes:[
+        {key:'hall',nome:'Hall / Corredor',sub:'Circula\u00e7\u00e3o interna',val:0},
+        {key:'varanda',nome:'Varanda',sub:'Varanda ou sacada',val:0}
+      ]},
+      {num:3, titulo:'\u00c1reas sociais', id:'social', ambientes:[
+        {key:'sala',nome:'Sala de estar',sub:'Ambiente social principal',val:1},
+        {key:'jantar',nome:'Sala de jantar',sub:'Ambiente de refei\u00e7\u00f5es',val:0}
+      ]},
+      {num:4, titulo:'Cozinha e servi\u00e7o', id:'servico', ambientes:[
+        {key:'cozinha',nome:'Cozinha',sub:'Preparo de alimentos',val:1},
+        {key:'lavanderia',nome:'Lavanderia',sub:'\u00c1rea de servi\u00e7o',val:0}
+      ]},
+      {num:5, titulo:'Dormit\u00f3rios e banheiros', id:'dormitorios', ambientes:[
+        {key:'dormitorio',nome:'Dormit\u00f3rio',sub:'Quartos do im\u00f3vel',val:1},
+        {key:'suite',nome:'Su\u00edte',sub:'Dormit\u00f3rio com banheiro',val:0},
+        {key:'banheiro',nome:'Banheiro social',sub:'Banheiros de uso comum',val:1},
+        {key:'escritorio',nome:'Escrit\u00f3rio / Home office',sub:'Ambiente de trabalho',val:0}
+      ]}
+    ];
+  }
+
+  // SVGs por key
+  var svgs = {
+    fachada: '<polygon points="28,4 54,22 2,22" fill="#dbeafe" stroke="#2d7dd2" stroke-width="1.5"/><rect x="10" y="22" width="36" height="18" rx="2" fill="#dbeafe" stroke="#2d7dd2" stroke-width="1.5"/><rect x="22" y="28" width="12" height="12" rx="1" fill="#93c5fd" stroke="#2d7dd2" stroke-width="1"/>',
+    garagem: '<rect x="6" y="14" width="44" height="26" rx="2" fill="#dbeafe" stroke="#2d7dd2" stroke-width="1.5"/><rect x="14" y="14" width="28" height="3" rx="1" fill="#2d7dd2"/><rect x="16" y="26" width="24" height="10" rx="2" fill="#93c5fd" stroke="#2d7dd2" stroke-width="1"/>',
+    lazer: '<circle cx="28" cy="22" r="16" fill="#dbeafe" stroke="#2d7dd2" stroke-width="1.5"/><path d="M20 28 Q28 16 36 28" stroke="#2d7dd2" stroke-width="1.5" fill="none"/>',
+    hall: '<rect x="8" y="6" width="40" height="32" rx="2" fill="#dbeafe" stroke="#2d7dd2" stroke-width="1.5"/><rect x="24" y="18" width="10" height="20" rx="1" fill="#93c5fd" stroke="#2d7dd2" stroke-width="1"/>',
+    varanda: '<rect x="4" y="16" width="48" height="24" rx="2" fill="#dbeafe" stroke="#2d7dd2" stroke-width="1.5"/><rect x="8" y="16" width="4" height="24" rx="1" fill="#2d7dd2"/><rect x="44" y="16" width="4" height="24" rx="1" fill="#2d7dd2"/><rect x="4" y="16" width="48" height="4" rx="1" fill="#93c5fd" stroke="#2d7dd2" stroke-width="1"/>',
+    sala: '<rect x="4" y="10" width="48" height="28" rx="2" fill="#dbeafe" stroke="#2d7dd2" stroke-width="1.5"/><rect x="10" y="22" width="20" height="12" rx="2" fill="#93c5fd" stroke="#2d7dd2" stroke-width="1"/><rect x="36" y="16" width="10" height="18" rx="1" fill="#93c5fd" stroke="#2d7dd2" stroke-width="1"/>',
+    jantar: '<rect x="12" y="14" width="32" height="20" rx="2" fill="#dbeafe" stroke="#2d7dd2" stroke-width="1.5"/><circle cx="20" cy="24" r="3" fill="#93c5fd" stroke="#2d7dd2" stroke-width="1"/><circle cx="28" cy="24" r="3" fill="#93c5fd" stroke="#2d7dd2" stroke-width="1"/><circle cx="36" cy="24" r="3" fill="#93c5fd" stroke="#2d7dd2" stroke-width="1"/>',
+    cozinha: '<rect x="6" y="8" width="44" height="32" rx="2" fill="#dbeafe" stroke="#2d7dd2" stroke-width="1.5"/><rect x="12" y="14" width="12" height="8" rx="1" fill="#93c5fd" stroke="#2d7dd2" stroke-width="1"/><circle cx="40" cy="18" r="5" fill="#93c5fd" stroke="#2d7dd2" stroke-width="1"/>',
+    lavanderia: '<rect x="8" y="8" width="40" height="32" rx="2" fill="#dbeafe" stroke="#2d7dd2" stroke-width="1.5"/><circle cx="28" cy="22" r="10" fill="#93c5fd" stroke="#2d7dd2" stroke-width="1.5"/><circle cx="28" cy="22" r="4" fill="#dbeafe" stroke="#2d7dd2" stroke-width="1"/>',
+    dormitorio: '<rect x="6" y="10" width="44" height="28" rx="2" fill="#dbeafe" stroke="#2d7dd2" stroke-width="1.5"/><rect x="12" y="18" width="32" height="16" rx="2" fill="#93c5fd" stroke="#2d7dd2" stroke-width="1"/><rect x="12" y="14" width="14" height="8" rx="1" fill="#bfdbfe" stroke="#2d7dd2" stroke-width="1"/>',
+    suite: '<rect x="4" y="8" width="48" height="32" rx="2" fill="#dbeafe" stroke="#2d7dd2" stroke-width="1.5"/><rect x="8" y="16" width="26" height="20" rx="2" fill="#93c5fd" stroke="#2d7dd2" stroke-width="1"/><rect x="38" y="16" width="10" height="12" rx="1" fill="#bfdbfe" stroke="#2d7dd2" stroke-width="1"/>',
+    banheiro: '<rect x="8" y="4" width="40" height="36" rx="2" fill="#dbeafe" stroke="#2d7dd2" stroke-width="1.5"/><rect x="14" y="10" width="10" height="8" rx="1" fill="#93c5fd" stroke="#2d7dd2" stroke-width="1"/><circle cx="24" cy="24" r="6" fill="#dbeafe" stroke="#2d7dd2" stroke-width="1.5"/><rect x="22" y="30" width="4" height="8" rx="1" fill="#2d7dd2"/>',
+    escritorio: '<rect x="4" y="8" width="48" height="28" rx="2" fill="#dbeafe" stroke="#2d7dd2" stroke-width="1.5"/><rect x="10" y="14" width="36" height="16" rx="1" fill="#93c5fd" stroke="#2d7dd2" stroke-width="1"/><rect x="14" y="36" width="28" height="4" rx="1" fill="#2d7dd2"/>',
+    entrada: '<rect x="16" y="4" width="24" height="36" rx="2" fill="#dbeafe" stroke="#2d7dd2" stroke-width="1.5"/><circle cx="34" cy="22" r="2" fill="#2d7dd2"/><rect x="20" y="8" width="16" height="6" rx="1" fill="#93c5fd" stroke="#2d7dd2" stroke-width="1"/>',
+    estacionamento: '<rect x="4" y="14" width="48" height="22" rx="2" fill="#dbeafe" stroke="#2d7dd2" stroke-width="1.5"/><line x1="20" y1="14" x2="20" y2="36" stroke="#2d7dd2" stroke-width="1" stroke-dasharray="3 2"/><line x1="36" y1="14" x2="36" y2="36" stroke="#2d7dd2" stroke-width="1" stroke-dasharray="3 2"/>',
+    recepcao: '<rect x="6" y="10" width="44" height="28" rx="2" fill="#dbeafe" stroke="#2d7dd2" stroke-width="1.5"/><rect x="12" y="24" width="32" height="10" rx="2" fill="#93c5fd" stroke="#2d7dd2" stroke-width="1"/><circle cx="28" cy="18" r="4" fill="#bfdbfe" stroke="#2d7dd2" stroke-width="1"/>',
+    copa: '<rect x="10" y="10" width="36" height="28" rx="2" fill="#dbeafe" stroke="#2d7dd2" stroke-width="1.5"/><circle cx="22" cy="24" r="5" fill="#93c5fd" stroke="#2d7dd2" stroke-width="1"/><rect x="32" y="18" width="8" height="12" rx="1" fill="#93c5fd" stroke="#2d7dd2" stroke-width="1"/>',
+    deposito: '<rect x="8" y="8" width="40" height="32" rx="2" fill="#dbeafe" stroke="#2d7dd2" stroke-width="1.5"/><rect x="14" y="14" width="28" height="8" rx="1" fill="#93c5fd" stroke="#2d7dd2" stroke-width="1"/><rect x="14" y="26" width="28" height="8" rx="1" fill="#93c5fd" stroke="#2d7dd2" stroke-width="1"/>',
+    areaprincipal: '<rect x="4" y="6" width="48" height="32" rx="2" fill="#dbeafe" stroke="#2d7dd2" stroke-width="1.5"/><rect x="10" y="12" width="36" height="20" rx="1" fill="#93c5fd" stroke="#2d7dd2" stroke-width="1"/>'
+  };
+
+  var totalSecoes = secoes.length;
+  var html = '';
+
+  for (var s = 0; s < secoes.length; s++) {
+    var sec = secoes[s];
+    html += '<!-- SE\u00c7\u00c3O ' + sec.num + ': ' + sec.titulo.toUpperCase() + ' -->\n';
+    html += '<div style="font-size:11px;font-weight:700;color:#8898aa;text-transform:uppercase;letter-spacing:0.5px;margin:0 0 8px;display:flex;align-items:center;gap:8px">';
+    html += '<div style="width:20px;height:20px;border-radius:50%;background:#2d7dd2;color:#FFF;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0">' + sec.num + '</div>';
+    html += sec.titulo + '</div>\n';
+    html += '<div style="background:#fff;border-radius:12px;border:0.5px solid #e2e8f0;padding:4px 0;margin-bottom:12px" id="secao-' + sec.id + '">\n';
+
+    for (var a = 0; a < sec.ambientes.length; a++) {
+      var amb = sec.ambientes[a];
+      var svgContent = svgs[amb.key] || svgs.sala;
+      var isLast = (a === sec.ambientes.length - 1);
+      var borderStyle = isLast ? '' : 'border-bottom:0.5px solid #f5f7fa;';
+      var valColor = amb.val > 0 ? '#2d7dd2' : '#8898aa';
+
+      html += '<div class="counter-row" id="row-' + amb.key + '" style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;' + borderStyle + 'gap:12px">\n';
+      html += '  <div style="display:flex;align-items:center;gap:10px;flex:1">\n';
+      html += '    <div style="width:36px;height:36px;border-radius:8px;background:#eef4ff;display:flex;align-items:center;justify-content:center;flex-shrink:0">';
+      html += '<svg width="22" height="22" viewBox="0 0 56 44" fill="none">' + svgContent + '</svg></div>\n';
+      html += '    <div><div style="font-size:13px;font-weight:600;color:#1a2540">' + amb.nome + '</div>';
+      html += '<div style="font-size:11px;color:#8898aa;margin-top:1px">' + amb.sub + '</div></div>\n';
+      html += '  </div>\n';
+      html += '  <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">\n';
+      html += '    <button onclick="decAmb(\'' + amb.key + '\')" style="width:28px;height:28px;border-radius:50%;border:0.5px solid #e2e8f0;background:#f8fafc;font-size:16px;cursor:pointer;color:#4a5568;display:flex;align-items:center;justify-content:center">&#8722;</button>\n';
+      html += '    <span id="val-' + amb.key + '" style="font-size:15px;font-weight:700;color:' + valColor + ';min-width:20px;text-align:center">' + amb.val + '</span>\n';
+      html += '    <button onclick="incAmb(\'' + amb.key + '\')" style="width:28px;height:28px;border-radius:50%;border:0.5px solid #e2e8f0;background:#f8fafc;font-size:16px;cursor:pointer;color:#4a5568;display:flex;align-items:center;justify-content:center">+</button>\n';
+      html += '  </div>\n';
+      html += '</div>\n';
+    }
+
+    // Custom container per section
+    html += '<div id="custom-' + sec.id + '" style="padding:4px 0"></div>\n';
+    // Botao + Outro
+    html += '<div style="padding:10px 16px">\n';
+    html += '  <button onclick="adicionarOutro(\'' + sec.id + '\',\'secao-' + sec.id + '\',\'custom-' + sec.id + '\')" style="display:flex;align-items:center;gap:6px;padding:8px 14px;border-radius:8px;border:1.5px dashed #2d7dd2;background:#f0f7ff;color:#2d7dd2;font-size:12px;font-weight:500;cursor:pointer;width:100%">+ Outro ' + sec.titulo.toLowerCase() + '</button>\n';
+    html += '</div>\n';
+    html += '</div>\n\n';
+  }
+
+  container.innerHTML = html;
+
+  // Atualizar resumo se funcao existir
   if (typeof updateAmbResumo === 'function') updateAmbResumo();
 }
 </script>
