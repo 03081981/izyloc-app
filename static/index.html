@@ -4650,11 +4650,11 @@ function _svgCurral(){return '<svg viewBox="0 0 56 44" fill="none"><rect x="4" y
 function _row(svg, nome, desc, key, val, subId) {
   val = val || 0;
   var onclick = subId
-    ? 'wizIncSub(this,"'+key+'","'+subId+'")'
-    : 'wizInc(this,"'+key+'")';
+    ? "wizIncSub(this,'"+key+"','"+subId+"')"
+    : "wizInc(this,'"+key+"')";
   var ondec = subId
-    ? 'wizDecSub(this,"'+key+'","'+subId+'")'
-    : 'wizDec(this,"'+key+'")';
+    ? "wizDecSub(this,'"+key+"','"+subId+"')"
+    : "wizDec(this,'"+key+"')";
   return '<div class="wiz-amb-row" id="wiz-row-'+key+'">'
     +'<div class="wiz-amb-svgbox">'+svg+'</div>'
     +'<div class="wiz-amb-info"><div class="wiz-amb-nome">'+nome+'</div><div class="wiz-amb-desc">'+desc+'</div></div>'
