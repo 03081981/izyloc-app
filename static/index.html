@@ -2335,55 +2335,83 @@ textarea.obs-geral{width:100%;background:#f8fafc;border:.5px solid #dce3ed;borde
       </div>
 
       <!-- TIPO DO IMOVEL -->
-      <div style="font-size:11px;font-weight:700;color:#8898aa;text-transform:uppercase;letter-spacing:0.5px;margin:0 0 10px">Tipo do imovel</div>
-      <select id="wi-prop-type" style="display:none"><option value="">Selecione...</option><option value="Apartamento">Apartamento</option><option value="Casa">Casa</option><option value="Studio / Kitnet">Studio / Kitnet</option><option value="Cobertura">Cobertura</option><option value="Sala comercial">Sala comercial</option><option value="Loja comercial">Loja comercial</option><option value="Predio comercial">Predio comercial</option><option value="Galpao / Barracao">Galpao / Barracao</option><option value="Chacara">Chacara</option><option value="Sitio">Sitio</option><option value="Outro">Outro</option></select>
+      <div style="font-size:11px;font-weight:700;color:#8898aa;text-transform:uppercase;letter-spacing:0.5px;margin:0 0 10px">Tipo do imóvel</div>
+<select id="wi-prop-type" style="display:none">
+  <option value="">Selecione...</option>
+  <option value="Casa">Casa</option>
+  <option value="Apartamento / Cobertura">Apartamento / Cobertura</option>
+  <option value="Studio / Kitnet">Studio / Kitnet</option>
+  <option value="Sala comercial">Sala comercial</option>
+  <option value="Predio comercial">Prédio comercial</option>
+  <option value="Loja / Salão comercial">Loja / Salão comercial</option>
+  <option value="Galpão / Barracão">Galpão / Barracão</option>
+  <option value="Terreno">Terreno</option>
+  <option value="Chácara / Sítio / Rural">Chácara / Sítio / Rural</option>
+  <option value="Outro">Outro</option>
+</select>
+<div id="wi-tipo-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px">
 
-      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px" id="wi-tipo-grid">
-        <div class="wi-tipo-btn" data-val="Apartamento" onclick="selectTipoImovel(this)" style="border:1px solid #e2e8f0;border-radius:8px;padding:10px 8px;cursor:pointer;background:#fff;text-align:center;font-size:11px;font-weight:500;color:#4a5568;display:flex;flex-direction:column;align-items:center;gap:5px;transition:all .15s">
-          <svg width="40" height="32" viewBox="0 0 56 44" fill="none"><rect x="8" y="4" width="40" height="36" rx="2" fill="#dbeafe" stroke="#2d7dd2" stroke-width="1.5"/><rect x="8" y="4" width="40" height="8" rx="2" fill="#2d7dd2"/><rect x="12" y="16" width="7" height="6" rx="1" fill="#93c5fd" stroke="#2d7dd2" stroke-width="0.8"/><rect x="24" y="16" width="7" height="6" rx="1" fill="#93c5fd" stroke="#2d7dd2" stroke-width="0.8"/><rect x="36" y="16" width="7" height="6" rx="1" fill="#93c5fd" stroke="#2d7dd2" stroke-width="0.8"/><rect x="22" y="34" width="12" height="6" rx="1" fill="#2d7dd2"/></svg>
-          Apartamento
-        </div>
-        <div class="wi-tipo-btn" data-val="Casa" onclick="selectTipoImovel(this)" style="border:1px solid #e2e8f0;border-radius:8px;padding:10px 8px;cursor:pointer;background:#fff;text-align:center;font-size:11px;font-weight:500;color:#4a5568;display:flex;flex-direction:column;align-items:center;gap:5px;transition:all .15s">
-          <svg width="40" height="32" viewBox="0 0 56 44" fill="none"><polygon points="28,4 54,22 2,22" fill="#2d7dd2"/><rect x="6" y="22" width="44" height="18" rx="1" fill="#dbeafe" stroke="#2d7dd2" stroke-width="1.5"/><rect x="22" y="28" width="12" height="12" rx="1" fill="#2d7dd2"/><rect x="8" y="26" width="8" height="7" rx="1" fill="#e0f2fe" stroke="#93c5fd" stroke-width="1"/><rect x="40" y="26" width="8" height="7" rx="1" fill="#e0f2fe" stroke="#93c5fd" stroke-width="1"/></svg>
-          Casa
-        </div>
-        <div class="wi-tipo-btn" data-val="Studio / Kitnet" onclick="selectTipoImovel(this)" style="border:1px solid #e2e8f0;border-radius:8px;padding:10px 8px;cursor:pointer;background:#fff;text-align:center;font-size:11px;font-weight:500;color:#4a5568;display:flex;flex-direction:column;align-items:center;gap:5px;transition:all .15s">
-          <svg width="40" height="32" viewBox="0 0 56 44" fill="none"><rect x="8" y="8" width="40" height="32" rx="2" fill="#dbeafe" stroke="#2d7dd2" stroke-width="1.5"/><rect x="12" y="14" width="20" height="12" rx="1" fill="#93c5fd" stroke="#2d7dd2" stroke-width="1"/><rect x="12" y="14" width="6" height="12" rx="1" fill="#2d7dd2"/><rect x="22" y="30" width="10" height="10" rx="1" fill="#2d7dd2"/></svg>
-          Studio/Kitnet
-        </div>
-        <div class="wi-tipo-btn" data-val="Cobertura" onclick="selectTipoImovel(this)" style="border:1px solid #e2e8f0;border-radius:8px;padding:10px 8px;cursor:pointer;background:#fff;text-align:center;font-size:11px;font-weight:500;color:#4a5568;display:flex;flex-direction:column;align-items:center;gap:5px;transition:all .15s">
-          <svg width="40" height="32" viewBox="0 0 56 44" fill="none"><rect x="10" y="16" width="36" height="24" rx="1" fill="#dbeafe" stroke="#2d7dd2" stroke-width="1.5"/><rect x="6" y="8" width="44" height="12" rx="2" fill="#2d7dd2"/><line x1="6" y1="6" x2="6" y2="2" stroke="#2d7dd2" stroke-width="1.5" stroke-linecap="round"/><line x1="50" y1="6" x2="50" y2="2" stroke="#2d7dd2" stroke-width="1.5" stroke-linecap="round"/><line x1="6" y1="2" x2="50" y2="2" stroke="#2d7dd2" stroke-width="1.5" stroke-linecap="round"/><rect x="24" y="30" width="8" height="10" rx="1" fill="#2d7dd2"/></svg>
-          Cobertura
-        </div>
-        <div class="wi-tipo-btn" data-val="Sala comercial" onclick="selectTipoImovel(this)" style="border:1px solid #e2e8f0;border-radius:8px;padding:10px 8px;cursor:pointer;background:#fff;text-align:center;font-size:11px;font-weight:500;color:#4a5568;display:flex;flex-direction:column;align-items:center;gap:5px;transition:all .15s">
-          <svg width="40" height="32" viewBox="0 0 56 44" fill="none"><rect x="4" y="8" width="48" height="32" rx="2" fill="#dbeafe" stroke="#2d7dd2" stroke-width="1.5"/><rect x="10" y="20" width="36" height="12" rx="1" fill="#fff" stroke="#2d7dd2" stroke-width="1"/><rect x="22" y="10" width="12" height="8" rx="1" fill="#2d7dd2"/></svg>
-          Sala comercial
-        </div>
-        <div class="wi-tipo-btn" data-val="Loja comercial" onclick="selectTipoImovel(this)" style="border:1px solid #e2e8f0;border-radius:8px;padding:10px 8px;cursor:pointer;background:#fff;text-align:center;font-size:11px;font-weight:500;color:#4a5568;display:flex;flex-direction:column;align-items:center;gap:5px;transition:all .15s">
-          <svg width="40" height="32" viewBox="0 0 56 44" fill="none"><rect x="4" y="14" width="48" height="26" rx="1" fill="#dbeafe" stroke="#2d7dd2" stroke-width="1.5"/><rect x="2" y="10" width="52" height="6" rx="1" fill="#2d7dd2"/><rect x="8" y="18" width="16" height="14" rx="1" fill="#e0f2fe" stroke="#2d7dd2" stroke-width="1"/><rect x="32" y="18" width="16" height="14" rx="1" fill="#e0f2fe" stroke="#2d7dd2" stroke-width="1"/><rect x="22" y="24" width="12" height="16" rx="1" fill="#2d7dd2"/></svg>
-          Loja comercial
-        </div>
-        <div class="wi-tipo-btn" data-val="Predio comercial" onclick="selectTipoImovel(this)" style="border:1px solid #e2e8f0;border-radius:8px;padding:10px 8px;cursor:pointer;background:#fff;text-align:center;font-size:11px;font-weight:500;color:#4a5568;display:flex;flex-direction:column;align-items:center;gap:5px;transition:all .15s">
-          <svg width="40" height="32" viewBox="0 0 56 44" fill="none"><rect x="10" y="2" width="36" height="38" rx="2" fill="#dbeafe" stroke="#2d7dd2" stroke-width="1.5"/><rect x="10" y="2" width="36" height="6" rx="2" fill="#2d7dd2"/><rect x="14" y="12" width="6" height="5" rx="1" fill="#93c5fd" stroke="#2d7dd2" stroke-width="0.8"/><rect x="24" y="12" width="6" height="5" rx="1" fill="#93c5fd" stroke="#2d7dd2" stroke-width="0.8"/><rect x="34" y="12" width="6" height="5" rx="1" fill="#93c5fd" stroke="#2d7dd2" stroke-width="0.8"/><rect x="22" y="30" width="10" height="10" rx="1" fill="#2d7dd2"/></svg>
-          Predio comercial
-        </div>
-        <div class="wi-tipo-btn" data-val="Galpao / Barracao" onclick="selectTipoImovel(this)" style="border:1px solid #e2e8f0;border-radius:8px;padding:10px 8px;cursor:pointer;background:#fff;text-align:center;font-size:11px;font-weight:500;color:#4a5568;display:flex;flex-direction:column;align-items:center;gap:5px;transition:all .15s">
-          <svg width="40" height="32" viewBox="0 0 56 44" fill="none"><path d="M2 22 L28 6 L54 22" fill="#2d7dd2" stroke="#2d7dd2" stroke-width="1"/><rect x="4" y="22" width="48" height="18" rx="1" fill="#dbeafe" stroke="#2d7dd2" stroke-width="1.5"/><rect x="14" y="24" width="28" height="16" rx="1" fill="#93c5fd" stroke="#2d7dd2" stroke-width="1"/><line x1="28" y1="24" x2="28" y2="40" stroke="#2d7dd2" stroke-width="1"/></svg>
-          Galpao/Barracao
-        </div>
-        <div class="wi-tipo-btn" data-val="Chacara" onclick="selectTipoImovel(this)" style="border:1px solid #e2e8f0;border-radius:8px;padding:10px 8px;cursor:pointer;background:#fff;text-align:center;font-size:11px;font-weight:500;color:#4a5568;display:flex;flex-direction:column;align-items:center;gap:5px;transition:all .15s">
-          <svg width="40" height="32" viewBox="0 0 56 44" fill="none"><rect x="2" y="32" width="52" height="8" rx="1" fill="#86efac"/><polygon points="20,14 36,14 36,28 20,28" fill="#dbeafe" stroke="#2d7dd2" stroke-width="1.2"/><polygon points="16,16 28,8 40,16" fill="#2d7dd2"/><rect x="25" y="21" width="6" height="7" rx="1" fill="#2d7dd2"/><circle cx="7" cy="20" r="7" fill="#4ade80"/><circle cx="47" cy="23" r="5" fill="#22c55e"/></svg>
-          Chacara
-        </div>
-        <div class="wi-tipo-btn" data-val="Sitio" onclick="selectTipoImovel(this)" style="border:1px solid #e2e8f0;border-radius:8px;padding:10px 8px;cursor:pointer;background:#fff;text-align:center;font-size:11px;font-weight:500;color:#4a5568;display:flex;flex-direction:column;align-items:center;gap:5px;transition:all .15s">
-          <svg width="40" height="32" viewBox="0 0 56 44" fill="none"><rect x="2" y="28" width="52" height="12" rx="1" fill="#86efac"/><polygon points="22,16 34,16 34,28 22,28" fill="#dbeafe" stroke="#2d7dd2" stroke-width="1.2"/><polygon points="18,18 28,10 38,18" fill="#2d7dd2"/><rect x="38" y="22" width="14" height="10" rx="1" fill="#fef3c7" stroke="#d97706" stroke-width="1.2"/><circle cx="48" cy="8" r="5" fill="#fbbf24"/></svg>
-          Sitio
-        </div>
-        <div class="wi-tipo-btn" data-val="Outro" onclick="selectTipoImovel(this)" style="border:1px solid #e2e8f0;border-radius:8px;padding:10px 8px;cursor:pointer;background:#fff;text-align:center;font-size:11px;font-weight:500;color:#4a5568;display:flex;flex-direction:column;align-items:center;gap:5px;transition:all .15s">
-          <svg width="40" height="32" viewBox="0 0 56 44" fill="none"><circle cx="28" cy="22" r="18" fill="#dbeafe" stroke="#2d7dd2" stroke-width="1.5" stroke-dasharray="3 2"/><text x="28" y="27" font-family="Arial" font-size="16" fill="#2d7dd2" text-anchor="middle" font-weight="700">?</text></svg>
-          Outro
-        </div>
-      </div>
+  <!-- CASA -->
+  <div class="wi-tipo-btn" data-val="Casa" onclick="selectTipoImovel(this)" style="border:1px solid #e2e8f0;border-radius:8px;padding:10px 8px;cursor:pointer;background:#fff;display:flex;flex-direction:column;align-items:center;gap:6px;transition:all .15s">
+    <svg width="32" height="32" viewBox="0 0 56 44" fill="none"><polygon points="28,4 54,22 2,22" fill="#2d7dd2"/><rect x="6" y="22" width="44" height="18" rx="2" fill="#dbeafe" stroke="#2d7dd2" stroke-width="1.5"/><rect x="22" y="28" width="12" height="12" rx="1" fill="#2d7dd2"/><rect x="8" y="26" width="8" height="7" rx="1" fill="#93c5fd" stroke="#2d7dd2" stroke-width="0.8"/><rect x="38" y="26" width="8" height="7" rx="1" fill="#93c5fd" stroke="#2d7dd2" stroke-width="0.8"/></svg>
+    <span style="font-size:11px;font-weight:600;color:#1a2540;text-align:center">Casa</span>
+  </div>
+
+  <!-- APARTAMENTO / COBERTURA -->
+  <div class="wi-tipo-btn" data-val="Apartamento / Cobertura" onclick="selectTipoImovel(this)" style="border:1px solid #e2e8f0;border-radius:8px;padding:10px 8px;cursor:pointer;background:#fff;display:flex;flex-direction:column;align-items:center;gap:6px;transition:all .15s">
+    <svg width="32" height="32" viewBox="0 0 56 44" fill="none"><rect x="8" y="2" width="40" height="40" rx="2" fill="#dbeafe" stroke="#2d7dd2" stroke-width="1.5"/><rect x="8" y="2" width="40" height="8" rx="2" fill="#2d7dd2"/><rect x="12" y="14" width="8" height="7" rx="1" fill="#93c5fd" stroke="#2d7dd2" stroke-width="0.8"/><rect x="24" y="14" width="8" height="7" rx="1" fill="#93c5fd" stroke="#2d7dd2" stroke-width="0.8"/><rect x="36" y="14" width="8" height="7" rx="1" fill="#93c5fd" stroke="#2d7dd2" stroke-width="0.8"/><rect x="12" y="25" width="8" height="7" rx="1" fill="#93c5fd" stroke="#2d7dd2" stroke-width="0.8"/><rect x="24" y="25" width="8" height="7" rx="1" fill="#93c5fd" stroke="#2d7dd2" stroke-width="0.8"/><rect x="36" y="25" width="8" height="7" rx="1" fill="#93c5fd" stroke="#2d7dd2" stroke-width="0.8"/></svg>
+    <span style="font-size:11px;font-weight:600;color:#1a2540;text-align:center">Apartamento / Cobertura</span>
+  </div>
+
+  <!-- STUDIO / KITNET -->
+  <div class="wi-tipo-btn" data-val="Studio / Kitnet" onclick="selectTipoImovel(this)" style="border:1px solid #e2e8f0;border-radius:8px;padding:10px 8px;cursor:pointer;background:#fff;display:flex;flex-direction:column;align-items:center;gap:6px;transition:all .15s">
+    <svg width="32" height="32" viewBox="0 0 56 44" fill="none"><rect x="8" y="4" width="40" height="36" rx="2" fill="#dbeafe" stroke="#2d7dd2" stroke-width="1.5"/><rect x="8" y="4" width="40" height="8" rx="2" fill="#2d7dd2"/><rect x="14" y="18" width="12" height="10" rx="1" fill="#93c5fd" stroke="#2d7dd2" stroke-width="0.8"/><rect x="30" y="18" width="12" height="10" rx="1" fill="#93c5fd" stroke="#2d7dd2" stroke-width="0.8"/><rect x="14" y="30" width="28" height="6" rx="1" fill="#93c5fd" stroke="#2d7dd2" stroke-width="0.8"/></svg>
+    <span style="font-size:11px;font-weight:600;color:#1a2540;text-align:center">Studio / Kitnet</span>
+  </div>
+
+  <!-- SALA COMERCIAL -->
+  <div class="wi-tipo-btn" data-val="Sala comercial" onclick="selectTipoImovel(this)" style="border:1px solid #e2e8f0;border-radius:8px;padding:10px 8px;cursor:pointer;background:#fff;display:flex;flex-direction:column;align-items:center;gap:6px;transition:all .15s">
+    <svg width="32" height="32" viewBox="0 0 56 44" fill="none"><rect x="4" y="8" width="48" height="32" rx="2" fill="#dbeafe" stroke="#2d7dd2" stroke-width="1.5"/><rect x="4" y="8" width="48" height="10" rx="2" fill="#2d7dd2"/><rect x="8" y="22" width="18" height="14" rx="1" fill="#fff" stroke="#93c5fd" stroke-width="1"/><rect x="30" y="22" width="18" height="14" rx="1" fill="#fff" stroke="#93c5fd" stroke-width="1"/></svg>
+    <span style="font-size:11px;font-weight:600;color:#1a2540;text-align:center">Sala comercial</span>
+  </div>
+
+  <!-- PRÉDIO COMERCIAL -->
+  <div class="wi-tipo-btn" data-val="Predio comercial" onclick="selectTipoImovel(this)" style="border:1px solid #e2e8f0;border-radius:8px;padding:10px 8px;cursor:pointer;background:#fff;display:flex;flex-direction:column;align-items:center;gap:6px;transition:all .15s">
+    <svg width="32" height="32" viewBox="0 0 56 44" fill="none"><rect x="8" y="2" width="40" height="40" rx="2" fill="#dbeafe" stroke="#2d7dd2" stroke-width="1.5"/><rect x="8" y="2" width="40" height="7" rx="2" fill="#2d7dd2"/><rect x="12" y="13" width="7" height="6" rx="1" fill="#93c5fd" stroke="#2d7dd2" stroke-width="0.8"/><rect x="24" y="13" width="7" height="6" rx="1" fill="#93c5fd" stroke="#2d7dd2" stroke-width="0.8"/><rect x="36" y="13" width="7" height="6" rx="1" fill="#93c5fd" stroke="#2d7dd2" stroke-width="0.8"/><rect x="12" y="22" width="7" height="6" rx="1" fill="#93c5fd" stroke="#2d7dd2" stroke-width="0.8"/><rect x="24" y="22" width="7" height="6" rx="1" fill="#93c5fd" stroke="#2d7dd2" stroke-width="0.8"/><rect x="36" y="22" width="7" height="6" rx="1" fill="#93c5fd" stroke="#2d7dd2" stroke-width="0.8"/><rect x="12" y="31" width="7" height="6" rx="1" fill="#93c5fd" stroke="#2d7dd2" stroke-width="0.8"/><rect x="24" y="31" width="7" height="6" rx="1" fill="#93c5fd" stroke="#2d7dd2" stroke-width="0.8"/><rect x="36" y="31" width="7" height="6" rx="1" fill="#93c5fd" stroke="#2d7dd2" stroke-width="0.8"/></svg>
+    <span style="font-size:11px;font-weight:600;color:#1a2540;text-align:center">Prédio comercial</span>
+  </div>
+
+  <!-- LOJA / SALÃO -->
+  <div class="wi-tipo-btn" data-val="Loja / Salão comercial" onclick="selectTipoImovel(this)" style="border:1px solid #e2e8f0;border-radius:8px;padding:10px 8px;cursor:pointer;background:#fff;display:flex;flex-direction:column;align-items:center;gap:6px;transition:all .15s">
+    <svg width="32" height="32" viewBox="0 0 56 44" fill="none"><rect x="2" y="16" width="52" height="26" rx="2" fill="#dbeafe" stroke="#2d7dd2" stroke-width="1.5"/><rect x="2" y="16" width="52" height="8" rx="2" fill="#2d7dd2"/><path d="M2 16 Q14 4 28 8 Q42 4 54 16" fill="#dbeafe" stroke="#2d7dd2" stroke-width="1.5"/><rect x="18" y="28" width="20" height="14" rx="1" fill="#2d7dd2"/><rect x="8" y="26" width="8" height="6" rx="1" fill="#93c5fd" stroke="#2d7dd2" stroke-width="0.8"/><rect x="40" y="26" width="8" height="6" rx="1" fill="#93c5fd" stroke="#2d7dd2" stroke-width="0.8"/></svg>
+    <span style="font-size:11px;font-weight:600;color:#1a2540;text-align:center">Loja / Salão</span>
+  </div>
+
+  <!-- GALPÃO / BARRACÃO -->
+  <div class="wi-tipo-btn" data-val="Galpão / Barracão" onclick="selectTipoImovel(this)" style="border:1px solid #e2e8f0;border-radius:8px;padding:10px 8px;cursor:pointer;background:#fff;display:flex;flex-direction:column;align-items:center;gap:6px;transition:all .15s">
+    <svg width="32" height="32" viewBox="0 0 56 44" fill="none"><path d="M2 22 L28 4 L54 22" fill="#2d7dd2" stroke="#2d7dd2" stroke-width="1"/><rect x="2" y="22" width="52" height="20" rx="1" fill="#dbeafe" stroke="#2d7dd2" stroke-width="1.5"/><rect x="8" y="28" width="16" height="14" rx="1" fill="#2d7dd2"/><rect x="32" y="28" width="16" height="14" rx="1" fill="#93c5fd" stroke="#2d7dd2" stroke-width="0.8"/></svg>
+    <span style="font-size:11px;font-weight:600;color:#1a2540;text-align:center">Galpão / Barracão</span>
+  </div>
+
+  <!-- TERRENO -->
+  <div class="wi-tipo-btn" data-val="Terreno" onclick="selectTipoImovel(this)" style="border:1px solid #e2e8f0;border-radius:8px;padding:10px 8px;cursor:pointer;background:#fff;display:flex;flex-direction:column;align-items:center;gap:6px;transition:all .15s">
+    <svg width="32" height="32" viewBox="0 0 56 44" fill="none"><rect x="2" y="28" width="52" height="12" rx="1" fill="#86efac" stroke="#16a34a" stroke-width="1"/><line x1="2" y1="4" x2="2" y2="40" stroke="#2d7dd2" stroke-width="2" stroke-linecap="round"/><line x1="54" y1="4" x2="54" y2="40" stroke="#2d7dd2" stroke-width="2" stroke-linecap="round"/><line x1="2" y1="4" x2="54" y2="4" stroke="#2d7dd2" stroke-width="2" stroke-linecap="round"/><line x1="2" y1="40" x2="54" y2="40" stroke="#2d7dd2" stroke-width="2" stroke-linecap="round"/><line x1="2" y1="4" x2="54" y2="40" stroke="#2d7dd2" stroke-width="0.8" stroke-dasharray="3 3"/><line x1="54" y1="4" x2="2" y2="40" stroke="#2d7dd2" stroke-width="0.8" stroke-dasharray="3 3"/></svg>
+    <span style="font-size:11px;font-weight:600;color:#1a2540;text-align:center">Terreno</span>
+  </div>
+
+  <!-- CHÁCARA / SÍTIO / RURAL -->
+  <div class="wi-tipo-btn" data-val="Chácara / Sítio / Rural" onclick="selectTipoImovel(this)" style="border:1px solid #e2e8f0;border-radius:8px;padding:10px 8px;cursor:pointer;background:#fff;display:flex;flex-direction:column;align-items:center;gap:6px;transition:all .15s">
+    <svg width="32" height="32" viewBox="0 0 56 44" fill="none"><rect x="2" y="28" width="52" height="12" rx="1" fill="#86efac" stroke="#16a34a" stroke-width="1"/><polygon points="20,4 44,18 44,32 20,32" fill="#dbeafe" stroke="#2d7dd2" stroke-width="1.5"/><rect x="20" y="18" width="24" height="14" rx="1" fill="#dbeafe" stroke="#2d7dd2" stroke-width="1.5"/><rect x="28" y="22" width="8" height="10" rx="1" fill="#2d7dd2"/><circle cx="8" cy="22" r="8" fill="#4ade80" stroke="#16a34a" stroke-width="1"/><circle cx="48" cy="24" r="6" fill="#4ade80" stroke="#16a34a" stroke-width="1"/></svg>
+    <span style="font-size:11px;font-weight:600;color:#1a2540;text-align:center">Chácara / Sítio / Rural</span>
+  </div>
+
+  <!-- OUTRO -->
+  <div class="wi-tipo-btn" data-val="Outro" onclick="selectTipoImovel(this)" style="border:1px solid #e2e8f0;border-radius:8px;padding:10px 8px;cursor:pointer;background:#fff;display:flex;flex-direction:column;align-items:center;gap:6px;transition:all .15s">
+    <svg width="32" height="32" viewBox="0 0 56 44" fill="none"><circle cx="28" cy="22" r="20" fill="#dbeafe" stroke="#2d7dd2" stroke-width="1.5" stroke-dasharray="4 2"/><line x1="28" y1="12" x2="28" y2="32" stroke="#2d7dd2" stroke-width="2" stroke-linecap="round"/><line x1="18" y1="22" x2="38" y2="22" stroke="#2d7dd2" stroke-width="2" stroke-linecap="round"/></svg>
+    <span style="font-size:11px;font-weight:600;color:#1a2540;text-align:center">Outro</span>
+  </div>
+
+</div>
 
       <!-- INFORMACOES ADICIONAIS -->
       <div style="font-size:11px;font-weight:700;color:#8898aa;text-transform:uppercase;letter-spacing:0.5px;margin:0 0 10px">Informacoes adicionais</div>
@@ -4832,16 +4860,15 @@ function renderAmbientesPorTipo() {
   var badge = document.getElementById('wiz-tipo-badge');
 
   var cat = 'casa';
-    if (tipo.indexOf('studio') >= 0 || tipo.indexOf('kitnet') >= 0) cat = 'studio';
-    else if (tipo.indexOf('apartamento') >= 0 || tipo.indexOf('cobertura') >= 0) cat = 'apto';
-    else if (tipo.indexOf('sala') >= 0 || tipo.indexOf('predio') >= 0 || tipo.indexOf('prédio') >= 0) cat = 'sala';
-    else if (tipo.indexOf('loja') >= 0 || tipo.indexOf('salao') >= 0 || tipo.indexOf('salão') >= 0) cat = 'loja';
-    else if (tipo.indexOf('galpao') >= 0 || tipo.indexOf('galpão') >= 0 || tipo.indexOf('barracao') >= 0 || tipo.indexOf('barracão') >= 0) cat = 'galpao';
-    else if (tipo.indexOf('terreno') >= 0) cat = 'terreno';
-    else if (tipo.indexOf('chacara') >= 0 || tipo.indexOf('chácara') >= 0 || tipo.indexOf('sitio') >= 0 || tipo.indexOf('sítio') >= 0 || tipo.indexOf('rural') >= 0) cat = 'chacara';
+      if (tipo.indexOf('studio') >= 0 || tipo.indexOf('kitnet') >= 0) cat = 'studio';
+      else if (tipo.indexOf('apartamento') >= 0 || tipo.indexOf('cobertura') >= 0) cat = 'apto';
+      else if (tipo.indexOf('sala') >= 0 || tipo.indexOf('prédio') >= 0 || tipo.indexOf('predio') >= 0) cat = 'sala';
+      else if (tipo.indexOf('loja') >= 0 || tipo.indexOf('salão') >= 0 || tipo.indexOf('salao') >= 0) cat = 'loja';
+      else if (tipo.indexOf('galpão') >= 0 || tipo.indexOf('galpao') >= 0 || tipo.indexOf('barracão') >= 0 || tipo.indexOf('barracao') >= 0) cat = 'galpao';
+      else if (tipo.indexOf('terreno') >= 0) cat = 'terreno';
+      else if (tipo.indexOf('chácara') >= 0 || tipo.indexOf('chacara') >= 0 || tipo.indexOf('sítio') >= 0 || tipo.indexOf('sitio') >= 0 || tipo.indexOf('rural') >= 0) cat = 'chacara';
 
-    // Studio/Kitnet usa mesma estrutura do apto com badge diferente
-    var badgeLabel = '';
+      var badgeLabel = '';
     if (cat === 'studio') { badgeLabel = '🏠 Studio / Kitnet'; cat = 'apto'; }
     else if (cat === 'apto') badgeLabel = '🏢 Apartamento / Cobertura';
     else if (cat === 'casa') badgeLabel = '🏠 Casa residencial';
