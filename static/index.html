@@ -3215,7 +3215,6 @@ function validateAndGoWstep2() {
     {id:'wi-address', label:'Endereço'},
     {id:'wi-bairro', label:'Bairro'},
     {id:'wi-cidade', label:'Cidade'},
-    {id:'wi-estado', label:'Estado'},
     {id:'wi-prop-type', label:'Tipo do imóvel'},
     {id:'wi-date', label:'Data da vistoria'}
   ];
@@ -3230,7 +3229,19 @@ function validateAndGoWstep2() {
       el.style.borderColor = '';
     }
   });
-  if (!ok) return;
+  var tipoSel = document.querySelector('.wi-tipo-btn.sel');
+  if (!tipoSel) {
+    var grid = document.getElementById('wi-tipo-grid');
+    if (grid) { grid.style.border = '1.5px solid #e53935'; grid.style.borderRadius = '8px'; }
+    ok = false;
+  } else {
+    var grid2 = document.getElementById('wi-tipo-grid');
+    if (grid2) { grid2.style.border = ''; }
+  }
+  if (!ok) {
+    window.scrollTo({top:0, behavior:'smooth'});
+    return;
+  }
   nextWizStep();
 }
 
