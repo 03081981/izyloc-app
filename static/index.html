@@ -1393,7 +1393,8 @@ canvas { display: block; }
   .dash-grid { grid-template-columns: 1fr; }
   .dash-grid-right { display: none; }
   .db-main-grid { grid-template-columns: 1fr; }
-  .db-col-side { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  .db-col-side { display: flex; flex-direction: column; gap: 20px; width: 100%; }
+  .db-como-card { height: auto!important; }
   .db-cards-row { grid-template-columns: repeat(3, 1fr); }
 }
 @media (max-width: 768px) {
