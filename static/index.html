@@ -1493,6 +1493,16 @@ canvas { display: block; }
   /* Etapa 4 mobile */
   #wstep-2 .form-grid-2col { grid-template-columns: 1fr 1fr; }
   #wstep-2 input { font-size:16px; }
+
+  /* Wizard mobile fixes */
+  .wiz-main-wrapper{margin-left:0!important;overflow:hidden;width:100%}
+  .page-content{padding:16px!important}
+  #wstep-2 [style*="grid-template-columns:1fr 1fr"]{grid-template-columns:1fr!important}
+  #wstep-2 [style*="grid-template-columns: 1fr 1fr"]{grid-template-columns:1fr!important}
+  #wstep-1 [style*="grid-template-columns:1fr 1fr"]{grid-template-columns:1fr!important}
+  #wstep-1 [style*="grid-template-columns: 1fr 1fr"]{grid-template-columns:1fr!important}
+  #wstep-0 .tipo-cards{grid-template-columns:1fr!important}
+  #wstep-quem [style*="grid-template-columns:1fr 1fr"]{grid-template-columns:1fr!important}
 }
   /* === Ambientes wstep-3 (counter-row) === */
   .counter-row { display: flex; align-items: center; justify-content: space-between; padding: 13px 16px; border: 1.5px solid #dce3ed; border-radius: 12px; margin-bottom: 8px; background: #fff; transition: all 0.15s; }
