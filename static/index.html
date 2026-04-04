@@ -2373,72 +2373,143 @@ textarea.obs-geral{width:100%;background:#f8fafc;border:.5px solid #dce3ed;borde
 </div>
 
     <div id="wstep-2" style="display:none">
-      <div class="wstep-title">Partes envolvidas</div>
-      <div class="wstep-sub">Informe os dados dos locadores, locatários e corretor.</div>
-      <div class="form-card">
-        <div class="form-card-title">Locadores</div>
-        <div id="locadores-container">
-          <div class="person-block" id="loc-block-0">
-            <div class="person-block-header">
-              <span class="person-block-title">Locador 1</span>
-            </div>
-            <div class="form-row">
-              <div class="form-group"><label class="form-label">Nome</label><input class="form-input" id="loc-name-0" type="text" placeholder="Nome completo"/></div>
-              <div class="form-group"><label class="form-label">CPF</label><input class="form-input" id="loc-cpf-0" type="text" placeholder="000.000.000-00"/></div>
-            </div>
-            <div class="form-row">
-              <div class="form-group"><label class="form-label">RG</label><input class="form-input" id="loc-rg-0" type="text" placeholder="RG"/></div>
-              <div class="form-group"><label class="form-label">Telefone</label><input class="form-input" id="loc-phone-0" type="tel" placeholder="(00) 00000-0000"/></div>
-            </div>
-            <div class="form-group"><label class="form-label">E-mail</label><input class="form-input" id="loc-email-0" type="email" placeholder="email@exemplo.com"/></div>
-          </div>
-        </div>
-        <button class="btn-add-person" onclick="addLocador ? addLocador() : null">
-          <svg viewBox="0 0 20 20" fill="currentColor" width="16" height="16"><path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"/></svg>
-          Adicionar locador
-        </button>
+<div class="wiz-section-title">Partes envolvidas</div>
+<div class="wiz-section-sub">Preencha os dados do locador, locatario e corretor avaliador.</div>
+
+<!-- LOCADORES -->
+<div style="font-size:11px;font-weight:700;color:#8898aa;text-transform:uppercase;letter-spacing:0.5px;margin:16px 0 10px">Locador(es) — Proprietario</div>
+<div id="locadores-container">
+  <div class="person-block" id="loc-block-0" style="background:#fff;border-radius:12px;border:0.5px solid #e2e8f0;padding:16px;margin-bottom:10px">
+    <div style="font-size:13px;font-weight:600;color:#1a2540;margin-bottom:12px;display:flex;align-items:center;gap:8px">
+      <div style="width:22px;height:22px;border-radius:50%;background:#2d7dd2;color:#fff;font-size:10px;display:flex;align-items:center;justify-content:center;font-weight:700">1</div>
+      Locador
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+      <div style="grid-column:1/-1;display:flex;flex-direction:column;gap:4px">
+        <label style="font-size:12px;font-weight:600;color:#4a5568">Nome completo</label>
+        <input id="loc-name-0" type="text" placeholder="Nome do locador" style="border:0.5px solid #e2e8f0;border-radius:8px;padding:9px 12px;font-size:13px;color:#1a2540;font-family:inherit;background:#fff;outline:none"/>
       </div>
-      <div class="form-card">
-        <div class="form-card-title">Locatários</div>
-        <div id="locatarios-container">
-          <div class="person-block" id="locat-block-0">
-            <div class="person-block-header">
-              <span class="person-block-title">Locatário 1</span>
-            </div>
-            <div class="form-row">
-              <div class="form-group"><label class="form-label">Nome</label><input class="form-input" id="locat-name-0" type="text" placeholder="Nome completo"/></div>
-              <div class="form-group"><label class="form-label">CPF</label><input class="form-input" id="locat-cpf-0" type="text" placeholder="000.000.000-00"/></div>
-            </div>
-            <div class="form-row">
-              <div class="form-group"><label class="form-label">RG</label><input class="form-input" id="locat-rg-0" type="text" placeholder="RG"/></div>
-              <div class="form-group"><label class="form-label">Telefone</label><input class="form-input" id="locat-phone-0" type="tel" placeholder="(00) 00000-0000"/></div>
-            </div>
-            <div class="form-group"><label class="form-label">E-mail</label><input class="form-input" id="locat-email-0" type="email" placeholder="email@exemplo.com"/></div>
-          </div>
-        </div>
-        <button class="btn-add-person" onclick="addLocatario ? addLocatario() : null">
-          <svg viewBox="0 0 20 20" fill="currentColor" width="16" height="16"><path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"/></svg>
-          Adicionar locatário
-        </button>
+      <div style="display:flex;flex-direction:column;gap:4px">
+        <label style="font-size:12px;font-weight:600;color:#4a5568">CPF</label>
+        <input id="loc-cpf-0" type="text" placeholder="000.000.000-00" style="border:0.5px solid #e2e8f0;border-radius:8px;padding:9px 12px;font-size:13px;color:#1a2540;font-family:inherit;background:#fff;outline:none"/>
       </div>
-      <div class="form-card" id="corretor-block">
-        <div class="form-card-title">Imobiliária / Corretor</div>
-        <div class="form-row">
-          <div class="form-group"><label class="form-label">Nome</label><input class="form-input" id="wi-corr-name" type="text" placeholder="Nome do corretor"/></div>
-          <div class="form-group"><label class="form-label">CRECI</label><input class="form-input" id="wi-corr-creci" type="text" placeholder="CRECI"/></div>
-        </div>
-        <div class="form-row">
-          <div class="form-group"><label class="form-label">Telefone</label><input class="form-input" id="wi-corr-phone" type="tel" placeholder="(00) 00000-0000"/></div>
-          <div class="form-group"><label class="form-label">E-mail</label><input class="form-input" id="wi-corr-email" type="email" placeholder="email@corretor.com"/></div>
-        </div>
+      <div style="display:flex;flex-direction:column;gap:4px">
+        <label style="font-size:12px;font-weight:600;color:#4a5568">RG</label>
+        <input id="loc-rg-0" type="text" placeholder="00.000.000-0" style="border:0.5px solid #e2e8f0;border-radius:8px;padding:9px 12px;font-size:13px;color:#1a2540;font-family:inherit;background:#fff;outline:none"/>
       </div>
-      <div class="wiz-nav">
-        <button class="btn-wiz-back-sm" onclick="prevWizStep ? prevWizStep() : null">Voltar</button>
-        <button class="btn-wiz-next" onclick="nextWizStep ? nextWizStep() : null">Continuar <svg viewBox="0 0 20 20" fill="currentColor" width="16" height="16"><path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z"/></svg></button>
+      <div style="display:flex;flex-direction:column;gap:4px">
+        <label style="font-size:12px;font-weight:600;color:#4a5568">Telefone</label>
+        <input id="loc-phone-0" type="tel" placeholder="(00) 00000-0000" style="border:0.5px solid #e2e8f0;border-radius:8px;padding:9px 12px;font-size:13px;color:#1a2540;font-family:inherit;background:#fff;outline:none"/>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:4px">
+        <label style="font-size:12px;font-weight:600;color:#4a5568">E-mail</label>
+        <input id="loc-email-0" type="email" placeholder="email@exemplo.com" style="border:0.5px solid #e2e8f0;border-radius:8px;padding:9px 12px;font-size:13px;color:#1a2540;font-family:inherit;background:#fff;outline:none"/>
       </div>
     </div>
+  </div>
+</div>
+<div style="display:flex;align-items:center;gap:6px;padding:10px 16px;border-radius:8px;border:1.5px dashed #2d7dd2;background:#f0f7ff;color:#2d7dd2;font-size:13px;font-weight:500;cursor:pointer;margin-bottom:4px;width:fit-content" onclick="addLocador ? addLocador() : null">+ Adicionar outro locador</div>
 
-    <!-- STEP 3: AMBIENTES -->
+<!-- LOCATÁRIOS -->
+<div style="font-size:11px;font-weight:700;color:#8898aa;text-transform:uppercase;letter-spacing:0.5px;margin:16px 0 10px">Locatario(s) — Inquilino</div>
+<div id="locatarios-container">
+  <div class="person-block" id="locat-block-0" style="background:#fff;border-radius:12px;border:0.5px solid #e2e8f0;padding:16px;margin-bottom:10px">
+    <div style="font-size:13px;font-weight:600;color:#1a2540;margin-bottom:12px;display:flex;align-items:center;gap:8px">
+      <div style="width:22px;height:22px;border-radius:50%;background:#2d7dd2;color:#fff;font-size:10px;display:flex;align-items:center;justify-content:center;font-weight:700">1</div>
+      Locatario
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+      <div style="grid-column:1/-1;display:flex;flex-direction:column;gap:4px">
+        <label style="font-size:12px;font-weight:600;color:#4a5568">Nome completo</label>
+        <input id="locat-name-0" type="text" placeholder="Nome do locatario" style="border:0.5px solid #e2e8f0;border-radius:8px;padding:9px 12px;font-size:13px;color:#1a2540;font-family:inherit;background:#fff;outline:none"/>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:4px">
+        <label style="font-size:12px;font-weight:600;color:#4a5568">CPF</label>
+        <input id="locat-cpf-0" type="text" placeholder="000.000.000-00" style="border:0.5px solid #e2e8f0;border-radius:8px;padding:9px 12px;font-size:13px;color:#1a2540;font-family:inherit;background:#fff;outline:none"/>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:4px">
+        <label style="font-size:12px;font-weight:600;color:#4a5568">RG</label>
+        <input id="locat-rg-0" type="text" placeholder="00.000.000-0" style="border:0.5px solid #e2e8f0;border-radius:8px;padding:9px 12px;font-size:13px;color:#1a2540;font-family:inherit;background:#fff;outline:none"/>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:4px">
+        <label style="font-size:12px;font-weight:600;color:#4a5568">Telefone</label>
+        <input id="locat-phone-0" type="tel" placeholder="(00) 00000-0000" style="border:0.5px solid #e2e8f0;border-radius:8px;padding:9px 12px;font-size:13px;color:#1a2540;font-family:inherit;background:#fff;outline:none"/>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:4px">
+        <label style="font-size:12px;font-weight:600;color:#4a5568">E-mail</label>
+        <input id="locat-email-0" type="email" placeholder="email@exemplo.com" style="border:0.5px solid #e2e8f0;border-radius:8px;padding:9px 12px;font-size:13px;color:#1a2540;font-family:inherit;background:#fff;outline:none"/>
+      </div>
+    </div>
+  </div>
+</div>
+<div style="display:flex;align-items:center;gap:6px;padding:10px 16px;border-radius:8px;border:1.5px dashed #2d7dd2;background:#f0f7ff;color:#2d7dd2;font-size:13px;font-weight:500;cursor:pointer;margin-bottom:4px;width:fit-content" onclick="addLocatario ? addLocatario() : null">+ Adicionar outro locatario</div>
+
+<!-- CORRETOR -->
+<div style="font-size:11px;font-weight:700;color:#8898aa;text-transform:uppercase;letter-spacing:0.5px;margin:16px 0 10px">Corretor avaliador</div>
+<div id="corretor-block" style="background:#fff;border-radius:12px;border:0.5px solid #e2e8f0;padding:16px;margin-bottom:10px">
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+    <div style="grid-column:1/-1;display:flex;flex-direction:column;gap:4px">
+      <label style="font-size:12px;font-weight:600;color:#4a5568">Nome do corretor avaliador</label>
+      <input id="wi-corr-name" type="text" placeholder="Nome completo do corretor" style="border:0.5px solid #e2e8f0;border-radius:8px;padding:9px 12px;font-size:13px;color:#1a2540;font-family:inherit;background:#fff;outline:none"/>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:4px">
+      <label style="font-size:12px;font-weight:600;color:#4a5568">CPF</label>
+      <input id="wi-corr-cpf" type="text" placeholder="000.000.000-00" style="border:0.5px solid #e2e8f0;border-radius:8px;padding:9px 12px;font-size:13px;color:#1a2540;font-family:inherit;background:#fff;outline:none"/>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:4px">
+      <label style="font-size:12px;font-weight:600;color:#4a5568">CRECI</label>
+      <input id="wi-corr-creci" type="text" placeholder="CRECI-SP 00000" style="border:0.5px solid #e2e8f0;border-radius:8px;padding:9px 12px;font-size:13px;color:#1a2540;font-family:inherit;background:#fff;outline:none"/>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:4px">
+      <label style="font-size:12px;font-weight:600;color:#4a5568">Telefone</label>
+      <input id="wi-corr-phone" type="tel" placeholder="(00) 00000-0000" style="border:0.5px solid #e2e8f0;border-radius:8px;padding:9px 12px;font-size:13px;color:#1a2540;font-family:inherit;background:#fff;outline:none"/>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:4px">
+      <label style="font-size:12px;font-weight:600;color:#4a5568">E-mail</label>
+      <input id="wi-corr-email" type="email" placeholder="email@corretor.com" style="border:0.5px solid #e2e8f0;border-radius:8px;padding:9px 12px;font-size:13px;color:#1a2540;font-family:inherit;background:#fff;outline:none"/>
+    </div>
+  </div>
+
+  <!-- BOTÃO ADICIONAR IMOBILIÁRIA -->
+  <div id="btn-add-imob" onclick="document.getElementById('btn-add-imob').style.display='none';document.getElementById('imob-expand').style.display='block'" style="display:flex;align-items:center;gap:6px;padding:10px 16px;border-radius:8px;border:1.5px dashed #2d7dd2;background:#f0f7ff;color:#2d7dd2;font-size:13px;font-weight:500;cursor:pointer;margin-top:14px;width:100%">
+    🏢 + Adicionar imobiliaria <span style="font-size:11px;color:#8898aa;font-weight:400;margin-left:4px">(se representando uma imobiliaria)</span>
+  </div>
+
+  <!-- CARD IMOBILIÁRIA -->
+  <div id="imob-expand" style="display:none;background:#f8fafc;border-radius:10px;border:0.5px solid #e2e8f0;padding:14px;margin-top:12px">
+    <div style="font-size:12px;font-weight:600;color:#1a2540;margin-bottom:10px;display:flex;align-items:center;gap:6px">
+      🏢 Dados da imobiliaria
+      <span onclick="document.getElementById('imob-expand').style.display='none';document.getElementById('btn-add-imob').style.display='flex'" style="margin-left:auto;font-size:11px;color:#dc2626;cursor:pointer;padding:3px 8px;border-radius:5px;border:0.5px solid #fca5a5;background:#fff5f5">✕ Remover</span>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+      <div style="grid-column:1/-1;display:flex;flex-direction:column;gap:4px">
+        <label style="font-size:12px;font-weight:600;color:#4a5568">Nome da imobiliaria</label>
+        <input id="wi-imob-name" type="text" placeholder="Nome da imobiliaria" style="border:0.5px solid #e2e8f0;border-radius:8px;padding:9px 12px;font-size:13px;color:#1a2540;font-family:inherit;background:#fff;outline:none"/>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:4px">
+        <label style="font-size:12px;font-weight:600;color:#4a5568">CNPJ</label>
+        <input id="wi-imob-cnpj" type="text" placeholder="00.000.000/0001-00" style="border:0.5px solid #e2e8f0;border-radius:8px;padding:9px 12px;font-size:13px;color:#1a2540;font-family:inherit;background:#fff;outline:none"/>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:4px">
+        <label style="font-size:12px;font-weight:600;color:#4a5568">Telefone</label>
+        <input id="wi-imob-phone" type="tel" placeholder="(00) 00000-0000" style="border:0.5px solid #e2e8f0;border-radius:8px;padding:9px 12px;font-size:13px;color:#1a2540;font-family:inherit;background:#fff;outline:none"/>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:4px">
+        <label style="font-size:12px;font-weight:600;color:#4a5568">E-mail</label>
+        <input id="wi-imob-email" type="email" placeholder="email@imobiliaria.com" style="border:0.5px solid #e2e8f0;border-radius:8px;padding:9px 12px;font-size:13px;color:#1a2540;font-family:inherit;background:#fff;outline:none"/>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- NAVEGAÇÃO -->
+<div style="display:flex;justify-content:space-between;align-items:center;padding:16px 20px;background:#fff;border-radius:10px;border:0.5px solid #e2e8f0;box-shadow:0 2px 8px rgba(0,0,0,0.04);margin-top:20px;margin-bottom:20px">
+  <button onclick="prevWizStep ? prevWizStep() : null" style="padding:10px 20px;border-radius:8px;border:0.5px solid #e2e8f0;background:#fff;font-size:13px;color:#4a5568;cursor:pointer">← Voltar</button>
+  <span style="font-size:12px;color:#8898aa">Etapa 4 de 8</span>
+  <button onclick="nextWizStep ? nextWizStep() : null" style="padding:10px 28px;border-radius:8px;background:#2d7dd2;color:#fff;font-size:14px;font-weight:700;border:none;cursor:pointer;box-shadow:0 4px 14px rgba(45,125,210,0.4)">Continuar →</button>
+</div>
+</div>
+<!-- STEP 3: AMBIENTES -->
     <div id="wstep-3" style="display:none">
       <div class="wstep-title">Selecionar ambientes</div>
       <div class="wstep-sub">Escolha os cômodos que serão vistoriados.</div>
