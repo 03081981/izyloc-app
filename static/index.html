@@ -1668,6 +1668,8 @@ textarea.obs-geral{width:100%;background:#f8fafc;border:.5px solid #dce3ed;borde
 
     .wi-tipo-btn.sel{border-color:#2d7dd2!important;background:#eef4ff!important;color:#2d7dd2!important;font-weight:600!important}
     .wi-tipo-btn:hover{border-color:#2d7dd2;background:#f8fbff}
+
+.counter-row{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;gap:12px}
 </style>
 </head>
 <body>
@@ -2524,188 +2526,242 @@ textarea.obs-geral{width:100%;background:#f8fafc;border:.5px solid #dce3ed;borde
 </div>
 <!-- STEP 3: AMBIENTES -->
     <div id="wstep-3" style="display:none">
-      <div class="wstep-title">Selecionar ambientes</div>
-      <div class="wstep-sub">Escolha os cômodos que serão vistoriados.</div>
-      <div class="form-card">
-        <div class="card-header">
-          <div class="card-icon">&#127969;</div>
-          <div>
-            <div class="card-title">Selecione os ambientes</div>
-            <div class="card-sub">Defina a quantidade de cada c&#244;modo do im&#243;vel</div>
-          </div>
-        </div>
+<div class="wiz-section-title">Ambientes para vistoriar</div>
+<div class="wiz-section-sub">Ajuste as quantidades. A ordem segue o caminho natural pelo im&#243;vel.</div>
 
-        <div id="amb-res">
-          <div class="amb-section-label">Dorm&#46; e banheiros</div>
-          <div class="counter-row active" id="row-dormitorio">
-            <div class="counter-left"><span class="counter-icon">&#128716;</span>
-              <div><div class="counter-name">Dorm&#46; / Quarto</div><div class="counter-desc">Dorm&#46; / dormit&#243;rio</div></div>
-            </div>
-            <div class="counter-ctrl">
-              <button class="counter-btn" onclick="decAmb('dormitorio')">&#8722;</button>
-              <span class="counter-val" id="val-dormitorio">1</span>
-              <button class="counter-btn" onclick="incAmb('dormitorio')">+</button>
-            </div>
-          </div>
-          <div class="counter-row active" id="row-banheiro">
-            <div class="counter-left"><span class="counter-icon">&#128703;</span>
-              <div><div class="counter-name">Banheiro</div><div class="counter-desc">Banheiros sociais</div></div>
-            </div>
-            <div class="counter-ctrl">
-              <button class="counter-btn" onclick="decAmb('banheiro')">&#8722;</button>
-              <span class="counter-val" id="val-banheiro">1</span>
-              <button class="counter-btn" onclick="incAmb('banheiro')">+</button>
-            </div>
-          </div>
-          <div class="amb-section-label">&#193;reas sociais</div>
-          <div class="counter-row active" id="row-sala">
-            <div class="counter-left"><span class="counter-icon">&#128715;</span>
-              <div><div class="counter-name">Sala</div><div class="counter-desc">Sala de estar / living</div></div>
-            </div>
-            <div class="counter-ctrl">
-              <button class="counter-btn" onclick="decAmb('sala')">&#8722;</button>
-              <span class="counter-val" id="val-sala">1</span>
-              <button class="counter-btn" onclick="incAmb('sala')">+</button>
-            </div>
-          </div>
-          <div class="counter-row active" id="row-cozinha">
-            <div class="counter-left"><span class="counter-icon">&#127859;</span>
-              <div><div class="counter-name">Cozinha</div><div class="counter-desc">Cozinha / copa</div></div>
-            </div>
-            <div class="counter-ctrl">
-              <button class="counter-btn" onclick="decAmb('cozinha')">&#8722;</button>
-              <span class="counter-val" id="val-cozinha">1</span>
-              <button class="counter-btn" onclick="incAmb('cozinha')">+</button>
-            </div>
-          </div>
-          <div class="amb-section-label">Servi&#231;o e extras</div>
-          <div class="counter-row" id="row-lavanderia">
-            <div class="counter-left"><span class="counter-icon">&#128085;</span>
-              <div><div class="counter-name">Lavanderia</div><div class="counter-desc">&#193;rea de servi&#231;o</div></div>
-            </div>
-            <div class="counter-ctrl">
-              <button class="counter-btn" onclick="decAmb('lavanderia')">&#8722;</button>
-              <span class="counter-val" id="val-lavanderia">0</span>
-              <button class="counter-btn" onclick="incAmb('lavanderia')">+</button>
-            </div>
-          </div>
-          <div class="counter-row" id="row-garagem">
-            <div class="counter-left"><span class="counter-icon">&#128663;</span>
-              <div><div class="counter-name">Garagem</div><div class="counter-desc">Vagas de garagem</div></div>
-            </div>
-            <div class="counter-ctrl">
-              <button class="counter-btn" onclick="decAmb('garagem')">&#8722;</button>
-              <span class="counter-val" id="val-garagem">0</span>
-              <button class="counter-btn" onclick="incAmb('garagem')">+</button>
-            </div>
-          </div>
-          <div class="counter-row" id="row-varanda">
-            <div class="counter-left"><span class="counter-icon">&#127807;</span>
-              <div><div class="counter-name">Varanda / Sacada</div><div class="counter-desc">&#193;rea externa coberta</div></div>
-            </div>
-            <div class="counter-ctrl">
-              <button class="counter-btn" onclick="decAmb('varanda')">&#8722;</button>
-              <span class="counter-val" id="val-varanda">0</span>
-              <button class="counter-btn" onclick="incAmb('varanda')">+</button>
-            </div>
-          </div>
-        </div>
+<!-- BADGE TIPO IMOVEL -->
+<div id="amb-tipo-badge" style="display:inline-flex;align-items:center;gap:6px;background:#eef4ff;border:0.5px solid #bfdbfe;border-radius:20px;padding:5px 14px;font-size:12px;font-weight:600;color:#2d7dd2;margin-bottom:14px">
+  &#127968; Im&#243;vel selecionado
+</div>
 
-        <div id="amb-com" style="display:none;">
-          <div class="amb-section-label">Escritórios e atendimento</div>
-          <div class="counter-row active" id="row-salas">
-            <div class="counter-left"><span class="counter-icon">&#128188;</span>
-              <div><div class="counter-name">Salas</div><div class="counter-desc">Salas comerciais</div></div>
-            </div>
-            <div class="counter-ctrl">
-              <button class="counter-btn" onclick="decAmb('salas')">&#8722;</button>
-              <span class="counter-val" id="val-salas">1</span>
-              <button class="counter-btn" onclick="incAmb('salas')">+</button>
-            </div>
-          </div>
-          <div class="counter-row active" id="row-banheiros">
-            <div class="counter-left"><span class="counter-icon">&#128703;</span>
-              <div><div class="counter-name">Banheiros</div><div class="counter-desc">Banheiros sociais</div></div>
-            </div>
-            <div class="counter-ctrl">
-              <button class="counter-btn" onclick="decAmb('banheiros')">&#8722;</button>
-              <span class="counter-val" id="val-banheiros">1</span>
-              <button class="counter-btn" onclick="incAmb('banheiros')">+</button>
-            </div>
-          </div>
-          <div class="amb-section-label">&#193;reas de apoio</div>
-          <div class="counter-row" id="row-recepcao">
-            <div class="counter-left"><span class="counter-icon">&#128194;</span>
-              <div><div class="counter-name">Recep&#231;&#227;o</div><div class="counter-desc">&#193;rea de recep&#231;&#227;o</div></div>
-            </div>
-            <div class="counter-ctrl">
-              <button class="counter-btn" onclick="decAmb('recepcao')">&#8722;</button>
-              <span class="counter-val" id="val-recepcao">0</span>
-              <button class="counter-btn" onclick="incAmb('recepcao')">+</button>
-            </div>
-          </div>
-          <div class="counter-row" id="row-copa">
-            <div class="counter-left"><span class="counter-icon">&#127859;</span>
-              <div><div class="counter-name">Copa / Cozinha</div><div class="counter-desc">Copa para funcion&#225;rios</div></div>
-            </div>
-            <div class="counter-ctrl">
-              <button class="counter-btn" onclick="decAmb('copa')">&#8722;</button>
-              <span class="counter-val" id="val-copa">0</span>
-              <button class="counter-btn" onclick="incAmb('copa')">+</button>
-            </div>
-          </div>
-          <div class="counter-row" id="row-deposito">
-            <div class="counter-left"><span class="counter-icon">&#128230;</span>
-              <div><div class="counter-name">Dep&#243;sito</div><div class="counter-desc">&#193;rea de armazenamento</div></div>
-            </div>
-            <div class="counter-ctrl">
-              <button class="counter-btn" onclick="decAmb('deposito')">&#8722;</button>
-              <span class="counter-val" id="val-deposito">0</span>
-              <button class="counter-btn" onclick="incAmb('deposito')">+</button>
-            </div>
-          </div>
-          <div class="counter-row" id="row-estac">
-            <div class="counter-left"><span class="counter-icon">&#128663;</span>
-              <div><div class="counter-name">Estacionamento</div><div class="counter-desc">Vagas cobertas</div></div>
-            </div>
-            <div class="counter-ctrl">
-              <button class="counter-btn" onclick="decAmb('estac')">&#8722;</button>
-              <span class="counter-val" id="val-estac">0</span>
-              <button class="counter-btn" onclick="incAmb('estac')">+</button>
-            </div>
-          </div>
-          <div class="counter-row" id="row-areatec">
-            <div class="counter-left"><span class="counter-icon">&#128295;</span>
-              <div><div class="counter-name">&#193;rea t&#233;cnica</div><div class="counter-desc">Casa de m&#225;quinas etc&#46;</div></div>
-            </div>
-            <div class="counter-ctrl">
-              <button class="counter-btn" onclick="decAmb('areatec')">&#8722;</button>
-              <span class="counter-val" id="val-areatec">0</span>
-              <button class="counter-btn" onclick="incAmb('areatec')">+</button>
-            </div>
-          </div>
-        </div>
+<!-- DICA GUIADA -->
+<div style="background:linear-gradient(135deg,#0f2a4a,#1565c0);border-radius:10px;padding:12px 16px;margin-bottom:20px;display:flex;align-items:center;gap:10px;font-size:12px;color:rgba(255,255,255,0.85)">
+  <span style="font-size:18px;flex-shrink:0">&#128694;</span>
+  <span>A vistoria seguir&#225; a ordem natural de caminhada pelo im&#243;vel &#8212; da entrada at&#233; os quartos. Ajuste as quantidades conforme o im&#243;vel.</span>
+</div>
 
-        <div class="amb-divider"></div>
-        <div class="amb-section-label">Ambiente personalizado</div>
-        <div class="amb-custom-row">
-          <input type="text" id="amb-custom-input" placeholder="Ex: Churrasqueira, Piscina, Hall de entrada..." />
-          <button onclick="addAmbCustom()">+ Adicionar</button>
-        </div>
-        <div id="amb-custom-list"></div>
-        <div class="amb-divider"></div>
-        <div class="resumo-box">
-          <div class="resumo-title">Resumo da seleção</div>
-          <div class="resumo-tags" id="amb-resumo"></div>
-        </div>
-      </div>
-      <div class="wiz-nav">
-        <button class="btn-wiz-back-sm" onclick="prevWizStep ? prevWizStep() : null">Voltar</button>
-        <button class="btn-wiz-next" onclick="advanceFromAmbientes()">Continuar <svg viewBox="0 0 20 20" fill="currentColor" width="16" height="16"><path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z"/></svg></button>
-      </div>
+<!-- SEÇÃO 1: EXTERIOR -->
+<div style="font-size:11px;font-weight:700;color:#8898aa;text-transform:uppercase;letter-spacing:0.5px;margin:0 0 8px;display:flex;align-items:center;gap:8px">
+  <div style="width:20px;height:20px;border-radius:50%;background:#2d7dd2;color:#fff;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0">1</div>
+  Exterior
+</div>
+<div style="background:#fff;border-radius:12px;border:0.5px solid #e2e8f0;padding:4px 0;margin-bottom:12px" id="secao-exterior">
+  <div class="counter-row" id="row-fachada" style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:0.5px solid #f5f7fa;gap:12px">
+    <div style="display:flex;align-items:center;gap:10px;flex:1">
+      <div style="width:36px;height:36px;border-radius:8px;background:#eef4ff;display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="22" height="22" viewBox="0 0 56 44" fill="none"><polygon points="28,4 54,22 2,22" fill="#2d7dd2"/><rect x="6" y="22" width="44" height="18" rx="1" fill="#dbeafe" stroke="#2d7dd2" stroke-width="1.5"/><rect x="22" y="28" width="12" height="12" rx="1" fill="#2d7dd2"/></svg></div>
+      <div><div style="font-size:13px;font-weight:600;color:#1a2540">Fachada / &#193;rea externa</div><div style="font-size:11px;color:#8898aa;margin-top:1px">Frente e &#225;rea externa do im&#243;vel</div></div>
     </div>
+    <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
+      <button onclick="decAmb('fachada')" style="width:28px;height:28px;border-radius:50%;border:0.5px solid #e2e8f0;background:#f8fafc;font-size:16px;cursor:pointer;color:#4a5568;display:flex;align-items:center;justify-content:center">&#8722;</button>
+      <span id="val-fachada" style="font-size:15px;font-weight:700;color:#2d7dd2;min-width:20px;text-align:center">1</span>
+      <button onclick="incAmb('fachada')" style="width:28px;height:28px;border-radius:50%;border:0.5px solid #e2e8f0;background:#f8fafc;font-size:16px;cursor:pointer;color:#4a5568;display:flex;align-items:center;justify-content:center">+</button>
+    </div>
+  </div>
+  <div class="counter-row" id="row-garagem" style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:0.5px solid #f5f7fa;gap:12px">
+    <div style="display:flex;align-items:center;gap:10px;flex:1">
+      <div style="width:36px;height:36px;border-radius:8px;background:#eef4ff;display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="22" height="22" viewBox="0 0 56 44" fill="none"><rect x="2" y="32" width="52" height="8" rx="1" fill="#e2e8f0" stroke="#2d7dd2" stroke-width="1"/><rect x="8" y="16" width="40" height="16" rx="1" fill="#dbeafe" stroke="#2d7dd2" stroke-width="1.5"/><circle cx="18" cy="24" r="4" fill="#2d7dd2"/><circle cx="38" cy="24" r="4" fill="#2d7dd2"/></svg></div>
+      <div><div style="font-size:13px;font-weight:600;color:#1a2540">Garagem / Vaga</div><div style="font-size:11px;color:#8898aa;margin-top:1px">Vagas cobertas ou descobertas</div></div>
+    </div>
+    <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
+      <button onclick="decAmb('garagem')" style="width:28px;height:28px;border-radius:50%;border:0.5px solid #e2e8f0;background:#f8fafc;font-size:16px;cursor:pointer;color:#4a5568;display:flex;align-items:center;justify-content:center">&#8722;</button>
+      <span id="val-garagem" style="font-size:15px;font-weight:700;color:#8898aa;min-width:20px;text-align:center">0</span>
+      <button onclick="incAmb('garagem')" style="width:28px;height:28px;border-radius:50%;border:0.5px solid #e2e8f0;background:#f8fafc;font-size:16px;cursor:pointer;color:#4a5568;display:flex;align-items:center;justify-content:center">+</button>
+    </div>
+  </div>
+  <div class="counter-row" id="row-lazer" style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:0.5px solid #f5f7fa;gap:12px">
+    <div style="display:flex;align-items:center;gap:10px;flex:1">
+      <div style="width:36px;height:36px;border-radius:8px;background:#eef4ff;display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="22" height="22" viewBox="0 0 56 44" fill="none"><rect x="2" y="28" width="52" height="12" rx="1" fill="#86efac"/><ellipse cx="28" cy="28" rx="20" ry="6" fill="#dbeafe" stroke="#2d7dd2" stroke-width="1.5"/><line x1="28" y1="4" x2="28" y2="22" stroke="#2d7dd2" stroke-width="2" stroke-linecap="round"/></svg></div>
+      <div><div style="font-size:13px;font-weight:600;color:#1a2540">&#193;rea de lazer / Quintal</div><div style="font-size:11px;color:#8898aa;margin-top:1px">Piscina, churrasqueira, jardim</div></div>
+    </div>
+    <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
+      <button onclick="decAmb('lazer')" style="width:28px;height:28px;border-radius:50%;border:0.5px solid #e2e8f0;background:#f8fafc;font-size:16px;cursor:pointer;color:#4a5568;display:flex;align-items:center;justify-content:center">&#8722;</button>
+      <span id="val-lazer" style="font-size:15px;font-weight:700;color:#8898aa;min-width:20px;text-align:center">0</span>
+      <button onclick="incAmb('lazer')" style="width:28px;height:28px;border-radius:50%;border:0.5px solid #e2e8f0;background:#f8fafc;font-size:16px;cursor:pointer;color:#4a5568;display:flex;align-items:center;justify-content:center">+</button>
+    </div>
+  </div>
+  <div id="custom-exterior" style="padding:4px 0"></div>
+  <div style="padding:10px 16px">
+    <button onclick="adicionarOutro('exterior','secao-exterior','custom-exterior')" style="display:flex;align-items:center;gap:6px;padding:8px 14px;border-radius:8px;border:1.5px dashed #2d7dd2;background:#f0f7ff;color:#2d7dd2;font-size:12px;font-weight:500;cursor:pointer;width:100%">+ Outro ambiente externo</button>
+  </div>
+</div>
 
-    <!-- STEP 4: VISTORIA (fotos por ambiente) -->
+<!-- SEÇÃO 2: ENTRADA E CIRCULAÇÃO -->
+<div style="font-size:11px;font-weight:700;color:#8898aa;text-transform:uppercase;letter-spacing:0.5px;margin:0 0 8px;display:flex;align-items:center;gap:8px">
+  <div style="width:20px;height:20px;border-radius:50%;background:#2d7dd2;color:#fff;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0">2</div>
+  Entrada e circula&#231;&#227;o
+</div>
+<div style="background:#fff;border-radius:12px;border:0.5px solid #e2e8f0;padding:4px 0;margin-bottom:12px" id="secao-entrada">
+  <div class="counter-row" id="row-hall" style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:0.5px solid #f5f7fa;gap:12px">
+    <div style="display:flex;align-items:center;gap:10px;flex:1">
+      <div style="width:36px;height:36px;border-radius:8px;background:#eef4ff;display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="22" height="22" viewBox="0 0 56 44" fill="none"><rect x="4" y="4" width="48" height="36" rx="2" fill="#dbeafe" stroke="#2d7dd2" stroke-width="1.5"/><rect x="4" y="4" width="48" height="8" rx="2" fill="#2d7dd2"/><rect x="10" y="18" width="8" height="14" rx="1" fill="#fff" stroke="#93c5fd" stroke-width="1"/><rect x="24" y="18" width="8" height="14" rx="1" fill="#fff" stroke="#93c5fd" stroke-width="1"/><rect x="38" y="18" width="8" height="14" rx="1" fill="#fff" stroke="#93c5fd" stroke-width="1"/></svg></div>
+      <div><div style="font-size:13px;font-weight:600;color:#1a2540">Hall / Corredor / Entrada</div><div style="font-size:11px;color:#8898aa;margin-top:1px">&#193;rea de circula&#231;&#227;o interna</div></div>
+    </div>
+    <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
+      <button onclick="decAmb('hall')" style="width:28px;height:28px;border-radius:50%;border:0.5px solid #e2e8f0;background:#f8fafc;font-size:16px;cursor:pointer;color:#4a5568;display:flex;align-items:center;justify-content:center">&#8722;</button>
+      <span id="val-hall" style="font-size:15px;font-weight:700;color:#8898aa;min-width:20px;text-align:center">0</span>
+      <button onclick="incAmb('hall')" style="width:28px;height:28px;border-radius:50%;border:0.5px solid #e2e8f0;background:#f8fafc;font-size:16px;cursor:pointer;color:#4a5568;display:flex;align-items:center;justify-content:center">+</button>
+    </div>
+  </div>
+  <div class="counter-row" id="row-varanda" style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:0.5px solid #f5f7fa;gap:12px">
+    <div style="display:flex;align-items:center;gap:10px;flex:1">
+      <div style="width:36px;height:36px;border-radius:8px;background:#eef4ff;display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="22" height="22" viewBox="0 0 56 44" fill="none"><rect x="4" y="20" width="48" height="20" rx="1" fill="#dbeafe" stroke="#2d7dd2" stroke-width="1.5"/><path d="M4 20 Q28 6 52 20" fill="#2d7dd2" stroke="#2d7dd2" stroke-width="1"/><rect x="10" y="24" width="12" height="10" rx="1" fill="#fff" stroke="#93c5fd" stroke-width="1"/></svg></div>
+      <div><div style="font-size:13px;font-weight:600;color:#1a2540">Varanda / Sacada</div><div style="font-size:11px;color:#8898aa;margin-top:1px">&#193;rea externa coberta</div></div>
+    </div>
+    <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
+      <button onclick="decAmb('varanda')" style="width:28px;height:28px;border-radius:50%;border:0.5px solid #e2e8f0;background:#f8fafc;font-size:16px;cursor:pointer;color:#4a5568;display:flex;align-items:center;justify-content:center">&#8722;</button>
+      <span id="val-varanda" style="font-size:15px;font-weight:700;color:#8898aa;min-width:20px;text-align:center">0</span>
+      <button onclick="incAmb('varanda')" style="width:28px;height:28px;border-radius:50%;border:0.5px solid #e2e8f0;background:#f8fafc;font-size:16px;cursor:pointer;color:#4a5568;display:flex;align-items:center;justify-content:center">+</button>
+    </div>
+  </div>
+  <div id="custom-entrada" style="padding:4px 0"></div>
+  <div style="padding:10px 16px">
+    <button onclick="adicionarOutro('entrada','secao-entrada','custom-entrada')" style="display:flex;align-items:center;gap:6px;padding:8px 14px;border-radius:8px;border:1.5px dashed #2d7dd2;background:#f0f7ff;color:#2d7dd2;font-size:12px;font-weight:500;cursor:pointer;width:100%">+ Outro ambiente de entrada</button>
+  </div>
+</div>
+
+<!-- SEÇÃO 3: ÁREAS SOCIAIS -->
+<div style="font-size:11px;font-weight:700;color:#8898aa;text-transform:uppercase;letter-spacing:0.5px;margin:0 0 8px;display:flex;align-items:center;gap:8px">
+  <div style="width:20px;height:20px;border-radius:50%;background:#2d7dd2;color:#fff;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0">3</div>
+  &#193;reas sociais
+</div>
+<div style="background:#fff;border-radius:12px;border:0.5px solid #e2e8f0;padding:4px 0;margin-bottom:12px" id="secao-social">
+  <div class="counter-row" id="row-sala" style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:0.5px solid #f5f7fa;gap:12px">
+    <div style="display:flex;align-items:center;gap:10px;flex:1">
+      <div style="width:36px;height:36px;border-radius:8px;background:#eef4ff;display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="22" height="22" viewBox="0 0 56 44" fill="none"><rect x="4" y="8" width="48" height="32" rx="2" fill="#dbeafe" stroke="#2d7dd2" stroke-width="1.5"/><rect x="10" y="20" width="36" height="12" rx="1" fill="#fff" stroke="#2d7dd2" stroke-width="1"/><rect x="12" y="14" width="6" height="6" rx="1" fill="#93c5fd" stroke="#2d7dd2" stroke-width="0.8"/><rect x="22" y="14" width="6" height="6" rx="1" fill="#93c5fd" stroke="#2d7dd2" stroke-width="0.8"/></svg></div>
+      <div><div style="font-size:13px;font-weight:600;color:#1a2540">Sala de estar / Living</div><div style="font-size:11px;color:#8898aa;margin-top:1px">Sala principal</div></div>
+    </div>
+    <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
+      <button onclick="decAmb('sala')" style="width:28px;height:28px;border-radius:50%;border:0.5px solid #e2e8f0;background:#f8fafc;font-size:16px;cursor:pointer;color:#4a5568;display:flex;align-items:center;justify-content:center">&#8722;</button>
+      <span id="val-sala" style="font-size:15px;font-weight:700;color:#2d7dd2;min-width:20px;text-align:center">1</span>
+      <button onclick="incAmb('sala')" style="width:28px;height:28px;border-radius:50%;border:0.5px solid #e2e8f0;background:#f8fafc;font-size:16px;cursor:pointer;color:#4a5568;display:flex;align-items:center;justify-content:center">+</button>
+    </div>
+  </div>
+  <div class="counter-row" id="row-salajantar" style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:0.5px solid #f5f7fa;gap:12px">
+    <div style="display:flex;align-items:center;gap:10px;flex:1">
+      <div style="width:36px;height:36px;border-radius:8px;background:#eef4ff;display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="22" height="22" viewBox="0 0 56 44" fill="none"><rect x="4" y="8" width="48" height="32" rx="2" fill="#dbeafe" stroke="#2d7dd2" stroke-width="1.5"/><rect x="10" y="20" width="36" height="12" rx="1" fill="#fff" stroke="#2d7dd2" stroke-width="1"/><line x1="28" y1="8" x2="28" y2="40" stroke="#e2e8f0" stroke-width="1"/></svg></div>
+      <div><div style="font-size:13px;font-weight:600;color:#1a2540">Sala de jantar</div><div style="font-size:11px;color:#8898aa;margin-top:1px">Ambiente de refei&#231;&#245;es</div></div>
+    </div>
+    <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
+      <button onclick="decAmb('salajantar')" style="width:28px;height:28px;border-radius:50%;border:0.5px solid #e2e8f0;background:#f8fafc;font-size:16px;cursor:pointer;color:#4a5568;display:flex;align-items:center;justify-content:center">&#8722;</button>
+      <span id="val-salajantar" style="font-size:15px;font-weight:700;color:#8898aa;min-width:20px;text-align:center">0</span>
+      <button onclick="incAmb('salajantar')" style="width:28px;height:28px;border-radius:50%;border:0.5px solid #e2e8f0;background:#f8fafc;font-size:16px;cursor:pointer;color:#4a5568;display:flex;align-items:center;justify-content:center">+</button>
+    </div>
+  </div>
+  <div id="custom-social" style="padding:4px 0"></div>
+  <div style="padding:10px 16px">
+    <button onclick="adicionarOutro('social','secao-social','custom-social')" style="display:flex;align-items:center;gap:6px;padding:8px 14px;border-radius:8px;border:1.5px dashed #2d7dd2;background:#f0f7ff;color:#2d7dd2;font-size:12px;font-weight:500;cursor:pointer;width:100%">+ Outro ambiente social</button>
+  </div>
+</div>
+
+<!-- SEÇÃO 4: COZINHA E SERVIÇO -->
+<div style="font-size:11px;font-weight:700;color:#8898aa;text-transform:uppercase;letter-spacing:0.5px;margin:0 0 8px;display:flex;align-items:center;gap:8px">
+  <div style="width:20px;height:20px;border-radius:50%;background:#2d7dd2;color:#fff;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0">4</div>
+  Cozinha e servi&#231;o
+</div>
+<div style="background:#fff;border-radius:12px;border:0.5px solid #e2e8f0;padding:4px 0;margin-bottom:12px" id="secao-cozinha">
+  <div class="counter-row" id="row-cozinha" style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:0.5px solid #f5f7fa;gap:12px">
+    <div style="display:flex;align-items:center;gap:10px;flex:1">
+      <div style="width:36px;height:36px;border-radius:8px;background:#eef4ff;display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="22" height="22" viewBox="0 0 56 44" fill="none"><rect x="4" y="8" width="48" height="32" rx="2" fill="#dbeafe" stroke="#2d7dd2" stroke-width="1.5"/><rect x="8" y="16" width="18" height="12" rx="1" fill="#fff" stroke="#2d7dd2" stroke-width="1"/><circle cx="14" cy="20" r="2" fill="#2d7dd2"/><circle cx="20" cy="20" r="2" fill="#93c5fd"/><rect x="30" y="12" width="18" height="10" rx="1" fill="#93c5fd" stroke="#2d7dd2" stroke-width="1"/></svg></div>
+      <div><div style="font-size:13px;font-weight:600;color:#1a2540">Cozinha / Copa</div><div style="font-size:11px;color:#8898aa;margin-top:1px">&#193;rea de preparo de alimentos</div></div>
+    </div>
+    <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
+      <button onclick="decAmb('cozinha')" style="width:28px;height:28px;border-radius:50%;border:0.5px solid #e2e8f0;background:#f8fafc;font-size:16px;cursor:pointer;color:#4a5568;display:flex;align-items:center;justify-content:center">&#8722;</button>
+      <span id="val-cozinha" style="font-size:15px;font-weight:700;color:#2d7dd2;min-width:20px;text-align:center">1</span>
+      <button onclick="incAmb('cozinha')" style="width:28px;height:28px;border-radius:50%;border:0.5px solid #e2e8f0;background:#f8fafc;font-size:16px;cursor:pointer;color:#4a5568;display:flex;align-items:center;justify-content:center">+</button>
+    </div>
+  </div>
+  <div class="counter-row" id="row-lavanderia" style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:0.5px solid #f5f7fa;gap:12px">
+    <div style="display:flex;align-items:center;gap:10px;flex:1">
+      <div style="width:36px;height:36px;border-radius:8px;background:#eef4ff;display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="22" height="22" viewBox="0 0 56 44" fill="none"><rect x="4" y="8" width="48" height="32" rx="2" fill="#dbeafe" stroke="#2d7dd2" stroke-width="1.5"/><circle cx="20" cy="22" r="8" fill="#fff" stroke="#2d7dd2" stroke-width="1.5"/><circle cx="20" cy="22" r="4" fill="#dbeafe" stroke="#2d7dd2" stroke-width="1"/><rect x="30" y="16" width="14" height="18" rx="2" fill="#93c5fd" stroke="#2d7dd2" stroke-width="1"/></svg></div>
+      <div><div style="font-size:13px;font-weight:600;color:#1a2540">Lavanderia / &#193;rea de servi&#231;o</div><div style="font-size:11px;color:#8898aa;margin-top:1px">&#193;rea para lavagem de roupas</div></div>
+    </div>
+    <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
+      <button onclick="decAmb('lavanderia')" style="width:28px;height:28px;border-radius:50%;border:0.5px solid #e2e8f0;background:#f8fafc;font-size:16px;cursor:pointer;color:#4a5568;display:flex;align-items:center;justify-content:center">&#8722;</button>
+      <span id="val-lavanderia" style="font-size:15px;font-weight:700;color:#8898aa;min-width:20px;text-align:center">0</span>
+      <button onclick="incAmb('lavanderia')" style="width:28px;height:28px;border-radius:50%;border:0.5px solid #e2e8f0;background:#f8fafc;font-size:16px;cursor:pointer;color:#4a5568;display:flex;align-items:center;justify-content:center">+</button>
+    </div>
+  </div>
+  <div id="custom-cozinha" style="padding:4px 0"></div>
+  <div style="padding:10px 16px">
+    <button onclick="adicionarOutro('cozinha','secao-cozinha','custom-cozinha')" style="display:flex;align-items:center;gap:6px;padding:8px 14px;border-radius:8px;border:1.5px dashed #2d7dd2;background:#f0f7ff;color:#2d7dd2;font-size:12px;font-weight:500;cursor:pointer;width:100%">+ Outro ambiente de servi&#231;o</button>
+  </div>
+</div>
+
+<!-- SEÇÃO 5: DORMITÓRIOS E BANHEIROS -->
+<div style="font-size:11px;font-weight:700;color:#8898aa;text-transform:uppercase;letter-spacing:0.5px;margin:0 0 8px;display:flex;align-items:center;gap:8px">
+  <div style="width:20px;height:20px;border-radius:50%;background:#2d7dd2;color:#fff;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0">5</div>
+  Dormit&#243;rios e banheiros
+</div>
+<div style="background:#fff;border-radius:12px;border:0.5px solid #e2e8f0;padding:4px 0;margin-bottom:12px" id="secao-dormitorios">
+  <div class="counter-row" id="row-dormitorio" style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:0.5px solid #f5f7fa;gap:12px">
+    <div style="display:flex;align-items:center;gap:10px;flex:1">
+      <div style="width:36px;height:36px;border-radius:8px;background:#eef4ff;display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="22" height="22" viewBox="0 0 56 44" fill="none"><rect x="4" y="26" width="48" height="12" rx="2" fill="#dbeafe" stroke="#2d7dd2" stroke-width="1.5"/><rect x="4" y="18" width="8" height="20" rx="2" fill="#2d7dd2"/><rect x="14" y="22" width="10" height="6" rx="2" fill="#fff" stroke="#93c5fd" stroke-width="1"/><rect x="14" y="28" width="36" height="8" rx="2" fill="#93c5fd" stroke="#2d7dd2" stroke-width="1"/></svg></div>
+      <div><div style="font-size:13px;font-weight:600;color:#1a2540">Dormit&#243;rio / Quarto</div><div style="font-size:11px;color:#8898aa;margin-top:1px">Quartos simples</div></div>
+    </div>
+    <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
+      <button onclick="decAmb('dormitorio')" style="width:28px;height:28px;border-radius:50%;border:0.5px solid #e2e8f0;background:#f8fafc;font-size:16px;cursor:pointer;color:#4a5568;display:flex;align-items:center;justify-content:center">&#8722;</button>
+      <span id="val-dormitorio" style="font-size:15px;font-weight:700;color:#2d7dd2;min-width:20px;text-align:center">1</span>
+      <button onclick="incAmb('dormitorio')" style="width:28px;height:28px;border-radius:50%;border:0.5px solid #e2e8f0;background:#f8fafc;font-size:16px;cursor:pointer;color:#4a5568;display:flex;align-items:center;justify-content:center">+</button>
+    </div>
+  </div>
+  <div class="counter-row" id="row-suite" style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:0.5px solid #f5f7fa;gap:12px">
+    <div style="display:flex;align-items:center;gap:10px;flex:1">
+      <div style="width:36px;height:36px;border-radius:8px;background:#eef4ff;display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="22" height="22" viewBox="0 0 56 44" fill="none"><rect x="8" y="4" width="40" height="36" rx="2" fill="#dbeafe" stroke="#2d7dd2" stroke-width="1.5"/><rect x="14" y="10" width="10" height="8" rx="1" fill="#93c5fd" stroke="#2d7dd2" stroke-width="1"/><circle cx="24" cy="24" r="6" fill="#dbeafe" stroke="#2d7dd2" stroke-width="1.5"/><rect x="22" y="30" width="4" height="8" rx="1" fill="#2d7dd2"/><circle cx="38" cy="14" r="4" fill="#2d7dd2"/></svg></div>
+      <div><div style="font-size:13px;font-weight:600;color:#1a2540">Su&#237;te</div><div style="font-size:11px;color:#8898aa;margin-top:1px">Dormit&#243;rio com banheiro privativo</div></div>
+    </div>
+    <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
+      <button onclick="decAmb('suite')" style="width:28px;height:28px;border-radius:50%;border:0.5px solid #e2e8f0;background:#f8fafc;font-size:16px;cursor:pointer;color:#4a5568;display:flex;align-items:center;justify-content:center">&#8722;</button>
+      <span id="val-suite" style="font-size:15px;font-weight:700;color:#8898aa;min-width:20px;text-align:center">0</span>
+      <button onclick="incAmb('suite')" style="width:28px;height:28px;border-radius:50%;border:0.5px solid #e2e8f0;background:#f8fafc;font-size:16px;cursor:pointer;color:#4a5568;display:flex;align-items:center;justify-content:center">+</button>
+    </div>
+  </div>
+  <div class="counter-row" id="row-banheiro" style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:0.5px solid #f5f7fa;gap:12px">
+    <div style="display:flex;align-items:center;gap:10px;flex:1">
+      <div style="width:36px;height:36px;border-radius:8px;background:#eef4ff;display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="22" height="22" viewBox="0 0 56 44" fill="none"><rect x="8" y="4" width="40" height="36" rx="2" fill="#dbeafe" stroke="#2d7dd2" stroke-width="1.5"/><rect x="14" y="10" width="10" height="8" rx="1" fill="#93c5fd" stroke="#2d7dd2" stroke-width="1"/><circle cx="24" cy="24" r="6" fill="#dbeafe" stroke="#2d7dd2" stroke-width="1.5"/><rect x="22" y="30" width="4" height="8" rx="1" fill="#2d7dd2"/></svg></div>
+      <div><div style="font-size:13px;font-weight:600;color:#1a2540">Banheiro social</div><div style="font-size:11px;color:#8898aa;margin-top:1px">Banheiros de uso comum</div></div>
+    </div>
+    <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
+      <button onclick="decAmb('banheiro')" style="width:28px;height:28px;border-radius:50%;border:0.5px solid #e2e8f0;background:#f8fafc;font-size:16px;cursor:pointer;color:#4a5568;display:flex;align-items:center;justify-content:center">&#8722;</button>
+      <span id="val-banheiro" style="font-size:15px;font-weight:700;color:#2d7dd2;min-width:20px;text-align:center">1</span>
+      <button onclick="incAmb('banheiro')" style="width:28px;height:28px;border-radius:50%;border:0.5px solid #e2e8f0;background:#f8fafc;font-size:16px;cursor:pointer;color:#4a5568;display:flex;align-items:center;justify-content:center">+</button>
+    </div>
+  </div>
+  <div class="counter-row" id="row-escritorio" style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:0.5px solid #f5f7fa;gap:12px">
+    <div style="display:flex;align-items:center;gap:10px;flex:1">
+      <div style="width:36px;height:36px;border-radius:8px;background:#eef4ff;display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="22" height="22" viewBox="0 0 56 44" fill="none"><rect x="4" y="8" width="48" height="28" rx="2" fill="#dbeafe" stroke="#2d7dd2" stroke-width="1.5"/><rect x="10" y="14" width="36" height="16" rx="1" fill="#93c5fd" stroke="#2d7dd2" stroke-width="1"/><rect x="14" y="36" width="28" height="4" rx="1" fill="#2d7dd2"/></svg></div>
+      <div><div style="font-size:13px;font-weight:600;color:#1a2540">Escrit&#243;rio / Home office</div><div style="font-size:11px;color:#8898aa;margin-top:1px">Ambiente de trabalho</div></div>
+    </div>
+    <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
+      <button onclick="decAmb('escritorio')" style="width:28px;height:28px;border-radius:50%;border:0.5px solid #e2e8f0;background:#f8fafc;font-size:16px;cursor:pointer;color:#4a5568;display:flex;align-items:center;justify-content:center">&#8722;</button>
+      <span id="val-escritorio" style="font-size:15px;font-weight:700;color:#8898aa;min-width:20px;text-align:center">0</span>
+      <button onclick="incAmb('escritorio')" style="width:28px;height:28px;border-radius:50%;border:0.5px solid #e2e8f0;background:#f8fafc;font-size:16px;cursor:pointer;color:#4a5568;display:flex;align-items:center;justify-content:center">+</button>
+    </div>
+  </div>
+  <div id="custom-dormitorios" style="padding:4px 0"></div>
+  <div style="padding:10px 16px">
+    <button onclick="adicionarOutro('dormitorios','secao-dormitorios','custom-dormitorios')" style="display:flex;align-items:center;gap:6px;padding:8px 14px;border-radius:8px;border:1.5px dashed #2d7dd2;background:#f0f7ff;color:#2d7dd2;font-size:12px;font-weight:500;cursor:pointer;width:100%">+ Outro dormit&#243;rio ou banheiro</button>
+  </div>
+</div>
+
+<!-- RESUMO CAMINHADA -->
+<div style="background:#eef4ff;border-radius:10px;border:0.5px solid #bfdbfe;padding:14px 16px;margin-bottom:14px">
+  <div style="font-size:11px;font-weight:700;color:#2d7dd2;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px">&#128694; Ordem de caminhada &#8212; Etapa 6</div>
+  <div id="amb-resumo" style="display:flex;flex-wrap:wrap;gap:6px"></div>
+</div>
+
+<!-- PERSONALIZADO GERAL -->
+<div id="amb-custom-list"></div>
+
+<!-- NAVEGAÇÃO -->
+<div style="display:flex;justify-content:space-between;align-items:center;padding:16px 20px;background:#fff;border-radius:10px;border:0.5px solid #e2e8f0;box-shadow:0 2px 8px rgba(0,0,0,0.04);margin-bottom:20px">
+  <button onclick="prevWizStep ? prevWizStep() : null" style="padding:10px 20px;border-radius:8px;border:0.5px solid #e2e8f0;background:#fff;font-size:13px;color:#4a5568;cursor:pointer">&#8592; Voltar</button>
+  <span style="font-size:12px;color:#8898aa">Etapa 5 de 8</span>
+  <button onclick="advanceFromAmbientes ? advanceFromAmbientes() : nextWizStep()" style="padding:10px 28px;border-radius:8px;background:#2d7dd2;color:#fff;font-size:14px;font-weight:700;border:none;cursor:pointer;box-shadow:0 4px 14px rgba(45,125,210,0.4)">Iniciar vistoria &#8594;</button>
+</div>
+
+</div>
+
+<!-- STEP 4: VISTORIA (fotos por ambiente) -->
     <div id="wstep-4" style="display:none">
       <div class="wstep-title" id="step4-header">Vistoria dos ambientes</div>
       <div class="wstep-sub">Fotografe e descreva o estado de cada ambiente.</div>
@@ -4707,6 +4763,27 @@ function buscarCep(cep) {
       var tip = document.getElementById('wi-cep-tip');
       if (tip) tip.style.display = 'block';
     }).catch(function(){});
+}
+
+
+// Adicionar ambiente personalizado por seção
+function adicionarOutro(secao, containerId, customId) {
+  var nome = prompt('Nome do ambiente:');
+  if (!nome || nome.trim() === '') return;
+  nome = nome.trim();
+  var key = 'custom_' + secao + '_' + Date.now();
+  var container = document.getElementById(customId);
+  if (!container) return;
+  if (typeof wizard !== 'undefined') {
+    if (!wizard.customRooms) wizard.customRooms = [];
+    wizard.customRooms.push({key: key, name: nome, secao: secao, val: 1});
+  }
+  var div = document.createElement('div');
+  div.id = 'row-' + key;
+  div.style.cssText = 'display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-top:0.5px solid #f5f7fa;gap:12px';
+  div.innerHTML = '<div style="display:flex;align-items:center;gap:10px;flex:1"><div style="width:36px;height:36px;border-radius:8px;background:#eef4ff;display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="22" height="22" viewBox="0 0 56 44" fill="none"><circle cx="28" cy="22" r="18" fill="#dbeafe" stroke="#2d7dd2" stroke-width="1.5" stroke-dasharray="3 2"/><text x="28" y="27" font-family="Arial" font-size="16" fill="#2d7dd2" text-anchor="middle" font-weight="700">+</text></svg></div><div><div style="font-size:13px;font-weight:600;color:#1a2540">' + nome + '</div><div style="font-size:11px;color:#8898aa;margin-top:1px">Ambiente personalizado</div></div></div><div style="display:flex;align-items:center;gap:8px;flex-shrink:0"><button onclick="var v=document.getElementById(\'val-' + key + '\');var n=parseInt(v.textContent)-1;if(n>=0){v.textContent=n;v.style.color=n>0?\'#2d7dd2\':\'#8898aa\';}" style="width:28px;height:28px;border-radius:50%;border:0.5px solid #e2e8f0;background:#f8fafc;font-size:16px;cursor:pointer;color:#4a5568;display:flex;align-items:center;justify-content:center">&#8722;</button><span id="val-' + key + '" style="font-size:15px;font-weight:700;color:#2d7dd2;min-width:20px;text-align:center">1</span><button onclick="var v=document.getElementById(\'val-' + key + '\');var n=parseInt(v.textContent)+1;v.textContent=n;v.style.color=\'#2d7dd2\';" style="width:28px;height:28px;border-radius:50%;border:0.5px solid #e2e8f0;background:#f8fafc;font-size:16px;cursor:pointer;color:#4a5568;display:flex;align-items:center;justify-content:center">+</button><button onclick="this.closest(\'[id^=row-]\').remove();" style="width:24px;height:24px;border-radius:50%;border:0.5px solid #fca5a5;background:#fff5f5;color:#dc2626;font-size:11px;cursor:pointer;display:flex;align-items:center;justify-content:center">&#10005;</button></div>';
+  container.appendChild(div);
+  if (typeof updateAmbResumo === 'function') updateAmbResumo();
 }
 </script>
 <button class="db-help-btn" onclick="showManual()" title="Manual do usuario">?</button>
