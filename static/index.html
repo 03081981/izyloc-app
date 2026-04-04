@@ -3804,6 +3804,7 @@ window.addEventListener('resize', () => {
       var lbl = document.getElementById('wiz-step-label');
       if (lbl) lbl.textContent = 'Etapa ' + (step + 1) + ' de 8';
       window.scrollTo(0, 0);
+    if(step===4) renderAmbientesPorTipo();
     };
 
     // FIX 5: Define nextWizStep and prevWizStep for navigation buttons
