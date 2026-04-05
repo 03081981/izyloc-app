@@ -2924,7 +2924,7 @@ function switchTab(tab, el) {
 const API = '';
 let currentUser = null, currentToken = null, currentInspection = null;
 let pageHistory = [], signaturePads = {};
-let wizard = { step: 1, inspectionId: null, selectedRooms: [], realizador: 'imobiliaria' };
+let wizard = { step: 1, inspectionId: null, selectedRooms: [], realizador: 'imobiliaria', tipo: '' };
     var _savedInspId = localStorage.getItem('izylo_current_inspection');
     if (_savedInspId) wizard.inspectionId = _savedInspId;
 
@@ -3197,7 +3197,7 @@ function formatDate(str) {
 
 // ─── NEW INSPECTION WIZARD ────────────────────────────────────────────────────
 function showNewInspection() {
-  wizard = { step: 1, inspectionId: null, selectedRooms: [], realizador: 'imobiliaria' };
+  wizard = { step: 1, inspectionId: null, selectedRooms: [], realizador: 'imobiliaria', tipo: '' };
   // Reset forms
   ['wi-address','wi-area','wi-imob-name','wi-imob-cnpj','wi-imob-phone','wi-imob-address',
    'wi-loc-name','wi-loc-cpf','wi-loc-rg','wi-loc-phone','wi-loc-email',
@@ -3302,7 +3302,9 @@ function showWstepQuem() {
 function selectTipoCard(card) {
   document.querySelectorAll('.tipo-card').forEach(c => c.classList.remove('selected'));
   card.classList.add('selected');
-  document.getElementById('wi-type').value = card.getAttribute('data-tipo') || card.getAttribute('data-type') || '';
+  var val = card.getAttribute('data-tipo') || card.getAttribute('data-type') || '';
+  document.getElementById('wi-type').value = val;
+  if (typeof wizard !== 'undefined') wizard.tipo = val;
 }
 
 function gotoWStep(step) {
@@ -3337,7 +3339,7 @@ async function wizardNext(step) {
     const fmtDate = dateVal ? new Date(dateVal+'T12:00:00').toLocaleDateString('pt-BR') : '';
     showLoading('Criando vistoria...');
     const r = await api('POST', '/api/inspections', {
-      type: document.getElementById('wi-type').value,
+      type: (typeof wizard !== 'undefined' && wizard.tipo) || document.getElementById('wi-type').value,
       property_address: document.getElementById('wi-address').value.trim(),
       property_type: document.getElementById('wi-prop-type').value,
       property_area: document.getElementById('wi-area').value,
@@ -6176,6 +6178,8 @@ function wiz6Concluir() {
       // Hook simplificado: aguarda DOM e inicializa wiz6
       setTimeout(function(){
         try {
+          // Forcar modo foto ANTES do init
+          if (typeof _wiz6Modo !== 'undefined') _wiz6Modo = 'foto';
           wiz6Init();
           var btnFoto = document.querySelector('[onclick="wiz6SelecionarModo(\'foto\')"]');
           if (btnFoto) btnFoto.click();
