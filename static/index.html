@@ -3409,7 +3409,18 @@ function addCustomRoom() {
 }
 
 // ─── BUILD ROOMS IN STEP 4 ────────────────────────────────────────────────────
-async function advanceFromAmbientes() { showLoading("Salvando ambientes..."); await buildRoomsList(); hideLoading(); nextWizStep(); }
+async function advanceFromAmbientes() {
+  // Capturar ambientes exibidos em #amb-resumo ANTES de qualquer reset
+  try {
+    var _ambFinal = [];
+    document.querySelectorAll('#amb-resumo span').forEach(function(sp){
+      var t = (sp.textContent || '').trim();
+      if (t) _ambFinal.push(t);
+    });
+    window._wiz6AmbientesFinal = _ambFinal;
+    console.log('[adv] ambientes capturados:', _ambFinal);
+  } catch(e) { console.warn('[adv] erro captura', e); }
+   showLoading("Salvando ambientes..."); await buildRoomsList(); hideLoading(); nextWizStep(); }
 
 async function buildRoomsList() {
   const container = document.getElementById('rooms-list');
@@ -5513,7 +5524,12 @@ function _wiz6GetItens(nomeAmb) {
 function wiz6Init() {
   _wiz6AmbIdx = 0;
   _wiz6AmbDone = {};
-  if (!window._wiz6AmbientesSalvos) _wiz6Ambientes = [];
+  // Ler ambientes da fonte definitiva capturada em advanceFromAmbientes
+  if (window._wiz6AmbientesFinal && window._wiz6AmbientesFinal.length > 0) {
+    _wiz6Ambientes = window._wiz6AmbientesFinal.slice();
+  } else if (!window._wiz6AmbientesSalvos) {
+    _wiz6Ambientes = [];
+  }
 
   // Pegar ambientes da Etapa 5 — só se não foram pré-carregados pelo hook
   if (_wiz6Ambientes.length === 0) {
@@ -5559,18 +5575,12 @@ function wiz6SelecionarModo(modo) {
   if (modoFoto) modoFoto.style.display = modo === 'foto' ? 'block' : 'none';
   if (modoVideo) modoVideo.style.display = modo === 'video' ? 'block' : 'none';
   if (modo === 'foto') {
-    var ambientes = [];
-    document.querySelectorAll('[id^="wiz-val-"]').forEach(function(el) {
-      var val = parseInt(el.textContent) || 0;
-      if (val <= 0) return;
-      var key = el.id.replace('wiz-val-','');
-      if (key === 'casa') return;
-      var nome = key.replace(/-/g,' ').replace(/\b\w/g,function(c){return c.toUpperCase();});
-      for (var i = 1; i <= val; i++) {
-        ambientes.push(val > 1 ? nome + ' ' + i : nome);
-      }
-    });
-    if (ambientes.length > 0) _wiz6Ambientes = ambientes;
+    // Usar ambientes definitivos capturados em advanceFromAmbientes
+    var ambientes = (window._wiz6AmbientesFinal || []).slice();
+    if (ambientes.length > 0) {
+      _wiz6Ambientes = ambientes;
+      window._wiz6AmbientesSalvos = ambientes;
+    }
     wiz6Init();
   }
 }
@@ -6105,43 +6115,14 @@ function wiz6Concluir() {
     }
     if (_prev) _prev(n);
     if (n === 4) {
-      // Tentar capturar com retry ate ambientes aparecerem
-      var _wiz6Tentativas = 0;
-      function _wiz6TentarInit() {
-        _wiz6Tentativas++;
-        var ambientes = [];
-        document.querySelectorAll('[id^="wiz-val-"]').forEach(function(el) {
-          var val = parseInt(el.textContent) || 0;
-          if (val <= 0) return;
-          var key = el.id.replace('wiz-val-','');
-          if (key === 'casa') return;
-          var nome = key.replace(/-/g,' ').replace(/\b\w/g,function(c){return c.toUpperCase();});
-          for (var i = 1; i <= val; i++) {
-            ambientes.push(val > 1 ? nome + ' ' + i : nome);
-          }
-        });
-        if (window._wiz6AmbientesSalvos && window._wiz6AmbientesSalvos.length > 0) {
-          ambientes = window._wiz6AmbientesSalvos;
-          window._wiz6AmbientesSalvos = null;
-        }
-        if (ambientes.length > 0) {
-          _wiz6Ambientes = ambientes;
+      // Hook simplificado: aguarda DOM e inicializa wiz6
+      setTimeout(function(){
+        try {
           wiz6Init();
-          var mF = document.getElementById('wiz6-modo-foto');
-          var mV = document.getElementById('wiz6-modo-video');
-          if (mF) mF.style.display = 'block';
-          if (mV) mV.style.display = 'none';
-          var bF = document.getElementById('wiz6-btn-foto');
-          var bV = document.getElementById('wiz6-btn-video');
-          if (bF) bF.classList.add('active');
-          if (bV) bV.classList.remove('active');
-        } else if (_wiz6Tentativas < 10) {
-          setTimeout(_wiz6TentarInit, 300);
-        } else {
-          wiz6Init();
-        }
-      }
-      setTimeout(_wiz6TentarInit, 300);
+          var btnFoto = document.querySelector('[onclick="wiz6SelecionarModo(\'foto\')"]');
+          if (btnFoto) btnFoto.click();
+        } catch(e) { console.warn('[hook wiz6] err', e); }
+      }, 300);
     }
   };
 })();
