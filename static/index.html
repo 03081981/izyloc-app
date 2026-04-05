@@ -1695,6 +1695,51 @@ textarea.obs-geral{width:100%;background:#f8fafc;border:.5px solid #dce3ed;borde
 .wiz-nome-input{border:0.5px solid #bfdbfe;border-radius:6px;padding:5px 8px;font-size:12px;color:#1a2540;font-family:inherit;background:#fff;outline:none;flex:1;min-width:0;margin-top:4px}
 .wiz-nome-input:focus{border-color:#2d7dd2}
 
+
+.wiz6-modo-btn{flex:1;padding:14px;border-radius:10px;border:0.5px solid #e2e8f0;background:#fff;text-align:center;cursor:pointer;transition:all .15s}
+.wiz6-modo-btn.active{border:2px solid #2d7dd2;background:#f0f7ff}
+.wiz6-modo-icon{font-size:24px;margin-bottom:4px}
+.wiz6-modo-title{font-size:13px;font-weight:600;color:#1a2540}
+.wiz6-modo-sub{font-size:11px;color:#8898aa;margin-top:2px}
+.wiz6-amb-tab{padding:8px 16px;border-radius:20px;font-size:12px;font-weight:500;cursor:pointer;border:1px solid #e2e8f0;background:#fff;color:#5a6a7e;white-space:nowrap;transition:all .15s}
+.wiz6-amb-tab.active{background:#2d7dd2;border-color:#2d7dd2;color:#fff}
+.wiz6-amb-tab.done{border-color:#059669;color:#059669;background:#d1fae5}
+.wiz6-grupo{background:#fff;border-radius:12px;border:0.5px solid #e2e8f0;margin-bottom:10px;overflow:hidden}
+.wiz6-grupo-header{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;cursor:pointer;user-select:none}
+.wiz6-grupo-titulo{font-size:12px;font-weight:600;color:#1a2540;display:flex;align-items:center;gap:8px}
+.wiz6-grupo-badge{font-size:10px;font-weight:600;padding:2px 8px;border-radius:10px}
+.wiz6-grupo-badge.ok{background:#d1fae5;color:#065f46}
+.wiz6-grupo-badge.pend{background:#fef3c7;color:#92400e}
+.wiz6-grupo-body{padding:0 14px 12px}
+.wiz6-item{display:flex;align-items:center;justify-content:space-between;padding:9px 0;border-bottom:0.5px solid #f5f7fa;gap:8px}
+.wiz6-item:last-child{border-bottom:none}
+.wiz6-item-nome{font-size:13px;font-weight:500;color:#1a2540;flex:1}
+.wiz6-item-estado{font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px;cursor:pointer;border:none;outline:none}
+.estado-bom{background:#d1fae5;color:#065f46}
+.estado-regular{background:#fef3c7;color:#92400e}
+.estado-avaria{background:#fee2e2;color:#991b1b}
+.estado-nao-possui{background:#f1f5f9;color:#64748b}
+.estado-pendente{background:#f1f5f9;color:#94a3b8}
+.wiz6-testavel{display:flex;gap:6px;margin-top:6px;flex-wrap:wrap}
+.wiz6-teste-btn{font-size:11px;font-weight:500;padding:4px 10px;border-radius:20px;border:0.5px solid #e2e8f0;background:#fff;cursor:pointer;transition:all .15s;color:#4a5568}
+.wiz6-teste-btn.sel-ok{background:#d1fae5;border-color:#059669;color:#065f46}
+.wiz6-teste-btn.sel-falha{background:#fee2e2;border-color:#ef4444;color:#991b1b}
+.wiz6-teste-btn.sel-nao{background:#fef3c7;border-color:#f59e0b;color:#92400e}
+.wiz6-ai-desc{font-size:12px;color:#1e3a5f;background:#f0f7ff;border-radius:8px;padding:8px 10px;margin-top:6px;line-height:1.5;border:0.5px solid #bfdbfe}
+.wiz6-obs-list{margin-top:8px}
+.wiz6-obs-item{display:flex;align-items:center;gap:8px;padding:7px 10px;background:#fff8e1;border-radius:8px;border:0.5px solid #fcd34d;margin-bottom:6px;font-size:12px;color:#92400e}
+.wiz6-obs-check{width:16px;height:16px;accent-color:#f59e0b;cursor:pointer}
+.wiz6-fotos-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+.wiz6-foto-thumb{width:72px;height:72px;border-radius:8px;object-fit:cover;border:0.5px solid #e2e8f0;cursor:pointer}
+.wiz6-add-foto{width:72px;height:72px;border-radius:8px;border:1.5px dashed #2d7dd2;background:#f0f7ff;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;font-size:10px;color:#2d7dd2;font-weight:600}
+.wiz6-creditos-warn{background:#fff8e1;border:0.5px solid #fcd34d;border-radius:8px;padding:10px 14px;font-size:12px;color:#92400e;display:flex;align-items:center;gap:8px;margin-bottom:12px}
+.wiz6-progress-bar{height:4px;background:#e2e8f0;border-radius:2px;margin-bottom:16px}
+.wiz6-progress-fill{height:100%;background:#2d7dd2;border-radius:2px;transition:width .4s}
+.wiz6-nav{display:flex;justify-content:space-between;align-items:center;padding:14px 0;margin-top:8px}
+.wiz6-btn-voltar{padding:10px 18px;border-radius:8px;border:0.5px solid #e2e8f0;background:#fff;font-size:13px;color:#4a5568;cursor:pointer}
+.wiz6-btn-prox{padding:10px 24px;border-radius:8px;background:#2d7dd2;color:#fff;font-size:13px;font-weight:600;border:none;cursor:pointer}
+.wiz6-btn-concluir{padding:10px 24px;border-radius:8px;background:#059669;color:#fff;font-size:13px;font-weight:600;border:none;cursor:pointer}
+.wiz6-mostrar-mais{font-size:12px;color:#2d7dd2;cursor:pointer;padding:8px 0;text-align:center;border-top:0.5px solid #f5f7fa}
 </style>
 </head>
 <body>
@@ -2611,24 +2656,96 @@ textarea.obs-geral{width:100%;background:#f8fafc;border:.5px solid #dce3ed;borde
 </div>
 </div>
 
-<div id="wstep-4" style="display:none">
-      <div class="wstep-title" id="step4-header">Vistoria dos ambientes</div>
-      <div class="wstep-sub">Fotografe e descreva o estado de cada ambiente.</div>
-      <div id="amb-tabs" class="ambientes-tabs"></div>
-      <div id="amb-progress" class="ambientes-progress" style="display:none">
-        <div class="prog-bar"><div id="amb-prog-fill" class="prog-fill"></div></div>
-        <span id="amb-prog-text" class="prog-text">0 de 0 concluídos</span>
+    <div id="wstep-4" style="display:none">
+      <div class="wiz-section-title" id="wiz6-titulo">Vistoria dos ambientes</div>
+      <div class="wiz-section-sub">Fotografe cada ambiente e a IA preenche tudo automaticamente.</div>
+
+      <!-- ESCOLHA DE MODO (aparece só na primeira vez) -->
+      <div id="wiz6-escolha-modo" style="margin-bottom:20px">
+        <div style="font-size:11px;font-weight:700;color:#8898aa;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:10px">Como deseja registrar a vistoria?</div>
+        <div style="display:flex;gap:10px">
+          <div class="wiz6-modo-btn active" id="wiz6-btn-foto" onclick="wiz6SelecionarModo('foto')">
+            <div class="wiz6-modo-icon">📸</div>
+            <div class="wiz6-modo-title">Foto por foto</div>
+            <div class="wiz6-modo-sub">Ambiente a ambiente</div>
+          </div>
+          <div class="wiz6-modo-btn" id="wiz6-btn-video" onclick="wiz6SelecionarModo('video')">
+            <div class="wiz6-modo-icon">🎥</div>
+            <div class="wiz6-modo-title">Modo vídeo</div>
+            <div class="wiz6-modo-sub">IA organiza tudo</div>
+          </div>
+        </div>
       </div>
-      <div id="amb-card"></div>
+
+      <!-- AVISO DE CRÉDITOS -->
+      <div id="wiz6-creditos-warn" class="wiz6-creditos-warn" style="display:none">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#92400e" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><circle cx="12" cy="16" r="0.5" fill="#92400e"/></svg>
+        <span id="wiz6-creditos-texto">Você tem <strong>0 créditos</strong> disponíveis.</span>
+      </div>
+
+      <!-- MODO FOTO -->
+      <div id="wiz6-modo-foto">
+        <!-- TABS DE AMBIENTES -->
+        <div style="overflow-x:auto;padding-bottom:8px;margin-bottom:16px">
+          <div id="wiz6-tabs" style="display:flex;gap:8px;min-width:max-content"></div>
+        </div>
+
+        <!-- PROGRESS BAR -->
+        <div class="wiz6-progress-bar">
+          <div class="wiz6-progress-fill" id="wiz6-progress-fill" style="width:0%"></div>
+        </div>
+        <div style="font-size:11px;color:#8898aa;margin-bottom:14px" id="wiz6-progress-txt">0 de 0 ambientes concluídos</div>
+
+        <!-- CARD DO AMBIENTE ATUAL -->
+        <div id="wiz6-amb-card"></div>
+
+        <!-- NAVEGAÇÃO ENTRE AMBIENTES -->
+        <div class="wiz6-nav">
+          <button class="wiz6-btn-voltar" onclick="wiz6AmbAnterior()">← Anterior</button>
+          <span style="font-size:12px;color:#8898aa" id="wiz6-amb-pos">1 de 1</span>
+          <button class="wiz6-btn-prox" id="wiz6-btn-prox-amb" onclick="wiz6ProxAmb()">Próximo →</button>
+        </div>
+      </div>
+
+      <!-- MODO VÍDEO -->
+      <div id="wiz6-modo-video" style="display:none">
+        <div id="wiz6-video-upload-tela">
+          <div style="border:1.5px dashed #2d7dd2;border-radius:12px;padding:32px 20px;text-align:center;background:#eef4ff;cursor:pointer;margin-bottom:16px" onclick="document.getElementById('wiz6-video-input').click()">
+            <div style="font-size:36px;margin-bottom:8px">🎥</div>
+            <div style="font-size:14px;font-weight:600;color:#1e40af;margin-bottom:4px">Clique para selecionar o vídeo</div>
+            <div style="font-size:12px;color:#3b6abd">MP4, MOV, AVI · até 500MB · máximo 10 minutos</div>
+            <input type="file" id="wiz6-video-input" accept="video/*" style="display:none" onchange="wiz6UploadVideo(this)"/>
+          </div>
+          <div style="background:#f0f7ff;border:0.5px solid #bfdbfe;border-radius:8px;padding:12px 14px;font-size:12px;color:#1e3a5f;margin-bottom:16px">
+            <strong>🎬 Roteiro de filmagem sugerido:</strong><br>
+            Caminhe pelo imóvel filmando cada ambiente por 15 a 30 segundos. Filme de perto itens danificados, trincas, manchas ou equipamentos.
+          </div>
+        </div>
+        <div id="wiz6-video-processando" style="display:none">
+          <div style="text-align:center;padding:32px 0">
+            <div style="font-size:36px;margin-bottom:12px">⏳</div>
+            <div style="font-size:14px;font-weight:600;color:#1a2540;margin-bottom:4px">IA processando o vídeo...</div>
+            <div style="font-size:12px;color:#8898aa">Isso pode levar alguns minutos. Não feche esta tela.</div>
+            <div class="wiz6-progress-bar" style="margin-top:16px"><div class="wiz6-progress-fill" id="wiz6-video-prog" style="width:20%"></div></div>
+            <div id="wiz6-video-status" style="font-size:12px;color:#2d7dd2;margin-top:8px">Extraindo frames...</div>
+          </div>
+        </div>
+        <div id="wiz6-video-revisao" style="display:none"></div>
+      </div>
+
+      <!-- BOTÃO CONCLUIR VISTORIA -->
+      <div id="wiz6-btn-concluir-wrap" style="display:none;margin-top:16px">
+        <button class="wiz6-btn-concluir" style="width:100%" onclick="wiz6Concluir()">✅ Concluir vistoria →</button>
+      </div>
+
+      <!-- LEGADO: mantidos para compatibilidade -->
+      <div id="amb-tabs" style="display:none"></div>
+      <div id="amb-card" style="display:none"></div>
       <div id="rooms-list" style="display:none"></div>
       <textarea id="wi-obs" style="display:none"></textarea>
-      <div class="wiz-nav">
-        <button class="btn-wiz-back-sm" onclick="prevWizStep()">← Voltar</button>
-        <button id="btn-concluir" class="btn-wiz-next" onclick="nextWizStep()">Concluir e revisar →</button>
-      </div>
     </div>
 
-    <!-- STEP REV: REVISÃO -->
+<!-- STEP REV: REVISÃO -->
     <div id="wstep-rev" style="display:none">
       <div class="wstep-title">Revisão do laudo</div>
       <div class="wstep-sub">Confira os dados antes de prosseguir para a assinatura.</div>
