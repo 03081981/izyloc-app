@@ -3433,36 +3433,39 @@ function addCustomRoom() {
 
 // ─── BUILD ROOMS IN STEP 4 ────────────────────────────────────────────────────
 async function advanceFromAmbientes() {
-  // Capturar ambientes do sistema novo (wiz-val-* + labels do DOM)
+  // CAPTURAR IMEDIATAMENTE - antes de qualquer reset do DOM
     var ambCapturados = [];
-    try {
-      document.querySelectorAll('[id^="wiz-val-"]').forEach(function(el) {
-        var val = parseInt(el.textContent) || 0;
-        if (val <= 0) return;
-        var key = el.id.replace('wiz-val-','');
-        if (key === 'casa') return;
-        var row = document.getElementById('wiz-row-' + key);
-        var label = row ? (row.querySelector('.wiz-amb-nome') || {}).textContent : null;
-        if (!label) {
-          label = key.replace(/-/g,' ').replace(/\b\w/g,function(c){return c.toUpperCase();});
+    document.querySelectorAll('[id^="wiz-val-"]').forEach(function(el) {
+      var val = parseInt(el.textContent) || 0;
+      if (val <= 0) return;
+      var key = el.id.replace('wiz-val-','');
+      if (key === 'casa') return;
+      var row = document.getElementById('wiz-row-' + key);
+      var label = row ? (row.querySelector('.wiz-amb-nome') || {}).textContent : null;
+      if (!label) label = key.replace(/-/g,' ').replace(/\b\w/g,function(c){return c.toUpperCase();});
+      label = (label || '').trim();
+      for (var i = 0; i < val; i++) ambCapturados.push(val > 1 ? label+' '+(i+1) : label);
+    });
+    if (ambCapturados.length > 0) {
+      window._wiz6AmbientesFinal = ambCapturados;
+      console.log('[advance] capturado ANTES do reset:', ambCapturados);
+    }
+    // Fallback defensivo para _ambData se o novo sistema nao encontrou nada
+    if (ambCapturados.length === 0) {
+      try {
+        if (typeof _ambData !== 'undefined' && typeof _ambMode !== 'undefined' && _ambData[_ambMode]) {
+          var _d = _ambData[_ambMode];
+          Object.keys(_d).forEach(function(key) {
+            var a = _d[key];
+            if (!a || (a.val || 0) <= 0) return;
+            for (var i = 0; i < a.val; i++) {
+              ambCapturados.push(a.val > 1 ? a.label + ' ' + (i+1) : a.label);
+            }
+          });
+          if (ambCapturados.length > 0) window._wiz6AmbientesFinal = ambCapturados;
         }
-        label = (label || '').trim();
-        for (var i = 0; i < val; i++) {
-          ambCapturados.push(val > 1 ? label + ' ' + (i+1) : label);
-        }
-      });
-      if (ambCapturados.length === 0 && typeof _ambData !== 'undefined' && typeof _ambMode !== 'undefined' && _ambData[_ambMode]) {
-        var _d = _ambData[_ambMode];
-        Object.keys(_d).forEach(function(key) {
-          var a = _d[key];
-          if (!a || (a.val || 0) <= 0) return;
-          for (var i = 0; i < a.val; i++) {
-            ambCapturados.push(a.val > 1 ? a.label + ' ' + (i+1) : a.label);
-          }
-        });
-      }
-    } catch(e) { console.warn('captura ambientes erro:', e); }
-    if (ambCapturados.length > 0) window._wiz6AmbientesFinal = ambCapturados;
+      } catch(e) { console.warn('captura ambientes fallback erro:', e); }
+    }
     console.log('[advance] ambientes capturados:', ambCapturados);
    showLoading("Salvando ambientes..."); await buildRoomsList(); hideLoading(); nextWizStep(); }
 
