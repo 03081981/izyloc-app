@@ -5610,6 +5610,8 @@ function wiz6Init() {
   wiz6RenderTabs();
   wiz6RenderAmbCard(_wiz6AmbIdx);
   wiz6AtualizarProgress();
+  // Auto-selecionar modo foto ao iniciar
+  if (!_wiz6Modo || _wiz6Modo !== 'video') wiz6SelecionarModo('foto');
 }
 
 // ── SELECIONAR MODO ──────────────────────────────────────
