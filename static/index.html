@@ -3475,7 +3475,7 @@ async function advanceFromAmbientes() {
       } catch(e) { console.warn('captura ambientes fallback erro:', e); }
     }
     console.log('[advance] ambientes capturados:', ambCapturados);
-   showLoading("Salvando ambientes..."); await buildRoomsList(); hideLoading(); nextWizStep(); }
+   showLoading("Salvando ambientes..."); await buildRoomsList(); hideLoading(); nextWizStep(); setTimeout(function(){ try { if(typeof wiz6Init==='function') wiz6Init(); } catch(e){ console.warn('[adv wiz6Init]',e); } }, 350); }
 
 async function buildRoomsList() {
   const container = document.getElementById('rooms-list');
