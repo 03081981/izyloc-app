@@ -5574,20 +5574,15 @@ function wiz6Init() {
   // Ler ambientes da fonte definitiva capturada em advanceFromAmbientes
   if (window._wiz6AmbientesFinal && window._wiz6AmbientesFinal.length > 0) {
     _wiz6Ambientes = window._wiz6AmbientesFinal.slice();
-  } else if (!window._wiz6AmbientesSalvos) {
+  } else if (_wiz6Ambientes && _wiz6Ambientes.length > 0) {
+    // Manter o que ja tem - nao zerar se _wiz6AmbientesFinal nao existe
+  } else {
     _wiz6Ambientes = [];
-  }
-
-  // Pegar ambientes da Etapa 5 — só se não foram pré-carregados pelo hook
-  if (_wiz6Ambientes.length === 0) {
-  var resumoEl = document.getElementById('amb-resumo');
-  if (resumoEl) {
-    var tags = resumoEl.querySelectorAll('span[style*="border-radius:20px"]');
+    var tags = document.querySelectorAll('[style*="border-radius:20px"]');
     tags.forEach(function(t) {
       var txt = t.textContent.trim();
-      // Remover ×N se houver múltiplos
-      if (txt.indexOf('×') >= 0) {
-        var partes = txt.split('×');
+      if (txt.indexOf('\u00D7') >= 0) {
+        var partes = txt.split('\u00D7');
         var nome = partes[0].trim();
         var qtd = parseInt(partes[1]) || 1;
         for (var i = 1; i <= qtd; i++) {
@@ -5597,8 +5592,6 @@ function wiz6Init() {
         _wiz6Ambientes.push(txt);
       }
     });
-  }
-
   } // fecha if _wiz6Ambientes.length === 0
   // Fallback se não tiver ambientes
   if (_wiz6Ambientes.length === 0) {
