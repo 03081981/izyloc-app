@@ -5550,11 +5550,29 @@ function wiz6Init() {
 // ── SELECIONAR MODO ──────────────────────────────────────
 function wiz6SelecionarModo(modo) {
   _wiz6Modo = modo;
-  document.getElementById('wiz6-btn-foto').classList.toggle('active', modo === 'foto');
-  document.getElementById('wiz6-btn-video').classList.toggle('active', modo === 'video');
-  document.getElementById('wiz6-modo-foto').style.display = modo === 'foto' ? 'block' : 'none';
-  document.getElementById('wiz6-modo-video').style.display = modo === 'video' ? 'block' : 'none';
-  if (modo === 'foto') wiz6Init();
+  var btnFoto = document.getElementById('wiz6-btn-foto');
+  var btnVideo = document.getElementById('wiz6-btn-video');
+  var modoFoto = document.getElementById('wiz6-modo-foto');
+  var modoVideo = document.getElementById('wiz6-modo-video');
+  if (btnFoto) btnFoto.classList.toggle('active', modo === 'foto');
+  if (btnVideo) btnVideo.classList.toggle('active', modo === 'video');
+  if (modoFoto) modoFoto.style.display = modo === 'foto' ? 'block' : 'none';
+  if (modoVideo) modoVideo.style.display = modo === 'video' ? 'block' : 'none';
+  if (modo === 'foto') {
+    var ambientes = [];
+    document.querySelectorAll('[id^="wiz-val-"]').forEach(function(el) {
+      var val = parseInt(el.textContent) || 0;
+      if (val <= 0) return;
+      var key = el.id.replace('wiz-val-','');
+      if (key === 'casa') return;
+      var nome = key.replace(/-/g,' ').replace(/\b\w/g,function(c){return c.toUpperCase();});
+      for (var i = 1; i <= val; i++) {
+        ambientes.push(val > 1 ? nome + ' ' + i : nome);
+      }
+    });
+    if (ambientes.length > 0) _wiz6Ambientes = ambientes;
+    wiz6Init();
+  }
 }
 
 // ── TABS DE AMBIENTES ────────────────────────────────────
@@ -6087,21 +6105,43 @@ function wiz6Concluir() {
     }
     if (_prev) _prev(n);
     if (n === 4) {
-      setTimeout(function() {
+      // Tentar capturar com retry ate ambientes aparecerem
+      var _wiz6Tentativas = 0;
+      function _wiz6TentarInit() {
+        _wiz6Tentativas++;
+        var ambientes = [];
+        document.querySelectorAll('[id^="wiz-val-"]').forEach(function(el) {
+          var val = parseInt(el.textContent) || 0;
+          if (val <= 0) return;
+          var key = el.id.replace('wiz-val-','');
+          if (key === 'casa') return;
+          var nome = key.replace(/-/g,' ').replace(/\b\w/g,function(c){return c.toUpperCase();});
+          for (var i = 1; i <= val; i++) {
+            ambientes.push(val > 1 ? nome + ' ' + i : nome);
+          }
+        });
         if (window._wiz6AmbientesSalvos && window._wiz6AmbientesSalvos.length > 0) {
-          _wiz6Ambientes = window._wiz6AmbientesSalvos;
+          ambientes = window._wiz6AmbientesSalvos;
           window._wiz6AmbientesSalvos = null;
         }
-        wiz6Init();
-        var modoFoto = document.getElementById('wiz6-modo-foto');
-        var modoVideo = document.getElementById('wiz6-modo-video');
-        if (modoFoto) modoFoto.style.display = 'block';
-        if (modoVideo) modoVideo.style.display = 'none';
-        var btnFoto = document.getElementById('wiz6-btn-foto');
-        var btnVideo = document.getElementById('wiz6-btn-video');
-        if (btnFoto) btnFoto.classList.add('active');
-        if (btnVideo) btnVideo.classList.remove('active');
-      }, 600);
+        if (ambientes.length > 0) {
+          _wiz6Ambientes = ambientes;
+          wiz6Init();
+          var mF = document.getElementById('wiz6-modo-foto');
+          var mV = document.getElementById('wiz6-modo-video');
+          if (mF) mF.style.display = 'block';
+          if (mV) mV.style.display = 'none';
+          var bF = document.getElementById('wiz6-btn-foto');
+          var bV = document.getElementById('wiz6-btn-video');
+          if (bF) bF.classList.add('active');
+          if (bV) bV.classList.remove('active');
+        } else if (_wiz6Tentativas < 10) {
+          setTimeout(_wiz6TentarInit, 300);
+        } else {
+          wiz6Init();
+        }
+      }
+      setTimeout(_wiz6TentarInit, 300);
     }
   };
 })();
