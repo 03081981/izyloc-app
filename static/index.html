@@ -5853,45 +5853,108 @@ async function wiz6AddFotos(input, ambIdx) {
 function wiz6AplicarResultadoIA(d, ambIdx, nomeAmb) {
   if (!d) return;
 
-  // Aplicar estados nos itens
+  // (P) Persistir dados brutos da IA em wizard.itensData
+  try {
+    if (typeof wizard !== "undefined") {
+      wizard.itensData = wizard.itensData || {};
+      wizard.itensData[ambIdx] = {
+        nome: nomeAmb,
+        descricao_geral: d.descricao_geral || d.description || "",
+        estado_geral: d.estado || "",
+        itens: (d.itens || d.items || []).map(function(it){ return {nome:it.nome, estado:it.estado, descricao:it.descricao||it.description||""}; }),
+        observacoes: d.observacoes || d.observations || [],
+        timestamp: Date.now()
+      };
+    }
+  } catch(ePers) { console.warn("[wiz6 persist]", ePers); }
+
+  // (1) Exibir descricao geral da IA no status do ambiente
+  var descTexto = d.descricao_geral || d.description || "";
+  var statusEl = document.getElementById("wiz6-ai-status-" + ambIdx);
+  if (statusEl && descTexto) {
+    var esc = function(s){ return (s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); };
+    statusEl.innerHTML = "<div style=\"background:#f0f9ff;border-left:3px solid #2d7dd2;padding:10px 14px;margin:8px 0;border-radius:6px;font-size:13px;color:#334155;line-height:1.5;\"><strong>IA identificou:</strong> " + esc(descTexto) + "</div>";
+  }
+
+  // (2) Aplicar estados nos itens que batem com a lista pre-definida
   var itensList = d.itens || d.items || [];
+  var matchedCount = 0;
+  var unmatchedItens = [];
   itensList.forEach(function(item) {
     if (!item.nome || !item.estado) return;
-    var itemKey = 'item_' + ambIdx + '_' + item.nome.replace(/\s+/g,'_').replace(/[^a-zA-Z0-9_]/g,'');
-    var estadoEl = document.getElementById('estado-' + itemKey);
+    var itemKey = "item_" + ambIdx + "_" + item.nome.replace(/\s+/g,"_").replace(/[^a-zA-Z0-9_]/g,"");
+    var estadoEl = document.getElementById("estado-" + itemKey);
     if (estadoEl) {
       estadoEl.textContent = _wiz6EstadoLabel(item.estado);
-      estadoEl.className = 'wiz6-item-estado ' + _wiz6EstadoClass(item.estado);
+      estadoEl.className = "wiz6-item-estado " + _wiz6EstadoClass(item.estado);
+      matchedCount++;
+    } else {
+      unmatchedItens.push(item);
     }
   });
 
-  // Aplicar observações importantes
+  // (3) Renderizar itens extras identificados pela IA (que nao batem com a lista)
+  var card = document.getElementById("wiz6-amb-card");
+  if (card) {
+    var extraId = "wiz6-ai-extra-" + ambIdx;
+    var extraEl = document.getElementById(extraId);
+    if (unmatchedItens.length > 0) {
+      if (!extraEl) {
+        extraEl = document.createElement("div");
+        extraEl.id = extraId;
+        extraEl.style.cssText = "background:#fffbeb;border:1px solid #fde68a;padding:12px 14px;margin:10px 0;border-radius:8px;";
+        var anchor = statusEl && statusEl.parentElement === card ? statusEl.nextSibling : (card.firstChild ? card.firstChild.nextSibling : null);
+        if (anchor) card.insertBefore(extraEl, anchor); else card.appendChild(extraEl);
+      }
+      var escH = function(s){ return (s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); };
+      var hh = "<div style=\"font-weight:600;margin-bottom:8px;color:#92400e;font-size:13px;\">Itens identificados pela IA nesta foto:</div>";
+      hh += unmatchedItens.map(function(it){
+        var desc = it.descricao || it.description || "";
+        return "<div style=\"padding:8px 0;border-top:1px solid #fde68a;\">"
+          + "<div style=\"display:flex;justify-content:space-between;align-items:center;gap:8px;\">"
+          + "<strong style=\"font-size:13px;color:#1f2937;\">" + escH(it.nome) + "</strong>"
+          + "<span class=\"wiz6-item-estado " + _wiz6EstadoClass(it.estado) + "\" style=\"font-size:11px;padding:2px 8px;border-radius:10px;\">" + _wiz6EstadoLabel(it.estado) + "</span>"
+          + "</div>"
+          + (desc ? "<div style=\"font-size:12px;color:#78716c;margin-top:4px;line-height:1.4;\">" + escH(desc) + "</div>" : "")
+          + "</div>";
+      }).join("");
+      extraEl.innerHTML = hh;
+    } else if (extraEl) {
+      extraEl.innerHTML = "";
+    }
+  }
+
+  // Aplicar observacoes importantes (comportamento preservado)
   var obs = d.observacoes || d.observations || [];
   if (obs.length > 0) {
-    var obsEl = document.getElementById('wiz6-obs-' + ambIdx);
+    var obsEl = document.getElementById("wiz6-obs-" + ambIdx);
     if (obsEl) {
       obsEl.innerHTML = obs.map(function(o) {
-        return '<div class="wiz6-obs-item">'
-          + '<input type="checkbox" class="wiz6-obs-check" checked/>'
-          + '<span>' + o + '</span>'
-          + '</div>';
-      }).join('');
+        return "<div class=\"wiz6-obs-item\">"
+          + "<input type=\"checkbox\" class=\"wiz6-obs-check\" checked/>"
+          + "<span>" + o + "</span>"
+          + "</div>";
+      }).join("");
     }
   }
 
-  // Marcar grupos como analisados
-  var itens = _wiz6GetItens(nomeAmb);
-  for (var grupo in itens) {
-    if (grupo === '_testavel') continue;
-    var grupoId = 'wiz6-grupo-' + ambIdx + '-' + grupo.replace(/\s/g,'_');
-    var badgeEl = document.getElementById('badge-' + grupoId);
-    if (badgeEl) {
-      badgeEl.textContent = 'IA analisou ✓';
-      badgeEl.className = 'wiz6-grupo-badge ok';
+  // (4) Marcar grupos como analisados APENAS se algo foi de fato aplicado
+  var anyApplied = matchedCount > 0 || unmatchedItens.length > 0 || !!descTexto;
+  if (anyApplied) {
+    var itensGrp = _wiz6GetItens(nomeAmb);
+    for (var grupo in itensGrp) {
+      if (grupo === "_testavel") continue;
+      var grupoId = "wiz6-grupo-" + ambIdx + "-" + grupo.replace(/\s/g,"_");
+      var badgeEl = document.getElementById("badge-" + grupoId);
+      if (badgeEl) {
+        badgeEl.textContent = "IA analisou \u2713";
+        badgeEl.className = "wiz6-grupo-badge ok";
+      }
     }
+    toast("\u2726 IA analisou " + nomeAmb + " \u2014 confira os itens!", "success");
+  } else {
+    toast("\u26a0 IA respondeu mas sem dados utilizaveis para " + nomeAmb, "warning");
   }
-
-  toast('✦ IA analisou ' + nomeAmb + ' — confira os itens!', 'success');
 }
 
 // ── CICLO DE ESTADO MANUAL (usuário pode ajustar) ────────
