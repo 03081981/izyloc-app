@@ -6198,8 +6198,7 @@ function wiz6Concluir() {
           // Forcar modo foto ANTES do init
           if (typeof _wiz6Modo !== 'undefined') _wiz6Modo = 'foto';
           wiz6Init();
-          var btnFoto = document.querySelector('[onclick="wiz6SelecionarModo(\'foto\')"]');
-          if (btnFoto) btnFoto.click();
+          // click removido: wiz6Init ja configura modo foto inline
         } catch(e) { console.warn('[hook wiz6] err', e); }
       }, 300);
     }
