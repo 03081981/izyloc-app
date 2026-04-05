@@ -1952,7 +1952,23 @@ textarea.obs-geral{width:100%;background:#f8fafc;border:.5px solid #dce3ed;borde
       <div class="db-hero">
         <div class="db-hero-left">
           <div class="db-greeting" id="db-greeting">Bom dia!</div>
-          <div class="db-subtitle">Quinta-feira, 3 de abril de 2026</div>
+          <div class="db-subtitle" id="db-subtitle"></div>
+<script>
+(function(){
+  var el = document.getElementById("db-subtitle");
+  if (!el) return;
+  var agora = new Date();
+  try {
+    el.textContent = agora.toLocaleDateString("pt-BR", {weekday:"long", day:"numeric", month:"long", year:"numeric"});
+  } catch(e) { el.textContent = agora.toDateString(); }
+  var hora = agora.getHours();
+  var saud = hora < 12 ? "Bom dia" : (hora < 18 ? "Boa tarde" : "Boa noite");
+  var gr = document.getElementById("db-greeting");
+  if (gr && gr.textContent) {
+    gr.textContent = gr.textContent.replace(/Bom dia|Boa tarde|Boa noite/, saud);
+  }
+})();
+</script>
         </div>
         <button class="db-btn-nova" onclick="showNewInspection()">+ Nova vistoria</button>
       </div>
@@ -3202,7 +3218,12 @@ function showNewInspection() {
 }
 
 function selectRealizaCard(card) {
-  document.querySelectorAll('.realiza-card').forEach(c => c.classList.remove('selected'));
+  document.querySelectorAll('.realiza-card').forEach(function(c) {
+    c.classList.remove('selected');
+    c.style.borderColor = '';
+    c.style.background = '';
+    c.style.boxShadow = '';
+  });
   card.classList.add('selected');
   if (typeof wizard !== 'undefined') wizard.realizador = card.dataset.realiza || '';
 }
@@ -3410,16 +3431,31 @@ function addCustomRoom() {
 
 // ─── BUILD ROOMS IN STEP 4 ────────────────────────────────────────────────────
 async function advanceFromAmbientes() {
-  // Capturar ambientes exibidos em #amb-resumo ANTES de qualquer reset
+  // Capturar ambientes de _ambData (fonte definitiva)
+  var ambCapturados = [];
   try {
-    var _ambFinal = [];
-    document.querySelectorAll('#amb-resumo span').forEach(function(sp){
-      var t = (sp.textContent || '').trim();
-      if (t) _ambFinal.push(t);
+    if (typeof _ambData !== 'undefined' && typeof _ambMode !== 'undefined' && _ambData[_ambMode]) {
+      var _d = _ambData[_ambMode];
+      Object.keys(_d).forEach(function(key) {
+        var a = _d[key];
+        if (!a || (a.val || 0) <= 0) return;
+        for (var i = 0; i < a.val; i++) {
+          ambCapturados.push(a.val > 1 ? a.label + ' ' + (i+1) : a.label);
+        }
+      });
+    }
+  } catch(e) { console.warn('captura ambientes erro:', e); }
+  // Fallback: tentar pelo resumo se _ambData vazio
+  if (ambCapturados.length === 0) {
+    document.querySelectorAll('#amb-resumo .resumo-tag').forEach(function(s) {
+      var txt = (s.textContent || '').trim();
+      if (!txt || txt.indexOf('Nenhum') >= 0) return;
+      var m = txt.match(/^.*?(\d+x\s+)?(.+)$/);
+      if (m) ambCapturados.push(m[2].trim());
     });
-    window._wiz6AmbientesFinal = _ambFinal;
-    console.log('[adv] ambientes capturados:', _ambFinal);
-  } catch(e) { console.warn('[adv] erro captura', e); }
+  }
+  if (ambCapturados.length > 0) window._wiz6AmbientesFinal = ambCapturados;
+  console.log('[advance] ambientes capturados:', ambCapturados);
    showLoading("Salvando ambientes..."); await buildRoomsList(); hideLoading(); nextWizStep(); }
 
 async function buildRoomsList() {
@@ -5575,11 +5611,25 @@ function wiz6SelecionarModo(modo) {
   if (modoFoto) modoFoto.style.display = modo === 'foto' ? 'block' : 'none';
   if (modoVideo) modoVideo.style.display = modo === 'video' ? 'block' : 'none';
   if (modo === 'foto') {
-    // Usar ambientes definitivos capturados em advanceFromAmbientes
-    var ambientes = (window._wiz6AmbientesFinal || []).slice();
-    if (ambientes.length > 0) {
-      _wiz6Ambientes = ambientes;
-      window._wiz6AmbientesSalvos = ambientes;
+    // Recapturar de _ambData se _wiz6AmbientesFinal vazio
+    if (!window._wiz6AmbientesFinal || window._wiz6AmbientesFinal.length === 0) {
+      try {
+        if (typeof _ambData !== 'undefined' && typeof _ambMode !== 'undefined' && _ambData[_ambMode]) {
+          var _d2 = _ambData[_ambMode];
+          var _ambs2 = [];
+          Object.keys(_d2).forEach(function(key) {
+            var a = _d2[key];
+            if (!a || (a.val || 0) <= 0) return;
+            for (var i = 0; i < a.val; i++) {
+              _ambs2.push(a.val > 1 ? a.label + ' ' + (i+1) : a.label);
+            }
+          });
+          if (_ambs2.length > 0) window._wiz6AmbientesFinal = _ambs2;
+        }
+      } catch(e) {}
+    }
+    if (window._wiz6AmbientesFinal && window._wiz6AmbientesFinal.length > 0) {
+      _wiz6Ambientes = window._wiz6AmbientesFinal.slice();
     }
     wiz6Init();
   }
