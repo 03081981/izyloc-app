@@ -5873,7 +5873,7 @@ function wiz6AplicarResultadoIA(d, ambIdx, nomeAmb) {
   var statusEl = document.getElementById("wiz6-ai-status-" + ambIdx);
   if (statusEl && descTexto) {
     var esc = function(s){ return (s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); };
-    statusEl.innerHTML = "<div style=\"background:#f0f9ff;border-left:3px solid #2d7dd2;padding:10px 14px;margin:8px 0;border-radius:6px;font-size:13px;color:#334155;line-height:1.5;\"><strong>IA identificou:</strong> " + esc(descTexto) + "</div>";
+    statusEl.innerHTML = "<div style=\"background:#f0f9ff;border-left:3px solid #2d7dd2;padding:10px 14px;margin:8px 0;border-radius:6px;font-size:13px;color:#334155;line-height:1.5;\"><strong>IA identificou:</strong> " + esc(descTexto) + "</div>"; statusEl.style.display = "block"; statusEl.style.visibility = "visible";
   }
 
   // (2) Aplicar estados nos itens que batem com a lista pre-definida
