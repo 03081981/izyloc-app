@@ -6093,7 +6093,15 @@ function wiz6Concluir() {
           window._wiz6AmbientesSalvos = null;
         }
         wiz6Init();
-      }, 400);
+        var modoFoto = document.getElementById('wiz6-modo-foto');
+        var modoVideo = document.getElementById('wiz6-modo-video');
+        if (modoFoto) modoFoto.style.display = 'block';
+        if (modoVideo) modoVideo.style.display = 'none';
+        var btnFoto = document.getElementById('wiz6-btn-foto');
+        var btnVideo = document.getElementById('wiz6-btn-video');
+        if (btnFoto) btnFoto.classList.add('active');
+        if (btnVideo) btnVideo.classList.remove('active');
+      }, 600);
     }
   };
 })();
