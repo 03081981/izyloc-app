@@ -5274,6 +5274,787 @@ function renderAmbientesPorTipo() {
 }
 // ========== FIM SISTEMA DE AMBIENTES ==========
 
+
+// ========== ETAPA 6 — VISTORIA DOS AMBIENTES ==========
+var _wiz6Modo = 'foto';
+var _wiz6AmbIdx = 0;
+var _wiz6Ambientes = [];
+var _wiz6AmbDone = {};
+var _wiz6VideoJobId = null;
+var _wiz6VideoPolling = null;
+
+// ── ITENS POR AMBIENTE ──────────────────────────────────
+var _wiz6ItensPorAmbiente = {
+  'fachada': {
+    'Elementos construtivos': ['Fachada','Parede externa','Pintura externa','Revestimento externo','Muro frontal','Calçada','Piso externo','Cobertura de entrada'],
+    'Esquadrias e acessos': ['Porta principal','Fechadura','Maçaneta','Portão social','Portão de garagem','Grades','Vidros frontais'],
+    'Instalações elétricas': ['Campainha','Iluminação externa','Arandelas','Sensores'],
+    'Equipamentos': ['Motor do portão','Interfone eletrônico','Fechadura eletrônica'],
+    'Acessórios e complementos': ['Número do imóvel','Caixa de correio','Toldo','Placa de identificação'],
+    '_testavel': ['Motor do portão','Interfone eletrônico','Campainha','Fechadura eletrônica']
+  },
+  'garagem': {
+    'Elementos construtivos': ['Piso','Parede','Pintura','Teto','Cobertura','Colunas','Ralo'],
+    'Esquadrias e acessos': ['Portão','Porta de acesso','Fechadura','Grades'],
+    'Instalações elétricas': ['Tomadas','Interruptores','Iluminação'],
+    'Instalações hidráulicas': ['Torneira','Ralo','Ponto hidráulico'],
+    'Equipamentos': ['Motor do portão'],
+    '_testavel': ['Motor do portão','Tomadas','Iluminação']
+  },
+  'sala': {
+    'Elementos construtivos': ['Piso','Rodapé','Parede','Pintura','Teto','Forro','Sanca'],
+    'Esquadrias e acessos': ['Porta','Batente','Fechadura','Janela','Vidros'],
+    'Instalações elétricas': ['Tomadas','Interruptores','Luminárias','Spots'],
+    'Equipamentos': ['Ar-condicionado','Ventilador de teto'],
+    'Mobiliário fixo': ['Painel de TV','Nichos','Estante fixa'],
+    'Acessórios e complementos': ['Cortina','Persiana','Trilho','Espelho'],
+    '_testavel': ['Ar-condicionado','Ventilador de teto','Tomadas','Interruptores','Luminárias']
+  },
+  'sala de estar': {
+    'Elementos construtivos': ['Piso','Rodapé','Parede','Pintura','Teto','Forro'],
+    'Esquadrias e acessos': ['Porta','Janela','Vidros'],
+    'Instalações elétricas': ['Tomadas','Interruptores','Luminárias'],
+    'Equipamentos': ['Ar-condicionado','Ventilador de teto'],
+    'Mobiliário fixo': ['Painel de TV','Nichos'],
+    'Acessórios e complementos': ['Cortina','Persiana','Espelho'],
+    '_testavel': ['Ar-condicionado','Ventilador de teto','Tomadas','Luminárias']
+  },
+  'sala de jantar': {
+    'Elementos construtivos': ['Piso','Rodapé','Parede','Pintura','Teto'],
+    'Esquadrias e acessos': ['Porta','Janela','Vidros'],
+    'Instalações elétricas': ['Tomadas','Interruptores','Luminárias'],
+    'Acessórios e complementos': ['Cortina','Persiana'],
+    '_testavel': ['Tomadas','Luminárias','Interruptores']
+  },
+  'sala de tv': {
+    'Elementos construtivos': ['Piso','Rodapé','Parede','Pintura','Teto'],
+    'Esquadrias e acessos': ['Porta','Janela'],
+    'Instalações elétricas': ['Tomadas','Interruptores','Luminárias'],
+    'Equipamentos': ['Ar-condicionado'],
+    'Mobiliário fixo': ['Painel de TV','Nichos'],
+    '_testavel': ['Ar-condicionado','Tomadas','Luminárias']
+  },
+  'corredor': {
+    'Elementos construtivos': ['Piso','Rodapé','Parede','Pintura','Teto'],
+    'Esquadrias e acessos': ['Portas','Batentes','Corrimão','Guarda-corpo'],
+    'Instalações elétricas': ['Interruptores','Iluminação'],
+    '_testavel': ['Iluminação','Interruptores']
+  },
+  'hall': {
+    'Elementos construtivos': ['Piso','Rodapé','Parede','Pintura','Teto'],
+    'Esquadrias e acessos': ['Porta','Batente'],
+    'Instalações elétricas': ['Interruptores','Iluminação'],
+    '_testavel': ['Iluminação','Interruptores']
+  },
+  'dormitorio': {
+    'Elementos construtivos': ['Piso','Rodapé','Parede','Pintura','Teto','Forro'],
+    'Esquadrias e acessos': ['Porta','Batente','Fechadura','Maçaneta','Janela','Vidros'],
+    'Instalações elétricas': ['Tomadas','Interruptores','Iluminação'],
+    'Equipamentos': ['Ar-condicionado','Ventilador de teto'],
+    'Mobiliário fixo': ['Guarda-roupa embutido','Armário planejado','Nichos','Cabeceira fixa'],
+    'Acessórios e complementos': ['Cortina','Persiana','Trilho','Espelho'],
+    '_testavel': ['Ar-condicionado','Ventilador de teto','Tomadas','Interruptores','Iluminação']
+  },
+  'suite': {
+    'Elementos construtivos': ['Piso','Rodapé','Parede','Pintura','Teto','Revestimento banheiro','Rejunte'],
+    'Esquadrias e acessos': ['Porta do quarto','Porta do banheiro','Batentes','Fechaduras','Janelas','Vidros','Box'],
+    'Instalações elétricas': ['Tomadas','Interruptores','Iluminação'],
+    'Instalações hidráulicas': ['Lavatório','Cuba','Torneira','Vaso sanitário','Caixa acoplada','Chuveiro','Ducha higiênica','Ralo','Registros'],
+    'Equipamentos': ['Ar-condicionado','Ventilador de teto','Exaustor'],
+    'Mobiliário fixo': ['Armários','Gabinete','Nichos','Guarda-roupa embutido'],
+    'Acessórios e complementos': ['Espelho','Toalheiro','Papeleira','Saboneteira','Cortina','Persiana'],
+    '_testavel': ['Ar-condicionado','Chuveiro','Torneira','Ducha higiênica','Exaustor','Vaso sanitário','Tomadas','Iluminação']
+  },
+  'closet': {
+    'Elementos construtivos': ['Piso','Rodapé','Parede','Pintura','Teto'],
+    'Esquadrias e acessos': ['Porta','Fechadura'],
+    'Instalações elétricas': ['Tomadas','Interruptores','Iluminação'],
+    'Mobiliário fixo': ['Armários','Gavetas','Cabideiros','Nichos','Prateleiras'],
+    'Acessórios e complementos': ['Espelho'],
+    '_testavel': ['Iluminação','Tomadas']
+  },
+  'cozinha': {
+    'Elementos construtivos': ['Piso','Rodapé','Parede','Pintura','Revestimento','Azulejos','Rejunte','Teto','Bancada fixa'],
+    'Esquadrias e acessos': ['Porta','Batente','Janela','Vidros'],
+    'Instalações elétricas': ['Tomadas','Interruptores','Iluminação','Pontos de energia'],
+    'Instalações hidráulicas': ['Pia','Cuba','Torneira','Misturador','Sifão','Ralo','Ponto hidráulico'],
+    'Instalações de gás': ['Ponto de gás','Registro de gás','Tubulação aparente'],
+    'Equipamentos': ['Cooktop','Fogão','Forno','Coifa','Depurador','Exaustor','Micro-ondas embutido'],
+    'Mobiliário fixo': ['Armários aéreos','Armários inferiores','Gabinete','Gavetas','Nichos','Bancada planejada'],
+    'Acessórios e complementos': ['Cortina','Persiana','Suporte'],
+    '_testavel': ['Cooktop','Fogão','Forno','Coifa','Torneira','Tomadas','Iluminação','Registro de gás']
+  },
+  'banheiro': {
+    'Elementos construtivos': ['Piso','Revestimento de parede','Azulejos','Rejunte','Teto','Forro','Bancada fixa'],
+    'Esquadrias e acessos': ['Porta','Batente','Fechadura','Janela','Box','Vidro do box','Trilho do box'],
+    'Instalações elétricas': ['Tomadas','Interruptores','Iluminação'],
+    'Instalações hidráulicas': ['Lavatório','Cuba','Torneira','Misturador','Vaso sanitário','Caixa acoplada','Assento sanitário','Chuveiro','Ducha higiênica','Ralo','Registros'],
+    'Equipamentos': ['Exaustor','Chuveiro elétrico'],
+    'Mobiliário fixo': ['Gabinete','Armário','Nichos'],
+    'Acessórios e complementos': ['Espelho','Toalheiro','Papeleira','Saboneteira','Cabides'],
+    '_testavel': ['Chuveiro','Torneira','Vaso sanitário','Ducha higiênica','Exaustor','Tomadas','Iluminação']
+  },
+  'lavabo': {
+    'Elementos construtivos': ['Piso','Revestimento','Rejunte','Teto'],
+    'Esquadrias e acessos': ['Porta','Batente','Fechadura','Janela'],
+    'Instalações elétricas': ['Tomadas','Interruptores','Iluminação'],
+    'Instalações hidráulicas': ['Lavatório','Cuba','Torneira','Vaso sanitário','Caixa acoplada','Ralo'],
+    'Mobiliário fixo': ['Gabinete','Nicho'],
+    'Acessórios e complementos': ['Espelho','Toalheiro','Papeleira','Saboneteira'],
+    '_testavel': ['Torneira','Vaso sanitário','Iluminação']
+  },
+  'lavanderia': {
+    'Elementos construtivos': ['Piso','Parede','Pintura','Revestimento','Teto','Cobertura'],
+    'Esquadrias e acessos': ['Porta','Janela','Vidros'],
+    'Instalações elétricas': ['Tomadas','Interruptores','Iluminação'],
+    'Instalações hidráulicas': ['Tanque','Torneira','Sifão','Ralo','Ponto hidráulico'],
+    'Instalações de gás': ['Aquecedor a gás','Tubulação de gás','Registro de gás'],
+    'Equipamentos': ['Máquina de lavar','Secadora','Aquecedor'],
+    'Mobiliário fixo': ['Armário','Prateleiras','Gabinete'],
+    'Acessórios e complementos': ['Varal','Suporte','Ganchos'],
+    '_testavel': ['Máquina de lavar','Secadora','Torneira','Aquecedor','Tomadas','Iluminação']
+  },
+  'varanda': {
+    'Elementos construtivos': ['Piso','Parede','Pintura','Teto','Cobertura','Guarda-corpo','Corrimão'],
+    'Esquadrias e acessos': ['Porta de acesso','Vidro de proteção','Grades','Fechamento em vidro'],
+    'Instalações elétricas': ['Tomadas','Interruptores','Iluminação'],
+    'Instalações hidráulicas': ['Ralo','Torneira'],
+    'Acessórios e complementos': ['Toldo','Rede de proteção','Cortina de vidro'],
+    '_testavel': ['Tomadas','Iluminação','Torneira']
+  },
+  'area gourmet': {
+    'Elementos construtivos': ['Piso','Parede','Revestimento','Teto','Cobertura','Bancada fixa'],
+    'Esquadrias e acessos': ['Porta','Janela','Vidros'],
+    'Instalações elétricas': ['Tomadas','Interruptores','Iluminação'],
+    'Instalações hidráulicas': ['Pia','Cuba','Torneira','Ralo'],
+    'Instalações de gás': ['Ponto de gás','Registro de gás'],
+    'Equipamentos': ['Churrasqueira','Forno','Cooktop','Coifa','Exaustor'],
+    'Mobiliário fixo': ['Armários','Gabinete','Prateleiras','Bancada'],
+    'Acessórios e complementos': ['Suporte','Toldo'],
+    '_testavel': ['Churrasqueira','Cooktop','Coifa','Torneira','Tomadas','Iluminação','Registro de gás']
+  },
+  'quintal': {
+    'Elementos construtivos': ['Piso externo','Calçada interna','Muros','Pintura externa','Deck'],
+    'Esquadrias e acessos': ['Portão','Grades','Cercas'],
+    'Instalações elétricas': ['Iluminação externa'],
+    'Instalações hidráulicas': ['Torneira externa','Ralo','Drenagem'],
+    'Áreas externas': ['Gramado','Jardim','Canteiros','Árvores','Plantas'],
+    '_testavel': ['Iluminação externa','Torneira externa','Portão']
+  },
+  'piscina': {
+    'Elementos construtivos': ['Estrutura da piscina','Revestimento interno','Borda','Piso ao redor','Deck'],
+    'Esquadrias e acessos': ['Grade de proteção','Portão de acesso'],
+    'Instalações elétricas': ['Iluminação da piscina'],
+    'Instalações hidráulicas': ['Ralos','Drenagem','Tubulação aparente','Cascata'],
+    'Equipamentos': ['Bomba','Filtro','Aquecedor','Casa de máquinas'],
+    'Acessórios e complementos': ['Escada','Corrimão','Capa de proteção'],
+    '_testavel': ['Bomba','Filtro','Aquecedor','Iluminação da piscina']
+  },
+  'escritorio': {
+    'Elementos construtivos': ['Piso','Rodapé','Parede','Pintura','Teto'],
+    'Esquadrias e acessos': ['Porta','Janela','Vidros'],
+    'Instalações elétricas': ['Tomadas','Interruptores','Iluminação','Rede lógica','Ponto de internet'],
+    'Equipamentos': ['Ar-condicionado','Ventilador de teto'],
+    'Mobiliário fixo': ['Armários','Nichos','Prateleiras','Bancada fixa'],
+    'Acessórios e complementos': ['Cortina','Persiana','Espelho'],
+    '_testavel': ['Ar-condicionado','Tomadas','Iluminação','Rede lógica']
+  },
+  'deposito': {
+    'Elementos construtivos': ['Piso','Parede','Pintura','Teto'],
+    'Esquadrias e acessos': ['Porta','Fechadura'],
+    'Instalações elétricas': ['Iluminação','Tomadas'],
+    'Mobiliário fixo': ['Prateleiras'],
+    '_testavel': ['Iluminação']
+  },
+  'galpao': {
+    'Elementos construtivos': ['Piso','Paredes','Cobertura','Telhado','Calhas','Colunas','Piso externo'],
+    'Esquadrias e acessos': ['Portão principal','Porta de pedestres','Portões laterais','Grades'],
+    'Instalações elétricas': ['Tomadas','Interruptores','Iluminação geral','Quadro elétrico','Painéis'],
+    'Instalações hidráulicas': ['Torneiras','Ralos','Tubulação aparente','Caixa d\'água'],
+    'Equipamentos': ['Motor do portão','Bomba','Compressor','Sistema de alarme','Câmeras'],
+    'Elementos técnicos': ['Doca','Plataforma niveladora','Área de carga','Área técnica'],
+    '_testavel': ['Motor do portão','Bomba','Compressor','Iluminação geral','Tomadas','Câmeras']
+  },
+  'terreno': {
+    'Elementos construtivos': ['Frente/testada','Lateral direita','Lateral esquerda','Fundos','Calçada','Muro'],
+    'Esquadrias e acessos': ['Portão','Entrada'],
+    'Instalações elétricas': ['Ponto de energia','Iluminação externa'],
+    'Áreas externas': ['Vegetação','Mata','Área total'],
+    '_testavel': ['Portão','Iluminação externa']
+  }
+};
+
+// ── CHAVE NORMALIZADA ────────────────────────────────────
+function _wiz6NormKey(nome) {
+  return nome.toLowerCase()
+    .replace(/[áàãâä]/g,'a').replace(/[éèêë]/g,'e')
+    .replace(/[íìîï]/g,'i').replace(/[óòõ��ö]/g,'o')
+    .replace(/[úùûü]/g,'u').replace(/ç/g,'c')
+    .replace(/\s+/g,' ').trim();
+}
+
+function _wiz6GetItens(nomeAmb) {
+  var k = _wiz6NormKey(nomeAmb);
+  if (_wiz6ItensPorAmbiente[k]) return _wiz6ItensPorAmbiente[k];
+  // Busca parcial
+  for (var key in _wiz6ItensPorAmbiente) {
+    if (k.indexOf(key) >= 0 || key.indexOf(k) >= 0) return _wiz6ItensPorAmbiente[key];
+  }
+  // Fallback genérico
+  return {
+    'Elementos construtivos': ['Piso','Parede','Pintura','Teto'],
+    'Esquadrias e acessos': ['Porta','Janela'],
+    'Instalações elétricas': ['Tomadas','Interruptores','Iluminação'],
+    '_testavel': ['Tomadas','Iluminação']
+  };
+}
+
+// ── INICIALIZAR ETAPA 6 ──────────────────────────────────
+function wiz6Init() {
+  _wiz6AmbIdx = 0;
+  _wiz6AmbDone = {};
+  _wiz6Ambientes = [];
+
+  // Pegar ambientes da Etapa 5
+  var resumoEl = document.getElementById('amb-resumo');
+  if (resumoEl) {
+    var tags = resumoEl.querySelectorAll('span[style*="border-radius:20px"]');
+    tags.forEach(function(t) {
+      var txt = t.textContent.trim();
+      // Remover ×N se houver múltiplos
+      if (txt.indexOf('×') >= 0) {
+        var partes = txt.split('×');
+        var nome = partes[0].trim();
+        var qtd = parseInt(partes[1]) || 1;
+        for (var i = 1; i <= qtd; i++) {
+          _wiz6Ambientes.push(qtd > 1 ? nome + ' ' + i : nome);
+        }
+      } else if (txt) {
+        _wiz6Ambientes.push(txt);
+      }
+    });
+  }
+
+  // Fallback se não tiver ambientes
+  if (_wiz6Ambientes.length === 0) {
+    _wiz6Ambientes = ['Ambiente 1'];
+  }
+
+  wiz6RenderTabs();
+  wiz6RenderAmbCard(_wiz6AmbIdx);
+  wiz6AtualizarProgress();
+}
+
+// ── SELECIONAR MODO ──────────────────────────────────────
+function wiz6SelecionarModo(modo) {
+  _wiz6Modo = modo;
+  document.getElementById('wiz6-btn-foto').classList.toggle('active', modo === 'foto');
+  document.getElementById('wiz6-btn-video').classList.toggle('active', modo === 'video');
+  document.getElementById('wiz6-modo-foto').style.display = modo === 'foto' ? 'block' : 'none';
+  document.getElementById('wiz6-modo-video').style.display = modo === 'video' ? 'block' : 'none';
+  if (modo === 'foto') wiz6Init();
+}
+
+// ── TABS DE AMBIENTES ────────────────────────────────────
+function wiz6RenderTabs() {
+  var tabs = document.getElementById('wiz6-tabs');
+  if (!tabs) return;
+  tabs.innerHTML = '';
+  _wiz6Ambientes.forEach(function(nome, i) {
+    var tab = document.createElement('div');
+    tab.className = 'wiz6-amb-tab' + (i === _wiz6AmbIdx ? ' active' : '') + (_wiz6AmbDone[i] ? ' done' : '');
+    tab.textContent = (_wiz6AmbDone[i] ? '✓ ' : '') + nome;
+    tab.onclick = (function(idx){ return function(){ wiz6RenderAmbCard(idx); }; })(i);
+    tabs.appendChild(tab);
+  });
+}
+
+// ── CARD DO AMBIENTE ─────────────────────────────────────
+function wiz6RenderAmbCard(idx) {
+  _wiz6AmbIdx = idx;
+  var nome = _wiz6Ambientes[idx];
+  var card = document.getElementById('wiz6-amb-card');
+  if (!card) return;
+
+  var itens = _wiz6GetItens(nome);
+  var testaveis = itens['_testavel'] || [];
+  var roomId = 'room_' + idx;
+
+  var html = '<div style="background:#fff;border-radius:12px;border:0.5px solid #e2e8f0;overflow:hidden;margin-bottom:12px">';
+
+  // Header do ambiente
+  html += '<div style="background:linear-gradient(135deg,#0f2a4a,#1565c0);padding:14px 16px;display:flex;align-items:center;gap:10px">'
+    + '<span style="font-size:20px">' + _wiz6AmbIcon(nome) + '</span>'
+    + '<div>'
+    + '<div style="font-size:14px;font-weight:600;color:#fff">' + nome + '</div>'
+    + '<div style="font-size:11px;color:rgba(255,255,255,0.7)">Tire fotos · IA analisa automaticamente</div>'
+    + '</div>'
+    + '</div>';
+
+  // Área de fotos
+  html += '<div style="padding:14px 16px;border-bottom:0.5px solid #f5f7fa">'
+    + '<div style="font-size:11px;font-weight:700;color:#8898aa;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:10px">📷 Fotos do ambiente</div>'
+    + '<div class="wiz6-fotos-row" id="wiz6-fotos-' + idx + '">'
+    + '<label class="wiz6-add-foto">'
+    + '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2d7dd2" stroke-width="1.5"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg>'
+    + '<span>Foto</span>'
+    + '<input type="file" accept="image/*" capture="environment" multiple style="display:none" onchange="wiz6AddFotos(this,' + idx + ')"/>'
+    + '</label>'
+    + '</div>'
+    + '<div id="wiz6-ai-status-' + idx + '" style="display:none;font-size:12px;color:#2d7dd2;margin-top:8px">⏳ IA analisando...</div>'
+    + '</div>';
+
+  // Grupos de itens
+  for (var grupo in itens) {
+    if (grupo === '_testavel') continue;
+    var grupoItens = itens[grupo];
+    var grupoId = 'wiz6-grupo-' + idx + '-' + grupo.replace(/\s/g,'_');
+
+    html += '<div class="wiz6-grupo">'
+      + '<div class="wiz6-grupo-header" onclick="wiz6ToggleGrupo(\'' + grupoId + '\')">'
+      + '<div class="wiz6-grupo-titulo">'
+      + _wiz6GrupoIcon(grupo) + ' ' + grupo
+      + '</div>'
+      + '<div style="display:flex;align-items:center;gap:8px">'
+      + '<span class="wiz6-grupo-badge pend" id="badge-' + grupoId + '">Aguardando foto</span>'
+      + '<span style="font-size:12px;color:#8898aa">▼</span>'
+      + '</div>'
+      + '</div>'
+      + '<div class="wiz6-grupo-body" id="' + grupoId + '">';
+
+    grupoItens.forEach(function(item) {
+      var itemKey = 'item_' + idx + '_' + item.replace(/\s+/g,'_').replace(/[^a-zA-Z0-9_]/g,'');
+      var testavel = testaveis.indexOf(item) >= 0;
+
+      html += '<div class="wiz6-item" id="' + itemKey + '">'
+        + '<span class="wiz6-item-nome">' + item + '</span>'
+        + '<button class="wiz6-item-estado estado-pendente" id="estado-' + itemKey + '" onclick="wiz6CicloEstado(this)">'
+        + '⏳ Aguardando'
+        + '</button>'
+        + '</div>';
+
+      if (testavel) {
+        html += '<div class="wiz6-testavel" id="teste-' + itemKey + '">'
+          + '<button class="wiz6-teste-btn" onclick="wiz6Testar(this,\'' + itemKey + '\',\'ok\')">✅ Funcionando</button>'
+          + '<button class="wiz6-teste-btn" onclick="wiz6Testar(this,\'' + itemKey + '\',\'falha\')">⚠️ Mau funcionamento</button>'
+          + '<button class="wiz6-teste-btn" onclick="wiz6Testar(this,\'' + itemKey + '\',\'nao\')">❌ Não testado</button>'
+          + '</div>';
+      }
+    });
+
+    html += '</div></div>'; // fecha grupo-body e grupo
+  }
+
+  // Bloco de observações importantes
+  html += '<div style="padding:14px 16px">'
+    + '<div style="font-size:11px;font-weight:700;color:#f59e0b;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px">⚠️ Observações importantes</div>'
+    + '<div id="wiz6-obs-' + idx + '" class="wiz6-obs-list">'
+    + '<div style="font-size:12px;color:#8898aa;font-style:italic">Nenhuma observação detectada ainda. Aparecerão após análise das fotos.</div>'
+    + '</div>'
+    + '<textarea id="wiz6-obs-manual-' + idx + '" placeholder="Adicionar observação manual..." style="width:100%;border:0.5px solid #e2e8f0;border-radius:8px;padding:8px;font-size:12px;font-family:inherit;margin-top:8px;resize:none" rows="2"></textarea>'
+    + '</div>';
+
+  html += '</div>'; // fecha card principal
+
+  // Navegação
+  var isLast = (idx === _wiz6Ambientes.length - 1);
+  var btnProx = document.getElementById('wiz6-btn-prox-amb');
+  if (btnProx) {
+    if (isLast) {
+      btnProx.textContent = 'Finalizar vistoria ✓';
+      btnProx.className = 'wiz6-btn-concluir';
+    } else {
+      btnProx.textContent = 'Próximo →';
+      btnProx.className = 'wiz6-btn-prox';
+    }
+  }
+
+  card.innerHTML = html;
+
+  // Posição
+  var posEl = document.getElementById('wiz6-amb-pos');
+  if (posEl) posEl.textContent = (idx+1) + ' de ' + _wiz6Ambientes.length;
+
+  wiz6RenderTabs();
+}
+
+// ── ADICIONAR FOTOS E ANALISAR COM IA ───────────────────
+async function wiz6AddFotos(input, ambIdx) {
+  if (!input.files || !input.files.length) return;
+  var files = Array.from(input.files);
+  var nome = _wiz6Ambientes[ambIdx];
+  var statusEl = document.getElementById('wiz6-ai-status-' + ambIdx);
+  var fotosRow = document.getElementById('wiz6-fotos-' + ambIdx);
+
+  // Pré-visualização imediata
+  files.forEach(function(file) {
+    var reader = new FileReader();
+    reader.onload = function(e) {
+      var thumb = document.createElement('img');
+      thumb.src = e.target.result;
+      thumb.className = 'wiz6-foto-thumb';
+      fotosRow.insertBefore(thumb, fotosRow.firstChild);
+    };
+    reader.readAsDataURL(file);
+  });
+
+  if (statusEl) statusEl.style.display = 'block';
+
+  // Analisar cada foto com IA
+  for (var i = 0; i < files.length; i++) {
+    var file = files[i];
+    var reader2 = new FileReader();
+    var dataUrl = await new Promise(function(res) {
+      reader2.onload = function(e) { res(e.target.result); };
+      reader2.readAsDataURL(file);
+    });
+
+    var itens = _wiz6GetItens(nome);
+    var listaItens = [];
+    for (var g in itens) { if (g !== '_testavel') listaItens = listaItens.concat(itens[g]); }
+
+    try {
+      showLoading('IA analisando foto ' + (i+1) + ' de ' + files.length + '...');
+      var r = await fetch('/api/analyze-photo', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({
+          image: dataUrl,
+          item: listaItens.join(', '),
+          ambiente: nome,
+          modo: 'completo',
+          instrucao: 'Analise esta foto do ambiente "' + nome + '". Para cada item visível da lista, determine o estado: Bom, Regular ou Com avaria. Detecte observações importantes como trincas, infiltração, mofo, ferrugem, descascamento. Retorne JSON com: {itens: [{nome, estado, descricao}], observacoes: [string], descricao_geral: string}'
+        })
+      });
+      hideLoading();
+      var d = await r.json();
+      wiz6AplicarResultadoIA(d, ambIdx, nome);
+    } catch(e) {
+      hideLoading();
+      console.error('Erro IA:', e);
+    }
+  }
+
+  if (statusEl) statusEl.style.display = 'none';
+  input.value = '';
+
+  // Marcar créditos usados
+  wiz6DescontarCreditos(files.length, 'foto');
+}
+
+// ── APLICAR RESULTADO DA IA ──────────────────────────────
+function wiz6AplicarResultadoIA(d, ambIdx, nomeAmb) {
+  if (!d) return;
+
+  // Aplicar estados nos itens
+  var itensList = d.itens || d.items || [];
+  itensList.forEach(function(item) {
+    if (!item.nome || !item.estado) return;
+    var itemKey = 'item_' + ambIdx + '_' + item.nome.replace(/\s+/g,'_').replace(/[^a-zA-Z0-9_]/g,'');
+    var estadoEl = document.getElementById('estado-' + itemKey);
+    if (estadoEl) {
+      estadoEl.textContent = _wiz6EstadoLabel(item.estado);
+      estadoEl.className = 'wiz6-item-estado ' + _wiz6EstadoClass(item.estado);
+    }
+  });
+
+  // Aplicar observações importantes
+  var obs = d.observacoes || d.observations || [];
+  if (obs.length > 0) {
+    var obsEl = document.getElementById('wiz6-obs-' + ambIdx);
+    if (obsEl) {
+      obsEl.innerHTML = obs.map(function(o) {
+        return '<div class="wiz6-obs-item">'
+          + '<input type="checkbox" class="wiz6-obs-check" checked/>'
+          + '<span>' + o + '</span>'
+          + '</div>';
+      }).join('');
+    }
+  }
+
+  // Marcar grupos como analisados
+  var itens = _wiz6GetItens(nomeAmb);
+  for (var grupo in itens) {
+    if (grupo === '_testavel') continue;
+    var grupoId = 'wiz6-grupo-' + ambIdx + '-' + grupo.replace(/\s/g,'_');
+    var badgeEl = document.getElementById('badge-' + grupoId);
+    if (badgeEl) {
+      badgeEl.textContent = 'IA analisou ✓';
+      badgeEl.className = 'wiz6-grupo-badge ok';
+    }
+  }
+
+  toast('✦ IA analisou ' + nomeAmb + ' — confira os itens!', 'success');
+}
+
+// ── CICLO DE ESTADO MANUAL (usuário pode ajustar) ────────
+function wiz6CicloEstado(btn) {
+  var estados = [
+    {cls:'estado-bom', label:'🟢 Bom'},
+    {cls:'estado-regular', label:'🟡 Regular'},
+    {cls:'estado-avaria', label:'🔴 Com avaria'},
+    {cls:'estado-nao-possui', label:'⬜ Não possui'}
+  ];
+  var atual = btn.className.replace('wiz6-item-estado ','');
+  var idx = estados.findIndex(function(e){ return e.cls === atual; });
+  if (idx < 0) idx = -1;
+  var prox = estados[(idx + 1) % estados.length];
+  btn.className = 'wiz6-item-estado ' + prox.cls;
+  btn.textContent = prox.label;
+}
+
+// ── BOTÕES DE TESTE ──────────────────────────────────────
+function wiz6Testar(btn, itemKey, tipo) {
+  var container = btn.closest('.wiz6-testavel');
+  if (!container) return;
+  container.querySelectorAll('.wiz6-teste-btn').forEach(function(b) {
+    b.classList.remove('sel-ok','sel-falha','sel-nao');
+  });
+  btn.classList.add('sel-' + tipo);
+
+  // Se mau funcionamento → marcar estado como avaria
+  if (tipo === 'falha') {
+    var estadoEl = document.getElementById('estado-' + itemKey);
+    if (estadoEl) {
+      estadoEl.className = 'wiz6-item-estado estado-avaria';
+      estadoEl.textContent = '🔴 Com avaria';
+    }
+  }
+}
+
+// ── TOGGLE GRUPO ─────────────────────────────────────────
+function wiz6ToggleGrupo(id) {
+  var el = document.getElementById(id);
+  if (!el) return;
+  el.style.display = el.style.display === 'none' ? 'block' : 'none';
+}
+
+// ── NAVEGAÇÃO ENTRE AMBIENTES ────────────────────────────
+function wiz6ProxAmb() {
+  _wiz6AmbDone[_wiz6AmbIdx] = true;
+  if (_wiz6AmbIdx < _wiz6Ambientes.length - 1) {
+    wiz6RenderAmbCard(_wiz6AmbIdx + 1);
+  } else {
+    wiz6Concluir();
+  }
+  wiz6AtualizarProgress();
+}
+
+function wiz6AmbAnterior() {
+  if (_wiz6AmbIdx > 0) wiz6RenderAmbCard(_wiz6AmbIdx - 1);
+}
+
+// ── PROGRESS BAR ─────────────────────────────────────────
+function wiz6AtualizarProgress() {
+  var total = _wiz6Ambientes.length;
+  var done = Object.keys(_wiz6AmbDone).length;
+  var pct = total > 0 ? Math.round(done / total * 100) : 0;
+  var fill = document.getElementById('wiz6-progress-fill');
+  var txt = document.getElementById('wiz6-progress-txt');
+  if (fill) fill.style.width = pct + '%';
+  if (txt) txt.textContent = done + ' de ' + total + ' ambientes concluídos';
+}
+
+// ── MODO VÍDEO ───────────────────────────────────────────
+async function wiz6UploadVideo(input) {
+  var file = input.files[0];
+  if (!file) return;
+
+  // Estimar frames e custo
+  var durSeg = await _wiz6GetVideoDuration(file);
+  var frames = _wiz6EstimarFrames(durSeg);
+  var custo = (frames * 0.9).toFixed(2);
+
+  var confirmar = confirm(
+    '🎥 Vídeo: ' + Math.round(durSeg) + ' segundos\n'
+    + 'Frames estimados: ' + frames + '\n'
+    + 'Custo estimado: R$ ' + custo + ' (' + frames + ' créditos de vídeo)\n\n'
+    + 'Confirmar processamento?'
+  );
+  if (!confirmar) { input.value = ''; return; }
+
+  document.getElementById('wiz6-video-upload-tela').style.display = 'none';
+  document.getElementById('wiz6-video-processando').style.display = 'block';
+
+  var fd = new FormData();
+  fd.append('video', file);
+  fd.append('ambientes', JSON.stringify(_wiz6Ambientes));
+
+  try {
+    var r = await fetch('/api/video/upload', {method:'POST', body:fd});
+    var d = await r.json();
+    if (d.job_id) {
+      _wiz6VideoJobId = d.job_id;
+      _wiz6VideoPolling = setInterval(wiz6PollVideo, 3000);
+    } else {
+      alert('Erro: ' + (d.erro || 'Tente novamente'));
+      document.getElementById('wiz6-video-upload-tela').style.display = 'block';
+      document.getElementById('wiz6-video-processando').style.display = 'none';
+    }
+  } catch(e) {
+    alert('Erro de conexão. Tente novamente.');
+    document.getElementById('wiz6-video-upload-tela').style.display = 'block';
+    document.getElementById('wiz6-video-processando').style.display = 'none';
+  }
+  input.value = '';
+}
+
+async function wiz6PollVideo() {
+  if (!_wiz6VideoJobId) return;
+  try {
+    var r = await fetch('/api/video/status/' + _wiz6VideoJobId);
+    var d = await r.json();
+    var statusEl = document.getElementById('wiz6-video-status');
+    if (statusEl) statusEl.textContent = d.mensagem || 'Processando...';
+    if (d.status === 'ok') {
+      clearInterval(_wiz6VideoPolling);
+      wiz6MostrarRevisaoVideo(d.ambientes || {});
+    } else if (d.status === 'erro') {
+      clearInterval(_wiz6VideoPolling);
+      alert('Erro no processamento: ' + (d.mensagem || 'Tente novamente'));
+      document.getElementById('wiz6-video-upload-tela').style.display = 'block';
+      document.getElementById('wiz6-video-processando').style.display = 'none';
+    }
+  } catch(e) {}
+}
+
+function wiz6MostrarRevisaoVideo(ambientes) {
+  document.getElementById('wiz6-video-processando').style.display = 'none';
+  var rev = document.getElementById('wiz6-video-revisao');
+  rev.style.display = 'block';
+
+  var html = '<div style="font-size:14px;font-weight:600;color:#1a2540;margin-bottom:12px">Revisão dos frames — confirme os ambientes</div>';
+
+  Object.entries(ambientes).forEach(function(entry) {
+    var amb = entry[0], frames = entry[1];
+    html += '<div style="margin-bottom:16px">'
+      + '<div style="font-size:12px;font-weight:600;color:#2d7dd2;margin-bottom:6px">' + amb + ' — ' + frames.length + ' frames</div>'
+      + '<div style="display:flex;gap:8px;flex-wrap:wrap">';
+    frames.forEach(function(frame, fi) {
+      html += '<div style="position:relative;cursor:pointer" onclick="wiz6ToggleFrame(this)">'
+        + '<img src="data:image/jpeg;base64,' + (frame.imagem_b64 || '') + '" style="width:80px;height:60px;object-fit:cover;border-radius:6px;border:2px solid #2d7dd2"/>'
+        + '<div style="font-size:9px;text-align:center;color:#8898aa;margin-top:2px">' + (frame.qualidade || '') + '</div>'
+        + '</div>';
+    });
+    html += '</div></div>';
+  });
+
+  html += '<button onclick="wiz6ConfirmarVideo()" style="width:100%;padding:12px;border-radius:8px;background:#059669;color:#fff;font-size:14px;font-weight:600;border:none;cursor:pointer;margin-top:8px">✅ Confirmar e continuar →</button>';
+  rev.innerHTML = html;
+}
+
+function wiz6ToggleFrame(el) {
+  var img = el.querySelector('img');
+  if (!img) return;
+  var ativo = img.style.borderColor !== 'rgb(239, 68, 68)';
+  img.style.borderColor = ativo ? '#ef4444' : '#2d7dd2';
+  img.style.opacity = ativo ? '0.4' : '1';
+}
+
+function wiz6ConfirmarVideo() {
+  if (typeof nextWizStep === 'function') nextWizStep();
+}
+
+// ── HELPERS ──────────────────────────────────────────────
+function _wiz6GetVideoDuration(file) {
+  return new Promise(function(res) {
+    var video = document.createElement('video');
+    video.preload = 'metadata';
+    video.onloadedmetadata = function() {
+      URL.revokeObjectURL(video.src);
+      res(video.duration || 0);
+    };
+    video.src = URL.createObjectURL(file);
+  });
+}
+
+function _wiz6EstimarFrames(durSeg) {
+  if (durSeg <= 60) return Math.max(8, Math.round(durSeg * 0.15));
+  if (durSeg <= 180) return Math.round(durSeg * 0.12);
+  if (durSeg <= 300) return Math.round(durSeg * 0.10);
+  return Math.min(100, Math.round(durSeg * 0.08));
+}
+
+function _wiz6AmbIcon(nome) {
+  var n = nome.toLowerCase();
+  if (n.indexOf('fachada') >= 0) return '🏠';
+  if (n.indexOf('garagem') >= 0) return '🚗';
+  if (n.indexOf('sala') >= 0) return '🛋️';
+  if (n.indexOf('cozinha') >= 0) return '🍳';
+  if (n.indexOf('banheiro') >= 0 || n.indexOf('lavabo') >= 0) return '🚿';
+  if (n.indexOf('suite') >= 0 || n.indexOf('suíte') >= 0) return '🛏️';
+  if (n.indexOf('dorm') >= 0 || n.indexOf('quarto') >= 0) return '🛏️';
+  if (n.indexOf('closet') >= 0) return '👔';
+  if (n.indexOf('cozinha') >= 0) return '🍳';
+  if (n.indexOf('varanda') >= 0 || n.indexOf('sacada') >= 0) return '🌿';
+  if (n.indexOf('gourmet') >= 0 || n.indexOf('churrasqueira') >= 0) return '🔥';
+  if (n.indexOf('piscina') >= 0) return '🏊';
+  if (n.indexOf('quintal') >= 0 || n.indexOf('jardim') >= 0) return '🌱';
+  if (n.indexOf('escritorio') >= 0 || n.indexOf('escritório') >= 0) return '💼';
+  if (n.indexOf('deposito') >= 0 || n.indexOf('depósito') >= 0) return '📦';
+  if (n.indexOf('galpao') >= 0 || n.indexOf('galpão') >= 0) return '🏭';
+  if (n.indexOf('lavanderia') >= 0) return '👕';
+  if (n.indexOf('corredor') >= 0 || n.indexOf('hall') >= 0) return '🚪';
+  return '🏠';
+}
+
+function _wiz6GrupoIcon(grupo) {
+  var g = grupo.toLowerCase();
+  if (g.indexOf('construtiv') >= 0) return '🧱';
+  if (g.indexOf('esquadria') >= 0) return '🚪';
+  if (g.indexOf('elétric') >= 0 || g.indexOf('eletric') >= 0) return '⚡';
+  if (g.indexOf('hidráulic') >= 0 || g.indexOf('hidraulic') >= 0) return '💧';
+  if (g.indexOf('gás') >= 0 || g.indexOf('gas') >= 0) return '🔥';
+  if (g.indexOf('equipamento') >= 0) return '⚙️';
+  if (g.indexOf('mobiliário fixo') >= 0 || g.indexOf('mobiliario fixo') >= 0) return '🪑';
+  if (g.indexOf('mobiliário solto') >= 0 || g.indexOf('mobiliario solto') >= 0) return '🛋️';
+  if (g.indexOf('acessório') >= 0 || g.indexOf('acessorio') >= 0) return '🔧';
+  if (g.indexOf('externas') >= 0 || g.indexOf('paisag') >= 0) return '🌿';
+  if (g.indexOf('técnico') >= 0 || g.indexOf('tecnico') >= 0) return '🔌';
+  return '📋';
+}
+
+function _wiz6EstadoLabel(estado) {
+  var e = (estado || '').toLowerCase();
+  if (e.indexOf('bom') >= 0 || e === 'good') return '🟢 Bom';
+  if (e.indexOf('regular') >= 0) return '🟡 Regular';
+  if (e.indexOf('avaria') >= 0 || e.indexOf('ruim') >= 0 || e === 'bad') return '🔴 Com avaria';
+  if (e.indexOf('possui') >= 0) return '⬜ Não possui';
+  return '⏳ Aguardando';
+}
+
+function _wiz6EstadoClass(estado) {
+  var e = (estado || '').toLowerCase();
+  if (e.indexOf('bom') >= 0 || e === 'good') return 'estado-bom';
+  if (e.indexOf('regular') >= 0) return 'estado-regular';
+  if (e.indexOf('avaria') >= 0 || e.indexOf('ruim') >= 0 || e === 'bad') return 'estado-avaria';
+  if (e.indexOf('possui') >= 0) return 'estado-nao-possui';
+  return 'estado-pendente';
+}
+
+function wiz6DescontarCreditos(qtd, tipo) {
+  var preco = tipo === 'video' ? 0.90 : 0.50;
+  console.log('Créditos usados:', qtd, tipo, '= R$', (qtd * preco).toFixed(2));
+  // TODO: conectar ao sistema de créditos do Mercado Pago
+}
+
+// ── CONCLUIR VISTORIA ────────────────────────────────────
+function wiz6Concluir() {
+  _wiz6AmbDone[_wiz6AmbIdx] = true;
+  wiz6AtualizarProgress();
+  if (typeof nextWizStep === 'function') nextWizStep();
+}
+
+// ── HOOK NA ETAPA 6 ──────────────────────────────────────
+// Sobrescrever gotoWStep para inicializar etapa 6 automaticamente
+var _wiz6OrigGotoWStep = typeof gotoWStep === 'function' ? gotoWStep : null;
+function gotoWStep(n) {
+  if (_wiz6OrigGotoWStep) _wiz6OrigGotoWStep(n);
+  if (n === 4) {
+    setTimeout(function() { wiz6Init(); }, 100);
+  }
+}
+// ========== FIM ETAPA 6 ==========
 </script>
 <button class="db-help-btn" onclick="showManual()" title="Manual do usuario">?</button>
 
