@@ -3441,7 +3441,8 @@ async function advanceFromAmbientes() {
       var key = el.id.replace('wiz-val-','');
       if (key === 'casa') return;
       var row = document.getElementById('wiz-row-' + key);
-      var label = row ? (row.querySelector('.wiz-amb-nome') || {}).textContent : null;
+      if (!row) return;
+      var label = (row.querySelector('.wiz-amb-nome') || {}).textContent;
       if (!label) label = key.replace(/-/g,' ').replace(/\b\w/g,function(c){return c.toUpperCase();});
       label = (label || '').trim();
       for (var i = 0; i < val; i++) ambCapturados.push(val > 1 ? label+' '+(i+1) : label);
@@ -5574,6 +5575,7 @@ function wiz6Init() {
   // Ler ambientes da fonte definitiva capturada em advanceFromAmbientes
   if (window._wiz6AmbientesFinal && window._wiz6AmbientesFinal.length > 0) {
     _wiz6Ambientes = window._wiz6AmbientesFinal.slice();
+    window._wiz6AmbientesFinal = null;
   } else if (_wiz6Ambientes && _wiz6Ambientes.length > 0) {
     // Manter o que ja tem - nao zerar se _wiz6AmbientesFinal nao existe
   } else {
@@ -5625,7 +5627,8 @@ function wiz6SelecionarModo(modo) {
                 var key = el.id.replace('wiz-val-','');
                 if (key === 'casa') return;
                 var row = document.getElementById('wiz-row-' + key);
-                var label = row ? (row.querySelector('.wiz-amb-nome') || {}).textContent : null;
+                if (!row) return;
+                var label = (row.querySelector('.wiz-amb-nome') || {}).textContent;
                 if (!label) label = key.replace(/-/g,' ').replace(/\b\w/g,function(c){return c.toUpperCase();});
                 label = (label || '').trim();
                 for (var i = 0; i < val; i++) _ambs2.push(val > 1 ? label+' '+(i+1) : label);
