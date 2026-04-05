@@ -3433,31 +3433,37 @@ function addCustomRoom() {
 
 // ─── BUILD ROOMS IN STEP 4 ────────────────────────────────────────────────────
 async function advanceFromAmbientes() {
-  // Capturar ambientes de _ambData (fonte definitiva)
-  var ambCapturados = [];
-  try {
-    if (typeof _ambData !== 'undefined' && typeof _ambMode !== 'undefined' && _ambData[_ambMode]) {
-      var _d = _ambData[_ambMode];
-      Object.keys(_d).forEach(function(key) {
-        var a = _d[key];
-        if (!a || (a.val || 0) <= 0) return;
-        for (var i = 0; i < a.val; i++) {
-          ambCapturados.push(a.val > 1 ? a.label + ' ' + (i+1) : a.label);
+  // Capturar ambientes do sistema novo (wiz-val-* + labels do DOM)
+    var ambCapturados = [];
+    try {
+      document.querySelectorAll('[id^="wiz-val-"]').forEach(function(el) {
+        var val = parseInt(el.textContent) || 0;
+        if (val <= 0) return;
+        var key = el.id.replace('wiz-val-','');
+        if (key === 'casa') return;
+        var row = document.getElementById('wiz-row-' + key);
+        var label = row ? (row.querySelector('.wiz-amb-nome') || {}).textContent : null;
+        if (!label) {
+          label = key.replace(/-/g,' ').replace(/\b\w/g,function(c){return c.toUpperCase();});
+        }
+        label = (label || '').trim();
+        for (var i = 0; i < val; i++) {
+          ambCapturados.push(val > 1 ? label + ' ' + (i+1) : label);
         }
       });
-    }
-  } catch(e) { console.warn('captura ambientes erro:', e); }
-  // Fallback: tentar pelo resumo se _ambData vazio
-  if (ambCapturados.length === 0) {
-    document.querySelectorAll('#amb-resumo .resumo-tag').forEach(function(s) {
-      var txt = (s.textContent || '').trim();
-      if (!txt || txt.indexOf('Nenhum') >= 0) return;
-      var m = txt.match(/^.*?(\d+x\s+)?(.+)$/);
-      if (m) ambCapturados.push(m[2].trim());
-    });
-  }
-  if (ambCapturados.length > 0) window._wiz6AmbientesFinal = ambCapturados;
-  console.log('[advance] ambientes capturados:', ambCapturados);
+      if (ambCapturados.length === 0 && typeof _ambData !== 'undefined' && typeof _ambMode !== 'undefined' && _ambData[_ambMode]) {
+        var _d = _ambData[_ambMode];
+        Object.keys(_d).forEach(function(key) {
+          var a = _d[key];
+          if (!a || (a.val || 0) <= 0) return;
+          for (var i = 0; i < a.val; i++) {
+            ambCapturados.push(a.val > 1 ? a.label + ' ' + (i+1) : a.label);
+          }
+        });
+      }
+    } catch(e) { console.warn('captura ambientes erro:', e); }
+    if (ambCapturados.length > 0) window._wiz6AmbientesFinal = ambCapturados;
+    console.log('[advance] ambientes capturados:', ambCapturados);
    showLoading("Salvando ambientes..."); await buildRoomsList(); hideLoading(); nextWizStep(); }
 
 async function buildRoomsList() {
@@ -5616,19 +5622,20 @@ function wiz6SelecionarModo(modo) {
     // Recapturar de _ambData se _wiz6AmbientesFinal vazio
     if (!window._wiz6AmbientesFinal || window._wiz6AmbientesFinal.length === 0) {
       try {
-        if (typeof _ambData !== 'undefined' && typeof _ambMode !== 'undefined' && _ambData[_ambMode]) {
-          var _d2 = _ambData[_ambMode];
-          var _ambs2 = [];
-          Object.keys(_d2).forEach(function(key) {
-            var a = _d2[key];
-            if (!a || (a.val || 0) <= 0) return;
-            for (var i = 0; i < a.val; i++) {
-              _ambs2.push(a.val > 1 ? a.label + ' ' + (i+1) : a.label);
-            }
-          });
-          if (_ambs2.length > 0) window._wiz6AmbientesFinal = _ambs2;
-        }
-      } catch(e) {}
+              var _ambs2 = [];
+              document.querySelectorAll('[id^="wiz-val-"]').forEach(function(el) {
+                var val = parseInt(el.textContent) || 0;
+                if (val <= 0) return;
+                var key = el.id.replace('wiz-val-','');
+                if (key === 'casa') return;
+                var row = document.getElementById('wiz-row-' + key);
+                var label = row ? (row.querySelector('.wiz-amb-nome') || {}).textContent : null;
+                if (!label) label = key.replace(/-/g,' ').replace(/\b\w/g,function(c){return c.toUpperCase();});
+                label = (label || '').trim();
+                for (var i = 0; i < val; i++) _ambs2.push(val > 1 ? label+' '+(i+1) : label);
+              });
+              if (_ambs2.length > 0) window._wiz6AmbientesFinal = _ambs2;
+            } catch(e) {}
     }
     if (window._wiz6AmbientesFinal && window._wiz6AmbientesFinal.length > 0) {
       _wiz6Ambientes = window._wiz6AmbientesFinal.slice();
