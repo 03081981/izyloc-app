@@ -2574,6 +2574,7 @@ textarea.obs-geral{width:100%;background:#f8fafc;border:.5px solid #dce3ed;borde
 <div style="display:flex;align-items:center;gap:6px;padding:10px 16px;border-radius:8px;border:1.5px dashed #2d7dd2;background:#f0f7ff;color:#2d7dd2;font-size:13px;font-weight:500;cursor:pointer;margin-bottom:4px;width:fit-content" onclick="addLocatario ? addLocatario() : null">+ Adicionar outro locatario</div>
 
 <!-- CORRETOR -->
+<div id="corretor-block">
 <div style="font-size:11px;font-weight:700;color:#8898aa;text-transform:uppercase;letter-spacing:0.5px;margin:16px 0 10px">Corretor avaliador</div>
 <div id="corretor-block" style="background:#fff;border-radius:12px;border:0.5px solid #e2e8f0;padding:16px;margin-bottom:10px">
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
@@ -2599,7 +2600,8 @@ textarea.obs-geral{width:100%;background:#f8fafc;border:.5px solid #dce3ed;borde
     </div>
   </div>
 
-  <!-- BOTÃO ADICIONAR IMOBILIÁRIA -->
+  </div>
+<!-- BOTÃO ADICIONAR IMOBILIÁRIA -->
   <div id="btn-add-imob" onclick="document.getElementById('btn-add-imob').style.display='none';document.getElementById('imob-expand').style.display='block'" style="display:flex;align-items:center;gap:6px;padding:10px 16px;border-radius:8px;border:1.5px dashed #2d7dd2;background:#f0f7ff;color:#2d7dd2;font-size:13px;font-weight:500;cursor:pointer;margin-top:14px;width:100%">
     🏢 + Adicionar imobiliaria <span style="font-size:11px;color:#8898aa;font-weight:400;margin-left:4px">(se representando uma imobiliaria)</span>
   </div>
@@ -6205,5 +6207,25 @@ function wiz6Concluir() {
     <button onclick="showNewInspection();fecharComoFunciona();" style="width:100%;background:#2d7dd2;color:#fff;border:none;border-radius:8px;padding:12px;font-size:13px;font-weight:700;cursor:pointer;box-shadow:0 4px 12px rgba(45,125,210,0.4)">+ Iniciar nova vistoria</button>
   </div>
 </div>
+
+<script>
+(function(){
+  function _applyCorretorVis(){
+    try {
+      var cb = document.getElementById("corretor-block");
+      if (!cb || typeof wizard === "undefined") return;
+      cb.style.display = (wizard.realizador === "corretor") ? "" : "none";
+    } catch(e){}
+  }
+  var _prevNWS = window.nextWizStep;
+  if (_prevNWS) window.nextWizStep = function(n){ _prevNWS(n); setTimeout(_applyCorretorVis,50); };
+  var _prevPWS = window.prevWizStep;
+  if (_prevPWS) window.prevWizStep = function(){ _prevPWS.apply(this,arguments); setTimeout(_applyCorretorVis,50); };
+  document.addEventListener("click", function(e){
+    var t = e.target;
+    if (t && t.closest && t.closest(".realiza-card")) setTimeout(_applyCorretorVis, 80);
+  }, true);
+})();
+</script>
 </body>
 </html>
