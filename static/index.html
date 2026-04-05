@@ -5842,7 +5842,7 @@ async function wiz6AddFotos(input, ambIdx) {
     }
   }
 
-  if (statusEl) statusEl.style.display = 'none';
+  if (statusEl && !(statusEl.innerHTML||'').trim()) statusEl.style.display = 'none';
   input.value = '';
 
   // Marcar créditos usados
