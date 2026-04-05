@@ -1,183 +1,206 @@
-import requests
+import anthropic
 import base64
-import os
 import json
-import time
+import os
+import re
 
 ANTHROPIC_API_KEY = os.environ.get('ANTHROPIC_API_KEY', '')
-ANTHROPIC_API_URL = 'https://api.anthropic.com/v1/messages'
 
-
-def _encode_image(image_path: str) -> tuple:
-    """Encode image to base64 and detect media type."""
-    ext = os.path.splitext(image_path)[1].lower()
-    media_types = {
-        '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg',
-        '.png': 'image/png', '.webp': 'image/webp', '.gif': 'image/gif'
-    }
-    media_type = media_types.get(ext, 'image/jpeg')
+def _encode_image(image_path):
     with open(image_path, 'rb') as f:
-        image_data = base64.standard_b64encode(f.read()).decode('utf-8')
-    return image_data, media_type
+        return base64.b64encode(f.read()).decode('utf-8')
 
-
-def analyze_photos(image_paths: list, item_name: str, room_name: str) -> dict:
+def analyze_photos(image_paths, item_name='', room_name='', modo='simples'):
     """
-    Analisa uma ou múltiplas fotos de vistoria usando Claude Vision.
-    Foco em identificar defeitos específicos para laudo imobiliário.
-    Retorna descrição objetiva dos problemas encontrados.
+    Analisa fotos de um ambiente para vistoria imobiliária.
+    
+    modo='simples': retorna {description, estado} — compatibilidade legada
+    modo='completo': retorna {itens, observacoes, descricao_geral, estado}
     """
     if not ANTHROPIC_API_KEY:
         return {
-            "success": False,
-            "description": "Chave de API da IA não configurada. Configure ANTHROPIC_API_KEY.",
-            "condition": "não avaliado",
-            "problems": []
+            'description': 'Configure ANTHROPIC_API_KEY para análise automática.',
+            'estado': 'Regular',
+            'itens': [],
+            'observacoes': [],
+            'descricao_geral': 'API não configurada.'
         }
 
-    if not image_paths:
-        return {
-            "success": False,
-            "description": "Nenhuma foto para analisar.",
-            "condition": "não avaliado",
-            "problems": []
-        }
+    client = anthropic.Anthropic(api_key=ANTHROPIC_API_KEY)
 
-    try:
-        # Monta os blocos de imagem para o Claude
-        content = []
-        valid_paths = []
-
-        for path in image_paths:
-            if not os.path.exists(path):
-                continue
-            image_data, media_type = _encode_image(path)
-            content.append({
+    # Preparar imagens
+    images_content = []
+    for path in image_paths:
+        try:
+            img_data = _encode_image(path)
+            images_content.append({
                 'type': 'image',
                 'source': {
                     'type': 'base64',
-                    'media_type': media_type,
-                    'data': image_data
+                    'media_type': 'image/jpeg',
+                    'data': img_data
                 }
             })
-            valid_paths.append(path)
+        except Exception:
+            pass
 
-        if not content:
-            return {
-                "success": False,
-                "description": "Fotos não encontradas no servidor.",
-                "condition": "não avaliado",
-                "problems": []
-            }
+    if not images_content:
+        return {
+            'description': 'Não foi possível processar a imagem.',
+            'estado': 'Regular',
+            'itens': [],
+            'observacoes': [],
+            'descricao_geral': 'Imagem inválida.'
+        }
 
-        n = len(content)
-        foto_str = "esta foto" if n == 1 else f"estas {n} fotos"
+    # Itens esperados no ambiente
+    itens_lista = [i.strip() for i in item_name.split(',') if i.strip()] if item_name else []
 
-        system_msg = """Você é um PERITO TÉCNICO ESPECIALISTA EM VISTORIA IMOBILIÁRIA com 20 anos de experiência. Analisa imagens e gera descrições técnicas para laudos profissionais.
+    # ── MODO COMPLETO ─────────────────────────────────────
+    if modo == 'completo':
+        itens_str = '\n'.join(['- ' + i for i in itens_lista]) if itens_lista else '- piso\n- parede\n- teto\n- porta\n- janela\n- iluminação'
 
-REGRAS ABSOLUTAS — nunca viole:
-1. NUNCA use "ou" para indicar incerteza de material, tipo ou acabamento. Use termos neutros: "metal", "revestimento cerâmico", "material não identificado".
-2. NUNCA invente ou estime medidas numéricas. Proibido escrever "90 cm", "1,20m", "aproximadamente X".
-3. NUNCA descreva itens adjacentes que não sejam o foco (não descreva parede se o item é janela).
-4. NUNCA afirme o que não está claramente visível na imagem.
-5. A descrição deve ter 4 a 7 linhas."""
+        system_msg = """Você é um perito em vistoria imobiliária profissional. 
+Analisa fotos de imóveis com precisão técnica e linguagem objetiva.
+NUNCA invente informações. Descreva apenas o que é visível na foto.
+Sempre retorne JSON válido conforme solicitado."""
 
-        prompt = f"""Analise {{foto_str}} do item "{{item_name}}" no ambiente "{{room_name}}".
+        prompt = f"""Analise esta foto do ambiente: {room_name}
 
-PADRÃO POR TIPO:
-- JANELA: abertura (correr/abrir/basculante), material visível, trilhos, vedação, sujidade
-- PORTA: tipo de folha, material, ferragens, estrutura, alinhamento, fechadura
-- PAREDE/PISO/TETO: revestimento, cor, patologias visíveis (umidade, trinca, mancha)
-- EQUIPAMENTO: marca se logotipo visível, componentes, estado de conservação, anomalias
-- MOBILIÁRIO: material aparente, estado das superfícies, funcionamento visível
+ITENS PARA AVALIAR:
+{itens_str}
 
-EXEMPLOS — NÃO fazer vs FAZER:
-Errado: "alumínio ou ferro"           Certo: "metal de acabamento claro"
-Errado: "cerâmica ou porcelanato"     Certo: "revestimento cerâmico"
-Errado: "vidro temperado ou laminado" Certo: "vidro liso"
-Errado: "90 cm de largura"            Certo: nao mencionar medidas
+Para cada item VISÍVEL na foto, determine:
+- estado: "Bom", "Regular" ou "Com avaria"
+- descricao: frase técnica objetiva sobre o estado
 
-Responda SOMENTE com JSON valido, sem texto adicional:
+Detecte também OBSERVAÇÕES IMPORTANTES como:
+- trincas, fissuras, rachaduras
+- infiltração, umidade, mofo, manchas
+- ferrugem, corrosão
+- descascamento, desgaste acentuado
+- itens quebrados ou danificados
+
+RETORNE APENAS JSON VÁLIDO neste formato exato:
 {{
-  "condition": "otimo|bom|regular|ruim|pessimo",
-  "description": "descricao tecnica de 4 a 7 linhas do item visivel",
-  "estado_geral": "bom|regular|ruim",
-  "problems": ["defeito visivel 1 se houver"]
+  "descricao_geral": "Descrição técnica geral do ambiente em 1-2 frases",
+  "estado": "Bom|Regular|Com avaria",
+  "itens": [
+    {{"nome": "nome do item", "estado": "Bom|Regular|Com avaria", "descricao": "descrição técnica do item"}}
+  ],
+  "observacoes": [
+    "Observação importante detectada 1",
+    "Observação importante detectada 2"
+  ]
+}}
+
+REGRAS:
+- Inclua apenas itens VISÍVEIS na foto
+- Se o item não estiver visível, NÃO inclua no array
+- observacoes deve ser array vazio [] se não houver anomalias
+- Seja objetivo e técnico, sem exageros
+- NÃO use markdown, retorne apenas o JSON"""
+
+    # ── MODO SIMPLES (legado) ─────────────────────────────
+    else:
+        system_msg = """Você é um perito em vistoria imobiliária. 
+Analisa fotos com precisão técnica.
+NUNCA invente. Descreva apenas o visível.
+Retorne JSON válido."""
+
+        prompt = f"""Analise esta foto do item: {item_name}
+Ambiente: {room_name}
+
+Retorne JSON:
+{{
+  "condition": "Bom|Regular|Ruim",
+  "estado": "Bom|Regular|Ruim", 
+  "description": "Descrição técnica objetiva do estado de conservação",
+  "descricao_geral": "mesma description",
+  "itens": [{{"nome": "{item_name}", "estado": "Bom|Regular|Ruim", "descricao": "descrição"}}],
+  "observacoes": []
 }}"""
 
-        content.append({'type': 'text', 'text': prompt})
+    # ── CHAMADA À API ─────────────────────────────────────
+    content = images_content + [{'type': 'text', 'text': prompt}]
 
-        headers = {
-            'x-api-key': ANTHROPIC_API_KEY,
-            'anthropic-version': '2023-06-01',
-            'content-type': 'application/json'
-        }
+    for tentativa in range(3):
+        try:
+            response = client.messages.create(
+                model='claude-sonnet-4-5',
+                max_tokens=1500,
+                system=system_msg,
+                messages=[{'role': 'user', 'content': content}]
+            )
 
-        payload = {
-            'model': 'claude-sonnet-4-6',
-            'max_tokens': 2048,
-            'system': system_msg,
-            'messages': [{'role': 'user', 'content': content}]
-        }
+            text = response.content[0].text.strip()
 
-        # Retry até 3x para erro de sobrecarga (429/529)
-        response = None
-        for _attempt in range(3):
-            response = requests.post(ANTHROPIC_API_URL, headers=headers, json=payload, timeout=60)
-            if response.status_code in (429, 529):
-                if _attempt < 2:
-                    time.sleep(2 ** _attempt)
-                    continue
-            break
+            # Limpar markdown se houver
+            text = re.sub(r'```json\s*', '', text)
+            text = re.sub(r'```\s*', '', text)
+            text = text.strip()
 
-        if response and response.status_code == 200:
-            result = response.json()
-            text = result['content'][0]['text'].strip()
+            # Extrair JSON
+            match = re.search(r'\{.*\}', text, re.DOTALL)
+            if match:
+                text = match.group(0)
 
-            # Remove markdown code blocks se presentes
-            if '```json' in text:
-                text = text.split('```json')[1].split('```')[0].strip()
-            elif '```' in text:
-                text = text.split('```')[1].split('```')[0].strip()
+            d = json.loads(text)
 
-            try:
-                analysis = json.loads(text)
-                estado = analysis.get("estado_geral", "")
-                desc = analysis.get("description", "")
-                if estado and "Estado geral:" not in desc:
-                    desc = desc.rstrip() + "\n\nEstado geral: " + estado
-                return {
-                    "success": True,
-                    "condition": analysis.get("condition", "avaliado"),
-                    "description": desc,
-                    "problems": analysis.get("problems", [])
-                }
-            except json.JSONDecodeError:
-                # Resposta não era JSON — usa o texto direto
-                return {
-                    "success": True,
-                    "condition": "avaliado",
-                    "description": text,
-                    "problems": []
-                }
-
-        else:
-            error_msg = response.json().get('error', {}).get('message', 'Erro desconhecido')
-            return {
-                "success": False,
-                "description": f"Erro na análise: {error_msg}",
-                "condition": "não avaliado",
-                "problems": []
+            # Normalizar campos para garantir compatibilidade
+            resultado = {
+                'description': d.get('description') or d.get('descricao_geral', ''),
+                'estado': d.get('estado') or d.get('condition', 'Regular'),
+                'descricao_geral': d.get('descricao_geral') or d.get('description', ''),
+                'itens': d.get('itens') or d.get('items') or [],
+                'observacoes': d.get('observacoes') or d.get('observations') or [],
+                'condition': d.get('condition') or d.get('estado', 'Regular'),
+                'success': True
             }
 
-    except FileNotFoundError:
-        return {"success": False, "description": "Foto não encontrada", "condition": "não avaliado", "problems": []}
-    except requests.Timeout:
-        return {"success": False, "description": "Tempo de resposta da IA esgotado", "condition": "não avaliado", "problems": []}
-    except Exception as e:
-        return {"success": False, "description": f"Erro: {str(e)}", "condition": "não avaliado", "problems": []}
+            # Garantir que description esteja preenchido
+            if not resultado['description'] and resultado['descricao_geral']:
+                resultado['description'] = resultado['descricao_geral']
+            if not resultado['descricao_geral'] and resultado['description']:
+                resultado['descricao_geral'] = resultado['description']
+
+            return resultado
+
+        except json.JSONDecodeError:
+            # Fallback — retornar o texto como descrição
+            if tentativa == 2:
+                return {
+                    'description': text[:500] if 'text' in dir() else 'Erro ao processar resposta.',
+                    'estado': 'Regular',
+                    'descricao_geral': text[:500] if 'text' in dir() else '',
+                    'itens': [],
+                    'observacoes': [],
+                    'condition': 'Regular',
+                    'success': False
+                }
+        except Exception as e:
+            if tentativa == 2:
+                return {
+                    'description': f'Erro na análise: {str(e)}',
+                    'estado': 'Regular',
+                    'descricao_geral': '',
+                    'itens': [],
+                    'observacoes': [],
+                    'condition': 'Regular',
+                    'success': False
+                }
+
+    return {
+        'description': 'Não foi possível analisar a imagem.',
+        'estado': 'Regular',
+        'descricao_geral': '',
+        'itens': [],
+        'observacoes': [],
+        'condition': 'Regular',
+        'success': False
+    }
 
 
-def analyze_photo(image_path: str, item_name: str, room_name: str) -> dict:
-    """Compatibilidade retroativa: analisa uma única foto."""
-    return analyze_photos([image_path], item_name, room_name)
+def analyze_photo(image_path, item_name='', room_name='', modo='simples'):
+    """Wrapper para análise de foto única — mantém compatibilidade."""
+    return analyze_photos([image_path], item_name, room_name, modo)
