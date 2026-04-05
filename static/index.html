@@ -5515,7 +5515,8 @@ function wiz6Init() {
   _wiz6AmbDone = {};
   _wiz6Ambientes = [];
 
-  // Pegar ambientes da Etapa 5
+  // Pegar ambientes da Etapa 5 — só se não foram pré-carregados pelo hook
+  if (_wiz6Ambientes.length === 0) {
   var resumoEl = document.getElementById('amb-resumo');
   if (resumoEl) {
     var tags = resumoEl.querySelectorAll('span[style*="border-radius:20px"]');
@@ -5535,6 +5536,8 @@ function wiz6Init() {
     });
   }
 
+  } // fecha if resumoEl
+  } // fecha if _wiz6Ambientes.length === 0
   // Fallback se não tiver ambientes
   if (_wiz6Ambientes.length === 0) {
     _wiz6Ambientes = ['Ambiente 1'];
@@ -6050,9 +6053,36 @@ function wiz6Concluir() {
 (function() {
   var _prev = gotoWStep;
   gotoWStep = function(n) {
+    if (n === 4) {
+      // Capturar ambientes ANTES de _prev(n) apagar o resumo
+      var ambAntes = [];
+      document.querySelectorAll('#amb-resumo span').forEach(function(s) {
+        var txt = s.textContent.trim();
+        if (!txt || txt.indexOf('Nenhum') >= 0) return;
+        // Suporte a "Dormitório x2" ou "Dormitório ×2"
+        var match = txt.match(/^(.+?)\s*[x×](\d+)$/);
+        if (match) {
+          var nome = match[1].trim();
+          var qtd = parseInt(match[2]);
+          for (var i = 1; i <= qtd; i++) {
+            ambAntes.push(qtd > 1 ? nome + ' ' + i : nome);
+          }
+        } else {
+          ambAntes.push(txt);
+        }
+      });
+      // Salvar globalmente antes de _prev apagar
+      window._wiz6AmbientesSalvos = ambAntes.length > 0 ? ambAntes : null;
+    }
     if (_prev) _prev(n);
     if (n === 4) {
-      setTimeout(function() { wiz6Init(); }, 300);
+      setTimeout(function() {
+        if (window._wiz6AmbientesSalvos && window._wiz6AmbientesSalvos.length > 0) {
+          _wiz6Ambientes = window._wiz6AmbientesSalvos;
+          window._wiz6AmbientesSalvos = null;
+        }
+        wiz6Init();
+      }, 300);
     }
   };
 })();
