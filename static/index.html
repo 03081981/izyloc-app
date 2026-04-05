@@ -3337,7 +3337,12 @@ async function wizardNext(step) {
       return toast('Endereço do imóvel é obrigatório', 'error');
     const dateVal = document.getElementById('wi-date').value;
     const fmtDate = dateVal ? new Date(dateVal+'T12:00:00').toLocaleDateString('pt-BR') : '';
-    showLoading('Criando vistoria...');
+    var _tp = (typeof wizard !== 'undefined' && wizard.tipo) || (document.getElementById('wi-type')||{}).value || '';
+        if (!_tp) { var _sel = document.querySelector('.tipo-card.selected'); if (_sel) _tp = _sel.getAttribute('data-tipo') || ''; }
+        if (['entrada','saida','temporada'].indexOf(_tp) < 0) { hideLoading(); return toast('Selecione o tipo de vistoria antes de continuar', 'error'); }
+        if (typeof wizard !== 'undefined') wizard.tipo = _tp;
+        var _wi = document.getElementById('wi-type'); if (_wi) _wi.value = _tp;
+        showLoading('Criando vistoria...');
     const r = await api('POST', '/api/inspections', {
       type: (typeof wizard !== 'undefined' && wizard.tipo) || document.getElementById('wi-type').value,
       property_address: document.getElementById('wi-address').value.trim(),
