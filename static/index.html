@@ -5610,8 +5610,18 @@ function wiz6Init() {
   wiz6RenderTabs();
   wiz6RenderAmbCard(_wiz6AmbIdx);
   wiz6AtualizarProgress();
-  // Auto-selecionar modo foto ao iniciar
-  if (!_wiz6Modo || _wiz6Modo !== 'video') wiz6SelecionarModo('foto');
+  // Auto-selecionar modo foto ao iniciar (inline, sem chamar wiz6SelecionarModo para evitar recursao)
+  if (!_wiz6Modo || _wiz6Modo !== 'video') {
+    _wiz6Modo = 'foto';
+    var _bf = document.getElementById('wiz6-btn-foto');
+    var _bv = document.getElementById('wiz6-btn-video');
+    var _mf = document.getElementById('wiz6-modo-foto');
+    var _mv = document.getElementById('wiz6-modo-video');
+    if (_bf) _bf.classList.add('active');
+    if (_bv) _bv.classList.remove('active');
+    if (_mf) _mf.style.display = 'block';
+    if (_mv) _mv.style.display = 'none';
+  }
 }
 
 // ── SELECIONAR MODO ──────────────────────────────────────
