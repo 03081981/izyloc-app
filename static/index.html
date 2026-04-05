@@ -6047,13 +6047,15 @@ function wiz6Concluir() {
 
 // ── HOOK NA ETAPA 6 ──────────────────────────────────────
 // Sobrescrever gotoWStep para inicializar etapa 6 automaticamente
-var _wiz6OrigGotoWStep = typeof gotoWStep === 'function' ? gotoWStep : null;
-function gotoWStep(n) {
-  if (_wiz6OrigGotoWStep) _wiz6OrigGotoWStep(n);
-  if (n === 4) {
-    setTimeout(function() { wiz6Init(); }, 100);
-  }
-}
+(function() {
+  var _prev = gotoWStep;
+  gotoWStep = function(n) {
+    if (_prev) _prev(n);
+    if (n === 4) {
+      setTimeout(function() { wiz6Init(); }, 300);
+    }
+  };
+})();
 // ========== FIM ETAPA 6 ==========
 </script>
 <button class="db-help-btn" onclick="showManual()" title="Manual do usuario">?</button>
