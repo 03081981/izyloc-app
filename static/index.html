@@ -2479,7 +2479,7 @@ textarea.obs-geral{width:100%;background:#f8fafc;border:.5px solid #dce3ed;borde
       <div style="background:#fff;border-radius:12px;border:0.5px solid #e2e8f0;padding:18px;margin-bottom:14px">
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
           <div style="display:flex;flex-direction:column;gap:4px">
-            <label style="font-size:12px;font-weight:600;color:#4a5568">Area aproximada (mÂ²)</label>
+            <label style="font-size:12px;font-weight:600;color:#4a5568">Area aproximada (m²)</label>
             <input id="wi-area" type="number" placeholder="Ex: 80" min="0" step="0.01" style="border:0.5px solid #e2e8f0;border-radius:8px;padding:9px 12px;font-size:13px;color:#1a2540;font-family:inherit;background:#fff;outline:none"/>
           </div>
           <div style="display:flex;flex-direction:column;gap:4px">
@@ -2731,7 +2731,7 @@ textarea.obs-geral{width:100%;background:#f8fafc;border:.5px solid #dce3ed;borde
           <div style="border:1.5px dashed #2d7dd2;border-radius:12px;padding:32px 20px;text-align:center;background:#eef4ff;cursor:pointer;margin-bottom:16px" onclick="document.getElementById('wiz6-video-input').click()">
             <div style="font-size:36px;margin-bottom:8px">🎥</div>
             <div style="font-size:14px;font-weight:600;color:#1e40af;margin-bottom:4px">Clique para selecionar o vídeo</div>
-            <div style="font-size:12px;color:#3b6abd">MP4, MOV, AVI Â· até 500MB Â· máximo 10 minutos</div>
+            <div style="font-size:12px;color:#3b6abd">MP4, MOV, AVI · até 500MB · máximo 10 minutos</div>
             <input type="file" id="wiz6-video-input" accept="video/*" style="display:none" onchange="wiz6UploadVideo(this)"/>
           </div>
           <div style="background:#f0f7ff;border:0.5px solid #bfdbfe;border-radius:8px;padding:12px 14px;font-size:12px;color:#1e3a5f;margin-bottom:16px">
@@ -3252,7 +3252,7 @@ function updateContextTag() {
   const tLabel = tMap[tipoVal]||tipoVal||'—';
   const rLabel = rMap[realizaVal]||realizaVal||'—';
   const tag = document.getElementById('wi-ctx-label');
-  if(tag) tag.textContent = tLabel+' Â· '+rLabel;
+  if(tag) tag.textContent = tLabel+' · '+rLabel;
 }
 function validateAndGoWstep2() {
   const required = [
@@ -3935,7 +3935,7 @@ function renderDetail(insp) {
         <span class="tag tag-${insp.status}">${insp.status}</span>
       </div>
       <div style="font-size:17px;font-weight:800">${insp.property_address||'—'}</div>
-      <div class="text-small mt-4">${insp.property_type||''} ${insp.property_area?'Â· '+insp.property_area+'mÂ²':''}</div>
+      <div class="text-small mt-4">${insp.property_type||''} ${insp.property_area?'· '+insp.property_area+'m²':''}</div>
       <div class="text-small mt-2">📅 ${insp.inspection_date||'—'}</div>
       ${insp.imobiliaria_name?`<div class="text-small mt-2">🏢 ${insp.imobiliaria_name}</div>`:''}
     </div>
@@ -3943,7 +3943,7 @@ function renderDetail(insp) {
       <div class="card-title">Partes Envolvidas</div>
       ${insp.locador_name?`<div class="mb-8"><div class="form-label">Locador</div><div>${insp.locador_name}</div>${insp.locador_cpf?`<div class="text-small">CPF: ${insp.locador_cpf}</div>`:''}</div>`:''}
       ${insp.locatario_name?`<div class="mb-8"><div class="form-label">Locatário</div><div>${insp.locatario_name}</div>${insp.locatario_cpf?`<div class="text-small">CPF: ${insp.locatario_cpf}</div>`:''}</div>`:''}
-      ${insp.corretor_name?`<div><div class="form-label">Corretor</div><div>${insp.corretor_name} ${insp.corretor_creci?'Â· CRECI '+insp.corretor_creci:''}</div></div>`:''}
+      ${insp.corretor_name?`<div><div class="form-label">Corretor</div><div>${insp.corretor_name} ${insp.corretor_creci?'· CRECI '+insp.corretor_creci:''}</div></div>`:''}
     </div>
     ${rooms.length?`<div style="font-size:15px;font-weight:700;margin:12px 0 8px">Ambientes (${rooms.length})</div>${roomsHtml}`:''}
     ${sigs.length?`<div class="card"><div class="card-title">✍️ Assinaturas</div>
