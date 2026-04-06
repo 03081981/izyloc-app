@@ -5786,66 +5786,54 @@ function wiz6RenderAmbCard(idx) {
 
 // ── ADICIONAR FOTOS E ANALISAR COM IA ───────────────────
 async function wiz6AddFotos(input, ambIdx) {
-  if (!input.files || !input.files.length) return;
-  var files = Array.from(input.files);
-  var nome = _wiz6Ambientes[ambIdx];
-  var statusEl = document.getElementById('wiz6-ai-status-' + ambIdx);
-  var fotosRow = document.getElementById('wiz6-fotos-' + ambIdx);
+  var files = input.files;
+  if (!files || !files.length) return;
+  var nome = _wiz6Ambientes[ambIdx] || 'Ambiente';
 
-  // Pré-visualização imediata
-  files.forEach(function(file) {
+  Array.from(files).forEach(function(file) {
     var reader = new FileReader();
     reader.onload = function(e) {
-      var thumb = document.createElement('img');
-      thumb.src = e.target.result;
-      thumb.className = 'wiz6-foto-thumb';
-      fotosRow.insertBefore(thumb, fotosRow.firstChild);
-    };
-    reader.readAsDataURL(file);
-  });
+      var dataUrl = e.target.result;
+      var base64 = dataUrl.split(',')[1];
+      var mime = file.type || 'image/jpeg';
 
-  if (statusEl) statusEl.style.display = 'block';
+      var statusEl = document.getElementById('wiz6-ai-status-' + ambIdx);
+      if (statusEl) {
+        statusEl.style.display = 'block';
+        statusEl.innerHTML = '⏳ IA analisando...';
+      }
 
-  // Analisar cada foto com IA
-  for (var i = 0; i < files.length; i++) {
-    var file = files[i];
-    var reader2 = new FileReader();
-    var dataUrl = await new Promise(function(res) {
-      reader2.onload = function(e) { res(e.target.result); };
-      reader2.readAsDataURL(file);
-    });
-
-    var itens = _wiz6GetItens(nome);
-    var listaItens = [];
-    for (var g in itens) { if (g !== '_testavel') listaItens = listaItens.concat(itens[g]); }
-
-    try {
-      showLoading('IA analisando foto ' + (i+1) + ' de ' + files.length + '...');
-      var r = await fetch('/api/analyze-photo', {
+      fetch('/api/analyze-photo', {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify({
-          image: dataUrl,
-          item: listaItens.join(', '),
+          image: base64,
           ambiente: nome,
           modo: 'completo',
-          instrucao: 'Analise esta foto do ambiente "' + nome + '". Para cada item visível da lista, determine o estado: Bom, Regular ou Com avaria. Detecte observações importantes como trincas, infiltração, mofo, ferrugem, descascamento. Retorne JSON com: {itens: [{nome, estado, descricao}], observacoes: [string], descricao_geral: string}'
+          mime_type: mime
         })
+      })
+      .then(function(resp) { return resp.json(); })
+      .then(function(dados) {
+        dados._preview = dataUrl;
+        wiz6AplicarResultadoIA(dados, ambIdx, nome);
+        wiz6DescontarCreditos(1);
+      })
+      .catch(function(err) {
+        console.error('Erro IA:', err);
+        wiz6AplicarResultadoIA({
+          _preview: dataUrl,
+          item: 'Item fotografado',
+          estado: 'Bom',
+          descricao: 'Erro ao analisar imagem. Adicione uma observacao manual.',
+          observacao: '',
+          success: false
+        }, ambIdx, nome);
       });
-      hideLoading();
-      var d = await r.json();
-      wiz6AplicarResultadoIA(d, ambIdx, nome);
-    } catch(e) {
-      hideLoading();
-      console.error('Erro IA:', e);
-    }
-  }
-
-  if (statusEl && !(statusEl.innerHTML||'').trim()) statusEl.style.display = 'none';
+    };
+    reader.readAsDataURL(file);
+  });
   input.value = '';
-
-  // Marcar créditos usados
-  wiz6DescontarCreditos(files.length, 'foto');
 }
 
 // ── APLICAR RESULTADO DA IA ──────────────────────────────
@@ -5958,12 +5946,43 @@ function wiz6ToggleGrupo(id) {
 // ── NAVEGAÇÃO ENTRE AMBIENTES ────────────────────────────
 function wiz6ProxAmb() {
   _wiz6AmbDone[_wiz6AmbIdx] = true;
-  if (_wiz6AmbIdx < _wiz6Ambientes.length - 1) {
-    wiz6RenderAmbCard(_wiz6AmbIdx + 1);
-  } else {
-    wiz6Concluir();
+  wiz6RenderTabs();
+
+  var ambIdx = _wiz6AmbIdx;
+  var nome = _wiz6Ambientes[ambIdx] || 'Ambiente';
+  var fotos = (wizard.itensData && wizard.itensData[ambIdx] && wizard.itensData[ambIdx].fotos) ? wizard.itensData[ambIdx].fotos : [];
+
+  function _avancar() {
+    if (_wiz6AmbIdx < _wiz6Ambientes.length - 1) {
+      _wiz6AmbIdx++;
+      wiz6RenderAmbCard(_wiz6AmbIdx);
+      wiz6AtualizarProgress();
+      var c = document.getElementById('wiz6-amb-card');
+      if (c) c.scrollIntoView({behavior:'smooth', block:'start'});
+    } else {
+      wiz6Concluir();
+    }
   }
-  wiz6AtualizarProgress();
+
+  if (fotos.length === 0) { _avancar(); return; }
+
+  var descricoes = fotos.map(function(f) {
+    return {item: f.item, descricao: f.descricao, estado: f.estado, cor: f.cor, material: f.material, observacao: f.observacao};
+  });
+
+  fetch('/api/consolidar-ambiente', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({ambiente: nome, descricoes: descricoes})
+  })
+  .then(function(resp) { return resp.json(); })
+  .then(function(dados) {
+    if (dados.resumo && wizard.itensData && wizard.itensData[ambIdx]) {
+      wizard.itensData[ambIdx].resumo = dados.resumo;
+    }
+    _avancar();
+  })
+  .catch(function() { _avancar(); });
 }
 
 function wiz6AmbAnterior() {
