@@ -20,7 +20,7 @@ import base64
 from dotenv import load_dotenv
 
 from database import get_conn, init_db
-from ai_service import analyze_photos, analyze_photo
+from ai_service import analyze_image, consolidate_environment
 from pdf_service import generate_pdf
 
 def _jser(obj):
@@ -995,41 +995,44 @@ class AnalyzePhotoHandler(BaseHandler):
         try:
             data = tornado.escape.json_decode(self.request.body)
             image_b64 = data.get("image", "")
-            item_name = data.get("item", "Item")
             room_name = data.get("ambiente", "Ambiente")
+            modo = data.get("modo", "completo")
+            mime_type = data.get("mime_type", "image/jpeg")
 
             if not image_b64:
                 self.set_status(400)
-                self.write({"error": "Imagem nÃÂ£o enviada"})
+                self.write({"error": "Imagem nao enviada"})
                 return
 
             # Remove data URL prefix if present
             if "," in image_b64:
                 image_b64 = image_b64.split(",", 1)[1]
 
-            # Save to temp file
-            import tempfile
-            tmp = tempfile.NamedTemporaryFile(suffix=".jpg", delete=False)
-            tmp.write(base64.b64decode(image_b64))
-            tmp.close()
-
-            try:
-                modo = data.get("modo", "simples")
-                result = analyze_photo(tmp.name, item_name, room_name, modo=modo)
-                self.write({
-                    "description": result.get("description", ""),
-                    "estado": result.get("estado", "Regular"),
-                    "descricao_geral": result.get("descricao_geral", ""),
-                    "itens": result.get("itens", []),
-                    "observacoes": result.get("observacoes", []),
-                    "condition": result.get("condition", "Regular")
-                })
-            finally:
-                os.unlink(tmp.name)
+            result = analyze_image(image_b64, room_name, modo, mime_type)
+            self.write(result)
 
         except Exception as e:
             self.set_status(500)
             self.write({"error": str(e)})
+
+
+class ConsolidarAmbienteHandler(BaseHandler):
+    def post(self):
+        try:
+            data = tornado.escape.json_decode(self.request.body)
+            ambiente = data.get("ambiente", "Ambiente")
+            descricoes = data.get("descricoes", [])
+
+            if not descricoes:
+                self.write({"resumo": "", "success": False})
+                return
+
+            result = consolidate_environment(ambiente, descricoes)
+            self.write(result)
+
+        except Exception as e:
+            self.set_status(500)
+            self.write({"error": str(e), "success": False})
 
 class PhotoUploadHandler(BaseHandler):
     def set_default_headers(self):
@@ -1432,6 +1435,7 @@ def make_app():
         (r'/api/inspections/([^/]+)/signatures', SignaturesHandler),
         # AI Photo Analysis
         (r'/api/analyze-photo', AnalyzePhotoHandler),
+        (r'/api/consolidar-ambiente', ConsolidarAmbienteHandler),
         # PDF
         (r'/api/inspections/([^/]+)/pdf', GeneratePDFHandler),
         (r'/api/inspections/([^/]+)/diag', DiagLocadoresHandler),
