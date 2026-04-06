@@ -11,11 +11,11 @@ SYSTEM_PROMPT = """Voce e um perito especializado em vistorias imobiliarias bras
 Sua funcao e analisar fotografias de ambientes e itens de imoveis com precisao tecnica.
 
 REGRAS OBRIGATORIAS:
-- Descreva APENAS o que e visivel na foto — nunca invente ou suponha
+- Descreva APENAS o que e visivel na foto â nunca invente ou suponha
 - Use linguagem tecnica objetiva, como um laudo pericial profissional
 - Identifique materiais, cores, dimensoes estimadas e estado de conservacao
-- Seja especifico: nao diga "parede branca" — diga "parede revestida com tinta acrilica na cor branco gelo"
-- Nao diga "parece" ou "provavelmente" — seja assertivo no que e visivel
+- Seja especifico: nao diga "parede branca" â diga "parede revestida com tinta acrilica na cor branco gelo"
+- Nao diga "parece" ou "provavelmente" â seja assertivo no que e visivel
 - Se houver avaria, descreva com precisao: localizacao, extensao estimada, natureza do dano
 - Retorne SEMPRE um JSON valido, sem markdown, sem explicacoes fora do JSON"""
 
@@ -161,7 +161,7 @@ def consolidar_ambiente(nome_ambiente: str, descricoes: list) -> dict:
     itens_texto = ""
     avarias = []
     for i, d in enumerate(descricoes, 1):
-        itens_texto += f"Foto {i} — {d.get('item', 'Item')}: {d.get('descricao', '')}\n"
+        itens_texto += f"Foto {i} â {d.get('item', 'Item')}: {d.get('descricao', '')}\n"
         if d.get('estado') == 'Com avaria' and d.get('observacao'):
             avarias.append(d.get('observacao'))
 
@@ -207,7 +207,7 @@ Retorne APENAS este JSON:
 
 def analisar_foto_simples(imagem_base64: str, nome_ambiente: str = "Ambiente", mime_type: str = "image/jpeg") -> dict:
     """
-    Modo legado — compatibilidade com codigo anterior.
+    Modo legado â compatibilidade com codigo anterior.
     Chama analisar_foto e normaliza para formato antigo.
     """
     resultado = analisar_foto(imagem_base64, nome_ambiente, mime_type)
@@ -245,3 +245,16 @@ def analisar_imagem(imagem_base64: str, ambiente: str = "Ambiente", modo: str = 
         return analisar_foto_simples(imagem_base64, ambiente, mime_type)
     else:
         return analisar_foto(imagem_base64, ambiente, mime_type)
+
+# Aliases em ingles para compatibilidade com server.py
+def analyze_photo(image_base64: str, environment: str = "Ambiente", mime_type: str = "image/jpeg") -> dict:
+    return analisar_foto(image_base64, environment, mime_type)
+
+def analyze_photos(images_base64: list, environment: str = "Ambiente", mime_type: str = "image/jpeg") -> list:
+    return [analisar_foto(img, environment, mime_type) for img in images_base64]
+
+def consolidate_environment(environment_name: str, descriptions: list) -> dict:
+    return consolidar_ambiente(environment_name, descriptions)
+
+def analyze_image(image_base64: str, environment: str = "Ambiente", mode: str = "completo", mime_type: str = "image/jpeg") -> dict:
+    return analisar_imagem(image_base64, environment, mode, mime_type)
