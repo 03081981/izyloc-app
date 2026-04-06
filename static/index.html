@@ -2460,7 +2460,7 @@ textarea.obs-geral{width:100%;background:#f8fafc;border:.5px solid #dce3ed;borde
     <span style="font-size:11px;font-weight:600;color:#1a2540;text-align:center">Terreno</span>
   </div>
 
-  <!-- CHÃCARA / SÍTIO / RURAL -->
+  <!-- CHÁCARA / SÍTIO / RURAL -->
   <div class="wi-tipo-btn" data-val="Chácara / Sítio / Rural" onclick="selectTipoImovel(this)" style="border:1px solid #e2e8f0;border-radius:8px;padding:10px 8px;cursor:pointer;background:#fff;display:flex;flex-direction:column;align-items:center;gap:6px;transition:all .15s">
     <svg width="32" height="32" viewBox="0 0 56 44" fill="none"><rect x="2" y="28" width="52" height="12" rx="1" fill="#86efac" stroke="#16a34a" stroke-width="1"/><polygon points="20,4 44,18 44,32 20,32" fill="#dbeafe" stroke="#2d7dd2" stroke-width="1.5"/><rect x="20" y="18" width="24" height="14" rx="1" fill="#dbeafe" stroke="#2d7dd2" stroke-width="1.5"/><rect x="28" y="22" width="8" height="10" rx="1" fill="#2d7dd2"/><circle cx="8" cy="22" r="8" fill="#4ade80" stroke="#16a34a" stroke-width="1"/><circle cx="48" cy="24" r="6" fill="#4ade80" stroke="#16a34a" stroke-width="1"/></svg>
     <span style="font-size:11px;font-weight:600;color:#1a2540;text-align:center">Chácara / Sítio / Rural</span>
@@ -2539,7 +2539,7 @@ textarea.obs-geral{width:100%;background:#f8fafc;border:.5px solid #dce3ed;borde
 </div>
 <div style="display:flex;align-items:center;gap:6px;padding:10px 16px;border-radius:8px;border:1.5px dashed #2d7dd2;background:#f0f7ff;color:#2d7dd2;font-size:13px;font-weight:500;cursor:pointer;margin-bottom:4px;width:fit-content" onclick="addLocador ? addLocador() : null">+ Adicionar outro locador</div>
 
-<!-- LOCATÃRIOS -->
+<!-- LOCATÁRIOS -->
 <div style="font-size:11px;font-weight:700;color:#8898aa;text-transform:uppercase;letter-spacing:0.5px;margin:16px 0 10px">Locatario(s) — Inquilino</div>
 <div id="locatarios-container">
   <div class="person-block" id="locat-block-0" style="background:#fff;border-radius:12px;border:0.5px solid #e2e8f0;padding:16px;margin-bottom:10px">
@@ -2601,12 +2601,12 @@ textarea.obs-geral{width:100%;background:#f8fafc;border:.5px solid #dce3ed;borde
   </div>
 
   </div>
-<!-- BOTÃO ADICIONAR IMOBILIÃRIA -->
+<!-- BOTÃO ADICIONAR IMOBILIÁRIA -->
   <div id="btn-add-imob" onclick="document.getElementById('btn-add-imob').style.display='none';document.getElementById('imob-expand').style.display='block'" style="display:flex;align-items:center;gap:6px;padding:10px 16px;border-radius:8px;border:1.5px dashed #2d7dd2;background:#f0f7ff;color:#2d7dd2;font-size:13px;font-weight:500;cursor:pointer;margin-top:14px;width:100%">
     ð¢ + Adicionar imobiliaria <span style="font-size:11px;color:#8898aa;font-weight:400;margin-left:4px">(se representando uma imobiliaria)</span>
   </div>
 
-  <!-- CARD IMOBILIÃRIA -->
+  <!-- CARD IMOBILIÁRIA -->
   <div id="imob-expand" style="display:none;background:#f8fafc;border-radius:10px;border:0.5px solid #e2e8f0;padding:14px;margin-top:12px">
     <div style="font-size:12px;font-weight:600;color:#1a2540;margin-bottom:10px;display:flex;align-items:center;gap:6px">
       ð¢ Dados da imobiliaria
@@ -2654,7 +2654,7 @@ textarea.obs-geral{width:100%;background:#f8fafc;border:.5px solid #dce3ed;borde
   <span>Selecione os ambientes que existem no imóvel. Na próxima etapa você fotografa ou grava um vídeo — a IA analisa e gera automaticamente a descrição técnica completa no laudo.</span>
 </div>
 
-<!-- CONTAINER DINÃMICO -->
+<!-- CONTAINER DINÂMICO -->
 <div id="amb-dynamic-sections"></div>
 
 <!-- RESUMO -->
@@ -2818,7 +2818,7 @@ function switchTab(tab, el) {
   if (target) target.classList.add('active');
   document.querySelectorAll('.nav-item').forEach(function(n) { n.classList.remove('active'); });
   if (el) el.classList.add('active');
-  var titles = {vistorias:'Dashboard', estatisticas:'Fotos e consumo', perfil:'ConfiguraçÃµes'};
+  var titles = {vistorias:'Dashboard', estatisticas:'Fotos e consumo', perfil:'Configurações'};
   var tt = document.getElementById('dash-topbar-title');
   if (tt) tt.textContent = titles[tab] || 'Dashboard';
 }
@@ -3496,7 +3496,7 @@ function renderRoomCard(room) {
 
   const roomIcons = {
     'Sala de Estar': 'ð', 'Cozinha': 'ð³', 'Quarto 1': 'ð', 'Quarto 2': 'ð',
-    'Banheiro': 'ð¿', 'Ãrea de Serviço': 'ð§º', 'Garagem': 'ð', 'Varanda': 'ð¿',
+    'Banheiro': 'ð¿', 'Área de Serviço': 'ð§º', 'Garagem': 'ð', 'Varanda': 'ð¿',
   };
   const icon = roomIcons[room.name] || 'ð ';
 
@@ -4205,7 +4205,7 @@ if (typeof initAmbientes === 'function') initAmbientes();
         copa:     {val:0, label:'Copa/Cozinha',   icon:'ð³'},
         deposito: {val:0, label:'Depósito',      icon:'ð¦'},
         estac:    {val:0, label:'Estacionamento', icon:'ð'},
-        areatec:  {val:0, label:'Ãrea técnica',   icon:'ð§'}
+        areatec:  {val:0, label:'Área técnica',   icon:'ð§'}
       }
     };
     var _ambMode = 'residencial';
@@ -4314,9 +4314,9 @@ if (typeof initAmbientes === 'function') initAmbientes();
     var obrigItems = ['Paredes','Piso','Teto / Iluminação','Porta','Janela'];
 
     var verificacoes = [
-      {nome:'ð¡ Iluminação', opts:['Funcionando','LÃ¢mpada queimada','Não funciona','Não testado']},
+      {nome:'ð¡ Iluminação', opts:['Funcionando','Lâmpada queimada','Não funciona','Não testado']},
       {nome:'ð Tomadas', opts:['Funcionando','Não funciona','Não testado']},
-      {nome:'ð° Ãgua/Encanamento', opts:['Sem vazamentos','Vazamento','Pressão baixa','Não testado']},
+      {nome:'ð° Água/Encanamento', opts:['Sem vazamentos','Vazamento','Pressão baixa','Não testado']},
       {nome:'âï¸ Ar-condicionado', opts:['Funcionando','Com defeito','Não funciona','Não testado']},
       {nome:'ðª Portas/Fechaduras', opts:['Funcionando','Com defeito','Não funciona','Não testado']}
     ];
@@ -4367,7 +4367,7 @@ if (typeof initAmbientes === 'function') initAmbientes();
         });
       }
 
-      h += '<div class="divider"></div><div class="section-label">VerificaçÃµes técnicas</div><div class="verif-grid">';
+      h += '<div class="divider"></div><div class="section-label">Verificações técnicas</div><div class="verif-grid">';
       verificacoes.forEach(function(v) {
         h += '<div class="verif-item"><div class="verif-name">'+v.nome+'</div><div class="verif-options">';
         v.opts.forEach(function(o) { h += '<button class="verif-btn" onclick="window._selVerif(this)">'+o+'</button>'; });
@@ -4375,7 +4375,7 @@ if (typeof initAmbientes === 'function') initAmbientes();
       });
       h += '</div>';
 
-      h += '<div class="divider"></div><div class="section-label">ObservaçÃµes gerais do ambiente</div>';
+      h += '<div class="divider"></div><div class="section-label">Observações gerais do ambiente</div>';
       h += '<textarea class="obs-geral" placeholder="Alguma observação adicional sobre este ambiente?"></textarea>';
 
       h += '<div class="nav-ambiente">';
@@ -5348,7 +5348,7 @@ var _wiz6ItensPorAmbiente = {
   'fachada': {
     'Elementos construtivos': ['Fachada','Parede externa','Pintura externa','Revestimento externo','Muro frontal','Calçada','Piso externo','Cobertura de entrada'],
     'Esquadrias e acessos': ['Porta principal','Fechadura','Maçaneta','Portão social','Portão de garagem','Grades','Vidros frontais'],
-    'InstalaçÃµes elétricas': ['Campainha','Iluminação externa','Arandelas','Sensores'],
+    'Instalações elétricas': ['Campainha','Iluminação externa','Arandelas','Sensores'],
     'Equipamentos': ['Motor do portão','Interfone eletrônico','Fechadura eletrônica'],
     'Acessórios e complementos': ['Número do imóvel','Caixa de correio','Toldo','Placa de identificação'],
     '_testavel': ['Motor do portão','Interfone eletrônico','Campainha','Fechadura eletrônica']
@@ -5356,15 +5356,15 @@ var _wiz6ItensPorAmbiente = {
   'garagem': {
     'Elementos construtivos': ['Piso','Parede','Pintura','Teto','Cobertura','Colunas','Ralo'],
     'Esquadrias e acessos': ['Portão','Porta de acesso','Fechadura','Grades'],
-    'InstalaçÃµes elétricas': ['Tomadas','Interruptores','Iluminação'],
-    'InstalaçÃµes hidráulicas': ['Torneira','Ralo','Ponto hidráulico'],
+    'Instalações elétricas': ['Tomadas','Interruptores','Iluminação'],
+    'Instalações hidráulicas': ['Torneira','Ralo','Ponto hidráulico'],
     'Equipamentos': ['Motor do portão'],
     '_testavel': ['Motor do portão','Tomadas','Iluminação']
   },
   'sala': {
     'Elementos construtivos': ['Piso','Rodapé','Parede','Pintura','Teto','Forro','Sanca'],
     'Esquadrias e acessos': ['Porta','Batente','Fechadura','Janela','Vidros'],
-    'InstalaçÃµes elétricas': ['Tomadas','Interruptores','Luminárias','Spots'],
+    'Instalações elétricas': ['Tomadas','Interruptores','Luminárias','Spots'],
     'Equipamentos': ['Ar-condicionado','Ventilador de teto'],
     'Mobiliário fixo': ['Painel de TV','Nichos','Estante fixa'],
     'Acessórios e complementos': ['Cortina','Persiana','Trilho','Espelho'],
@@ -5373,7 +5373,7 @@ var _wiz6ItensPorAmbiente = {
   'sala de estar': {
     'Elementos construtivos': ['Piso','Rodapé','Parede','Pintura','Teto','Forro'],
     'Esquadrias e acessos': ['Porta','Janela','Vidros'],
-    'InstalaçÃµes elétricas': ['Tomadas','Interruptores','Luminárias'],
+    'Instalações elétricas': ['Tomadas','Interruptores','Luminárias'],
     'Equipamentos': ['Ar-condicionado','Ventilador de teto'],
     'Mobiliário fixo': ['Painel de TV','Nichos'],
     'Acessórios e complementos': ['Cortina','Persiana','Espelho'],
@@ -5382,14 +5382,14 @@ var _wiz6ItensPorAmbiente = {
   'sala de jantar': {
     'Elementos construtivos': ['Piso','Rodapé','Parede','Pintura','Teto'],
     'Esquadrias e acessos': ['Porta','Janela','Vidros'],
-    'InstalaçÃµes elétricas': ['Tomadas','Interruptores','Luminárias'],
+    'Instalações elétricas': ['Tomadas','Interruptores','Luminárias'],
     'Acessórios e complementos': ['Cortina','Persiana'],
     '_testavel': ['Tomadas','Luminárias','Interruptores']
   },
   'sala de tv': {
     'Elementos construtivos': ['Piso','Rodapé','Parede','Pintura','Teto'],
     'Esquadrias e acessos': ['Porta','Janela'],
-    'InstalaçÃµes elétricas': ['Tomadas','Interruptores','Luminárias'],
+    'Instalações elétricas': ['Tomadas','Interruptores','Luminárias'],
     'Equipamentos': ['Ar-condicionado'],
     'Mobiliário fixo': ['Painel de TV','Nichos'],
     '_testavel': ['Ar-condicionado','Tomadas','Luminárias']
@@ -5397,19 +5397,19 @@ var _wiz6ItensPorAmbiente = {
   'corredor': {
     'Elementos construtivos': ['Piso','Rodapé','Parede','Pintura','Teto'],
     'Esquadrias e acessos': ['Portas','Batentes','Corrimão','Guarda-corpo'],
-    'InstalaçÃµes elétricas': ['Interruptores','Iluminação'],
+    'Instalações elétricas': ['Interruptores','Iluminação'],
     '_testavel': ['Iluminação','Interruptores']
   },
   'hall': {
     'Elementos construtivos': ['Piso','Rodapé','Parede','Pintura','Teto'],
     'Esquadrias e acessos': ['Porta','Batente'],
-    'InstalaçÃµes elétricas': ['Interruptores','Iluminação'],
+    'Instalações elétricas': ['Interruptores','Iluminação'],
     '_testavel': ['Iluminação','Interruptores']
   },
   'dormitorio': {
     'Elementos construtivos': ['Piso','Rodapé','Parede','Pintura','Teto','Forro'],
     'Esquadrias e acessos': ['Porta','Batente','Fechadura','Maçaneta','Janela','Vidros'],
-    'InstalaçÃµes elétricas': ['Tomadas','Interruptores','Iluminação'],
+    'Instalações elétricas': ['Tomadas','Interruptores','Iluminação'],
     'Equipamentos': ['Ar-condicionado','Ventilador de teto'],
     'Mobiliário fixo': ['Guarda-roupa embutido','Armário planejado','Nichos','Cabeceira fixa'],
     'Acessórios e complementos': ['Cortina','Persiana','Trilho','Espelho'],
@@ -5418,8 +5418,8 @@ var _wiz6ItensPorAmbiente = {
   'suite': {
     'Elementos construtivos': ['Piso','Rodapé','Parede','Pintura','Teto','Revestimento banheiro','Rejunte'],
     'Esquadrias e acessos': ['Porta do quarto','Porta do banheiro','Batentes','Fechaduras','Janelas','Vidros','Box'],
-    'InstalaçÃµes elétricas': ['Tomadas','Interruptores','Iluminação'],
-    'InstalaçÃµes hidráulicas': ['Lavatório','Cuba','Torneira','Vaso sanitário','Caixa acoplada','Chuveiro','Ducha higiênica','Ralo','Registros'],
+    'Instalações elétricas': ['Tomadas','Interruptores','Iluminação'],
+    'Instalações hidráulicas': ['Lavatório','Cuba','Torneira','Vaso sanitário','Caixa acoplada','Chuveiro','Ducha higiênica','Ralo','Registros'],
     'Equipamentos': ['Ar-condicionado','Ventilador de teto','Exaustor'],
     'Mobiliário fixo': ['Armários','Gabinete','Nichos','Guarda-roupa embutido'],
     'Acessórios e complementos': ['Espelho','Toalheiro','Papeleira','Saboneteira','Cortina','Persiana'],
@@ -5428,7 +5428,7 @@ var _wiz6ItensPorAmbiente = {
   'closet': {
     'Elementos construtivos': ['Piso','Rodapé','Parede','Pintura','Teto'],
     'Esquadrias e acessos': ['Porta','Fechadura'],
-    'InstalaçÃµes elétricas': ['Tomadas','Interruptores','Iluminação'],
+    'Instalações elétricas': ['Tomadas','Interruptores','Iluminação'],
     'Mobiliário fixo': ['Armários','Gavetas','Cabideiros','Nichos','Prateleiras'],
     'Acessórios e complementos': ['Espelho'],
     '_testavel': ['Iluminação','Tomadas']
@@ -5436,9 +5436,9 @@ var _wiz6ItensPorAmbiente = {
   'cozinha': {
     'Elementos construtivos': ['Piso','Rodapé','Parede','Pintura','Revestimento','Azulejos','Rejunte','Teto','Bancada fixa'],
     'Esquadrias e acessos': ['Porta','Batente','Janela','Vidros'],
-    'InstalaçÃµes elétricas': ['Tomadas','Interruptores','Iluminação','Pontos de energia'],
-    'InstalaçÃµes hidráulicas': ['Pia','Cuba','Torneira','Misturador','Sifão','Ralo','Ponto hidráulico'],
-    'InstalaçÃµes de gás': ['Ponto de gás','Registro de gás','Tubulação aparente'],
+    'Instalações elétricas': ['Tomadas','Interruptores','Iluminação','Pontos de energia'],
+    'Instalações hidráulicas': ['Pia','Cuba','Torneira','Misturador','Sifão','Ralo','Ponto hidráulico'],
+    'Instalações de gás': ['Ponto de gás','Registro de gás','Tubulação aparente'],
     'Equipamentos': ['Cooktop','Fogão','Forno','Coifa','Depurador','Exaustor','Micro-ondas embutido'],
     'Mobiliário fixo': ['Armários aéreos','Armários inferiores','Gabinete','Gavetas','Nichos','Bancada planejada'],
     'Acessórios e complementos': ['Cortina','Persiana','Suporte'],
@@ -5447,8 +5447,8 @@ var _wiz6ItensPorAmbiente = {
   'banheiro': {
     'Elementos construtivos': ['Piso','Revestimento de parede','Azulejos','Rejunte','Teto','Forro','Bancada fixa'],
     'Esquadrias e acessos': ['Porta','Batente','Fechadura','Janela','Box','Vidro do box','Trilho do box'],
-    'InstalaçÃµes elétricas': ['Tomadas','Interruptores','Iluminação'],
-    'InstalaçÃµes hidráulicas': ['Lavatório','Cuba','Torneira','Misturador','Vaso sanitário','Caixa acoplada','Assento sanitário','Chuveiro','Ducha higiênica','Ralo','Registros'],
+    'Instalações elétricas': ['Tomadas','Interruptores','Iluminação'],
+    'Instalações hidráulicas': ['Lavatório','Cuba','Torneira','Misturador','Vaso sanitário','Caixa acoplada','Assento sanitário','Chuveiro','Ducha higiênica','Ralo','Registros'],
     'Equipamentos': ['Exaustor','Chuveiro elétrico'],
     'Mobiliário fixo': ['Gabinete','Armário','Nichos'],
     'Acessórios e complementos': ['Espelho','Toalheiro','Papeleira','Saboneteira','Cabides'],
@@ -5457,8 +5457,8 @@ var _wiz6ItensPorAmbiente = {
   'lavabo': {
     'Elementos construtivos': ['Piso','Revestimento','Rejunte','Teto'],
     'Esquadrias e acessos': ['Porta','Batente','Fechadura','Janela'],
-    'InstalaçÃµes elétricas': ['Tomadas','Interruptores','Iluminação'],
-    'InstalaçÃµes hidráulicas': ['Lavatório','Cuba','Torneira','Vaso sanitário','Caixa acoplada','Ralo'],
+    'Instalações elétricas': ['Tomadas','Interruptores','Iluminação'],
+    'Instalações hidráulicas': ['Lavatório','Cuba','Torneira','Vaso sanitário','Caixa acoplada','Ralo'],
     'Mobiliário fixo': ['Gabinete','Nicho'],
     'Acessórios e complementos': ['Espelho','Toalheiro','Papeleira','Saboneteira'],
     '_testavel': ['Torneira','Vaso sanitário','Iluminação']
@@ -5466,9 +5466,9 @@ var _wiz6ItensPorAmbiente = {
   'lavanderia': {
     'Elementos construtivos': ['Piso','Parede','Pintura','Revestimento','Teto','Cobertura'],
     'Esquadrias e acessos': ['Porta','Janela','Vidros'],
-    'InstalaçÃµes elétricas': ['Tomadas','Interruptores','Iluminação'],
-    'InstalaçÃµes hidráulicas': ['Tanque','Torneira','Sifão','Ralo','Ponto hidráulico'],
-    'InstalaçÃµes de gás': ['Aquecedor a gás','Tubulação de gás','Registro de gás'],
+    'Instalações elétricas': ['Tomadas','Interruptores','Iluminação'],
+    'Instalações hidráulicas': ['Tanque','Torneira','Sifão','Ralo','Ponto hidráulico'],
+    'Instalações de gás': ['Aquecedor a gás','Tubulação de gás','Registro de gás'],
     'Equipamentos': ['Máquina de lavar','Secadora','Aquecedor'],
     'Mobiliário fixo': ['Armário','Prateleiras','Gabinete'],
     'Acessórios e complementos': ['Varal','Suporte','Ganchos'],
@@ -5477,17 +5477,17 @@ var _wiz6ItensPorAmbiente = {
   'varanda': {
     'Elementos construtivos': ['Piso','Parede','Pintura','Teto','Cobertura','Guarda-corpo','Corrimão'],
     'Esquadrias e acessos': ['Porta de acesso','Vidro de proteção','Grades','Fechamento em vidro'],
-    'InstalaçÃµes elétricas': ['Tomadas','Interruptores','Iluminação'],
-    'InstalaçÃµes hidráulicas': ['Ralo','Torneira'],
+    'Instalações elétricas': ['Tomadas','Interruptores','Iluminação'],
+    'Instalações hidráulicas': ['Ralo','Torneira'],
     'Acessórios e complementos': ['Toldo','Rede de proteção','Cortina de vidro'],
     '_testavel': ['Tomadas','Iluminação','Torneira']
   },
   'area gourmet': {
     'Elementos construtivos': ['Piso','Parede','Revestimento','Teto','Cobertura','Bancada fixa'],
     'Esquadrias e acessos': ['Porta','Janela','Vidros'],
-    'InstalaçÃµes elétricas': ['Tomadas','Interruptores','Iluminação'],
-    'InstalaçÃµes hidráulicas': ['Pia','Cuba','Torneira','Ralo'],
-    'InstalaçÃµes de gás': ['Ponto de gás','Registro de gás'],
+    'Instalações elétricas': ['Tomadas','Interruptores','Iluminação'],
+    'Instalações hidráulicas': ['Pia','Cuba','Torneira','Ralo'],
+    'Instalações de gás': ['Ponto de gás','Registro de gás'],
     'Equipamentos': ['Churrasqueira','Forno','Cooktop','Coifa','Exaustor'],
     'Mobiliário fixo': ['Armários','Gabinete','Prateleiras','Bancada'],
     'Acessórios e complementos': ['Suporte','Toldo'],
@@ -5496,16 +5496,16 @@ var _wiz6ItensPorAmbiente = {
   'quintal': {
     'Elementos construtivos': ['Piso externo','Calçada interna','Muros','Pintura externa','Deck'],
     'Esquadrias e acessos': ['Portão','Grades','Cercas'],
-    'InstalaçÃµes elétricas': ['Iluminação externa'],
-    'InstalaçÃµes hidráulicas': ['Torneira externa','Ralo','Drenagem'],
-    'Ãreas externas': ['Gramado','Jardim','Canteiros','Ãrvores','Plantas'],
+    'Instalações elétricas': ['Iluminação externa'],
+    'Instalações hidráulicas': ['Torneira externa','Ralo','Drenagem'],
+    'Áreas externas': ['Gramado','Jardim','Canteiros','Árvores','Plantas'],
     '_testavel': ['Iluminação externa','Torneira externa','Portão']
   },
   'piscina': {
     'Elementos construtivos': ['Estrutura da piscina','Revestimento interno','Borda','Piso ao redor','Deck'],
     'Esquadrias e acessos': ['Grade de proteção','Portão de acesso'],
-    'InstalaçÃµes elétricas': ['Iluminação da piscina'],
-    'InstalaçÃµes hidráulicas': ['Ralos','Drenagem','Tubulação aparente','Cascata'],
+    'Instalações elétricas': ['Iluminação da piscina'],
+    'Instalações hidráulicas': ['Ralos','Drenagem','Tubulação aparente','Cascata'],
     'Equipamentos': ['Bomba','Filtro','Aquecedor','Casa de máquinas'],
     'Acessórios e complementos': ['Escada','Corrimão','Capa de proteção'],
     '_testavel': ['Bomba','Filtro','Aquecedor','Iluminação da piscina']
@@ -5513,7 +5513,7 @@ var _wiz6ItensPorAmbiente = {
   'escritorio': {
     'Elementos construtivos': ['Piso','Rodapé','Parede','Pintura','Teto'],
     'Esquadrias e acessos': ['Porta','Janela','Vidros'],
-    'InstalaçÃµes elétricas': ['Tomadas','Interruptores','Iluminação','Rede lógica','Ponto de internet'],
+    'Instalações elétricas': ['Tomadas','Interruptores','Iluminação','Rede lógica','Ponto de internet'],
     'Equipamentos': ['Ar-condicionado','Ventilador de teto'],
     'Mobiliário fixo': ['Armários','Nichos','Prateleiras','Bancada fixa'],
     'Acessórios e complementos': ['Cortina','Persiana','Espelho'],
@@ -5522,24 +5522,24 @@ var _wiz6ItensPorAmbiente = {
   'deposito': {
     'Elementos construtivos': ['Piso','Parede','Pintura','Teto'],
     'Esquadrias e acessos': ['Porta','Fechadura'],
-    'InstalaçÃµes elétricas': ['Iluminação','Tomadas'],
+    'Instalações elétricas': ['Iluminação','Tomadas'],
     'Mobiliário fixo': ['Prateleiras'],
     '_testavel': ['Iluminação']
   },
   'galpao': {
     'Elementos construtivos': ['Piso','Paredes','Cobertura','Telhado','Calhas','Colunas','Piso externo'],
-    'Esquadrias e acessos': ['Portão principal','Porta de pedestres','PortÃµes laterais','Grades'],
-    'InstalaçÃµes elétricas': ['Tomadas','Interruptores','Iluminação geral','Quadro elétrico','Painéis'],
-    'InstalaçÃµes hidráulicas': ['Torneiras','Ralos','Tubulação aparente','Caixa d\'água'],
-    'Equipamentos': ['Motor do portão','Bomba','Compressor','Sistema de alarme','CÃ¢meras'],
-    'Elementos técnicos': ['Doca','Plataforma niveladora','Ãrea de carga','Ãrea técnica'],
-    '_testavel': ['Motor do portão','Bomba','Compressor','Iluminação geral','Tomadas','CÃ¢meras']
+    'Esquadrias e acessos': ['Portão principal','Porta de pedestres','Portões laterais','Grades'],
+    'Instalações elétricas': ['Tomadas','Interruptores','Iluminação geral','Quadro elétrico','Painéis'],
+    'Instalações hidráulicas': ['Torneiras','Ralos','Tubulação aparente','Caixa d\'água'],
+    'Equipamentos': ['Motor do portão','Bomba','Compressor','Sistema de alarme','Câmeras'],
+    'Elementos técnicos': ['Doca','Plataforma niveladora','Área de carga','Área técnica'],
+    '_testavel': ['Motor do portão','Bomba','Compressor','Iluminação geral','Tomadas','Câmeras']
   },
   'terreno': {
     'Elementos construtivos': ['Frente/testada','Lateral direita','Lateral esquerda','Fundos','Calçada','Muro'],
     'Esquadrias e acessos': ['Portão','Entrada'],
-    'InstalaçÃµes elétricas': ['Ponto de energia','Iluminação externa'],
-    'Ãreas externas': ['Vegetação','Mata','Ãrea total'],
+    'Instalações elétricas': ['Ponto de energia','Iluminação externa'],
+    'Áreas externas': ['Vegetação','Mata','Área total'],
     '_testavel': ['Portão','Iluminação externa']
   }
 };
@@ -5547,9 +5547,9 @@ var _wiz6ItensPorAmbiente = {
 // ââ CHAVE NORMALIZADA ââââââââââââââââââââââââââââââââââââ
 function _wiz6NormKey(nome) {
   return nome.toLowerCase()
-    .replace(/[áÃ ãÃ¢Ã¤]/g,'a').replace(/[éÃ¨êÃ«]/g,'e')
-    .replace(/[íÃ¬Ã®Ã¯]/g,'i').replace(/[óÃ²Ãµï¿½ï¿½Ã¶]/g,'o')
-    .replace(/[úÃ¹Ã»Ã¼]/g,'u').replace(/ç/g,'c')
+    .replace(/[áàãâä]/g,'a').replace(/[éèêë]/g,'e')
+    .replace(/[íìîï]/g,'i').replace(/[óòõï¿½ï¿½ö]/g,'o')
+    .replace(/[úùûü]/g,'u').replace(/ç/g,'c')
     .replace(/\s+/g,' ').trim();
 }
 
@@ -5564,7 +5564,7 @@ function _wiz6GetItens(nomeAmb) {
   return {
     'Elementos construtivos': ['Piso','Parede','Pintura','Teto'],
     'Esquadrias e acessos': ['Porta','Janela'],
-    'InstalaçÃµes elétricas': ['Tomadas','Interruptores','Iluminação'],
+    'Instalações elétricas': ['Tomadas','Interruptores','Iluminação'],
     '_testavel': ['Tomadas','Iluminação']
   };
 }
@@ -5981,7 +5981,7 @@ function wiz6CicloEstado(btn) {
   btn.textContent = prox.label;
 }
 
-// ââ BOTÃES DE TESTE ââââââââââââââââââââââââââââââââââââââ
+// ââ BOTÕES DE TESTE ââââââââââââââââââââââââââââââââââââââ
 function wiz6Testar(btn, itemKey, tipo) {
   var container = btn.closest('.wiz6-testavel');
   if (!container) return;
@@ -6287,7 +6287,7 @@ function wiz6Concluir() {
         document.querySelectorAll('#amb-resumo span').forEach(function(s) {
           var txt = s.textContent.trim();
           if (!txt || txt.indexOf('Nenhum') >= 0 || txt === '→') return;
-          var match = txt.match(/^(.+?)\s*[xÃ](\d+)$/i);
+          var match = txt.match(/^(.+?)\s*[x×](\d+)$/i);
           if (match) {
             var nome = match[1].trim();
             var qtd = parseInt(match[2]);
