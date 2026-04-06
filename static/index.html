@@ -5234,18 +5234,18 @@ function renderAmbientesPorTipo() {
 
   else if (tipo.indexOf('sala') >= 0 || tipo.indexOf('predio') >= 0) {
     html += _secaoHtml(1,'Areas de trabalho',
-      _rowHtml(iRecep,'Sala / escritorio','Sala principal','sala',1)+
+      _rowHtml(iRecep,'Sala / escritorio','Escritorio ou sala','sala',1)+
       _rowHtml(iRecep,'Recepcao / hall','Recepcao de clientes','recepcao',0)+
       _rowHtml(iEscrit,'Sala de reuniao','Sala de reunioes','reuniao',0),'ambiente de trabalho');
     html += _secaoHtml(2,'Banheiros',
       _rowHtml(iBanh,'Banheiro','Banheiro do imovel','banheiro',1),'banheiro');
     html += _secaoHtml(3,'Servicos',
       _rowHtml(iCopa,'Copa','Copa do imovel','copa',0)+
+      _rowHtml(iCoz,'Cozinha','Cozinha do imovel','cozinha_com',0)+
       _rowHtml(iDesp,'Despensa','Deposito de alimentos','despensa',0)+
       _rowHtml(iDepo,'Deposito','Deposito geral','deposito',0),'ambiente de servico');
     html += _secaoHtml(4,'Acesso e externas',
       _toggleHtml(iExt,'Fachada','Frente do imovel','area_externa',true)+
-      _rowHtml(iPatio,'Corredor / circulacao','Circulacao interna','corredor',0)+
       _rowHtml(iGar,'Estacionamento','Area de estacionamento','garagem',0),'area externa');
   }
 
@@ -5259,6 +5259,7 @@ function renderAmbientesPorTipo() {
     html += _secaoHtml(3,'Servicos',
       _rowHtml(iDepo,'Estoque / deposito','Area de estoque','deposito',0)+
       _rowHtml(iCopa,'Copa','Copa dos funcionarios','copa',0)+
+      _rowHtml(iCoz,'Cozinha','Cozinha dos funcionarios','cozinha_loj',0)+
       _rowHtml(iDesp,'Despensa','Deposito de alimentos','despensa',0),'ambiente de servico');
     html += _secaoHtml(4,'Acesso e externas',
       _toggleHtml(iExt,'Fachada','Frente da loja','area_externa',true)+
@@ -5276,6 +5277,7 @@ function renderAmbientesPorTipo() {
     html += _secaoHtml(3,'Administrativo',
       _rowHtml(iEscrit,'Escritorio','Escritorio administrativo','escritorio',0)+
       _rowHtml(iCopa,'Copa','Copa dos funcionarios','copa',0)+
+      _rowHtml(iCoz,'Cozinha','Cozinha dos funcionarios','cozinha_gal',0)+
       _rowHtml(iDesp,'Despensa','Deposito de alimentos','despensa',0),'ambiente administrativo');
     html += _secaoHtml(4,'Acesso e externas',
       _toggleHtml(iExt,'Fachada','Frente do imovel','area_externa',true)+
@@ -5286,8 +5288,7 @@ function renderAmbientesPorTipo() {
   else if (tipo.indexOf('terreno') >= 0) {
     html += _secaoHtml(1,'Areas do terreno',
       _toggleHtml(iTerr,'Frente / acesso','Entrada e frente do terreno','area_externa',true)+
-      _rowHtml(iPasto,'Area do terreno','Area total do terreno','sala',1)+
-      _rowHtml(iCerca,'Confrontantes / divisa','Limites do terreno','divisa',0),'area');
+      _rowHtml(iPasto,'Area do terreno','Area total do terreno','sala',1),'area');
   }
 
   else if (tipo.indexOf('chacar') >= 0 || tipo.indexOf('sitio') >= 0 || tipo.indexOf('rural') >= 0) {
