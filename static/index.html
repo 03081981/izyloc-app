@@ -4907,6 +4907,49 @@ function _syncLegacy(key, val) {
   if (el) el.textContent = val;
 }
 
+function wizToggle(row, key) {
+  var toggle = document.getElementById('wiz-toggle-' + key);
+  var label = document.getElementById('wiz-toggle-label-' + key);
+  var input = document.getElementById('wiz-val-' + key);
+  if (!toggle || !input) return;
+  var ativo = input.value === '1';
+  if (ativo) {
+    input.value = '0';
+    toggle.style.background = '#e2e8f0';
+    toggle.children[0].style.left = '3px';
+    if (label) { label.textContent = 'Nao'; label.style.color = '#8898aa'; }
+  } else {
+    input.value = '1';
+    toggle.style.background = '#2d7dd2';
+    toggle.children[0].style.left = '23px';
+    if (label) { label.textContent = 'Sim'; label.style.color = '#2d7dd2'; }
+  }
+  wizUpdateResumo();
+}
+
+function wizCriarNovoAmbiente(btn) {
+  var nome = prompt('Nome do novo ambiente:');
+  if (!nome || !nome.trim()) return;
+  nome = nome.trim();
+  var key = 'custom_' + Date.now();
+  var svgCustom = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="#2d7dd2" stroke-width="1.5" stroke-dasharray="3 2"/><line x1="12" y1="8" x2="12" y2="16" stroke="#2d7dd2" stroke-width="1.5"/><line x1="8" y1="12" x2="16" y2="12" stroke="#2d7dd2" stroke-width="1.5"/></svg>';
+  var row = '<div class="wiz-amb-row" id="wiz-row-' + key + '">' +
+    '<div class="wiz-amb-svgbox">' + svgCustom + '</div>' +
+    '<div style="flex:1">' +
+      '<div class="wiz-amb-nome">' + nome + '</div>' +
+      '<div class="wiz-amb-desc">Ambiente personalizado</div>' +
+    '</div>' +
+    '<div class="wiz-ctrl">' +
+      '<button class="wiz-ctrl-btn" onclick="wizDec(this,\'' + key + '\')" aria-label="diminuir">' + String.fromCharCode(8722) + '</button>' +
+      '<span class="wiz-ctrl-val ativo" id="wiz-val-' + key + '">1</span>' +
+      '<button class="wiz-ctrl-btn" onclick="wizInc(this,\'' + key + '\')" aria-label="aumentar">+</button>' +
+      '<button class="wiz-ctrl-btn" style="color:#ef4444;margin-left:4px" onclick="this.closest(\'.wiz-amb-row\').remove();wizUpdateResumo()" aria-label="remover">x</button>' +
+    '</div>' +
+  '</div>';
+  btn.insertAdjacentHTML('beforebegin', row);
+  wizUpdateResumo();
+}
+
 function wizInc(btn, key) {
   var v = document.getElementById('wiz-val-'+key);
   if (!v) return;
