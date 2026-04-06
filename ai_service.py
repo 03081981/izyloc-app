@@ -11,11 +11,11 @@ SYSTEM_PROMPT = """Voce e um perito especializado em vistorias imobiliarias bras
 Sua funcao e analisar fotografias de ambientes e itens de imoveis com precisao tecnica.
 
 REGRAS OBRIGATORIAS:
-- Descreva APENAS o que e visivel na foto Ã¢ÂÂ nunca invente ou suponha
+- Descreva APENAS o que e visivel na foto ÃÂ¢ÃÂÃÂ nunca invente ou suponha
 - Use linguagem tecnica objetiva, como um laudo pericial profissional
 - Identifique materiais, cores, dimensoes estimadas e estado de conservacao
-- Seja especifico: nao diga "parede branca" Ã¢ÂÂ diga "parede revestida com tinta acrilica na cor branco gelo"
-- Nao diga "parece" ou "provavelmente" Ã¢ÂÂ seja assertivo no que e visivel
+- Seja especifico: nao diga "parede branca" ÃÂ¢ÃÂÃÂ diga "parede revestida com tinta acrilica na cor branco gelo"
+- Nao diga "parece" ou "provavelmente" ÃÂ¢ÃÂÃÂ seja assertivo no que e visivel
 - Se houver avaria, descreva com precisao: localizacao, extensao estimada, natureza do dano
 - Retorne SEMPRE um JSON valido, sem markdown, sem explicacoes fora do JSON"""
 
@@ -152,7 +152,7 @@ def consolidar_ambiente(nome_ambiente: str, descricoes: list) -> dict:
     itens_texto = ""
     avarias = []
     for i, d in enumerate(descricoes, 1):
-        itens_texto += f"Foto {i} — {d.get('item', 'Item')}: {d.get('descricao', '')}\n"
+        itens_texto += f"Foto {i} â {d.get('item', 'Item')}: {d.get('descricao', '')}\n"
         if d.get('estado') == 'Com avaria' and d.get('observacao'):
             avarias.append(d.get('observacao'))
 
@@ -174,7 +174,7 @@ INSTRUCOES:
 
 Retorne APENAS este JSON sem markdown:
 {{
-  "resumo": "SINTESE:\n\nPiso: [material, cor, estado]\n\nParedes: [material, cor, estado, avarias se houver]\n\nTeto: [material, cor, estado]\n\nEsquadrias: [portas e janelas, estado]\n\nObservacoes: [itens adicionais identificados]\n\nEstado geral: [Bom / Regular / Com avaria] — [justificativa resumida]"
+  "resumo": "SINTESE:\n\nPiso: [material, cor, estado]\n\nParedes: [material, cor, estado, avarias se houver]\n\nTeto: [material, cor, estado]\n\nEsquadrias: [portas e janelas, estado]\n\nObservacoes: [itens adicionais identificados]\n\nEstado geral: [Bom / Regular / Com avaria] â [justificativa resumida]"
 }}"""
 
     for tentativa in range(3):
@@ -187,8 +187,9 @@ Retorne APENAS este JSON sem markdown:
             )
 
             texto = response.content[0].text.strip()
-            texto = re.sub(r'\`\`\`json\\s*', '', texto)
-            texto = re.sub(r'\`\`\`\\s*', '', texto)
+            texto = re.sub(r'```json\s*', '', texto)
+            texto = re.sub(r'```\s*', '', texto)
+            texto = texto.strip()
             dados = json.loads(texto.strip())
             dados['success'] = True
             return dados
@@ -202,7 +203,7 @@ Retorne APENAS este JSON sem markdown:
 
 def analisar_foto_simples(imagem_base64: str, nome_ambiente: str = "Ambiente", mime_type: str = "image/jpeg") -> dict:
     """
-    Modo legado Ã¢ÂÂ compatibilidade com codigo anterior.
+    Modo legado ÃÂ¢ÃÂÃÂ compatibilidade com codigo anterior.
     Chama analisar_foto e normaliza para formato antigo.
     """
     resultado = analisar_foto(imagem_base64, nome_ambiente, mime_type)
