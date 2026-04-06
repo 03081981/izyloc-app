@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#1565E8"/>
 <meta name="apple-mobile-web-app-capable" content="yes"/>
 <meta name="apple-mobile-web-app-status-bar-style" content="default"/>
-<title>izyLAUDO â Vistorias Imobiliárias</title>
+<title>izyLAUDO – Vistorias Imobiliárias</title>
 <link rel="manifest" href="/static/manifest.json"/>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/signature_pad/4.1.7/signature_pad.umd.min.js"></script>
 
@@ -60,12 +60,12 @@ body {
   overflow-x: hidden;
 }
 
-/* âââ SCROLLBAR âââ */
+/* ─── SCROLLBAR ─── */
 ::-webkit-scrollbar { width: 6px; height: 6px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
 
-/* âââ TOPBAR (global back/logout bar) âââ */
+/* ─── TOPBAR (global back/logout bar) ─── */
 #topbar {
   display: none;
   position: fixed; top: 0; left: 0; right: 0;
@@ -101,11 +101,11 @@ body {
 }
 #btn-logout:hover { background: var(--bg); color: var(--text-2); }
 
-/* âââ PAGE SYSTEM âââ */
+/* ─── PAGE SYSTEM ─── */
 .page { display: none; min-height: 100vh; }
 .page.active { display: block; }
 
-/* âââ AUTH PAGE âââ */
+/* ─── AUTH PAGE ─── */
 #page-auth {
   display: none;
   min-height: 100vh;
@@ -223,11 +223,11 @@ body {
 }
 .auth-error.show { display: block; }
 
-/* âââ AUTH FORMS TOGGLE âââ */
+/* ─── AUTH FORMS TOGGLE ─── */
 #form-login, #form-register, #form-forgot { display: none; }
 #form-login.show, #form-register.show, #form-forgot.show { display: block; }
 
-/* âââ RESET PAGE âââ */
+/* ─── RESET PAGE ─── */
 #page-reset {
   display: none;
   min-height: 100vh;
@@ -271,7 +271,7 @@ body {
   margin: 0 auto 20px;
 }
 
-/* âââ APP LAYOUT (sidebar + main) âââ */
+/* ─── APP LAYOUT (sidebar + main) ─── */
 #page-dashboard {
   display: none;
   min-height: 100vh;
@@ -280,7 +280,7 @@ body {
   display: flex;
 }
 
-/* âââ SIDEBAR âââ */
+/* ─── SIDEBAR ─── */
 .sidebar {
   width: var(--sidebar-w);
   min-height: 100vh;
@@ -375,7 +375,7 @@ body {
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
 
-/* âââ MAIN WRAPPER âââ */
+/* ─── MAIN WRAPPER ─── */
 .dash-main-wrapper {
   margin-left: var(--sidebar-w);
   min-height: 100vh;
@@ -384,7 +384,7 @@ body {
   min-width: 0;
 }
 
-/* âââ DASH TOPBAR âââ */
+/* ─── DASH TOPBAR ─── */
 .dash-topbar {
   height: 64px;
   background: var(--white);
@@ -423,14 +423,14 @@ body {
 }
 .topbar-icon-btn:hover { background: var(--bg); color: var(--text-2); }
 
-/* âââ DASH TAB CONTENT âââ */
+/* ─── DASH TAB CONTENT ─── */
 .dash-tab-content {
   flex: 1; padding: 28px;
   display: none;
 }
 .dash-tab-content.active { display: block; }
 
-/* âââ DASH GRID âââ */
+/* ─── DASH GRID ─── */
 .dash-grid {
   display: grid;
   grid-template-columns: 1fr 340px;
@@ -438,7 +438,7 @@ body {
   align-items: start;
 }
 
-/* âââ SECTION HEADER âââ */
+/* ─── SECTION HEADER ─── */
 .section-header {
   display: flex; align-items: center; justify-content: space-between;
   margin-bottom: 14px; margin-top: 24px;
@@ -452,7 +452,7 @@ body {
 }
 .section-link:hover { text-decoration: underline; }
 
-/* âââ STAT CARDS âââ */
+/* ─── STAT CARDS ─── */
 .stat-cards-row {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -486,7 +486,7 @@ body {
   text-transform: uppercase; letter-spacing: .5px;
 }
 
-/* âââ INSPECTIONS LIST âââ */
+/* ─── INSPECTIONS LIST ─── */
 #inspections-list {
   display: flex; flex-direction: column; gap: 10px;
 }
@@ -548,7 +548,7 @@ body {
   text-align: center; padding: 48px 20px; color: var(--text-3);
 }
 
-/* âââ NEW DASHBOARD v2 âââ */
+/* ─── NEW DASHBOARD v2 ─── */
 .db-hero {
   display: flex; align-items: center; justify-content: space-between;
   margin-bottom: 24px; flex-wrap: wrap; gap: 12px;
@@ -736,7 +736,7 @@ body {
 .inspections-empty svg { width: 48px; height: 48px; margin: 0 auto 16px; opacity: .3; }
 .inspections-empty p { font-size: 14px; }
 
-/* âââ CREDITS PANEL âââ */
+/* ─── CREDITS PANEL ─── */
 .credits-panel {
   background: var(--white);
   border-radius: var(--r-lg);
@@ -797,7 +797,7 @@ body {
   font-size: 11px; color: var(--text-3); text-align: center; margin-top: 8px;
 }
 
-/* âââ EXTRATO PANEL âââ */
+/* ─── EXTRATO PANEL ─── */
 .extrato-panel {
   background: var(--white);
   border-radius: var(--r-lg);
@@ -829,14 +829,14 @@ body {
 .ext-debit { background: #FEE2E2; color: #DC2626; }
 .ext-laudo { background: var(--blue-light); color: var(--blue); }
 
-/* âââ DASHBOARD STATS TAB âââ */
+/* ─── DASHBOARD STATS TAB ─── */
 .stats-section { padding: 4px 0; }
 .stats-grid-full {
   display: grid; grid-template-columns: repeat(4, 1fr);
   gap: 16px; margin-bottom: 24px;
 }
 
-/* âââ PROFILE TAB âââ */
+/* ─── PROFILE TAB ─── */
 .profile-card {
   background: var(--white); border-radius: var(--r-lg);
   box-shadow: var(--sh); border: 1px solid var(--border-light);
@@ -868,11 +868,11 @@ body {
 }
 .profile-field-value { font-size: 14px; font-weight: 500; color: var(--text); }
 
-/* âââ NAV DASH TABS (hidden, kept for JS compat) âââ */
+/* ─── NAV DASH TABS (hidden, kept for JS compat) ─── */
 .dash-nav-tabs { display: none !important; }
 .dash-header { display: none !important; }
 
-/* âââ WIZARD PAGE âââ */
+/* ─── WIZARD PAGE ─── */
 #page-wizard {
   display: none;
   min-height: 100vh;
@@ -910,7 +910,7 @@ body {
 }
 .btn-wiz-back:hover { background: var(--bg); }
 
-/* âââ STEPPER âââ */
+/* ─── STEPPER ─── */
 .wizard-stepper-wrap {
   padding: 12px 0 14px;
   overflow-x: auto;
@@ -953,7 +953,7 @@ body {
 .step-item.active .step-label { color: var(--blue); font-weight: 600; }
 .step-item.done .step-label { color: var(--blue); }
 
-/* âââ WIZARD CONTENT âââ */
+/* ─── WIZARD CONTENT ─── */
 .page-content {
   flex: 1; overflow-y: auto; padding: 28px 24px;
 }
@@ -967,7 +967,7 @@ body {
   margin-bottom: 28px;
 }
 
-/* âââ TIPO CARDS (WIZARD STEP 0) âââ */
+/* ─── TIPO CARDS (WIZARD STEP 0) ─── */
 .tipo-cards {
   display: grid; grid-template-columns: repeat(3, 1fr);
   gap: 16px; margin-bottom: 24px;
@@ -1060,7 +1060,7 @@ body {
 }
 .wiz-info-icon { color: var(--blue); flex-shrink: 0; margin-top: 1px; }
 
-/* âââ WIZARD NAV âââ */
+/* ─── WIZARD NAV ─── */
 .wiz-nav {
   display: flex; justify-content: space-between; align-items: center;
   padding-top: 20px; margin-top: 8px;
@@ -1086,7 +1086,7 @@ body {
 }
 .btn-wiz-back-sm:hover { background: var(--bg); border-color: var(--text-3); }
 
-/* âââ SUBCHOICE (check-in/check-out) âââ */
+/* ─── SUBCHOICE (check-in/check-out) ─── */
 #temporada-subchoice { display: none; }
 #temporada-subchoice.show { display: block; }
 .subchoice-row {
@@ -1103,7 +1103,7 @@ body {
 .subchoice-btn:hover { border-color: var(--blue-border); color: var(--blue); }
 .subchoice-btn.active { border-color: var(--blue); background: var(--blue-light); color: var(--blue); }
 
-/* âââ WIZARD FORMS âââ */
+/* ─── WIZARD FORMS ─── */
 .wiz-step { display: none; }
 .wiz-step.active { display: block; }
 .wstep-title {
@@ -1142,7 +1142,7 @@ body {
   font-size: 14px; font-weight: 600; color: var(--text-2);
 }
 
-/* âââ ROOMS (step 3 & 4) âââ */
+/* ─── ROOMS (step 3 & 4) ─── */
 .room-check-row {
   display: flex; align-items: center; gap: 10px;
   padding: 10px 14px;
@@ -1196,7 +1196,7 @@ body {
 }
 .photo-add-btn:hover { border-color: var(--blue); color: var(--blue); background: var(--blue-light); }
 
-/* âââ REVIEW + SIGNATURES âââ */
+/* ─── REVIEW + SIGNATURES ─── */
 .rev-section { margin-bottom: 20px; }
 .rev-section-title {
   font-size: 13px; font-weight: 700; color: var(--text-3);
@@ -1217,7 +1217,7 @@ canvas { display: block; }
 .sig-actions { display: flex; gap: 8px; }
 .sig-status { font-size: 12px; color: var(--text-3); margin-top: 6px; }
 
-/* âââ DETAIL PAGE âââ */
+/* ─── DETAIL PAGE ─── */
 #page-detail {
   display: none; min-height: 100vh;
   flex-direction: column; background: var(--bg);
@@ -1232,7 +1232,7 @@ canvas { display: block; }
 .detail-title { font-size: 16px; font-weight: 700; color: var(--text); flex: 1; }
 #detail-content { flex: 1; padding: 24px; overflow-y: auto; }
 
-/* âââ MODAL âââ */
+/* ─── MODAL ─── */
 .modal-overlay {
   display: none; position: fixed; inset: 0;
   background: rgba(0,0,0,.45); z-index: 500;
@@ -1258,7 +1258,7 @@ canvas { display: block; }
   display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px;
 }
 
-/* âââ LOADING OVERLAY âââ */
+/* ─── LOADING OVERLAY ─── */
 .loading-overlay {
   position: fixed; inset: 0;
   background: rgba(255,255,255,.85);
@@ -1277,7 +1277,7 @@ canvas { display: block; }
 @keyframes spin { to { transform: rotate(360deg); } }
 .loading-text { font-size: 14px; color: var(--text-2); font-weight: 500; }
 
-/* âââ TOAST âââ */
+/* ─── TOAST ─── */
 .toast-el {
   position: fixed; bottom: 24px; left: 50%;
   transform: translateX(-50%) translateY(100px);
@@ -1292,7 +1292,7 @@ canvas { display: block; }
 .toast-el.success { background: var(--success); }
 .toast-el.error { background: var(--error); }
 
-/* âââ FAB âââ */
+/* ─── FAB ─── */
 .fab {
   display: none;
   position: fixed; bottom: 24px; right: 24px;
@@ -1306,7 +1306,7 @@ canvas { display: block; }
 }
 .fab:hover { background: var(--blue-mid); transform: scale(1.08); }
 
-/* âââ LOCATARIO/LOCADOR BLOCKS âââ */
+/* ─── LOCATARIO/LOCADOR BLOCKS ─── */
 .person-block {
   background: var(--white); border-radius: var(--r);
   border: 1px solid var(--border-light);
@@ -1335,7 +1335,7 @@ canvas { display: block; }
 }
 .btn-add-person:hover { border-color: var(--blue); color: var(--blue); background: var(--blue-light); }
 
-/* âââ SWITCH TOGGLE âââ */
+/* ─── SWITCH TOGGLE ─── */
 .toggle-row {
   display: flex; align-items: center; justify-content: space-between;
   padding: 12px 14px; background: var(--bg); border-radius: var(--r-sm);
@@ -1355,7 +1355,7 @@ canvas { display: block; }
 }
 .toggle-switch.on .toggle-thumb { transform: translateX(18px); }
 
-/* âââ ITEM SUGGESTIONS âââ */
+/* ─── ITEM SUGGESTIONS ─── */
 #temporada-item-suggestions { display: none; }
 #temporada-item-suggestions.show { display: block; }
 .suggestion-chips {
@@ -1369,7 +1369,7 @@ canvas { display: block; }
 }
 .chip:hover { border-color: var(--blue); color: var(--blue); background: var(--blue-light); }
 
-/* âââ RESP FLOW âââ */
+/* ─── RESP FLOW ─── */
 #v5-resp-flow, #v6-temporada { display: none; }
 #v5-resp-flow.show, #v6-temporada.show { display: block; }
 .resp-option-row {
@@ -1385,7 +1385,7 @@ canvas { display: block; }
 .resp-opt-btn:hover { border-color: var(--blue-border); color: var(--blue); }
 .resp-opt-btn.active { border-color: var(--blue); background: var(--blue-light); color: var(--blue); }
 
-/* âââ RESPONSIVE âââ */
+/* ─── RESPONSIVE ─── */
 @media (max-width: 1200px) {
   .db-cards-row { grid-template-columns: repeat(3, 1fr); }
 }
@@ -1451,7 +1451,7 @@ canvas { display: block; }
   .form-row { grid-template-columns: 1fr; }
 }
 
-/* âââ UTILS âââ */
+/* ─── UTILS ─── */
 .text-center { text-align: center; }
 .text-muted { color: var(--text-3); }
 .mt-2 { margin-top: 8px; }
@@ -1460,7 +1460,7 @@ canvas { display: block; }
 .hidden { display: none !important; }
 .flex-center { display: flex; align-items: center; justify-content: center; }
 
-/* âââ REALIZA CARDS (WIZARD STEP: QUEM REALIZA) âââ */
+/* ─── REALIZA CARDS (WIZARD STEP: QUEM REALIZA) ─── */
 .realiza-cards {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -1746,19 +1746,19 @@ textarea.obs-geral{width:100%;background:#f8fafc;border:.5px solid #dce3ed;borde
 
 <!-- TOP BAR -->
 <div class="topbar" id="topbar">
-  <button class="topbar-back hidden" id="btn-back" onclick="goBack()">â¹</button>
+  <button class="topbar-back hidden" id="btn-back" onclick="goBack()">‹</button>
   <div class="topbar-center" id="topbar-title">
     <span class="topbar-logo-small">
       <span class="blue">iZY'</span><span class="black">lOC</span>
     </span>
   </div>
   <div class="topbar-right">
-    <button class="btn-logout" id="btn-logout" onclick="logout()" title="Sair" style="display:none">â</button>
+    <button class="btn-logout" id="btn-logout" onclick="logout()" title="Sair" style="display:none">⏏</button>
   </div>
 </div>
 
 
-<!-- ââââââââââââââ PAGE: AUTH ââââââââââââââ -->
+<!-- ══════════════ PAGE: AUTH ══════════════ -->
 <div id="page-auth" class="page">
   <div class="auth-card">
     <div style='text-align:center; margin-bottom:20px;'><div style='font-size:28px; font-weight:700; line-height:1; letter-spacing:-0.5px;'><span style='color:#2d7dd2; font-weight:400;'>izy</span><span style='color:#1a1a1a; font-weight:700;'>LAUDO</span></div><div style='font-size:10px; color:#999; letter-spacing:1px; text-transform:uppercase; margin-top:4px;'>Vistorias Imobiliárias</div></div>
@@ -1835,7 +1835,7 @@ textarea.obs-geral{width:100%;background:#f8fafc;border:.5px solid #dce3ed;borde
   </div>
 </div>
 
-<!-- ââââââââââââââ PAGE: RESET ââââââââââââââ -->
+<!-- ══════════════ PAGE: RESET ══════════════ -->
 <div id="page-reset" class="page">
   <div class="reset-card">
     <div style='text-align:center; margin-bottom:20px;'><div style='font-size:28px; font-weight:700; line-height:1; letter-spacing:-0.5px;'><span style='color:#2d7dd2; font-weight:400;'>izy</span><span style='color:#1a1a1a; font-weight:700;'>LAUDO</span></div><div style='font-size:10px; color:#999; letter-spacing:1px; text-transform:uppercase; margin-top:4px;'>Vistorias Imobiliárias</div></div>
@@ -1879,7 +1879,7 @@ textarea.obs-geral{width:100%;background:#f8fafc;border:.5px solid #dce3ed;borde
   </div>
 </div>
 
-<!-- ââââââââââââââ PAGE: DASHBOARD ââââââââââââââ -->
+<!-- ══════════════ PAGE: DASHBOARD ══════════════ -->
 <div id="page-dashboard" class="page">
   <!-- SIDEBAR -->
   <aside class="sidebar">
@@ -2029,7 +2029,7 @@ textarea.obs-geral{width:100%;background:#f8fafc;border:.5px solid #dce3ed;borde
           <div><div style="font-size:12px;font-weight:600;color:#fff">Nova vistoria</div><div style="font-size:10px;color:rgba(255,255,255,0.7);margin-top:1px">Iniciar laudo</div></div>
         </div>
         <div style="background:#fff;border-radius:10px;padding:14px;cursor:pointer;display:flex;align-items:center;gap:8px;border:0.5px solid #e2e8f0" onclick="mostrarLaudosMobile()">
-          <div style="width:30px;height:30px;border-radius:7px;background:#eef4ff;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0">ð</div>
+          <div style="width:30px;height:30px;border-radius:7px;background:#eef4ff;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0">📋</div>
           <div><div style="font-size:12px;font-weight:600;color:#1a2540">Meus laudos</div><div style="font-size:10px;color:#8898aa;margin-top:1px">Acesse seus laudos</div></div>
         </div>
       </div>
@@ -2047,7 +2047,7 @@ textarea.obs-geral{width:100%;background:#f8fafc;border:.5px solid #dce3ed;borde
         <div class="db-col-main">
           <div class="db-section-header">
             <span>Laudos recentes</span>
-            <span class="db-section-link" onclick="alert('Funcionalidade em breve!')" style="display:flex;align-items:center;gap:5px">ð Procurar laudo</span>
+            <span class="db-section-link" onclick="alert('Funcionalidade em breve!')" style="display:flex;align-items:center;gap:5px">🔍 Procurar laudo</span>
           </div>
           <div id="inspections-list"></div>
         </div>
@@ -2179,7 +2179,7 @@ textarea.obs-geral{width:100%;background:#f8fafc;border:.5px solid #dce3ed;borde
 </div>
 
 
-<!-- ââââââââââââââ PAGE: WIZARD ââââââââââââââ -->
+<!-- ══════════════ PAGE: WIZARD ══════════════ -->
 <div id="page-wizard" class="page">
   <aside class="sidebar">
       <div class="sidebar-logo">
@@ -2194,10 +2194,10 @@ textarea.obs-geral{width:100%;background:#f8fafc;border:.5px solid #dce3ed;borde
         <div class="nav-section-label">Fotos e creditos</div>
         <div class="nav-item nav-item-cred"><span id="wiz-nav-saldo" style="color:#4fc3f7;font-weight:600">📸 Fotos restantes</span></div>
         <div class="nav-item" onclick="showPage('page-dashboard')">+ Adicionar creditos</div>
-        <div class="nav-item" onclick="showPage('page-dashboard')">ð Extrato de uso</div>
+        <div class="nav-item" onclick="showPage('page-dashboard')">📋 Extrato de uso</div>
         <div class="nav-divider"></div>
         <div class="nav-section-label">Ajuda</div>
-        <div class="nav-item" onclick="showManual()">ð Manual do usuario</div>
+        <div class="nav-item" onclick="showManual()">📖 Manual do usuario</div>
         <div class="nav-divider"></div>
         <div class="nav-section-label">Conta</div>
         <div class="nav-item" onclick="showPage('page-dashboard')">Configuracoes</div>
@@ -2251,7 +2251,7 @@ textarea.obs-geral{width:100%;background:#f8fafc;border:.5px solid #dce3ed;borde
       <div class="tipo-cards" style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:24px">
 
         <div class="tipo-card selected" data-tipo="entrada" onclick="selectTipoCard(this)" style="border-radius:12px;overflow:hidden;border:1.5px solid #e2e8f0;cursor:pointer;background:#fff;position:relative;text-align:center;padding:20px 14px;transition:all .2s">
-          <div style="position:absolute;top:10px;right:10px;width:20px;height:20px;border-radius:50%;background:#2d7dd2;color:#fff;font-size:10px;display:none;align-items:center;justify-content:center;font-weight:700" class="tc-checkmark">â</div>
+          <div style="position:absolute;top:10px;right:10px;width:20px;height:20px;border-radius:50%;background:#2d7dd2;color:#fff;font-size:10px;display:none;align-items:center;justify-content:center;font-weight:700" class="tc-checkmark">✓</div>
           <div style="width:64px;height:50px;margin:0 auto 12px;display:flex;align-items:center;justify-content:center">
             <svg width="64" height="50" viewBox="0 0 56 44" fill="none"><rect x="10" y="4" width="26" height="36" rx="2" fill="#dbeafe" stroke="#2d7dd2" stroke-width="1.5"/><path d="M36 4 Q46 14 46 22 Q46 30 36 40" fill="#bfdbfe" stroke="#2d7dd2" stroke-width="1.5"/><circle cx="33" cy="22" r="2.5" fill="#2d7dd2"/><circle cx="46" cy="10" r="4" fill="none" stroke="#2d7dd2" stroke-width="1.5"/><line x1="46" y1="14" x2="46" y2="24" stroke="#2d7dd2" stroke-width="1.5" stroke-linecap="round"/><line x1="46" y1="20" x2="49" y2="20" stroke="#2d7dd2" stroke-width="1.5" stroke-linecap="round"/><line x1="46" y1="23" x2="49" y2="23" stroke="#2d7dd2" stroke-width="1.5" stroke-linecap="round"/></svg>
           </div>
@@ -2260,7 +2260,7 @@ textarea.obs-geral{width:100%;background:#f8fafc;border:.5px solid #dce3ed;borde
         </div>
 
         <div class="tipo-card" data-tipo="saida" onclick="selectTipoCard(this)" style="border-radius:12px;overflow:hidden;border:1.5px solid #e2e8f0;cursor:pointer;background:#fff;position:relative;text-align:center;padding:20px 14px;transition:all .2s">
-          <div style="position:absolute;top:10px;right:10px;width:20px;height:20px;border-radius:50%;background:#2d7dd2;color:#fff;font-size:10px;display:none;align-items:center;justify-content:center;font-weight:700" class="tc-checkmark">â</div>
+          <div style="position:absolute;top:10px;right:10px;width:20px;height:20px;border-radius:50%;background:#2d7dd2;color:#fff;font-size:10px;display:none;align-items:center;justify-content:center;font-weight:700" class="tc-checkmark">✓</div>
           <div style="width:64px;height:50px;margin:0 auto 12px;display:flex;align-items:center;justify-content:center">
             <svg width="64" height="50" viewBox="0 0 56 44" fill="none"><rect x="14" y="4" width="26" height="36" rx="2" fill="#dbeafe" stroke="#2d7dd2" stroke-width="1.5"/><circle cx="36" cy="22" r="2.5" fill="#2d7dd2"/><line x1="42" y1="22" x2="52" y2="22" stroke="#2d7dd2" stroke-width="2" stroke-linecap="round"/><polyline points="48,18 52,22 48,26" fill="none" stroke="#2d7dd2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><rect x="2" y="28" width="10" height="10" rx="1" fill="#93c5fd" stroke="#2d7dd2" stroke-width="1"/></svg>
           </div>
@@ -2269,7 +2269,7 @@ textarea.obs-geral{width:100%;background:#f8fafc;border:.5px solid #dce3ed;borde
         </div>
 
         <div class="tipo-card" data-tipo="temporada" onclick="selectTipoCard(this)" style="border-radius:12px;overflow:hidden;border:1.5px solid #e2e8f0;cursor:pointer;background:#fff;position:relative;text-align:center;padding:20px 14px;transition:all .2s">
-          <div style="position:absolute;top:10px;right:10px;width:20px;height:20px;border-radius:50%;background:#2d7dd2;color:#fff;font-size:10px;display:none;align-items:center;justify-content:center;font-weight:700" class="tc-checkmark">â</div>
+          <div style="position:absolute;top:10px;right:10px;width:20px;height:20px;border-radius:50%;background:#2d7dd2;color:#fff;font-size:10px;display:none;align-items:center;justify-content:center;font-weight:700" class="tc-checkmark">✓</div>
           <div style="width:64px;height:50px;margin:0 auto 12px;display:flex;align-items:center;justify-content:center">
             <svg width="64" height="50" viewBox="0 0 56 44" fill="none"><rect x="6" y="8" width="36" height="30" rx="3" fill="#dbeafe" stroke="#2d7dd2" stroke-width="1.5"/><rect x="6" y="8" width="36" height="10" rx="3" fill="#2d7dd2"/><line x1="16" y1="4" x2="16" y2="14" stroke="#2d7dd2" stroke-width="2" stroke-linecap="round"/><line x1="32" y1="4" x2="32" y2="14" stroke="#2d7dd2" stroke-width="2" stroke-linecap="round"/><circle cx="16" cy="26" r="2" fill="#2d7dd2"/><circle cx="24" cy="26" r="2" fill="#2d7dd2"/><circle cx="32" cy="26" r="2" fill="#93c5fd"/><circle cx="46" cy="10" r="5" fill="#fbbf24"/></svg>
           </div>
@@ -2295,7 +2295,7 @@ textarea.obs-geral{width:100%;background:#f8fafc;border:.5px solid #dce3ed;borde
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:24px">
 
         <div class="realiza-card selected" data-realiza="imobiliaria" onclick="selectRealizaCard(this)" style="border-radius:12px;border:1.5px solid #2d7dd2;cursor:pointer;background:#f0f7ff;position:relative;text-align:center;padding:20px 14px;transition:all .2s">
-          <div class="realiza-ck" style="position:absolute;top:10px;right:10px;width:20px;height:20px;border-radius:50%;background:#2d7dd2;color:#fff;font-size:10px;display:none;align-items:center;justify-content:center;font-weight:700">â</div>
+          <div class="realiza-ck" style="position:absolute;top:10px;right:10px;width:20px;height:20px;border-radius:50%;background:#2d7dd2;color:#fff;font-size:10px;display:none;align-items:center;justify-content:center;font-weight:700">✓</div>
           <div style="width:64px;height:50px;margin:0 auto 12px;display:flex;align-items:center;justify-content:center">
             <svg width="64" height="50" viewBox="0 0 56 44" fill="none"><rect x="8" y="6" width="40" height="34" rx="2" fill="#dbeafe" stroke="#2d7dd2" stroke-width="1.5"/><rect x="8" y="6" width="40" height="10" rx="2" fill="#2d7dd2"/><rect x="12" y="20" width="7" height="6" rx="1" fill="#93c5fd" stroke="#2d7dd2" stroke-width="0.8"/><rect x="24" y="20" width="7" height="6" rx="1" fill="#93c5fd" stroke="#2d7dd2" stroke-width="0.8"/><rect x="36" y="20" width="7" height="6" rx="1" fill="#93c5fd" stroke="#2d7dd2" stroke-width="0.8"/><rect x="22" y="30" width="12" height="10" rx="1" fill="#2d7dd2"/><circle cx="32" cy="35" r="1" fill="#fff"/><circle cx="50" cy="12" r="3" fill="#fff" stroke="#2d7dd2" stroke-width="1"/><path d="M46 20c0-2.2 1.8-4 4-4s4 1.8 4 4" fill="#dbeafe" stroke="#2d7dd2" stroke-width="1"/></svg>
           </div>
@@ -2304,7 +2304,7 @@ textarea.obs-geral{width:100%;background:#f8fafc;border:.5px solid #dce3ed;borde
         </div>
 
         <div class="realiza-card" data-realiza="proprietario" onclick="selectRealizaCard(this)" style="border-radius:12px;border:1.5px solid #e2e8f0;cursor:pointer;background:#fff;position:relative;text-align:center;padding:20px 14px;transition:all .2s">
-          <div style="position:absolute;top:10px;right:10px;width:20px;height:20px;border-radius:50%;background:#2d7dd2;color:#fff;font-size:10px;display:none;align-items:center;justify-content:center;font-weight:700" class="realiza-ck">â</div>
+          <div style="position:absolute;top:10px;right:10px;width:20px;height:20px;border-radius:50%;background:#2d7dd2;color:#fff;font-size:10px;display:none;align-items:center;justify-content:center;font-weight:700" class="realiza-ck">✓</div>
           <div style="width:64px;height:50px;margin:0 auto 12px;display:flex;align-items:center;justify-content:center">
             <svg width="64" height="50" viewBox="0 0 56 50" fill="none"><circle cx="28" cy="12" r="9" fill="#dbeafe" stroke="#2d7dd2" stroke-width="1.5"/><circle cx="25" cy="11" r="1.2" fill="#2d7dd2"/><circle cx="31" cy="11" r="1.2" fill="#2d7dd2"/><path d="M25 15 Q28 17.5 31 15" stroke="#2d7dd2" stroke-width="1.2" stroke-linecap="round" fill="none"/><path d="M12 44 C12 34 18 30 28 30 C38 30 44 34 44 44" fill="#dbeafe" stroke="#2d7dd2" stroke-width="1.5" stroke-linecap="round"/><path d="M26 30 L28 36 L30 30" fill="#2d7dd2" stroke="#2d7dd2" stroke-width="0.5" stroke-linejoin="round"/><circle cx="44" cy="36" r="3.5" fill="none" stroke="#2d7dd2" stroke-width="1.5"/><line x1="44" y1="39.5" x2="44" y2="47" stroke="#2d7dd2" stroke-width="1.5" stroke-linecap="round"/><line x1="44" y1="44" x2="47" y2="44" stroke="#2d7dd2" stroke-width="1.5" stroke-linecap="round"/><line x1="44" y1="46" x2="47" y2="46" stroke="#2d7dd2" stroke-width="1.5" stroke-linecap="round"/></svg>
           </div>
@@ -2343,7 +2343,7 @@ textarea.obs-geral{width:100%;background:#f8fafc;border:.5px solid #dce3ed;borde
 
       <!-- Context tag -->
       <div id="wi-context-tag" class="wi-context-tag">
-        <span class="wi-ctx-check">â</span> <span id="wi-ctx-label">—</span>
+        <span class="wi-ctx-check">✓</span> <span id="wi-ctx-label">—</span>
       </div>
 
       <!-- Hidden inputs -->
@@ -2362,10 +2362,10 @@ textarea.obs-geral{width:100%;background:#f8fafc;border:.5px solid #dce3ed;borde
             <input id="wi-cep" type="text" placeholder="00000-000" style="border:0.5px solid #e2e8f0;border-radius:8px;padding:9px 12px;font-size:13px;color:#1a2540;font-family:inherit;background:#fff;outline:none" oninput="buscarCep(this.value)"/>
           </div>
           <div style="display:flex;align-items:flex-end">
-            <button onclick="buscarCep(document.getElementById('wi-cep').value)" style="padding:9px 14px;border-radius:8px;background:#eef4ff;color:#2d7dd2;border:0.5px solid #bfdbfe;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap">ð Buscar CEP</button>
+            <button onclick="buscarCep(document.getElementById('wi-cep').value)" style="padding:9px 14px;border-radius:8px;background:#eef4ff;color:#2d7dd2;border:0.5px solid #bfdbfe;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap">🔍 Buscar CEP</button>
           </div>
         </div>
-        <div id="wi-cep-tip" style="font-size:11px;color:#2d7dd2;margin-bottom:10px;display:none">â Endereco preenchido automaticamente via ViaCEP</div>
+        <div id="wi-cep-tip" style="font-size:11px;color:#2d7dd2;margin-bottom:10px;display:none">✓ Endereco preenchido automaticamente via ViaCEP</div>
 
         <div style="display:flex;flex-direction:column;gap:4px;margin-bottom:10px">
           <label style="font-size:12px;font-weight:600;color:#4a5568">Endereco</label>
@@ -2603,14 +2603,14 @@ textarea.obs-geral{width:100%;background:#f8fafc;border:.5px solid #dce3ed;borde
   </div>
 <!-- BOTÃO ADICIONAR IMOBILIÁRIA -->
   <div id="btn-add-imob" onclick="document.getElementById('btn-add-imob').style.display='none';document.getElementById('imob-expand').style.display='block'" style="display:flex;align-items:center;gap:6px;padding:10px 16px;border-radius:8px;border:1.5px dashed #2d7dd2;background:#f0f7ff;color:#2d7dd2;font-size:13px;font-weight:500;cursor:pointer;margin-top:14px;width:100%">
-    ð¢ + Adicionar imobiliaria <span style="font-size:11px;color:#8898aa;font-weight:400;margin-left:4px">(se representando uma imobiliaria)</span>
+    🏢 + Adicionar imobiliaria <span style="font-size:11px;color:#8898aa;font-weight:400;margin-left:4px">(se representando uma imobiliaria)</span>
   </div>
 
   <!-- CARD IMOBILIÁRIA -->
   <div id="imob-expand" style="display:none;background:#f8fafc;border-radius:10px;border:0.5px solid #e2e8f0;padding:14px;margin-top:12px">
     <div style="font-size:12px;font-weight:600;color:#1a2540;margin-bottom:10px;display:flex;align-items:center;gap:6px">
-      ð¢ Dados da imobiliaria
-      <span onclick="document.getElementById('imob-expand').style.display='none';document.getElementById('btn-add-imob').style.display='flex'" style="margin-left:auto;font-size:11px;color:#dc2626;cursor:pointer;padding:3px 8px;border-radius:5px;border:0.5px solid #fca5a5;background:#fff5f5">â Remover</span>
+      🏢 Dados da imobiliaria
+      <span onclick="document.getElementById('imob-expand').style.display='none';document.getElementById('btn-add-imob').style.display='flex'" style="margin-left:auto;font-size:11px;color:#dc2626;cursor:pointer;padding:3px 8px;border-radius:5px;border:0.5px solid #fca5a5;background:#fff5f5">✕ Remover</span>
     </div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
       <div style="grid-column:1/-1;display:flex;flex-direction:column;gap:4px">
@@ -2650,7 +2650,7 @@ textarea.obs-geral{width:100%;background:#f8fafc;border:.5px solid #dce3ed;borde
 
 <!-- DICA -->
 <div style="background:linear-gradient(135deg,#0f2a4a,#1565c0);border-radius:10px;padding:12px 16px;margin-bottom:18px;display:flex;align-items:center;gap:10px;font-size:12px;color:rgba(255,255,255,0.85)">
-  <span style="font-size:18px;flex-shrink:0">ð¶</span>
+  <span style="font-size:18px;flex-shrink:0">🚶</span>
   <span>Selecione os ambientes que existem no imóvel. Na próxima etapa você fotografa ou grava um vídeo — a IA analisa e gera automaticamente a descrição técnica completa no laudo.</span>
 </div>
 
@@ -2659,7 +2659,7 @@ textarea.obs-geral{width:100%;background:#f8fafc;border:.5px solid #dce3ed;borde
 
 <!-- RESUMO -->
 <div style="background:#eef4ff;border-radius:10px;border:0.5px solid #bfdbfe;padding:14px 16px;margin-bottom:14px">
-  <div style="font-size:11px;font-weight:700;color:#2d7dd2;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px">ð¶ Ordem de caminhada — Etapa 6</div>
+  <div style="font-size:11px;font-weight:700;color:#2d7dd2;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px">🚶 Ordem de caminhada — Etapa 6</div>
   <div id="amb-resumo" style="display:flex;flex-wrap:wrap;gap:6px"><span style="font-size:12px;color:#8898aa;font-style:italic">Nenhum ambiente selecionado ainda</span></div>
 </div>
 
@@ -2735,13 +2735,13 @@ textarea.obs-geral{width:100%;background:#f8fafc;border:.5px solid #dce3ed;borde
             <input type="file" id="wiz6-video-input" accept="video/*" style="display:none" onchange="wiz6UploadVideo(this)"/>
           </div>
           <div style="background:#f0f7ff;border:0.5px solid #bfdbfe;border-radius:8px;padding:12px 14px;font-size:12px;color:#1e3a5f;margin-bottom:16px">
-            <strong>ð¬ Roteiro de filmagem sugerido:</strong><br>
+            <strong>🎬 Roteiro de filmagem sugerido:</strong><br>
             Caminhe pelo imóvel filmando cada ambiente por 15 a 30 segundos. Filme de perto itens danificados, trincas, manchas ou equipamentos.
           </div>
         </div>
         <div id="wiz6-video-processando" style="display:none">
           <div style="text-align:center;padding:32px 0">
-            <div style="font-size:36px;margin-bottom:12px">â³</div>
+            <div style="font-size:36px;margin-bottom:12px">⏳</div>
             <div style="font-size:14px;font-weight:600;color:#1a2540;margin-bottom:4px">IA processando o vídeo...</div>
             <div style="font-size:12px;color:#8898aa">Isso pode levar alguns minutos. Não feche esta tela.</div>
             <div class="wiz6-progress-bar" style="margin-top:16px"><div class="wiz6-progress-fill" id="wiz6-video-prog" style="width:20%"></div></div>
@@ -2753,7 +2753,7 @@ textarea.obs-geral{width:100%;background:#f8fafc;border:.5px solid #dce3ed;borde
 
       <!-- BOTÃO CONCLUIR VISTORIA -->
       <div id="wiz6-btn-concluir-wrap" style="display:none;margin-top:16px">
-        <button class="wiz6-btn-concluir" style="width:100%" onclick="wiz6Concluir()">â Concluir vistoria →</button>
+        <button class="wiz6-btn-concluir" style="width:100%" onclick="wiz6Concluir()">✅ Concluir vistoria →</button>
       </div>
 
       <!-- LEGADO: mantidos para compatibilidade -->
@@ -2779,7 +2779,7 @@ textarea.obs-geral{width:100%;background:#f8fafc;border:.5px solid #dce3ed;borde
       <div class="wstep-title">Laudo de vistoria</div>
       <div class="wstep-sub">Seu laudo está pronto. Baixe o PDF ou envie para assinatura digital.</div>
       <div style="background:#fff;border-radius:12px;box-shadow:0 1px 4px rgba(0,0,0,.08);padding:24px;margin:16px 0;text-align:center">
-        <div style="font-size:48px;margin-bottom:12px">ð</div>
+        <div style="font-size:48px;margin-bottom:12px">📄</div>
         <div style="font-size:16px;font-weight:600;color:#1e293b;margin-bottom:4px">Laudo gerado com sucesso</div>
         <div style="font-size:13px;color:#64748b;margin-bottom:20px">Revise o documento e escolha uma opção abaixo</div>
         <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
@@ -2796,7 +2796,7 @@ textarea.obs-geral{width:100%;background:#f8fafc;border:.5px solid #dce3ed;borde
   </div><!-- /wiz-main-wrapper -->
 </div>
 
-<!-- ââââââââââââââ PAGE: DETAIL ââââââââââââââ -->
+<!-- ══════════════ PAGE: DETAIL ══════════════ -->
 <div id="page-detail" class="page">
   <div class="detail-header">
     <button class="btn-wiz-back" onclick="showPage('page-dashboard')" style="margin-right:4px"><svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z"/></svg></button>
@@ -2809,7 +2809,7 @@ textarea.obs-geral{width:100%;background:#f8fafc;border:.5px solid #dce3ed;borde
 </div>
 
 <script>
-// ââ switchTab: sidebar navigation helper ââ
+// ── switchTab: sidebar navigation helper ──
 function switchTab(tab, el) {
   document.querySelectorAll('.dash-tab-content').forEach(function(t) {
     t.classList.remove('active');
@@ -2823,7 +2823,7 @@ function switchTab(tab, el) {
   if (tt) tt.textContent = titles[tab] || 'Dashboard';
 }
 
-// ââ Sync profile fields across tabs ââ
+// ── Sync profile fields across tabs ──
 (function() {
   function syncProfile() {
     var n = document.getElementById('profile-name');
@@ -2881,7 +2881,7 @@ function switchTab(tab, el) {
 </script>
 
 
-<!-- ââââââââââââââ MODAL: ADD ITEM ââââââââââââââ -->
+<!-- ══════════════ MODAL: ADD ITEM ══════════════ -->
 <div class="modal-overlay" id="modal-add-item" onclick="closeModal('modal-add-item')">
   <div class="modal" onclick="event.stopPropagation()">
     <div class="modal-handle"></div>
@@ -2920,7 +2920,7 @@ function switchTab(tab, el) {
 </div>
 
 <script>
-// âââ STATE ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ─── STATE ────────────────────────────────────────────────────────────────────
 const API = '';
 let currentUser = null, currentToken = null, currentInspection = null;
 let pageHistory = [], signaturePads = {};
@@ -2928,7 +2928,7 @@ let wizard = { step: 1, inspectionId: null, selectedRooms: [], realizador: 'imob
     var _savedInspId = localStorage.getItem('izylo_current_inspection');
     if (_savedInspId) wizard.inspectionId = _savedInspId;
 
-// âââ BOOT âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ─── BOOT ─────────────────────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
   var cardPadrao = document.querySelector('[data-realiza].selected');
   if (cardPadrao) wizard.realizador = cardPadrao.dataset.realiza;
@@ -2943,7 +2943,7 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('wi-date').value = new Date().toISOString().split('T')[0];
 });
 
-// âââ NAVIGATION âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ─── NAVIGATION ───────────────────────────────────────────────────────────────
 function showPage(id, title = null, addHistory = true) {
   hideLoading();
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
@@ -2987,7 +2987,7 @@ function goBack() {
   }
 }
 
-// âââ API ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ─── API ──────────────────────────────────────────────────────────────────────
 async function api(method, path, body = null, isMultipart = false) {
   const h = {};
   if (currentToken) h['Authorization'] = `Bearer ${currentToken}`;
@@ -3003,7 +3003,7 @@ async function api(method, path, body = null, isMultipart = false) {
   } catch { return { error: 'Erro de conexão', ok: false }; }
 }
 
-// âââ TOAST & LOADING ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ─── TOAST & LOADING ──────────────────────────────────────────────────────────
 let toastTO;
 function toast(msg, type = '') {
   document.getElementById('toast-el')?.remove();
@@ -3018,7 +3018,7 @@ function showLoading(t='Aguarde...') {
 }
 function hideLoading() { document.getElementById('loading').style.display = 'none'; }
 
-// âââ AUTH âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ─── AUTH ─────────────────────────────────────────────────────────────────────
 function switchAuthTab(tab, btn) {
   document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
   btn.classList.add('active');
@@ -3060,7 +3060,7 @@ async function doRegister() {
   saveSession(r);
   showPage('page-dashboard', null, false);
   loadDashboard();
-  toast('Conta criada! Bem-vindo ao iZY\'lOC ð', 'success');
+  toast('Conta criada! Bem-vindo ao iZY\'lOC 🎉', 'success');
 }
 
 function saveSession(r) {
@@ -3077,7 +3077,7 @@ function logout() {
   showPage('page-auth');
 }
 
-// âââ DASHBOARD ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ─── DASHBOARD ────────────────────────────────────────────────────────────────
 function switchDashTab(tab, btn) {
   document.querySelectorAll('.dash-nav-tab').forEach(t => t.classList.remove('active'));
   btn.classList.add('active');
@@ -3195,7 +3195,7 @@ function formatDate(str) {
   try { return new Date(str).toLocaleDateString('pt-BR'); } catch { return str; }
 }
 
-// âââ NEW INSPECTION WIZARD ââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ─── NEW INSPECTION WIZARD ────────────────────────────────────────────────────
 function showNewInspection() {
   wizard = { step: 1, inspectionId: null, selectedRooms: [], realizador: 'imobiliaria', tipo: '' };
   // Reset forms
@@ -3407,13 +3407,13 @@ function v(id) {
 
 function wizardBack(step) { gotoWStep(step - 1); }
 
-// âââ ROOM SELECTION âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ─── ROOM SELECTION ───────────────────────────────────────────────────────────
 function toggleRoomCheck(el, name) {
   const box = el.querySelector('.check-box');
   const isChecked = el.classList.contains('checked');
   el.classList.toggle('checked', !isChecked);
   box.classList.toggle('checked', !isChecked);
-  box.innerHTML = !isChecked ? 'â' : '';
+  box.innerHTML = !isChecked ? '✓' : '';
   if (!isChecked) {
     if (!wizard.selectedRooms.includes(name)) wizard.selectedRooms.push(name);
   } else {
@@ -3432,13 +3432,13 @@ function addCustomRoom() {
   const el = document.createElement('div');
   el.className = 'room-check-item checked';
   el.onclick = function() { toggleRoomCheck(this, name); };
-  el.innerHTML = `<div class="check-box checked">â</div><span class="room-check-label">${name}</span>`;
+  el.innerHTML = `<div class="check-box checked">✓</div><span class="room-check-label">${name}</span>`;
   list.appendChild(el);
   input.value = '';
   toast(`"${name}" adicionado`, 'success');
 }
 
-// âââ BUILD ROOMS IN STEP 4 ââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ─── BUILD ROOMS IN STEP 4 ────────────────────────────────────────────────────
 async function advanceFromAmbientes() {
   // CAPTURAR IMEDIATAMENTE - antes de qualquer reset do DOM
     var ambCapturados = [];
@@ -3495,10 +3495,10 @@ function renderRoomCard(room) {
   el.className = 'room-card'; el.id = `room-${room.id}`;
 
   const roomIcons = {
-    'Sala de Estar': 'ð', 'Cozinha': 'ð³', 'Quarto 1': 'ð', 'Quarto 2': 'ð',
-    'Banheiro': 'ð¿', 'Área de Serviço': 'ð§º', 'Garagem': 'ð', 'Varanda': 'ð¿',
+    'Sala de Estar': '🛋', 'Cozinha': '🍳', 'Quarto 1': '🛏', 'Quarto 2': '🛏',
+    'Banheiro': '🚿', 'Área de Serviço': '🧺', 'Garagem': '🚗', 'Varanda': '🌿',
   };
-  const icon = roomIcons[room.name] || 'ð ';
+  const icon = roomIcons[room.name] || '🏠';
 
   el.innerHTML = `
     <div class="room-header" onclick="toggleRoom('${room.id}')">
@@ -3509,7 +3509,7 @@ function renderRoomCard(room) {
           <div class="room-count" id="rc-${room.id}">Nenhum item</div>
         </div>
       </div>
-      <span class="room-chevron" id="chevron-${room.id}">â¼</span>
+      <span class="room-chevron" id="chevron-${room.id}">▼</span>
     </div>
     <div class="room-body" id="rbody-${room.id}">
       <div id="items-${room.id}" style="margin-top:12px"></div>
@@ -3528,7 +3528,7 @@ function toggleRoom(id) {
   chev.classList.toggle('open', !open);
 }
 
-// âââ ITEMS ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ─── ITEMS ────────────────────────────────────────────────────────────────────
 function openAddItemModal(roomId) {
   document.getElementById('modal-room-id').value = roomId;
   document.getElementById('new-item-name').value = '';
@@ -3565,7 +3565,7 @@ function renderItemCard(item, roomId) {
     <div id="photo-grid-${item.id}" class="photo-grid"></div>
     <div id="photo-count-${item.id}" class="photo-count-badge" style="display:none"></div>
     <div id="ai-box-${item.id}" style="display:none">
-      <div class="ai-badge">â¦ Descrição gerada pela IA</div>
+      <div class="ai-badge">✦ Descrição gerada pela IA</div>
       <div class="ai-description" id="ai-desc-${item.id}"></div>
     </div>
     <div id="edit-box-${item.id}" style="display:none">
@@ -3574,12 +3574,12 @@ function renderItemCard(item, roomId) {
     </div>
     <div class="item-actions">
       <label class="btn btn-primary btn-sm" style="cursor:pointer;font-size:13px">
-        ð· Adicionar Foto
+        📷 Adicionar Foto
         <input type="file" accept="image/*" capture="environment" style="display:none"
           onchange="uploadPhoto('${item.id}', this)"/>
       </label>
-      <button class="btn btn-ghost btn-sm" onclick="toggleEdit('${item.id}')">âï¸</button>
-      <button class="btn btn-ghost btn-sm" style="color:var(--danger)" onclick="deleteItem('${item.id}','${roomId}')">ð</button>
+      <button class="btn btn-ghost btn-sm" onclick="toggleEdit('${item.id}')">✏ï¸</button>
+      <button class="btn btn-ghost btn-sm" style="color:var(--danger)" onclick="deleteItem('${item.id}','${roomId}')">🗑</button>
     </div>`;
   container.appendChild(el);
   // Carrega fotos já existentes ao renderizar
@@ -3613,8 +3613,8 @@ async function uploadPhoto(itemId, input) {
   // Quantidade de fotos já existentes
   const totalBefore = grid ? grid.children.length : 0;
   const loadMsg = totalBefore > 0
-    ? `ð¤ A IA está analisando ${totalBefore + 1} fotos...\nAguarde alguns segundos`
-    : 'ð¤ A IA está analisando a foto...\nAguarde alguns segundos';
+    ? `🤖 A IA está analisando ${totalBefore + 1} fotos...\nAguarde alguns segundos`
+    : '🤖 A IA está analisando a foto...\nAguarde alguns segundos';
   showLoading(loadMsg);
 
   const fd = new FormData(); fd.append('photo', file);
@@ -3642,7 +3642,7 @@ async function uploadPhoto(itemId, input) {
       condEl.className = `cond cond-${ai.condition.replace(/[óô]/g,'o').replace(/[éê]/g,'e')}`;
     }
     const n = r.total_photos || 1;
-    const msg = n > 1 ? `â IA analisou ${n} fotos!` : 'â IA analisou a foto!';
+    const msg = n > 1 ? `✅ IA analisou ${n} fotos!` : '✅ IA analisou a foto!';
     toast(msg, 'success');
   } else if (!ai?.success) {
     toast(ai?.description || 'Foto salva (configure ANTHROPIC_API_KEY para análise automática)', 'warning');
@@ -3665,13 +3665,13 @@ async function loadItemPhotos(itemId) {
     thumb.innerHTML = `
       <img src="${p.url}" alt="foto" onclick="window.open('${p.url}','_blank')"/>
       <button class="photo-thumb-del" title="Remover foto"
-        onclick="deletePhoto('${itemId}','${p.id}')">â</button>`;
+        onclick="deletePhoto('${itemId}','${p.id}')">✕</button>`;
     grid.appendChild(thumb);
   });
   if (countBadge) {
     if (photos.length > 1) {
       countBadge.style.display = 'block';
-      countBadge.textContent = `${photos.length} fotos â¢ toque para ampliar`;
+      countBadge.textContent = `${photos.length} fotos • toque para ampliar`;
     } else {
       countBadge.style.display = 'none';
     }
@@ -3690,7 +3690,7 @@ async function deletePhoto(itemId, photoId) {
   const remaining = grid ? grid.children.length : 0;
   if (countBadge) {
     if (remaining > 1) {
-      countBadge.textContent = `${remaining} fotos â¢ toque para ampliar`;
+      countBadge.textContent = `${remaining} fotos • toque para ampliar`;
     } else {
       countBadge.style.display = 'none';
     }
@@ -3730,7 +3730,7 @@ async function deleteItem(itemId, roomId) {
   updateRoomCount(roomId);
 }
 
-// âââ SIGNATURES âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ─── SIGNATURES ───────────────────────────────────────────────────────────────
 function initSigPads() {
   ['locador','locatario','corretor'].forEach(p => {
     const canvas = document.getElementById(`canvas-${p}`);
@@ -3772,7 +3772,7 @@ async function saveSig(party) {
   hideLoading();
   if (!r.ok) return toast(r.error||'Erro', 'error');
   const el = document.getElementById(`sigstatus-${party}`);
-  if (el) { el.textContent = 'â Assinado'; el.classList.add('done'); }
+  if (el) { el.textContent = '✓ Assinado'; el.classList.add('done'); }
   toast(`Assinatura confirmada!`, 'success');
 }
 
@@ -3862,7 +3862,7 @@ async function gerarLaudo() {
 async function generatePDF(id) {
   var iid = id || iid || (currentInspection && currentInspection.id);
   if (!iid) { alert('Inspe\u00e7\u00e3o n\u00e3o encontrada.'); return; }
-  showLoading('ð Gerando laudo PDF...');
+  showLoading('📄 Gerando laudo PDF...');
   const r = await api('GET', `/api/inspections/${iid}/pdf`);
   hideLoading();
   if (r.blob) {
@@ -3871,13 +3871,13 @@ async function generatePDF(id) {
     a.href = url; a.download = `iZYlOC_Laudo_${iid.substring(0,8).toUpperCase()}.pdf`;
     document.body.appendChild(a); a.click();
     document.body.removeChild(a); URL.revokeObjectURL(url);
-    toast('â Laudo gerado com sucesso!', 'success');
+    toast('✅ Laudo gerado com sucesso!', 'success');
       localStorage.removeItem('izylo_current_inspection');
     setTimeout(() => { showPage('page-dashboard',null,false); loadDashboard(); }, 2000);
   } else { toast(r.error||'Erro ao gerar PDF', 'error'); }
 }
 
-// âââ DETAIL PAGE ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ─── DETAIL PAGE ──────────────────────────────────────────────────────────────
 async function openInspection(id) {
   showLoading('Carregando...');
   const r = await api('GET', `/api/inspections/${id}`);
@@ -3904,7 +3904,7 @@ function renderDetail(insp) {
           `<div class="photo-thumb"><img src="${p.url}" alt="foto" onclick="window.open('${p.url}','_blank')"/></div>`
         ).join('');
         photosHtml = `<div class="photo-grid">${thumbs}</div>
-          <div class="photo-count-badge">${photos.length} fotos â¢ toque para ampliar</div>`;
+          <div class="photo-count-badge">${photos.length} fotos • toque para ampliar</div>`;
       } else if (item.photo_filename) {
         photosHtml = `<img src="/uploads/${item.photo_filename}" class="item-photo" alt="foto"/>`;
       }
@@ -3916,12 +3916,12 @@ function renderDetail(insp) {
           </span>
         </div>
         ${photosHtml}
-        ${desc ? `<div class="ai-badge">â¦ Descrição IA</div><div class="ai-description">${desc}</div>` : ''}
+        ${desc ? `<div class="ai-badge">✦ Descrição IA</div><div class="ai-description">${desc}</div>` : ''}
       </div>`;
     }).join('');
     return `<div class="room-card">
       <div class="room-header"><div class="room-header-left">
-        <div class="room-icon">ð </div>
+        <div class="room-icon">🏠</div>
         <div class="room-name">${room.name}</div>
       </div></div>
       <div class="room-body">${items||'<p class="text-small mt-8">Nenhum item</p>'}</div>
@@ -3936,8 +3936,8 @@ function renderDetail(insp) {
       </div>
       <div style="font-size:17px;font-weight:800">${insp.property_address||'—'}</div>
       <div class="text-small mt-4">${insp.property_type||''} ${insp.property_area?'Â· '+insp.property_area+'mÂ²':''}</div>
-      <div class="text-small mt-2">ð ${insp.inspection_date||'—'}</div>
-      ${insp.imobiliaria_name?`<div class="text-small mt-2">ð¢ ${insp.imobiliaria_name}</div>`:''}
+      <div class="text-small mt-2">📅 ${insp.inspection_date||'—'}</div>
+      ${insp.imobiliaria_name?`<div class="text-small mt-2">🏢 ${insp.imobiliaria_name}</div>`:''}
     </div>
     <div class="card">
       <div class="card-title">Partes Envolvidas</div>
@@ -3946,12 +3946,12 @@ function renderDetail(insp) {
       ${insp.corretor_name?`<div><div class="form-label">Corretor</div><div>${insp.corretor_name} ${insp.corretor_creci?'Â· CRECI '+insp.corretor_creci:''}</div></div>`:''}
     </div>
     ${rooms.length?`<div style="font-size:15px;font-weight:700;margin:12px 0 8px">Ambientes (${rooms.length})</div>${roomsHtml}`:''}
-    ${sigs.length?`<div class="card"><div class="card-title">âï¸ Assinaturas</div>
-      ${sigs.map(s=>`<div class="flex gap-8 mb-8"><span class="tag tag-concluido">â</span>
+    ${sigs.length?`<div class="card"><div class="card-title">✍ï¸ Assinaturas</div>
+      ${sigs.map(s=>`<div class="flex gap-8 mb-8"><span class="tag tag-concluido">✓</span>
         <span class="text-small">${s.party_type} — ${s.party_name||''}</span></div>`).join('')}
     </div>`:''}
     <button class="btn btn-primary btn-full mt-8 mb-16" onclick="dlPDF('${insp.id}')">
-      ð Baixar Laudo PDF
+      📄 Baixar Laudo PDF
     </button>`;
 }
 
@@ -4187,25 +4187,25 @@ if (typeof initAmbientes === 'function') initAmbientes();
   })();
 
 
-    // ââ Ambientes (wstep-3) ââââââââââââââââââââââââââââââââââ
+    // ── Ambientes (wstep-3) ──────────────────────────────────
     var _ambData = {
       residencial: {
-        dormitorio: {val:1, label:'Dorm. / Quarto', icon:'ðï¸'},
-        banheiro:   {val:1, label:'Banheiro',        icon:'ð¿'},
-        sala:       {val:1, label:'Sala',            icon:'ðï¸'},
-        cozinha:    {val:1, label:'Cozinha',         icon:'ð³'},
-        lavanderia: {val:0, label:'Lavanderia',      icon:'ð'},
-        garagem:    {val:0, label:'Garagem',         icon:'ð'},
-        varanda:    {val:0, label:'Varanda',         icon:'ð¿'}
+        dormitorio: {val:1, label:'Dorm. / Quarto', icon:'🛏ï¸'},
+        banheiro:   {val:1, label:'Banheiro',        icon:'🚿'},
+        sala:       {val:1, label:'Sala',            icon:'🛋ï¸'},
+        cozinha:    {val:1, label:'Cozinha',         icon:'🍳'},
+        lavanderia: {val:0, label:'Lavanderia',      icon:'👕'},
+        garagem:    {val:0, label:'Garagem',         icon:'🚗'},
+        varanda:    {val:0, label:'Varanda',         icon:'🌿'}
       },
       comercial: {
-        salas:    {val:1, label:'Salas',          icon:'ð¼'},
-        banheiros:{val:1, label:'Banheiros',      icon:'ð¿'},
-        recepcao: {val:0, label:'Recepção',   icon:'ð'},
-        copa:     {val:0, label:'Copa/Cozinha',   icon:'ð³'},
-        deposito: {val:0, label:'Depósito',      icon:'ð¦'},
-        estac:    {val:0, label:'Estacionamento', icon:'ð'},
-        areatec:  {val:0, label:'Área técnica',   icon:'ð§'}
+        salas:    {val:1, label:'Salas',          icon:'💼'},
+        banheiros:{val:1, label:'Banheiros',      icon:'🚿'},
+        recepcao: {val:0, label:'Recepção',   icon:'📂'},
+        copa:     {val:0, label:'Copa/Cozinha',   icon:'🍳'},
+        deposito: {val:0, label:'Depósito',      icon:'📦'},
+        estac:    {val:0, label:'Estacionamento', icon:'🚗'},
+        areatec:  {val:0, label:'Área técnica',   icon:'🔧'}
       }
     };
     var _ambMode = 'residencial';
@@ -4277,16 +4277,16 @@ if (typeof initAmbientes === 'function') initAmbientes();
       if (list) {
         var d = document.createElement('div');
         d.innerHTML = '<div class="counter-row active" style="margin-top:8px;">' +
-          '<div class="counter-left"><span class="counter-icon">ð </span>' +
+          '<div class="counter-left"><span class="counter-icon">🏠</span>' +
           '<div><div class="counter-name">'+val+'</div><div class="counter-desc">Personalizado</div></div></div>' +
-          '<div class="counter-ctrl"><button class="counter-btn">â</button><span class="counter-val">1</span><button class="counter-btn">+</button></div>' +
+          '<div class="counter-ctrl"><button class="counter-btn">−</button><span class="counter-val">1</span><button class="counter-btn">+</button></div>' +
           '</div>';
         list.appendChild(d.firstChild);
       }
       if (inp) inp.value = '';
     }
     
-  // ââ Itens e Fotos (wstep-4) ââ
+  // ── Itens e Fotos (wstep-4) ──
   window.initItensEtapa = function() {
     var rooms = [];
     var ambData = (typeof _ambData !== 'undefined' && typeof _ambMode !== 'undefined') ? (_ambData[_ambMode] || {}) : {};
@@ -4314,11 +4314,11 @@ if (typeof initAmbientes === 'function') initAmbientes();
     var obrigItems = ['Paredes','Piso','Teto / Iluminação','Porta','Janela'];
 
     var verificacoes = [
-      {nome:'ð¡ Iluminação', opts:['Funcionando','Lâmpada queimada','Não funciona','Não testado']},
-      {nome:'ð Tomadas', opts:['Funcionando','Não funciona','Não testado']},
-      {nome:'ð° Água/Encanamento', opts:['Sem vazamentos','Vazamento','Pressão baixa','Não testado']},
-      {nome:'âï¸ Ar-condicionado', opts:['Funcionando','Com defeito','Não funciona','Não testado']},
-      {nome:'ðª Portas/Fechaduras', opts:['Funcionando','Com defeito','Não funciona','Não testado']}
+      {nome:'💡 Iluminação', opts:['Funcionando','Lâmpada queimada','Não funciona','Não testado']},
+      {nome:'🔌 Tomadas', opts:['Funcionando','Não funciona','Não testado']},
+      {nome:'🚰 Água/Encanamento', opts:['Sem vazamentos','Vazamento','Pressão baixa','Não testado']},
+      {nome:'❄ï¸ Ar-condicionado', opts:['Funcionando','Com defeito','Não funciona','Não testado']},
+      {nome:'🚪 Portas/Fechaduras', opts:['Funcionando','Com defeito','Não funciona','Não testado']}
     ];
 
     wizard.itensData = {};
@@ -4339,8 +4339,8 @@ if (typeof initAmbientes === 'function') initAmbientes();
       var baseNome = nome.replace(/\s*\d+$/,'');
       var cond = condItems[baseNome] || condItems[nome] || [];
 
-      var h = '<div class="card"><div class="card-header"><div class="card-icon">ð </div><div><div class="card-title">'+nome+'</div><div class="card-sub">Fotografe cada item e indique os condicionais</div></div></div>';
-      h += '<div class="info-obrig">ð· Itens obrigatórios exigem foto.</div>';
+      var h = '<div class="card"><div class="card-header"><div class="card-icon">🏠</div><div><div class="card-title">'+nome+'</div><div class="card-sub">Fotografe cada item e indique os condicionais</div></div></div>';
+      h += '<div class="info-obrig">📷 Itens obrigatórios exigem foto.</div>';
       h += '<div class="section-label">Itens obrigatórios</div>';
 
       obrigItems.forEach(function(item) {
@@ -4348,8 +4348,8 @@ if (typeof initAmbientes === 'function') initAmbientes();
         h += '</div>';
         h += '<div class="item-body"><div class="item-foto-row"><div>';
         h += '<div style="display:flex;gap:8px;"><div class="foto-add-box" onclick="window._addFoto('+idx+',this,true)"><span style="font-size:18px">\ud83d\udcf7</span><span>Tirar foto</span></div><div class="foto-add-box" onclick="window._addFoto('+idx+',this,false)"><span style="font-size:18px">\ud83d\uddbc\ufe0f</span><span>Galeria</span></div></div>';
-        h += '<div class="foto-obrig-label">â  Sem foto</div></div>';
-        h += '<div class="desc-col"><div class="ia-mini" style="opacity:0.4"><div class="ia-mini-top"><span class="ia-badge-sm">â¦ IA</span></div><div class="ia-pending">Aguardando foto...</div></div>';
+        h += '<div class="foto-obrig-label">⚠ Sem foto</div></div>';
+        h += '<div class="desc-col"><div class="ia-mini" style="opacity:0.4"><div class="ia-mini-top"><span class="ia-badge-sm">✦ IA</span></div><div class="ia-pending">Aguardando foto...</div></div>';
         h += '<textarea class="item-obs" placeholder="Observação..."></textarea></div></div></div></div>';
       });
 
@@ -4361,8 +4361,8 @@ if (typeof initAmbientes === 'function') initAmbientes();
           h += '<div style="display:flex;align-items:center;gap:10px"><span style="font-size:12px;color:#5a6a7e">Possui</span>';
           h += '<label class="toggle-possui"><input type="checkbox" onchange="window._toggleCond(this,\''+safeId+'\')"><span class="slider"></span></label></div></div>';
           h += '<div class="item-body" id="'+safeId+'" style="display:none"><div class="item-foto-row"><div>';
-          h += '<div class="foto-add-box ok" onclick="window._addFoto('+idx+',this)"><span style="font-size:20px">ð·</span><span>Tirar foto</span></div></div>';
-          h += '<div class="desc-col"><div class="ia-mini" style="opacity:0.4"><div class="ia-mini-top"><span class="ia-badge-sm">â¦ IA</span></div><div class="ia-pending">Aguardando foto...</div></div>';
+          h += '<div class="foto-add-box ok" onclick="window._addFoto('+idx+',this)"><span style="font-size:20px">📷</span><span>Tirar foto</span></div></div>';
+          h += '<div class="desc-col"><div class="ia-mini" style="opacity:0.4"><div class="ia-mini-top"><span class="ia-badge-sm">✦ IA</span></div><div class="ia-pending">Aguardando foto...</div></div>';
           h += '<textarea class="item-obs" placeholder="Observação..."></textarea></div></div></div></div>';
         });
       }
@@ -4700,9 +4700,9 @@ if (!window._fotoStore) window._fotoStore = {};
 
     renderTab(0);
   };
-  // ââ End Itens e Fotos ââ
+  // ── End Itens e Fotos ──
 
-  // ââ End Ambientes ââââââââââââââââââââââââââââââââââââââââ
+  // ── End Ambientes ────────────────────────────────────────
 
   
 // — Como funciona modal —
@@ -5343,7 +5343,7 @@ var _wiz6AmbDone = {};
 var _wiz6VideoJobId = null;
 var _wiz6VideoPolling = null;
 
-// ââ ITENS POR AMBIENTE ââââââââââââââââââââââââââââââââââ
+// ── ITENS POR AMBIENTE ──────────────────────────────────
 var _wiz6ItensPorAmbiente = {
   'fachada': {
     'Elementos construtivos': ['Fachada','Parede externa','Pintura externa','Revestimento externo','Muro frontal','Calçada','Piso externo','Cobertura de entrada'],
@@ -5544,7 +5544,7 @@ var _wiz6ItensPorAmbiente = {
   }
 };
 
-// ââ CHAVE NORMALIZADA ââââââââââââââââââââââââââââââââââââ
+// ── CHAVE NORMALIZADA ────────────────────────────────────
 function _wiz6NormKey(nome) {
   return nome.toLowerCase()
     .replace(/[áàãâä]/g,'a').replace(/[éèêë]/g,'e')
@@ -5569,7 +5569,7 @@ function _wiz6GetItens(nomeAmb) {
   };
 }
 
-// ââ INICIALIZAR ETAPA 6 ââââââââââââââââââââââââââââââââââ
+// ── INICIALIZAR ETAPA 6 ──────────────────────────────────
 function wiz6Init() {
   _wiz6AmbIdx = 0;
   _wiz6AmbDone = {};
@@ -5618,7 +5618,7 @@ function wiz6Init() {
   }
 }
 
-// ââ SELECIONAR MODO ââââââââââââââââââââââââââââââââââââââ
+// ── SELECIONAR MODO ──────────────────────────────────────
 function wiz6SelecionarModo(modo) {
   _wiz6Modo = modo;
   var btnFoto = document.getElementById('wiz6-btn-foto');
@@ -5656,7 +5656,7 @@ function wiz6SelecionarModo(modo) {
   }
 }
 
-// ââ TABS DE AMBIENTES ââââââââââââââââââââââââââââââââââââ
+// ── TABS DE AMBIENTES ────────────────────────────────────
 function wiz6RenderTabs() {
   var tabs = document.getElementById('wiz6-tabs');
   if (!tabs) return;
@@ -5664,13 +5664,13 @@ function wiz6RenderTabs() {
   _wiz6Ambientes.forEach(function(nome, i) {
     var tab = document.createElement('div');
     tab.className = 'wiz6-amb-tab' + (i === _wiz6AmbIdx ? ' active' : '') + (_wiz6AmbDone[i] ? ' done' : '');
-    tab.textContent = (_wiz6AmbDone[i] ? 'â ' : '') + nome;
+    tab.textContent = (_wiz6AmbDone[i] ? '✓ ' : '') + nome;
     tab.onclick = (function(idx){ return function(){ wiz6RenderAmbCard(idx); }; })(i);
     tabs.appendChild(tab);
   });
 }
 
-// ââ CARD DO AMBIENTE âââââââââââââââââââââââââââââââââââââ
+// ── CARD DO AMBIENTE ─────────────────────────────────────
 function wiz6RenderAmbCard(idx) {
   var card = document.getElementById('wiz6-amb-card');
   if (!card) return;
@@ -5841,7 +5841,7 @@ function wiz6RenderAmbCard(idx) {
     '</div>';
 }
 
-// ââ ADICIONAR FOTOS E ANALISAR COM IA âââââââââââââââââââ
+// ── ADICIONAR FOTOS E ANALISAR COM IA ───────────────────
 async function wiz6AddFotos(input, ambIdx) {
   var files = input.files;
   if (!files || !files.length) return;
@@ -5868,10 +5868,10 @@ async function wiz6AddFotos(input, ambIdx) {
   input.value = '';
 }
 
-// ââ APLICAR RESULTADO DA IA ââââââââââââââââââââââââââââââ
+// ── APLICAR RESULTADO DA IA ──────────────────────────────
 
 
-// ââ CICLO DE ESTADO MANUAL (usuário pode ajustar) ââââââââ
+// ── CICLO DE ESTADO MANUAL (usuário pode ajustar) ────────
 
 
 
@@ -5968,10 +5968,10 @@ function wiz6SalvarObs(ambIdx, val) {
 
 function wiz6CicloEstado(btn) {
   var estados = [
-    {cls:'estado-bom', label:'ð¢ Bom'},
-    {cls:'estado-regular', label:'ð¡ Regular'},
-    {cls:'estado-avaria', label:'ð´ Com avaria'},
-    {cls:'estado-nao-possui', label:'â¬ Não possui'}
+    {cls:'estado-bom', label:'🟢 Bom'},
+    {cls:'estado-regular', label:'🟡 Regular'},
+    {cls:'estado-avaria', label:'🔴 Com avaria'},
+    {cls:'estado-nao-possui', label:'⬜ Não possui'}
   ];
   var atual = btn.className.replace('wiz6-item-estado ','');
   var idx = estados.findIndex(function(e){ return e.cls === atual; });
@@ -5981,7 +5981,7 @@ function wiz6CicloEstado(btn) {
   btn.textContent = prox.label;
 }
 
-// ââ BOTÕES DE TESTE ââââââââââââââââââââââââââââââââââââââ
+// ── BOTÕES DE TESTE ──────────────────────────────────────
 function wiz6Testar(btn, itemKey, tipo) {
   var container = btn.closest('.wiz6-testavel');
   if (!container) return;
@@ -5995,19 +5995,19 @@ function wiz6Testar(btn, itemKey, tipo) {
     var estadoEl = document.getElementById('estado-' + itemKey);
     if (estadoEl) {
       estadoEl.className = 'wiz6-item-estado estado-avaria';
-      estadoEl.textContent = 'ð´ Com avaria';
+      estadoEl.textContent = '🔴 Com avaria';
     }
   }
 }
 
-// ââ TOGGLE GRUPO âââââââââââââââââââââââââââââââââââââââââ
+// ── TOGGLE GRUPO ─────────────────────────────────────────
 function wiz6ToggleGrupo(id) {
   var el = document.getElementById(id);
   if (!el) return;
   el.style.display = el.style.display === 'none' ? 'block' : 'none';
 }
 
-// ââ NAVEGAÇÃO ENTRE AMBIENTES ââââââââââââââââââââââââââââ
+// ── NAVEGAÇÃO ENTRE AMBIENTES ────────────────────────────
 function wiz6ProxAmb() {
   _wiz6AmbDone[_wiz6AmbIdx] = true;
   wiz6RenderTabs();
@@ -6064,7 +6064,7 @@ function wiz6AmbAnterior() {
   }
 }
 
-// ââ PROGRESS BAR âââââââââââââââââââââââââââââââââââââââââ
+// ── PROGRESS BAR ─────────────────────────────────────────
 function wiz6AtualizarProgress() {
   var total = _wiz6Ambientes.length;
   var done = Object.keys(_wiz6AmbDone).length;
@@ -6075,7 +6075,7 @@ function wiz6AtualizarProgress() {
   if (txt) txt.textContent = done + ' de ' + total + ' ambientes concluídos';
 }
 
-// ââ MODO VÍDEO âââââââââââââââââââââââââââââââââââââââââââ
+// ── MODO VÍDEO ───────────────────────────────────────────
 async function wiz6UploadVideo(input) {
   var file = input.files[0];
   if (!file) return;
@@ -6159,7 +6159,7 @@ function wiz6MostrarRevisaoVideo(ambientes) {
     html += '</div></div>';
   });
 
-  html += '<button onclick="wiz6ConfirmarVideo()" style="width:100%;padding:12px;border-radius:8px;background:#059669;color:#fff;font-size:14px;font-weight:600;border:none;cursor:pointer;margin-top:8px">â Confirmar e continuar →</button>';
+  html += '<button onclick="wiz6ConfirmarVideo()" style="width:100%;padding:12px;border-radius:8px;background:#059669;color:#fff;font-size:14px;font-weight:600;border:none;cursor:pointer;margin-top:8px">✅ Confirmar e continuar →</button>';
   rev.innerHTML = html;
 }
 
@@ -6175,7 +6175,7 @@ function wiz6ConfirmarVideo() {
   if (typeof nextWizStep === 'function') nextWizStep();
 }
 
-// ââ HELPERS ââââââââââââââââââââââââââââââââââââââââââââââ
+// ── HELPERS ──────────────────────────────────────────────
 function _wiz6GetVideoDuration(file) {
   return new Promise(function(res) {
     var video = document.createElement('video');
@@ -6197,50 +6197,50 @@ function _wiz6EstimarFrames(durSeg) {
 
 function _wiz6AmbIcon(nome) {
   var n = nome.toLowerCase();
-  if (n.indexOf('fachada') >= 0) return 'ð ';
-  if (n.indexOf('garagem') >= 0) return 'ð';
-  if (n.indexOf('sala') >= 0) return 'ðï¸';
-  if (n.indexOf('cozinha') >= 0) return 'ð³';
-  if (n.indexOf('banheiro') >= 0 || n.indexOf('lavabo') >= 0) return 'ð¿';
-  if (n.indexOf('suite') >= 0 || n.indexOf('suíte') >= 0) return 'ðï¸';
-  if (n.indexOf('dorm') >= 0 || n.indexOf('quarto') >= 0) return 'ðï¸';
-  if (n.indexOf('closet') >= 0) return 'ð';
-  if (n.indexOf('cozinha') >= 0) return 'ð³';
-  if (n.indexOf('varanda') >= 0 || n.indexOf('sacada') >= 0) return 'ð¿';
-  if (n.indexOf('gourmet') >= 0 || n.indexOf('churrasqueira') >= 0) return 'ð¥';
-  if (n.indexOf('piscina') >= 0) return 'ð';
-  if (n.indexOf('quintal') >= 0 || n.indexOf('jardim') >= 0) return 'ð±';
-  if (n.indexOf('escritorio') >= 0 || n.indexOf('escritório') >= 0) return 'ð¼';
-  if (n.indexOf('deposito') >= 0 || n.indexOf('depósito') >= 0) return 'ð¦';
-  if (n.indexOf('galpao') >= 0 || n.indexOf('galpão') >= 0) return 'ð­';
-  if (n.indexOf('lavanderia') >= 0) return 'ð';
-  if (n.indexOf('corredor') >= 0 || n.indexOf('hall') >= 0) return 'ðª';
-  return 'ð ';
+  if (n.indexOf('fachada') >= 0) return '🏠';
+  if (n.indexOf('garagem') >= 0) return '🚗';
+  if (n.indexOf('sala') >= 0) return '🛋ï¸';
+  if (n.indexOf('cozinha') >= 0) return '🍳';
+  if (n.indexOf('banheiro') >= 0 || n.indexOf('lavabo') >= 0) return '🚿';
+  if (n.indexOf('suite') >= 0 || n.indexOf('suíte') >= 0) return '🛏ï¸';
+  if (n.indexOf('dorm') >= 0 || n.indexOf('quarto') >= 0) return '🛏ï¸';
+  if (n.indexOf('closet') >= 0) return '👔';
+  if (n.indexOf('cozinha') >= 0) return '🍳';
+  if (n.indexOf('varanda') >= 0 || n.indexOf('sacada') >= 0) return '🌿';
+  if (n.indexOf('gourmet') >= 0 || n.indexOf('churrasqueira') >= 0) return '🔥';
+  if (n.indexOf('piscina') >= 0) return '🏊';
+  if (n.indexOf('quintal') >= 0 || n.indexOf('jardim') >= 0) return '🌱';
+  if (n.indexOf('escritorio') >= 0 || n.indexOf('escritório') >= 0) return '💼';
+  if (n.indexOf('deposito') >= 0 || n.indexOf('depósito') >= 0) return '📦';
+  if (n.indexOf('galpao') >= 0 || n.indexOf('galpão') >= 0) return '🏭';
+  if (n.indexOf('lavanderia') >= 0) return '👕';
+  if (n.indexOf('corredor') >= 0 || n.indexOf('hall') >= 0) return '🚪';
+  return '🏠';
 }
 
 function _wiz6GrupoIcon(grupo) {
   var g = grupo.toLowerCase();
-  if (g.indexOf('construtiv') >= 0) return 'ð§±';
-  if (g.indexOf('esquadria') >= 0) return 'ðª';
-  if (g.indexOf('elétric') >= 0 || g.indexOf('eletric') >= 0) return 'â¡';
-  if (g.indexOf('hidráulic') >= 0 || g.indexOf('hidraulic') >= 0) return 'ð§';
-  if (g.indexOf('gás') >= 0 || g.indexOf('gas') >= 0) return 'ð¥';
-  if (g.indexOf('equipamento') >= 0) return 'âï¸';
-  if (g.indexOf('mobiliário fixo') >= 0 || g.indexOf('mobiliario fixo') >= 0) return 'ðª';
-  if (g.indexOf('mobiliário solto') >= 0 || g.indexOf('mobiliario solto') >= 0) return 'ðï¸';
-  if (g.indexOf('acessório') >= 0 || g.indexOf('acessorio') >= 0) return 'ð§';
-  if (g.indexOf('externas') >= 0 || g.indexOf('paisag') >= 0) return 'ð¿';
-  if (g.indexOf('técnico') >= 0 || g.indexOf('tecnico') >= 0) return 'ð';
-  return 'ð';
+  if (g.indexOf('construtiv') >= 0) return '🧱';
+  if (g.indexOf('esquadria') >= 0) return '🚪';
+  if (g.indexOf('elétric') >= 0 || g.indexOf('eletric') >= 0) return '⚡';
+  if (g.indexOf('hidráulic') >= 0 || g.indexOf('hidraulic') >= 0) return '💧';
+  if (g.indexOf('gás') >= 0 || g.indexOf('gas') >= 0) return '🔥';
+  if (g.indexOf('equipamento') >= 0) return '⚙ï¸';
+  if (g.indexOf('mobiliário fixo') >= 0 || g.indexOf('mobiliario fixo') >= 0) return '🪑';
+  if (g.indexOf('mobiliário solto') >= 0 || g.indexOf('mobiliario solto') >= 0) return '🛋ï¸';
+  if (g.indexOf('acessório') >= 0 || g.indexOf('acessorio') >= 0) return '🔧';
+  if (g.indexOf('externas') >= 0 || g.indexOf('paisag') >= 0) return '🌿';
+  if (g.indexOf('técnico') >= 0 || g.indexOf('tecnico') >= 0) return '🔌';
+  return '📋';
 }
 
 function _wiz6EstadoLabel(estado) {
   var e = (estado || '').toLowerCase();
-  if (e.indexOf('bom') >= 0 || e === 'good') return 'ð¢ Bom';
-  if (e.indexOf('regular') >= 0) return 'ð¡ Regular';
-  if (e.indexOf('avaria') >= 0 || e.indexOf('ruim') >= 0 || e === 'bad') return 'ð´ Com avaria';
-  if (e.indexOf('possui') >= 0) return 'â¬ Não possui';
-  return 'â³ Aguardando';
+  if (e.indexOf('bom') >= 0 || e === 'good') return '🟢 Bom';
+  if (e.indexOf('regular') >= 0) return '🟡 Regular';
+  if (e.indexOf('avaria') >= 0 || e.indexOf('ruim') >= 0 || e === 'bad') return '🔴 Com avaria';
+  if (e.indexOf('possui') >= 0) return '⬜ Não possui';
+  return '⏳ Aguardando';
 }
 
 function _wiz6EstadoClass(estado) {
@@ -6258,14 +6258,14 @@ function wiz6DescontarCreditos(qtd, tipo) {
   // TODO: conectar ao sistema de créditos do Mercado Pago
 }
 
-// ââ CONCLUIR VISTORIA ââââââââââââââââââââââââââââââââââââ
+// ── CONCLUIR VISTORIA ────────────────────────────────────
 function wiz6Concluir() {
   _wiz6AmbDone[_wiz6AmbIdx] = true;
   wiz6AtualizarProgress();
   if (typeof nextWizStep === 'function') nextWizStep();
 }
 
-// ââ HOOK NA ETAPA 6 ââââââââââââââââââââââââââââââââââââââ
+// ── HOOK NA ETAPA 6 ──────────────────────────────────────
 // Sobrescrever gotoWStep para inicializar etapa 6 automaticamente
 (function() {
   var _prev = gotoWStep;
@@ -6325,7 +6325,7 @@ function wiz6Concluir() {
         <span style="font-size:16px;font-weight:400;color:#2d7dd2;font-family:Helvetica,Arial,sans-serif">izy</span><span style="font-size:16px;font-weight:900;color:#1a2540;font-family:Helvetica,Arial,sans-serif">LAUDO</span>
         <div style="font-size:6px;color:#8898aa;letter-spacing:2px;text-transform:uppercase;margin-top:1px">Vistorias Imobiliarias</div>
       </div>
-      <button onclick="fecharComoFunciona()" style="width:32px;height:32px;border-radius:50%;border:none;background:#e2e8f0;color:#4a5568;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center">â</button>
+      <button onclick="fecharComoFunciona()" style="width:32px;height:32px;border-radius:50%;border:none;background:#e2e8f0;color:#4a5568;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center">✕</button>
     </div>
     <div style="font-size:11px;font-weight:700;color:#8898aa;text-transform:uppercase;letter-spacing:0.8px;margin-bottom:14px">Passo a passo</div>
     <div id="modal-passos">
