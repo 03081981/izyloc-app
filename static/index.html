@@ -6058,7 +6058,8 @@ function wiz6ProxAmb() {
 
 function wiz6AmbAnterior() {
   if (_wiz6AmbIdx > 0) {
-    wiz6RenderAmbCard(_wiz6AmbIdx - 1);
+    _wiz6AmbIdx--;
+    wiz6RenderAmbCard(_wiz6AmbIdx);
   } else {
     if (typeof gotoWStep === 'function') gotoWStep(3);
   }
