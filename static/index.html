@@ -6011,49 +6011,40 @@ function wiz6ToggleGrupo(id) {
 function wiz6ProxAmb() {
   _wiz6AmbDone[_wiz6AmbIdx] = true;
   wiz6RenderTabs();
-
   var ambIdx = _wiz6AmbIdx;
   var nome = _wiz6Ambientes[ambIdx] || 'Ambiente';
-  var fotos = (wizard.itensData && wizard.itensData[ambIdx] && wizard.itensData[ambIdx].fotos) ? wizard.itensData[ambIdx].fotos : [];
+  var dados = (wizard.itensData && wizard.itensData[ambIdx]) ? wizard.itensData[ambIdx] : {};
+  var fotos = dados.fotos || [];
 
-  function _avancar() {
-    if (_wiz6AmbIdx < _wiz6Ambientes.length - 1) {
-      _wiz6AmbIdx++;
-      wiz6RenderAmbCard(_wiz6AmbIdx);
-      wiz6AtualizarProgress();
-      var c = document.getElementById('wiz6-amb-card');
-      if (c) c.scrollIntoView({behavior:'smooth', block:'start'});
-    } else {
-      wiz6Concluir();
-    }
+  // Avancar imediatamente (navegacao instantanea)
+  if (_wiz6AmbIdx < _wiz6Ambientes.length - 1) {
+    _wiz6AmbIdx++;
+    wiz6RenderAmbCard(_wiz6AmbIdx);
+    wiz6AtualizarProgress();
+    var card = document.getElementById('wiz6-amb-card');
+    if (card) card.scrollIntoView({behavior:'smooth', block:'start'});
+  } else {
+    wiz6Concluir();
   }
 
-  if (fotos.length === 0) { _avancar(); return; }
-
-  var descricoes = fotos.map(function(f) {
-    return {item: f.item, descricao: f.descricao, estado: f.estado, cor: f.cor, material: f.material, observacao: f.observacao};
-  });
-
-  fetch('/api/consolidar-ambiente', {
-    method: 'POST',
-    headers: {'Content-Type': 'application/json'},
-    body: JSON.stringify({ambiente: nome, descricoes: descricoes})
-  })
-  .then(function(resp) { return resp.json(); })
-  .then(function(dados) {
-    if (dados && dados.resumo && wizard.itensData && wizard.itensData[ambIdx]) {
-      wizard.itensData[ambIdx].resumo = dados.resumo;
-    }
-    _avancar();
-  })
-  .catch(function(err) {
-    console.warn('Consolidacao falhou, avancando mesmo assim:', err);
-    _avancar();
-  });
-  // Timeout de seguranca - avancar apos 10s mesmo se API travar
-  setTimeout(function() {
-    if (_wiz6AmbIdx === ambIdx) { _avancar(); }
-  }, 10000);
+  // Consolidar em background (so se nao fez batch)
+  if (fotos.length > 0 && !dados.jaAnalisou) {
+    var descricoes = fotos.map(function(f) {
+      return {item: f.item, descricao: f.descricao, estado: f.estado};
+    });
+    fetch('/api/consolidar-ambiente', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ambiente: nome, descricoes: descricoes})
+    })
+    .then(function(resp) { return resp.json(); })
+    .then(function(result) {
+      if (result && result.resumo && wizard.itensData && wizard.itensData[ambIdx]) {
+        wizard.itensData[ambIdx].resumo = result.resumo;
+      }
+    })
+    .catch(function(err) { console.warn('Consolidacao background:', err); });
+  }
 }
 
 function wiz6AmbAnterior() {
