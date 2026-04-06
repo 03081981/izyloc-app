@@ -11,11 +11,11 @@ SYSTEM_PROMPT = """Voce e um perito especializado em vistorias imobiliarias bras
 Sua funcao e analisar fotografias de ambientes e itens de imoveis com precisao tecnica.
 
 REGRAS OBRIGATORIAS:
-- Descreva APENAS o que e visivel na foto ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ nunca invente ou suponha
+- Descreva APENAS o que e visivel na foto â nunca invente ou suponha
 - Use linguagem tecnica objetiva, como um laudo pericial profissional
 - Identifique materiais, cores, dimensoes estimadas e estado de conservacao
-- Seja especifico: nao diga "parede branca" ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ diga "parede revestida com tinta acrilica na cor branco gelo"
-- Nao diga "parece" ou "provavelmente" ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ seja assertivo no que e visivel
+- Seja especifico: nao diga "parede branca" â diga "parede revestida com tinta acrilica na cor branco gelo"
+- Nao diga "parece" ou "provavelmente" â seja assertivo no que e visivel
 - Se houver avaria, descreva com precisao: localizacao, extensao estimada, natureza do dano
 - Retorne SEMPRE um JSON valido, sem markdown, sem explicacoes fora do JSON"""
 
@@ -143,21 +143,13 @@ IMPORTANTE:
 def consolidar_ambiente(nome_ambiente: str, descricoes: list) -> dict:
     """
     Consolida todas as descricoes de fotos de um ambiente em sintese estruturada.
-    Chamado ao clicar 'Proximo ambiente'.
     """
-
     if not descricoes:
         return {"resumo": "", "success": False}
 
     itens_texto = ""
-    avarias = []
     for i, d in enumerate(descricoes, 1):
-        itens_texto += f"Foto {i} Ã¢ÂÂ {d.get('item', 'Item')}: {d.get('descricao', '')}\n"
-        if d.get('estado') == 'Com avaria' and d.get('observacao'):
-            avarias.append(d.get('observacao'))
-
-    tem_avaria = len(avarias) > 0
-    estado_geral = "Com avaria" if tem_avaria else "Bom"
+        itens_texto += f"Foto {i} -- {d.get('item', 'Item')}: {d.get('descricao', '')}\n"
 
     prompt = f"""Voce e um perito em vistorias imobiliarias. Com base nas descricoes das fotos abaixo do ambiente '{nome_ambiente}', gere uma SINTESE ESTRUTURADA profissional.
 
@@ -174,7 +166,7 @@ INSTRUCOES:
 
 Retorne APENAS este JSON sem markdown:
 {{
-  "resumo": "SINTESE:\n\nPiso: [material, cor, estado]\n\nParedes: [material, cor, estado, avarias se houver]\n\nTeto: [material, cor, estado]\n\nEsquadrias: [portas e janelas, estado]\n\nObservacoes: [itens adicionais identificados]\n\nEstado geral: [Bom / Regular / Com avaria] Ã¢ÂÂ [justificativa resumida]"
+  "resumo": "SINTESE:\n\nPiso: [material, cor, estado]\n\nParedes: [material, cor, estado, avarias se houver]\n\nTeto: [material, cor, estado]\n\nEsquadrias: [portas e janelas, estado]\n\nObservacoes: [itens adicionais identificados]\n\nEstado geral: [Bom / Regular / Com avaria] -- [justificativa resumida]"
 }}"""
 
     for tentativa in range(3):
@@ -185,15 +177,13 @@ Retorne APENAS este JSON sem markdown:
                 system=SYSTEM_PROMPT,
                 messages=[{"role": "user", "content": prompt}]
             )
-
             texto = response.content[0].text.strip()
             texto = re.sub(r'```json\s*', '', texto)
             texto = re.sub(r'```\s*', '', texto)
             texto = texto.strip()
-            dados = json.loads(texto.strip())
+            dados = json.loads(texto)
             dados['success'] = True
             return dados
-
         except Exception as e:
             if tentativa < 2:
                 time.sleep(2 ** tentativa)
@@ -203,7 +193,7 @@ Retorne APENAS este JSON sem markdown:
 
 def analisar_foto_simples(imagem_base64: str, nome_ambiente: str = "Ambiente", mime_type: str = "image/jpeg") -> dict:
     """
-    Modo legado ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ compatibilidade com codigo anterior.
+    Modo legado â compatibilidade com codigo anterior.
     Chama analisar_foto e normaliza para formato antigo.
     """
     resultado = analisar_foto(imagem_base64, nome_ambiente, mime_type)
@@ -242,12 +232,9 @@ def analisar_imagem(imagem_base64: str, ambiente: str = "Ambiente", modo: str = 
     else:
         return analisar_foto(imagem_base64, ambiente, mime_type)
 
-
 def analisar_batch(imagens: list, nome_ambiente: str) -> dict:
     """
     Analisa um lote de fotos do mesmo ambiente em uma unica chamada.
-    imagens: lista de dicts com {base64, mime_type}
-    Retorna descricao consolidada estruturada do ambiente.
     """
     if not imagens:
         return {"resumo": "", "estado_geral": "Bom", "success": False}
@@ -282,7 +269,7 @@ INSTRUCOES:
 
 Retorne APENAS este JSON sem markdown:
 {{
-  "resumo": "SINTESE DO AMBIENTE:\n\nPiso: [material, cor, dimensoes se visiveis, estado]\n\nParedes: [material, cor, estado, avarias se houver com localizacao]\n\nTeto: [material, cor, estado]\n\nEsquadrias: [portas e janelas identificadas, material, estado]\n\nMoveis e equipamentos: [itens identificados e seus estados]\n\nObservacoes: [avarias, anomalias ou itens de atencao]\n\nEstado geral: [Bom / Regular / Com avaria] — [justificativa]",
+  "resumo": "SINTESE DO AMBIENTE:\n\nPiso: [material, cor, dimensoes se visiveis, estado]\n\nParedes: [material, cor, estado, avarias se houver com localizacao]\n\nTeto: [material, cor, estado]\n\nEsquadrias: [portas e janelas identificadas, material, estado]\n\nMoveis e equipamentos: [itens identificados e seus estados]\n\nObservacoes: [avarias, anomalias ou itens de atencao]\n\nEstado geral: [Bom / Regular / Com avaria] -- [justificativa]",
   "estado_geral": "Bom ou Regular ou Com avaria"
 }}"""
 
@@ -297,8 +284,8 @@ Retorne APENAS este JSON sem markdown:
                     messages=[{"role": "user", "content": content}]
                 )
                 texto = response.content[0].text.strip()
-                texto = re.sub(r'\`\`\`json', '', texto)
-                texto = re.sub(r'\`\`\`', '', texto)
+                texto = re.sub(r'```json\s*', '', texto)
+                texto = re.sub(r'```\s*', '', texto)
                 texto = texto.strip()
                 dados = json.loads(texto)
                 resumos.append(dados.get("resumo", ""))
@@ -307,27 +294,19 @@ Retorne APENAS este JSON sem markdown:
                 if tentativa < 2:
                     time.sleep(2 ** tentativa)
 
-    # Unir resumos de multiplos lotes
     resumo_final = "\n\n".join([r for r in resumos if r])
-
-    # Determinar estado geral
     estado = "Bom"
-    resumo_lower = resumo_final.lower()
-    if "com avaria" in resumo_lower or "avaria" in resumo_lower:
+    if "com avaria" in resumo_final.lower() or "avaria" in resumo_final.lower():
         estado = "Com avaria"
-    elif "regular" in resumo_lower:
+    elif "regular" in resumo_final.lower():
         estado = "Regular"
 
-    return {
-        "resumo": resumo_final,
-        "estado_geral": estado,
-        "success": bool(resumo_final)
-    }
+    return {"resumo": resumo_final, "estado_geral": estado, "success": bool(resumo_final)}
 
 
-# Alias ingles
 def analyze_batch(images: list, environment_name: str) -> dict:
     return analisar_batch(images, environment_name)
+
 
 # Aliases em ingles para compatibilidade com server.py
 def analyze_photo(image_base64: str, environment: str = "Ambiente", mime_type: str = "image/jpeg") -> dict:
