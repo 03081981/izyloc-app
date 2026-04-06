@@ -1421,7 +1421,7 @@ def make_app():
     static_dir = os.path.join(os.path.dirname(__file__), 'static')
     upload_dir = UPLOAD_DIR
     return tornado.web.Application([
-        # Auth
+        # Auth (v2)
         (r'/api/auth/register', RegisterHandler),
         (r'/api/auth/login', LoginHandler),
         (r'/api/auth/me', MeHandler),
