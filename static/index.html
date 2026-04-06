@@ -3578,7 +3578,7 @@ function renderItemCard(item, roomId) {
         <input type="file" accept="image/*" capture="environment" style="display:none"
           onchange="uploadPhoto('${item.id}', this)"/>
       </label>
-      <button class="btn btn-ghost btn-sm" onclick="toggleEdit('${item.id}')">✏ï¸</button>
+      <button class="btn btn-ghost btn-sm" onclick="toggleEdit('${item.id}')">✏️</button>
       <button class="btn btn-ghost btn-sm" style="color:var(--danger)" onclick="deleteItem('${item.id}','${roomId}')">🗑</button>
     </div>`;
   container.appendChild(el);
@@ -3946,7 +3946,7 @@ function renderDetail(insp) {
       ${insp.corretor_name?`<div><div class="form-label">Corretor</div><div>${insp.corretor_name} ${insp.corretor_creci?'Â· CRECI '+insp.corretor_creci:''}</div></div>`:''}
     </div>
     ${rooms.length?`<div style="font-size:15px;font-weight:700;margin:12px 0 8px">Ambientes (${rooms.length})</div>${roomsHtml}`:''}
-    ${sigs.length?`<div class="card"><div class="card-title">✍ï¸ Assinaturas</div>
+    ${sigs.length?`<div class="card"><div class="card-title">✍️ Assinaturas</div>
       ${sigs.map(s=>`<div class="flex gap-8 mb-8"><span class="tag tag-concluido">✓</span>
         <span class="text-small">${s.party_type} — ${s.party_name||''}</span></div>`).join('')}
     </div>`:''}
@@ -4190,9 +4190,9 @@ if (typeof initAmbientes === 'function') initAmbientes();
     // ── Ambientes (wstep-3) ──────────────────────────────────
     var _ambData = {
       residencial: {
-        dormitorio: {val:1, label:'Dorm. / Quarto', icon:'🛏ï¸'},
+        dormitorio: {val:1, label:'Dorm. / Quarto', icon:'🛏️'},
         banheiro:   {val:1, label:'Banheiro',        icon:'🚿'},
-        sala:       {val:1, label:'Sala',            icon:'🛋ï¸'},
+        sala:       {val:1, label:'Sala',            icon:'🛋️'},
         cozinha:    {val:1, label:'Cozinha',         icon:'🍳'},
         lavanderia: {val:0, label:'Lavanderia',      icon:'👕'},
         garagem:    {val:0, label:'Garagem',         icon:'🚗'},
@@ -4317,7 +4317,7 @@ if (typeof initAmbientes === 'function') initAmbientes();
       {nome:'💡 Iluminação', opts:['Funcionando','Lâmpada queimada','Não funciona','Não testado']},
       {nome:'🔌 Tomadas', opts:['Funcionando','Não funciona','Não testado']},
       {nome:'🚰 Água/Encanamento', opts:['Sem vazamentos','Vazamento','Pressão baixa','Não testado']},
-      {nome:'❄ï¸ Ar-condicionado', opts:['Funcionando','Com defeito','Não funciona','Não testado']},
+      {nome:'❄️ Ar-condicionado', opts:['Funcionando','Com defeito','Não funciona','Não testado']},
       {nome:'🚪 Portas/Fechaduras', opts:['Funcionando','Com defeito','Não funciona','Não testado']}
     ];
 
@@ -5548,7 +5548,7 @@ var _wiz6ItensPorAmbiente = {
 function _wiz6NormKey(nome) {
   return nome.toLowerCase()
     .replace(/[áàãâä]/g,'a').replace(/[éèêë]/g,'e')
-    .replace(/[íìîï]/g,'i').replace(/[óòõï¿½ï¿½ö]/g,'o')
+    .replace(/[íìîï]/g,'i').replace(/[óòõ��ö]/g,'o')
     .replace(/[úùûü]/g,'u').replace(/ç/g,'c')
     .replace(/\s+/g,' ').trim();
 }
@@ -6199,11 +6199,11 @@ function _wiz6AmbIcon(nome) {
   var n = nome.toLowerCase();
   if (n.indexOf('fachada') >= 0) return '🏠';
   if (n.indexOf('garagem') >= 0) return '🚗';
-  if (n.indexOf('sala') >= 0) return '🛋ï¸';
+  if (n.indexOf('sala') >= 0) return '🛋️';
   if (n.indexOf('cozinha') >= 0) return '🍳';
   if (n.indexOf('banheiro') >= 0 || n.indexOf('lavabo') >= 0) return '🚿';
-  if (n.indexOf('suite') >= 0 || n.indexOf('suíte') >= 0) return '🛏ï¸';
-  if (n.indexOf('dorm') >= 0 || n.indexOf('quarto') >= 0) return '🛏ï¸';
+  if (n.indexOf('suite') >= 0 || n.indexOf('suíte') >= 0) return '🛏️';
+  if (n.indexOf('dorm') >= 0 || n.indexOf('quarto') >= 0) return '🛏️';
   if (n.indexOf('closet') >= 0) return '👔';
   if (n.indexOf('cozinha') >= 0) return '🍳';
   if (n.indexOf('varanda') >= 0 || n.indexOf('sacada') >= 0) return '🌿';
@@ -6225,9 +6225,9 @@ function _wiz6GrupoIcon(grupo) {
   if (g.indexOf('elétric') >= 0 || g.indexOf('eletric') >= 0) return '⚡';
   if (g.indexOf('hidráulic') >= 0 || g.indexOf('hidraulic') >= 0) return '💧';
   if (g.indexOf('gás') >= 0 || g.indexOf('gas') >= 0) return '🔥';
-  if (g.indexOf('equipamento') >= 0) return '⚙ï¸';
+  if (g.indexOf('equipamento') >= 0) return '⚙️';
   if (g.indexOf('mobiliário fixo') >= 0 || g.indexOf('mobiliario fixo') >= 0) return '🪑';
-  if (g.indexOf('mobiliário solto') >= 0 || g.indexOf('mobiliario solto') >= 0) return '🛋ï¸';
+  if (g.indexOf('mobiliário solto') >= 0 || g.indexOf('mobiliario solto') >= 0) return '🛋️';
   if (g.indexOf('acessório') >= 0 || g.indexOf('acessorio') >= 0) return '🔧';
   if (g.indexOf('externas') >= 0 || g.indexOf('paisag') >= 0) return '🌿';
   if (g.indexOf('técnico') >= 0 || g.indexOf('tecnico') >= 0) return '🔌';
