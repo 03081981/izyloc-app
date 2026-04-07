@@ -7,17 +7,22 @@ import time
 client = anthropic.Anthropic()
 MODEL = "claude-sonnet-4-5"
 
-SYSTEM_PROMPT = """Voce e um perito especializado em vistorias imobiliarias brasileiras.
-Sua funcao e analisar fotografias de ambientes e itens de imoveis com precisao tecnica.
+SYSTEM_PROMPT = """
+Voce e um perito especializado em vistorias imobiliarias brasileiras.
+Sua funcao e analisar fotografias de ambientes e itens de imoveis.
 
-REGRAS OBRIGATORIAS:
-- Descreva APENAS o que e visivel na foto â nunca invente ou suponha
-- Use linguagem tecnica objetiva, como um laudo pericial profissional
-- Identifique materiais, cores, dimensoes estimadas e estado de conservacao
-- Seja especifico: nao diga "parede branca" â diga "parede revestida com tinta acrilica na cor branco gelo"
-- Nao diga "parece" ou "provavelmente" â seja assertivo no que e visivel
-- Se houver avaria, descreva com precisao: localizacao, extensao estimada, natureza do dano
-- Retorne SEMPRE um JSON valido, sem markdown, sem explicacoes fora do JSON"""
+REGRAS ABSOLUTAS - NUNCA VIOLE:
+1. Descreva APENAS o que e CLARAMENTE visivel na foto - jamais invente, suponha ou interprete
+2. MATERIAL: Mencione apenas se identificavel com absoluta certeza visual. Se nao tiver certeza - NAO MENCIONE o material
+3. MEDIDAS: NUNCA mencione dimensoes ou medidas - nem estimadas, nem aproximadas
+4. ELEMENTOS SECUNDARIOS: Ignore completamente qualquer elemento visivel ao fundo atraves de portas ou aberturas
+5. AVARIAS: Descreva exatamente o que ve - "rodape com afastamento visivel da parede" e nao "rodape mal fixado"
+6. ATENCAO AOS DETALHES: Examine cada elemento - fios aparentes, tomadas sem tampa, rodapes soltos, manchas sutis
+7. LUMINARIAS: "Ponto de iluminacao sem lampada ativa" - nunca "falta luminaria" ou "buraco no teto"
+8. CORES: Descreva cores claramente visiveis - "branco", "bege claro", "cinza" - sem inventar tons especificos
+9. Estado de conservacao: use apenas Bom, Regular ou Com avaria - nunca "Excelente"
+10. Seja objetivo e direto - sem floreios, sem suposicoes
+"""
 
 def analisar_foto(imagem_base64: str, nome_ambiente: str, mime_type: str = "image/jpeg") -> dict:
     """
@@ -193,7 +198,7 @@ Retorne APENAS este JSON sem markdown:
 
 def analisar_foto_simples(imagem_base64: str, nome_ambiente: str = "Ambiente", mime_type: str = "image/jpeg") -> dict:
     """
-    Modo legado â compatibilidade com codigo anterior.
+    Modo legado -- compatibilidade com codigo anterior.
     Chama analisar_foto e normaliza para formato antigo.
     """
     resultado = analisar_foto(imagem_base64, nome_ambiente, mime_type)
@@ -257,19 +262,19 @@ def analisar_batch(imagens: list, nome_ambiente: str) -> dict:
 
         prompt = f"""Voce recebeu {len(lote)} foto(s) do ambiente '{nome_ambiente}'.
 
-Analise TODAS as fotos e gere um laudo tecnico completo do ambiente.
+Analise TODAS as fotos seguindo as REGRAS ABSOLUTAS do sistema.
 
-INSTRUCOES:
-- Identifique todos os elementos visiveis em todas as fotos
-- Compile as informacoes de forma coerente e sem repeticoes
-- Para cada elemento mencione: material, cor e estado de conservacao
-- Destaque CLARAMENTE qualquer avaria encontrada em qualquer foto
-- Use linguagem tecnica de laudo pericial profissional
-- Seja objetivo, preciso e detalhado
+INSTRUCOES ADICIONAIS PARA LOTE:
+- Compile informacoes de todas as fotos sem repeticoes
+- NUNCA mencione medidas ou dimensoes
+- Material APENAS se tiver certeza absoluta visual
+- Ignore elementos visiveis ao fundo atraves de portas/aberturas
+- Atencao a detalhes: fios aparentes, tomadas sem tampa, rodapes soltos, manchas
+- Cores simples: "branco", "bege claro", "cinza" - sem inventar tons
 
 Retorne APENAS este JSON sem markdown:
 {{
-  "resumo": "SINTESE DO AMBIENTE:\n\nPiso: [material, cor, dimensoes se visiveis, estado]\n\nParedes: [material, cor, estado, avarias se houver com localizacao]\n\nTeto: [material, cor, estado]\n\nEsquadrias: [portas e janelas identificadas, material, estado]\n\nMoveis e equipamentos: [itens identificados e seus estados]\n\nObservacoes: [avarias, anomalias ou itens de atencao]\n\nEstado geral: [Bom / Regular / Com avaria] -- [justificativa]",
+  "resumo": "SINTESE DO AMBIENTE:\n\nPiso: [descricao, cor, estado]\n\nParedes: [descricao, cor, estado, avarias se houver]\n\nTeto: [descricao, cor, estado]\n\nEsquadrias: [portas e janelas visiveis, estado]\n\nInstalacoes: [pontos de luz, tomadas, interruptores - estado]\n\nMoveis e equipamentos: [itens visiveis e estados]\n\nObservacoes: [avarias, detalhes relevantes]\n\nEstado geral: [Bom / Regular / Com avaria] - [justificativa breve]",
   "estado_geral": "Bom ou Regular ou Com avaria"
 }}"""
 
