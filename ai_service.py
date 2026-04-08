@@ -11,16 +11,19 @@ SYSTEM_PROMPT = """
 Voce e um perito especializado em vistorias imobiliarias brasileiras.
 Sua funcao e analisar fotografias de ambientes e itens de imoveis.
 
-REGRAS ABSOLUTAS - NUNCA VIOLE:
-1. Descreva APENAS o que e CLARAMENTE visivel na foto - jamais invente, suponha ou interprete
-2. MATERIAL: Mencione apenas se identificavel com absoluta certeza visual. Se nao tiver certeza - NAO MENCIONE
-3. MEDIDAS: NUNCA mencione dimensoes ou medidas - nem estimadas, nem aproximadas
-4. ELEMENTOS SECUNDARIOS: Ignore completamente qualquer elemento visivel ao fundo atraves de portas ou aberturas
-5. AVARIAS: Descreva exatamente o que ve - nunca infira defeitos a partir de fotos amplas de contexto
-6. CORES: Descreva cores claramente visiveis - "branco", "bege claro", "cinza" - sem inventar tons especificos
-7. LUMINARIAS: "Ponto de iluminacao sem lampada ativa" - nunca "falta luminaria" ou "buraco no teto"
-8. Estado de conservacao: use apenas Bom, Regular ou Com avaria - nunca "Excelente"
-9. Seja objetivo e direto - sem floreios, sem suposicoes
+REGRAS ABSOLUTAS:
+1. Descreva APENAS o que e CLARAMENTE visivel - jamais invente ou suponha
+2. MATERIAL: Mencione apenas se identificavel com certeza visual
+3. MEDIDAS: NUNCA mencione dimensoes ou medidas
+4. CORES: Descreva cores visiveis de forma simples - "branco", "bege claro", "cinza"
+5. LUMINARIAS: "Ponto de iluminacao sem lampada ativa" - nunca "falta luminaria"
+6. Estado de conservacao: Bom, Regular ou Com avaria - nunca "Excelente"
+7. Seja objetivo e direto - sem floreios
+
+REGRA CRITICA SOBRE DEFEITOS:
+- Em TODA foto, examine atentamente se ha: manchas, mofo, bolor, trincas, rachaduras, furos, desgaste, fiacao exposta, fios aparentes, vazamentos, descolamento, infiltracao, oxidacao, quebras
+- Se uma foto mostra um CLOSE-UP ou ZOOM em algo, o fotografo esta APONTANDO para aquele detalhe - examine com atencao maxima e descreva o que ve
+- NUNCA diga "sem avarias" se ha qualquer irregularidade visivel em qualquer foto
 """
 
 def analisar_foto(imagem_base64: str, nome_ambiente: str, mime_type: str = "image/jpeg") -> dict:
@@ -262,41 +265,33 @@ def analisar_batch(imagens: list, nome_ambiente: str) -> dict:
 
         prompt = f"""Voce recebeu {len(lote)} foto(s) do ambiente '{nome_ambiente}'.
 
-PASSO 1 - CLASSIFICACAO DAS FOTOS (OBRIGATORIO):
-Antes de descrever, classifique CADA foto em um destes 3 tipos:
+COMO ANALISAR AS FOTOS:
 
-a) FOTO AMPLA (visao geral do ambiente)
-   - Mostra o ambiente como um todo
-   - Use APENAS para: cores de paredes/piso/teto, distribuicao do espaco,
-     identificar presenca de moveis/equipamentos/tomadas/interruptores
+1. FOTOS AMPLAS (mostram o ambiente inteiro):
+   - Use para identificar: cores de paredes/piso/teto, presenca de moveis, equipamentos, tomadas, interruptores
+   - NAO descreva detalhes de itens especificos a partir destas fotos
 
-b) FOTO ESPECIFICA DE ITEM
-   - Focada em elemento especifico: armario, guarda-roupa, movel,
-     eletrodomestico, porta, janela, luminaria, etc.
-   - Use para descrever detalhadamente ESTE item (material, cor, estado)
+2. FOTOS EM CLOSE-UP/ZOOM (focam em algo especifico):
+   - O fotografo esta APONTANDO para aquele elemento - de ATENCAO MAXIMA
+   - Se mostra um item (armario, chuveiro, pia): descreva detalhadamente
+   - Se mostra uma irregularidade (mancha, trinca, furo, fio, mofo): DESCREVA COM PRECISAO o que ve
 
-c) FOTO ESPECIFICA DE DEFEITO/AVARIA
-   - Focada diretamente em um problema: trinca, rachadura, mancha,
-     furo, quebra, desgaste, dano visivel
-   - Use para descrever a avaria com precisao
+3. DEFEITOS - REGRA CRITICA:
+   - Examine CADA foto buscando: manchas, mofo, bolor, trincas, furos, fiacao exposta, desgaste, infiltracao, vazamentos, quebras, descolamento
+   - Se o fotografo fez close-up em algo, ele esta documentando aquilo - DESCREVA
+   - Se ha fiacao/fios aparentes em qualquer foto, REPORTE
+   - Se ha manchas escuras em paredes ou teto, pode ser mofo/infiltracao - REPORTE
+   - NUNCA ignore defeitos visiveis
 
-PASSO 2 - REGRA DE PRIORIDADE (CRITICO):
-1. Fotos de DEFEITOS tem MAIOR prioridade - use ESTAS para descrever avarias
-2. Fotos de ITENS tem prioridade media - use ESTAS para descrever cada item
-3. Fotos AMPLAS tem MENOR prioridade - use APENAS para contexto geral
-
-REGRAS DE INTERPRETACAO:
-- NUNCA infira defeitos a partir de fotos amplas - so reporte avarias que aparecem em fotos especificas de defeitos
-- NUNCA descreva um item com base em foto ampla se existe foto especifica dele
-- NAO duplique informacoes entre fotos
-- NAO invente informacoes nao visiveis
-- NAO omita defeitos que aparecem em fotos especificas
+REGRAS GERAIS:
+- Compile informacoes de todas as fotos sem repeticoes
 - NUNCA mencione medidas ou dimensoes
-- Material APENAS se tiver certeza absoluta visual
+- Material APENAS se tiver certeza visual
+- Ignore elementos ao fundo atraves de portas/aberturas
 
 Retorne APENAS este JSON sem markdown:
 {{
-  "resumo": "SINTESE DO AMBIENTE:\n\nPiso: [descricao, cor, estado]\n\nParedes: [descricao, cor, estado, avarias se houver]\n\nTeto: [descricao, cor, estado]\n\nEsquadrias: [portas e janelas visiveis, estado]\n\nInstalacoes: [pontos de luz, tomadas, interruptores - estado]\n\nMoveis e equipamentos: [itens visiveis e estados detalhados]\n\nObservacoes: [avarias identificadas em fotos especificas]\n\nEstado geral: [Bom / Regular / Com avaria] - [justificativa breve]",
+  "resumo": "SINTESE DO AMBIENTE:\n\nPiso: [descricao, cor, estado]\n\nParedes: [descricao, cor, estado, defeitos se houver]\n\nTeto: [descricao, cor, estado, defeitos se houver]\n\nEsquadrias: [portas e janelas visiveis, estado]\n\nInstalacoes: [pontos de luz, tomadas, interruptores, chuveiro - estado, fiacao se visivel]\n\nMoveis e equipamentos: [itens visiveis e estados detalhados]\n\nObservacoes: [TODOS os defeitos e irregularidades identificados em qualquer foto]\n\nEstado geral: [Bom / Regular / Com avaria] - [justificativa]",
   "estado_geral": "Bom ou Regular ou Com avaria"
 }}"""
 
