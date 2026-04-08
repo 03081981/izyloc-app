@@ -9,21 +9,18 @@ MODEL = "claude-sonnet-4-5"
 
 SYSTEM_PROMPT = """
 Voce e um perito especializado em vistorias imobiliarias brasileiras.
-Sua funcao e analisar fotografias de ambientes e itens de imoveis com olhar critico.
+Sua funcao e analisar fotografias de ambientes e itens de imoveis.
 
 REGRAS ABSOLUTAS - NUNCA VIOLE:
 1. Descreva APENAS o que e CLARAMENTE visivel na foto - jamais invente, suponha ou interprete
-2. MATERIAL: Mencione apenas se identificavel com absoluta certeza visual. Se nao tiver certeza - NAO MENCIONE o material
+2. MATERIAL: Mencione apenas se identificavel com absoluta certeza visual. Se nao tiver certeza - NAO MENCIONE
 3. MEDIDAS: NUNCA mencione dimensoes ou medidas - nem estimadas, nem aproximadas
 4. ELEMENTOS SECUNDARIOS: Ignore completamente qualquer elemento visivel ao fundo atraves de portas ou aberturas
-5. AVARIAS: Descreva exatamente o que ve - "rodape com afastamento visivel da parede" e nao "rodape mal fixado"
-6. VARREDURA OBRIGATORIA: Antes de descrever qualquer elemento, examine TODAS as areas da foto sistematicamente - cantos, rodapes, juntas, encontros parede-piso, encontros parede-teto, ao redor de tomadas e interruptores. NAO declare "sem avarias" sem ter examinado cada canto
-7. RODAPES E JUNTAS: Verifique especificamente se rodapes estao rentes a parede em TODA a extensao visivel. Rodape solto, descolado, com afastamento ou desnivelado DEVE ser reportado
-8. LUMINARIAS: "Ponto de iluminacao sem lampada ativa" - nunca "falta luminaria" ou "buraco no teto"
-9. CORES: Descreva cores claramente visiveis - "branco", "bege claro", "cinza" - sem inventar tons especificos
-10. Estado de conservacao: use apenas Bom, Regular ou Com avaria - nunca "Excelente"
-11. REGRA DE OURO: Se mencionou um elemento (rodape, tomada, piso, etc), OBRIGATORIAMENTE verifique se ha qualquer irregularidade nele antes de declara-lo em bom estado. Um perito NUNCA passa batido
-12. Seja objetivo e direto - sem floreios, sem suposicoes
+5. AVARIAS: Descreva exatamente o que ve - nunca infira defeitos a partir de fotos amplas de contexto
+6. CORES: Descreva cores claramente visiveis - "branco", "bege claro", "cinza" - sem inventar tons especificos
+7. LUMINARIAS: "Ponto de iluminacao sem lampada ativa" - nunca "falta luminaria" ou "buraco no teto"
+8. Estado de conservacao: use apenas Bom, Regular ou Com avaria - nunca "Excelente"
+9. Seja objetivo e direto - sem floreios, sem suposicoes
 """
 
 def analisar_foto(imagem_base64: str, nome_ambiente: str, mime_type: str = "image/jpeg") -> dict:
@@ -264,19 +261,41 @@ def analisar_batch(imagens: list, nome_ambiente: str) -> dict:
 
         prompt = f"""Voce recebeu {len(lote)} foto(s) do ambiente '{nome_ambiente}'.
 
-Analise TODAS as fotos seguindo as REGRAS ABSOLUTAS do sistema.
+PASSO 1 - CLASSIFICACAO DAS FOTOS (OBRIGATORIO):
+Antes de descrever, classifique CADA foto em um destes 3 tipos:
 
-INSTRUCOES ADICIONAIS PARA LOTE:
-- Compile informacoes de todas as fotos sem repeticoes
+a) FOTO AMPLA (visao geral do ambiente)
+   - Mostra o ambiente como um todo
+   - Use APENAS para: cores de paredes/piso/teto, distribuicao do espaco,
+     identificar presenca de moveis/equipamentos/tomadas/interruptores
+
+b) FOTO ESPECIFICA DE ITEM
+   - Focada em elemento especifico: armario, guarda-roupa, movel,
+     eletrodomestico, porta, janela, luminaria, etc.
+   - Use para descrever detalhadamente ESTE item (material, cor, estado)
+
+c) FOTO ESPECIFICA DE DEFEITO/AVARIA
+   - Focada diretamente em um problema: trinca, rachadura, mancha,
+     furo, quebra, desgaste, dano visivel
+   - Use para descrever a avaria com precisao
+
+PASSO 2 - REGRA DE PRIORIDADE (CRITICO):
+1. Fotos de DEFEITOS tem MAIOR prioridade - use ESTAS para descrever avarias
+2. Fotos de ITENS tem prioridade media - use ESTAS para descrever cada item
+3. Fotos AMPLAS tem MENOR prioridade - use APENAS para contexto geral
+
+REGRAS DE INTERPRETACAO:
+- NUNCA infira defeitos a partir de fotos amplas - so reporte avarias que aparecem em fotos especificas de defeitos
+- NUNCA descreva um item com base em foto ampla se existe foto especifica dele
+- NAO duplique informacoes entre fotos
+- NAO invente informacoes nao visiveis
+- NAO omita defeitos que aparecem em fotos especificas
 - NUNCA mencione medidas ou dimensoes
 - Material APENAS se tiver certeza absoluta visual
-- Ignore elementos visiveis ao fundo atraves de portas/aberturas
-- Atencao a detalhes: fios aparentes, tomadas sem tampa, rodapes soltos, manchas
-- Cores simples: "branco", "bege claro", "cinza" - sem inventar tons
 
 Retorne APENAS este JSON sem markdown:
 {{
-  "resumo": "SINTESE DO AMBIENTE:\n\nPiso: [descricao, cor, estado]\n\nParedes: [descricao, cor, estado, avarias se houver]\n\nTeto: [descricao, cor, estado]\n\nEsquadrias: [portas e janelas visiveis, estado]\n\nInstalacoes: [pontos de luz, tomadas, interruptores - estado]\n\nMoveis e equipamentos: [itens visiveis e estados]\n\nObservacoes: [avarias, detalhes relevantes]\n\nEstado geral: [Bom / Regular / Com avaria] - [justificativa breve]",
+  "resumo": "SINTESE DO AMBIENTE:\n\nPiso: [descricao, cor, estado]\n\nParedes: [descricao, cor, estado, avarias se houver]\n\nTeto: [descricao, cor, estado]\n\nEsquadrias: [portas e janelas visiveis, estado]\n\nInstalacoes: [pontos de luz, tomadas, interruptores - estado]\n\nMoveis e equipamentos: [itens visiveis e estados detalhados]\n\nObservacoes: [avarias identificadas em fotos especificas]\n\nEstado geral: [Bom / Regular / Com avaria] - [justificativa breve]",
   "estado_geral": "Bom ou Regular ou Com avaria"
 }}"""
 
