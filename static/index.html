@@ -5943,6 +5943,54 @@ function wiz6AnalisarBatch(ambIdx) {
     wiz6DescontarCreditos(fotos.length);
     wiz6RenderAmbCard(ambIdx);
     wiz6AtualizarProgress();
+
+    // Handle ambientes_extras detected by AI
+    var extras = dados.ambientes_extras || [];
+    if (extras.length > 0) {
+      extras.forEach(function(ext) {
+        var extNome = ext.nome || 'Ambiente detectado';
+        // Check if this environment already exists
+        if (_wiz6Ambientes.indexOf(extNome) !== -1) return;
+        // Add new environment
+        var newIdx = _wiz6Ambientes.length;
+        _wiz6Ambientes.push(extNome);
+        // Move detected photos to new environment
+        var extFotos = (ext.fotos || []).map(function(n) { return n - 1; }); // 1-based to 0-based
+        var movedFotos = [];
+        extFotos.forEach(function(fi) {
+          if (wizard.itensData[ambIdx] && wizard.itensData[ambIdx].fotos && wizard.itensData[ambIdx].fotos[fi]) {
+            movedFotos.push(wizard.itensData[ambIdx].fotos[fi]);
+          }
+        });
+        // Create itensData for the new environment
+        wizard.itensData[newIdx] = {
+          fotos: movedFotos,
+          testes: {},
+          obs: '',
+          resumo: ext.descricao || '',
+          jaAnalisou: true,
+          estado_geral: ext.estado || 'Bom'
+        };
+        console.log('[AI] Ambiente extra detectado: ' + extNome + ' com ' + movedFotos.length + ' foto(s)');
+      });
+      // Remove moved photos from original environment (reverse order)
+      extras.forEach(function(ext) {
+        var extFotos = (ext.fotos || []).map(function(n) { return n - 1; }).sort(function(a,b){return b-a;});
+        extFotos.forEach(function(fi) {
+          if (wizard.itensData[ambIdx] && wizard.itensData[ambIdx].fotos && fi < wizard.itensData[ambIdx].fotos.length) {
+            wizard.itensData[ambIdx].fotos.splice(fi, 1);
+          }
+        });
+      });
+      // Re-render current card and update progress
+      wiz6RenderAmbCard(ambIdx);
+      wiz6AtualizarProgress();
+      // Show notification
+      var extraNames = extras.map(function(e){return e.nome;}).join(', ');
+      if (statusEl) {
+        statusEl.innerHTML += '<div style="margin-top:8px;padding:8px;background:#e8f5e9;border-radius:6px;color:#2e7d32;font-size:12px">\u2728 Ambiente(s) detectado(s) pela IA: <strong>' + extraNames + '</strong></div>';
+      }
+    }
   })
   .catch(function(err) {
     console.error('Erro batch:', err);
