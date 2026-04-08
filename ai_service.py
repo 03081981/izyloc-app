@@ -305,7 +305,7 @@ Retorne APENAS este JSON sem markdown:
             try:
                 response = client.messages.create(
                     model=MODEL,
-                    max_tokens=1500,
+                    max_tokens=4000,
                     system=SYSTEM_PROMPT,
                     messages=[{"role": "user", "content": content}]
                 )
@@ -317,6 +317,7 @@ Retorne APENAS este JSON sem markdown:
                 resumos.append(dados.get("resumo", ""))
                 break
             except Exception as e:
+                print(f"[analisar_batch] Tentativa {tentativa+1}/3 falhou: {e}")
                 if tentativa < 2:
                     time.sleep(2 ** tentativa)
 
