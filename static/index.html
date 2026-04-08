@@ -4488,6 +4488,25 @@ if (typeof initAmbientes === 'function') initAmbientes();
       if (!rc) return;
       var h = '';
 
+      // Populate _fotoStore from wizard.itensData (batch flow)
+      if (typeof _wiz6Ambientes !== 'undefined' && wizard && wizard.itensData) {
+        if (!window._fotoStore) window._fotoStore = {};
+        for (var ai = 0; ai < _wiz6Ambientes.length; ai++) {
+          var ambName = _wiz6Ambientes[ai];
+          var dados = wizard.itensData[ai];
+          if (dados && dados.fotos && dados.fotos.length > 0 && !window._fotoStore[ambName]) {
+            window._fotoStore[ambName] = dados.fotos.map(function(f, fi) {
+              return {
+                src: f.preview || ('data:' + (f.mime || 'image/jpeg') + ';base64,' + f.base64),
+                item: '',
+                estado: dados.estado_geral || 'Bom',
+                desc: fi === 0 ? (dados.resumo || '') : ''
+              };
+            });
+          }
+        }
+      }
+
       // Card 1: Dados do imovel
       var tipo = '';
       var btnCI = document.getElementById('btn-checkin');
