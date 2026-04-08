@@ -3443,7 +3443,7 @@ async function advanceFromAmbientes() {
   // CAPTURAR IMEDIATAMENTE - antes de qualquer reset do DOM
     var ambCapturados = [];
     document.querySelectorAll('[id^="wiz-val-"]').forEach(function(el) {
-      var val = parseInt(el.textContent) || 0;
+      var val = parseInt(el.tagName==='INPUT'?el.value:el.textContent) || 0;
       if (val <= 0) return;
       var key = el.id.replace('wiz-val-','');
       if (key === 'casa') return;
@@ -5635,7 +5635,7 @@ function wiz6SelecionarModo(modo) {
       try {
               var _ambs2 = [];
               document.querySelectorAll('[id^="wiz-val-"]').forEach(function(el) {
-                var val = parseInt(el.textContent) || 0;
+                var val = parseInt(el.tagName==='INPUT'?el.value:el.textContent) || 0;
                 if (val <= 0) return;
                 var key = el.id.replace('wiz-val-','');
                 if (key === 'casa') return;
@@ -6266,7 +6266,7 @@ function wiz6Concluir() {
       // Capturar ambientes dos contadores wiz-val-* ANTES de _prev apagar
       var ambAntes = [];
       document.querySelectorAll('[id^="wiz-val-"]').forEach(function(el) {
-        var val = parseInt(el.textContent) || 0;
+        var val = parseInt(el.tagName==='INPUT'?el.value:el.textContent) || 0;
         if (val <= 0) return;
         var key = el.id.replace('wiz-val-','');
         if (key === 'casa') return;
