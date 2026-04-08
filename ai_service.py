@@ -254,7 +254,8 @@ def analisar_batch(imagens: list, nome_ambiente: str) -> dict:
 
     for lote in lotes:
         content = []
-        for img in lote:
+        for idx_foto, img in enumerate(lote, 1):
+            content.append({"type": "text", "text": f"--- FOTO {idx_foto} ---"})
             content.append({
                 "type": "image",
                 "source": {
@@ -265,6 +266,7 @@ def analisar_batch(imagens: list, nome_ambiente: str) -> dict:
             })
 
         prompt = f"""Voce recebeu {len(lote)} foto(s) do ambiente '{nome_ambiente}'.
+Cada foto esta numerada (FOTO 1, FOTO 2, etc).
 
 INSTRUCAO PRINCIPAL: Examine CADA foto individualmente buscando QUALQUER irregularidade.
 
@@ -286,10 +288,11 @@ PASSO 2 - HIERARQUIA DAS FOTOS:
   * Se e um item: descreva-o detalhadamente
   * Se e um defeito: descreva com PRECISAO (localizacao, extensao, tipo)
 
-PASSO 3 - SINTETIZAR:
-Compile tudo em uma descricao unica, SEM omitir nenhum defeito encontrado.
+PASSO 3 - SINTETIZAR COM REFERENCIAS:
+Compile tudo em uma descricao unica. Para CADA elemento ou defeito descrito, inclua entre parenteses o numero da foto de origem. Exemplo: "Geladeira marca Consul cor branca (foto 2)", "Mancha escura no piso proximo a porta (foto 5)".
 
 REGRAS:
+- SEMPRE referencie a foto de origem entre parenteses: (foto N)
 - NUNCA diga "sem avarias" se qualquer foto mostra irregularidade
 - NUNCA mencione medidas ou dimensoes
 - Material APENAS se tiver certeza visual
@@ -298,7 +301,7 @@ REGRAS:
 
 Retorne APENAS este JSON sem markdown:
 {{
-  "resumo": "SINTESE DO AMBIENTE:\n\nPiso: [descricao, cor, estado - mencionar furos/manchas/danos se houver]\n\nParedes: [descricao, cor, estado - mencionar mofo/manchas/trincas se houver]\n\nTeto: [descricao, cor, estado - mencionar infiltracao/manchas se houver]\n\nEsquadrias: [portas e janelas, estado]\n\nInstalacoes: [tomadas, interruptores, chuveiro, fiacao - REPORTAR fios aparentes]\n\nMoveis e equipamentos: [itens e estados]\n\nObservacoes: [LISTA COMPLETA de defeitos e irregularidades encontrados em TODAS as fotos]\n\nEstado geral: [Bom / Regular / Com avaria] - [justificativa baseada nos defeitos encontrados]",
+  "resumo": "SINTESE DO AMBIENTE:\n\nPiso: [descricao com (foto N) para cada observacao]\n\nParedes: [descricao com (foto N)]\n\nTeto: [descricao com (foto N)]\n\nEsquadrias: [descricao com (foto N)]\n\nInstalacoes: [descricao com (foto N)]\n\nMoveis e equipamentos: [descricao com (foto N)]\n\nObservacoes: [defeitos com (foto N)]\n\nEstado geral: [Bom / Regular / Com avaria] - [justificativa]",
   "estado_geral": "Bom ou Regular ou Com avaria"
 }}"""
 
