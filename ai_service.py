@@ -251,6 +251,7 @@ def analisar_batch(imagens: list, nome_ambiente: str) -> dict:
     LOTE_MAX = 20
     lotes = [imagens[i:i+LOTE_MAX] for i in range(0, len(imagens), LOTE_MAX)]
     resumos = []
+    all_extras = []
 
     for lote in lotes:
         content = []
@@ -291,6 +292,13 @@ PASSO 2 - HIERARQUIA DAS FOTOS:
 PASSO 3 - SINTETIZAR COM REFERENCIAS:
 Compile tudo em uma descricao unica. Para CADA elemento ou defeito descrito, inclua entre parenteses o numero da foto de origem. Exemplo: "Geladeira marca Consul cor branca (foto 2)", "Mancha escura no piso proximo a porta (foto 5)".
 
+PASSO 4 - DETECTAR AMBIENTES DIFERENTES:
+Se alguma foto mostra CLARAMENTE um ambiente DIFERENTE de '{nome_ambiente}' (exemplo: corredor, hall, lavabo, area de servico, varanda, despensa), identifique:
+- Numero da(s) foto(s) que pertencem a esse outro ambiente
+- Nome correto do ambiente (ex: 'Corredor interno', 'Hall de entrada')
+- Descricao breve e estado de conservacao
+So reporte se tiver CERTEZA VISUAL. Na duvida, mantenha no ambiente atual.
+
 REGRAS:
 - SEMPRE referencie a foto de origem entre parenteses: (foto N)
 - NUNCA diga "sem avarias" se qualquer foto mostra irregularidade
@@ -301,9 +309,18 @@ REGRAS:
 
 Retorne APENAS este JSON sem markdown:
 {{
-  "resumo": "SINTESE DO AMBIENTE:\n\nPiso: [descricao com (foto N) para cada observacao]\n\nParedes: [descricao com (foto N)]\n\nTeto: [descricao com (foto N)]\n\nEsquadrias: [descricao com (foto N)]\n\nInstalacoes: [descricao com (foto N)]\n\nMoveis e equipamentos: [descricao com (foto N)]\n\nObservacoes: [defeitos com (foto N)]\n\nEstado geral: [Bom / Regular / Com avaria] - [justificativa]",
-  "estado_geral": "Bom ou Regular ou Com avaria"
-}}"""
+  "resumo": "SINTESE DO AMBIENTE:\n\nPiso: [descricao com (foto N) para cada observacao]\n\nParedes: [descricao com (foto N)]\n\nTeto: [descricao com (foto N)]\n\nEsquadrias: [descricao com (foto N)]\n\nInstalacoes: [descricao com (foto N)]\n\nMoveis e equipamentos: [descricao com (foto N)]\n\nObservacoes: [defeitos com (foto N)]\n\nEstado geral: [Bom / Regular / Com avaria]  - [justificativa]",
+  "estado_geral": "Bom ou Regular ou Com avaria",
+  "ambientes_extras": [
+    {{
+      "nome": "Nome do ambiente detectado",
+      "fotos": [1],
+      "descricao": "Descricao do ambiente...",
+      "estado": "Bom ou Regular ou Com avaria"
+    }}
+  ]
+}}
+Se TODAS as fotos pertencem ao ambiente "{nome_ambiente}", retorne "ambientes_extras": []"""
 
         content.append({"type": "text", "text": prompt})
 
@@ -335,7 +352,7 @@ Retorne APENAS este JSON sem markdown:
     elif "regular" in resumo_final.lower():
         estado = "Regular"
 
-    result = {"resumo": resumo_final, "estado_geral": estado, "success": bool(resumo_final)}
+    result = {"resumo": resumo_final, "estado_geral": estado, "success": bool(resumo_final), "ambientes_extras": all_extras}
     if not resumo_final and last_error:
         result["error"] = last_error
     return result
