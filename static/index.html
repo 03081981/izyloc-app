@@ -4514,9 +4514,7 @@ window.initRevisao = function() {
 
       // Populate _fotoStore from wizard.itensData (batch flow)
       if (typeof _wiz6Ambientes !== 'undefined' && wizard && wizard.itensData) {
-            };
-
-    if (!window._fotoStore) window._fotoStore = {};
+            if (!window._fotoStore) window._fotoStore = {};
         for (var ai = 0; ai < _wiz6Ambientes.length; ai++) {
           var ambName = _wiz6Ambientes[ai];
           var dados = wizard.itensData[ai];
