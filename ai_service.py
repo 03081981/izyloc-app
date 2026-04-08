@@ -240,6 +240,7 @@ def analisar_batch(imagens: list, nome_ambiente: str) -> dict:
     """
     Analisa um lote de fotos do mesmo ambiente em uma unica chamada.
     """
+    last_error = ""
     if not imagens:
         return {"resumo": "", "estado_geral": "Bom", "success": False}
 
@@ -317,6 +318,7 @@ Retorne APENAS este JSON sem markdown:
                 resumos.append(dados.get("resumo", ""))
                 break
             except Exception as e:
+                last_error = str(e)
                 print(f"[analisar_batch] Tentativa {tentativa+1}/3 falhou: {e}")
                 if tentativa < 2:
                     time.sleep(2 ** tentativa)
@@ -328,7 +330,10 @@ Retorne APENAS este JSON sem markdown:
     elif "regular" in resumo_final.lower():
         estado = "Regular"
 
-    return {"resumo": resumo_final, "estado_geral": estado, "success": bool(resumo_final)}
+    result = {"resumo": resumo_final, "estado_geral": estado, "success": bool(resumo_final)}
+    if not resumo_final and last_error:
+        result["error"] = last_error
+    return result
 
 
 def analyze_batch(images: list, environment_name: str) -> dict:
