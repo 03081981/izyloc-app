@@ -4483,36 +4483,38 @@ if (typeof initAmbientes === 'function') initAmbientes();
       if (btn) { btn.textContent = 'Baixar PDF'; btn.disabled = false; }
     };
 
-    window.initRevisao = function() {
+    // --- Lightbox modal for photo zoom (global scope) ---
+window._openFotoModal = function(imgSrc) {
+  var m = document.getElementById('foto-modal-overlay');
+  if (!m) {
+    m = document.createElement('div');
+    m.id = 'foto-modal-overlay';
+    m.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.9);z-index:99999;display:flex;align-items:center;justify-content:center;cursor:pointer;padding:16px;box-sizing:border-box';
+    m.onclick = function() { m.style.display = 'none'; };
+    var cb = document.createElement('div');
+    cb.style.cssText = 'position:absolute;top:16px;right:20px;color:#fff;font-size:32px;font-weight:700;cursor:pointer;z-index:100000;line-height:1';
+    cb.textContent = '\u00D7';
+    cb.onclick = function() { m.style.display = 'none'; };
+    m.appendChild(cb);
+    var im = document.createElement('img');
+    im.id = 'foto-modal-img';
+    im.style.cssText = 'max-width:100%;max-height:100%;object-fit:contain;border-radius:8px';
+    im.onclick = function(e) { e.stopPropagation(); };
+    m.appendChild(im);
+    document.body.appendChild(m);
+  }
+  document.getElementById('foto-modal-img').src = imgSrc;
+  m.style.display = 'flex';
+};
+
+window.initRevisao = function() {
       var rc = document.getElementById('rev-content');
       if (!rc) return;
       var h = '';
 
       // Populate _fotoStore from wizard.itensData (batch flow)
       if (typeof _wiz6Ambientes !== 'undefined' && wizard && wizard.itensData) {
-        // --- Lightbox modal for photo zoom ---
-    window._openFotoModal = function(imgSrc) {
-      var m = document.getElementById('foto-modal-overlay');
-      if (!m) {
-        m = document.createElement('div');
-        m.id = 'foto-modal-overlay';
-        m.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.9);z-index:99999;display:flex;align-items:center;justify-content:center;cursor:pointer;padding:16px;box-sizing:border-box';
-        m.onclick = function() { m.style.display = 'none'; };
-        var cb = document.createElement('div');
-        cb.style.cssText = 'position:absolute;top:16px;right:20px;color:#fff;font-size:32px;font-weight:700;cursor:pointer;z-index:100000;line-height:1';
-        cb.textContent = '\u00D7';
-        cb.onclick = function() { m.style.display = 'none'; };
-        m.appendChild(cb);
-        var im = document.createElement('img');
-        im.id = 'foto-modal-img';
-        im.style.cssText = 'max-width:100%;max-height:100%;object-fit:contain;border-radius:8px';
-        im.onclick = function(e) { e.stopPropagation(); };
-        m.appendChild(im);
-        document.body.appendChild(m);
-      }
-      document.getElementById('foto-modal-img').src = imgSrc;
-      m.style.display = 'flex';
-    };
+            };
 
     if (!window._fotoStore) window._fotoStore = {};
         for (var ai = 0; ai < _wiz6Ambientes.length; ai++) {
@@ -5846,7 +5848,7 @@ function wiz6RenderAmbCard(idx) {
               '<input type="file" accept="image/*" capture="environment" multiple style="display:none" onchange="wiz6AddFotos(this,' + idx + ')">' +
             '</label>' +
             '<button onclick="wiz6AnalisarBatch(' + idx + ')" style="padding:10px 24px;background:#16a34a;color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer">' +
-              '\ud83e\udd16 Analisar com IA' +
+              (jaAnalisou ? '\ud83d\udd04 Re-analisar com IA' : '\ud83e\udd16 Analisar com IA') +
             '</button>' +
           '</div>' +
         '</div>'
