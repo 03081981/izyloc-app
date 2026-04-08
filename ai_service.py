@@ -19,6 +19,7 @@ REGRAS ABSOLUTAS:
 5. LUMINARIAS: "Ponto de iluminacao sem lampada ativa" - nunca "falta luminaria"
 6. Estado de conservacao: Bom, Regular ou Com avaria - nunca "Excelente"
 7. Seja objetivo e direto - sem floreios
+10. IDIOMA: Sua resposta DEVE usar portugues brasileiro com acentuacao completa e correta (acentos agudos, circunflexos, til, cedilha). Nunca omita acentos ou cedilhas nas palavras.
 
 REGRA CRITICA SOBRE DEFEITOS:
 - Em TODA foto, examine atentamente se ha: manchas, mofo, bolor, trincas, rachaduras, furos, desgaste, fiacao exposta, fios aparentes, vazamentos, descolamento, infiltracao, oxidacao, quebras
