@@ -3811,8 +3811,8 @@ async function gerarLaudo() {
   };
     var ambArr = [];
     Object.keys(window._fotoStore || {}).forEach(function(amb) {
-      var fotos = (window._fotoStore[amb] || []).map(function(f) {
-        return {src: f.src||'', item: f.item || '', estado: f.estado || '', desc: f.desc || ''};
+      var fotos = (window._fotoStore[amb] || []).map(function(f, fi8) {
+        return {src: f.src||'', item: f.item || '', estado: f.estado || '', desc: f.desc || '', foto_numero: fi8+1};
       });
       var verifs = (window._ambStore && window._ambStore[amb]) ? window._ambStore[amb].verificacoes || {} : {};
       var obsAmb = (window._ambStore && window._ambStore[amb]) ? window._ambStore[amb].obs || '' : '';
@@ -4571,11 +4571,11 @@ if (typeof initAmbientes === 'function') initAmbientes();
           var fotos = fs[ambNome];
           h += '<div style="margin-bottom:12px;padding-bottom:10px;border-bottom:1px solid #e2e8f0">';
           h += '<div style="font-weight:600;font-size:14px;margin-bottom:6px">' + ambNome + ' <span style="color:#64748b;font-weight:400;font-size:12px">(' + fotos.length + ' foto' + (fotos.length>1?'s':'') + ')</span></div>';
-          fotos.forEach(function(f) {
+          fotos.forEach(function(f, fi7) {
             var ec = f.estado==='Ruim'?'#c62828':f.estado==='Regular'?'#854f0b':'#2e7d32';
             var eb = f.estado==='Ruim'?'#fde8e8':f.estado==='Regular'?'#fff8e8':'#e8f4eb';
             h += '<div style="display:flex;gap:10px;margin-bottom:8px;align-items:flex-start">';
-            h += '<img src="'+f.src+'" style="width:60px;height:45px;object-fit:cover;border-radius:6px;flex-shrink:0">';
+            h += '<div style="position:relative;flex-shrink:0"><img src="'+f.src+'" style="width:60px;height:45px;object-fit:cover;border-radius:6px"><div style="position:absolute;bottom:1px;left:1px;background:rgba(0,0,0,0.7);color:#fff;font-size:9px;font-weight:700;padding:1px 4px;border-radius:6px">F' + (fi7+1) + '</div></div>';
             h += '<div style="flex:1;min-width:0">';
             h += '<div style="font-size:13px;font-weight:500">' + (f.item||'') + '</div>';
             if (f.estado) h += '<span style="display:inline-block;padding:1px 8px;border-radius:10px;font-size:11px;font-weight:600;background:'+eb+';color:'+ec+';margin:2px 0">' + f.estado + '</span>';
@@ -5731,6 +5731,7 @@ function wiz6RenderAmbCard(idx) {
     htmlFotos +=
       '<div style="position:relative;border-radius:8px;overflow:hidden;aspect-ratio:4/3;background:#f1f5f9">' +
         '<img src="' + f.preview + '" style="width:100%;height:100%;object-fit:cover;display:block">' +
+            '<div style="position:absolute;bottom:4px;left:4px;background:rgba(0,0,0,0.7);color:#fff;font-size:11px;font-weight:700;padding:2px 8px;border-radius:10px">Foto ' + (fi+1) + '</div>' +
         (podRemover
           ? '<button onclick="wiz6RemoverFoto(' + idx + ',' + fi + ')" style="position:absolute;top:4px;right:4px;width:24px;height:24px;background:rgba(239,68,68,0.9);border:none;border-radius:50%;color:#fff;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1">\u00d7</button>'
           : '<button onclick="wiz6RemoverFotoPos(' + idx + ',' + fi + ')" style="position:absolute;top:4px;right:4px;width:24px;height:24px;background:rgba(107,114,128,0.9);border:none;border-radius:50%;color:#fff;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1">\u00d7</button>') +
