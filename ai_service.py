@@ -91,7 +91,7 @@ IMPORTANTE:
             texto = re.sub(r'```\s*', '', texto)
             texto = texto.strip()
 
-            dados = json.loads(texto)
+            dados = json.loads(texto, strict=False)
             dados['success'] = True
 
             # Normalizar estado
@@ -185,7 +185,7 @@ Retorne APENAS este JSON sem markdown:
             texto = re.sub(r'```json\s*', '', texto)
             texto = re.sub(r'```\s*', '', texto)
             texto = texto.strip()
-            dados = json.loads(texto)
+            dados = json.loads(texto, strict=False)
             dados['success'] = True
             return dados
         except Exception as e:
@@ -314,7 +314,7 @@ Retorne APENAS este JSON sem markdown:
                 texto = re.sub(r'```json\s*', '', texto)
                 texto = re.sub(r'```\s*', '', texto)
                 texto = texto.strip()
-                dados = json.loads(texto)
+                dados = json.loads(texto, strict=False)
                 resumos.append(dados.get("resumo", ""))
                 break
             except Exception as e:
