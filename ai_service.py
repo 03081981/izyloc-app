@@ -265,33 +265,39 @@ def analisar_batch(imagens: list, nome_ambiente: str) -> dict:
 
         prompt = f"""Voce recebeu {len(lote)} foto(s) do ambiente '{nome_ambiente}'.
 
-COMO ANALISAR AS FOTOS:
+INSTRUCAO PRINCIPAL: Examine CADA foto individualmente buscando QUALQUER irregularidade.
 
-1. FOTOS AMPLAS (mostram o ambiente inteiro):
-   - Use para identificar: cores de paredes/piso/teto, presenca de moveis, equipamentos, tomadas, interruptores
-   - NAO descreva detalhes de itens especificos a partir destas fotos
+PASSO 1 - EXAMINAR CADA FOTO:
+Para cada foto, pergunte-se:
+- Esta foto mostra um CLOSE-UP de algo? Se sim, o fotografo esta documentando aquele detalhe
+- Ha manchas escuras em paredes ou teto? (pode ser mofo, infiltracao, bolor)
+- Ha fiacao ou fios aparentes/expostos? (em chuveiros, tomadas, teto)
+- Ha furos, buracos ou falhas no piso, paredes ou teto?
+- Ha trincas, rachaduras ou fissuras?
+- Ha desgaste, descascamento ou descolamento de pintura/revestimento?
+- Ha vazamentos, umidade ou marcas de agua?
+- Rodapes estao soltos ou descolados?
+- Rejuntes estao falhos, escurecidos ou com mofo?
 
-2. FOTOS EM CLOSE-UP/ZOOM (focam em algo especifico):
-   - O fotografo esta APONTANDO para aquele elemento - de ATENCAO MAXIMA
-   - Se mostra um item (armario, chuveiro, pia): descreva detalhadamente
-   - Se mostra uma irregularidade (mancha, trinca, furo, fio, mofo): DESCREVA COM PRECISAO o que ve
+PASSO 2 - HIERARQUIA DAS FOTOS:
+- FOTOS AMPLAS (ambiente inteiro): use para cores, layout, presenca de itens
+- FOTOS EM CLOSE-UP (zoom em algo): o fotografo esta APONTANDO para aquele detalhe
+  * Se e um item: descreva-o detalhadamente
+  * Se e um defeito: descreva com PRECISAO (localizacao, extensao, tipo)
 
-3. DEFEITOS - REGRA CRITICA:
-   - Examine CADA foto buscando: manchas, mofo, bolor, trincas, furos, fiacao exposta, desgaste, infiltracao, vazamentos, quebras, descolamento
-   - Se o fotografo fez close-up em algo, ele esta documentando aquilo - DESCREVA
-   - Se ha fiacao/fios aparentes em qualquer foto, REPORTE
-   - Se ha manchas escuras em paredes ou teto, pode ser mofo/infiltracao - REPORTE
-   - NUNCA ignore defeitos visiveis
+PASSO 3 - SINTETIZAR:
+Compile tudo em uma descricao unica, SEM omitir nenhum defeito encontrado.
 
-REGRAS GERAIS:
-- Compile informacoes de todas as fotos sem repeticoes
+REGRAS:
+- NUNCA diga "sem avarias" se qualquer foto mostra irregularidade
 - NUNCA mencione medidas ou dimensoes
 - Material APENAS se tiver certeza visual
+- Se ha duvida se algo e defeito, REPORTE como observacao
 - Ignore elementos ao fundo atraves de portas/aberturas
 
 Retorne APENAS este JSON sem markdown:
 {{
-  "resumo": "SINTESE DO AMBIENTE:\n\nPiso: [descricao, cor, estado]\n\nParedes: [descricao, cor, estado, defeitos se houver]\n\nTeto: [descricao, cor, estado, defeitos se houver]\n\nEsquadrias: [portas e janelas visiveis, estado]\n\nInstalacoes: [pontos de luz, tomadas, interruptores, chuveiro - estado, fiacao se visivel]\n\nMoveis e equipamentos: [itens visiveis e estados detalhados]\n\nObservacoes: [TODOS os defeitos e irregularidades identificados em qualquer foto]\n\nEstado geral: [Bom / Regular / Com avaria] - [justificativa]",
+  "resumo": "SINTESE DO AMBIENTE:\n\nPiso: [descricao, cor, estado - mencionar furos/manchas/danos se houver]\n\nParedes: [descricao, cor, estado - mencionar mofo/manchas/trincas se houver]\n\nTeto: [descricao, cor, estado - mencionar infiltracao/manchas se houver]\n\nEsquadrias: [portas e janelas, estado]\n\nInstalacoes: [tomadas, interruptores, chuveiro, fiacao - REPORTAR fios aparentes]\n\nMoveis e equipamentos: [itens e estados]\n\nObservacoes: [LISTA COMPLETA de defeitos e irregularidades encontrados em TODAS as fotos]\n\nEstado geral: [Bom / Regular / Com avaria] - [justificativa baseada nos defeitos encontrados]",
   "estado_geral": "Bom ou Regular ou Com avaria"
 }}"""
 
