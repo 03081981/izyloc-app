@@ -1465,11 +1465,28 @@ class UploadVideoHandler(BaseHandler):
 
             def processar():
                 try:
+                    print(f"[VIDEO] Job {job_id}: Iniciando processamento...")
+                    print(f"[VIDEO] Video path: {video_path}, size: {os.path.getsize(video_path)} bytes")
+                    print(f"[VIDEO] Ambientes: {ambientes}")
                     _video_jobs[job_id]['mensagem'] = 'Extraindo frames...'
                     _video_jobs[job_id]['progresso'] = 20
 
                     from video_service import processar_video_completo
                     resultado = processar_video_completo(video_path, ambientes, output_dir)
+
+                    print(f"[VIDEO] Job {job_id}: Resultado success={resultado.get('success')}")
+                    print(f"[VIDEO] Job {job_id}: total_frames={resultado.get('total_frames')}")
+                    print(f"[VIDEO] Job {job_id}: erro={resultado.get('erro')}")
+                    print(f"[VIDEO] Job {job_id}: ambientes keys={list(resultado.get('frames_por_ambiente', {}).keys())}")
+                    for amb_name, amb_frames in resultado.get('frames_por_ambiente', {}).items():
+                        print(f"[VIDEO] Job {job_id}: ambiente '{amb_name}' = {len(amb_frames)} frames")
+
+                    # CHECK SUCCESS - se processar_video_completo falhou, reportar erro
+                    if not resultado.get('success'):
+                        _video_jobs[job_id]['status'] = 'erro'
+                        _video_jobs[job_id]['mensagem'] = resultado.get('erro', 'Processamento falhou sem detalhes')
+                        print(f"[VIDEO] Job {job_id}: FALHOU - {resultado.get('erro')}")
+                        return
 
                     ambientes_fmt = {}
                     for amb, frames in resultado.get('frames_por_ambiente', {}).items():
@@ -1487,6 +1504,9 @@ class UploadVideoHandler(BaseHandler):
                                 'mime_type': 'image/jpeg'
                             })
 
+                    total = sum(len(f) for f in ambientes_fmt.values())
+                    print(f"[VIDEO] Job {job_id}: OK! {total} frames formatados")
+
                     _video_jobs[job_id]['status'] = 'ok'
                     _video_jobs[job_id]['progresso'] = 100
                     _video_jobs[job_id]['mensagem'] = 'Processamento concluido!'
@@ -1494,6 +1514,9 @@ class UploadVideoHandler(BaseHandler):
                     _video_jobs[job_id]['eventos'] = resultado.get('eventos', [])
                     _video_jobs[job_id]['total_frames'] = resultado.get('total_frames', 0)
                 except Exception as e:
+                    import traceback
+                    print(f"[VIDEO] Job {job_id}: EXCEPTION: {str(e)}")
+                    traceback.print_exc()
                     _video_jobs[job_id]['status'] = 'erro'
                     _video_jobs[job_id]['mensagem'] = str(e)
                 finally:
