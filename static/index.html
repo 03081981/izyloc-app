@@ -6059,7 +6059,10 @@ function wiz6AnalisarBatch(ambIdx) {
       'Banheiro': ['vaso sanit', 'caixa acoplada', 'box de chuveiro', 'box com ralo', 'ralo linear', 'descarga', 'chuveiro', 'bacia sanit'],
       'Cozinha': ['fogao', 'fogão', 'coifa', 'pia de cozinha', 'cooktop', 'forno embutido'],
       'Area de servico': ['tanque', 'maquina de lavar', 'máquina de lavar', 'varal'],
-      'Dormitorio': ['cama de casal', 'cama box', 'guarda-roupa', 'criado-mudo', 'cabeceira']
+      'Dormitorio': ['cama de casal', 'cama box', 'guarda-roupa', 'criado-mudo', 'cabeceira'],
+      'Corredor': ['corredor', 'hall', 'passagem', 'circulacao', 'circulação'],
+      'Area externa': ['area externa', 'área externa', 'jardim', 'quintal', 'churrasqueira', 'piscina', 'muro externo'],
+      'Garagem': ['garagem', 'vaga de garagem', 'portao', 'portão automatico', 'vaga coberta']
     };
 
     // Check if resumo contains strong signals of a DIFFERENT environment
@@ -6069,6 +6072,9 @@ function wiz6AnalisarBatch(ambIdx) {
       if (envName === 'Banheiro' && (nomeLower.indexOf('banhe') >= 0 || nomeLower.indexOf('lavabo') >= 0)) return;
       if (envName === 'Cozinha' && nomeLower.indexOf('cozinha') >= 0) return;
       if (envName === 'Dormitorio' && (nomeLower.indexOf('dorm') >= 0 || nomeLower.indexOf('quarto') >= 0 || nomeLower.indexOf('suite') >= 0)) return;
+      if (envName === 'Corredor' && (nomeLower.indexOf('corred') >= 0 || nomeLower.indexOf('hall') >= 0)) return;
+      if (envName === 'Area externa' && (nomeLower.indexOf('extern') >= 0 || nomeLower.indexOf('jardim') >= 0 || nomeLower.indexOf('quintal') >= 0)) return;
+      if (envName === 'Garagem' && (nomeLower.indexOf('garag') >= 0 || nomeLower.indexOf('vaga') >= 0)) return;
 
       var matchCount = 0;
       envSignatures[envName].forEach(function(kw) {
