@@ -5956,7 +5956,8 @@ function wiz6AnalisarBatch(ambIdx) {
     headers: {'Content-Type': 'application/json'},
     body: JSON.stringify({
       imagens: imagens,
-      ambiente: nome
+      ambiente: nome,
+      tipo_vistoria: (typeof wizard !== 'undefined' && wizard.tipo) || 'entrada'
     })
   })
   .then(function(resp) { return resp.json(); })
