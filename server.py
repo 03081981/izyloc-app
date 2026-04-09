@@ -1027,7 +1027,8 @@ class AnalisarBatchHandler(BaseHandler):
                 self.write({"resumo": "", "estado_geral": "Bom", "success": False})
                 return
 
-            resultado = analyze_batch(imagens, ambiente)
+            tipo_vistoria = data.get("tipo_vistoria", "entrada")
+            resultado = analyze_batch(imagens, ambiente, tipo_vistoria)
             self.write(resultado)
         except Exception as e:
             self.set_status(500)
