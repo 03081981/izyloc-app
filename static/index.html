@@ -5715,6 +5715,81 @@ function wiz6RenderTabs() {
 }
 
 // ── CARD DO AMBIENTE ─────────────────────────────────────
+function wiz6AceitarMoverExtras(ambIdx) {
+  var pending = window._wiz6PendingExtras;
+  if (!pending || pending.ambIdx !== ambIdx) return;
+  var extras = pending.extras;
+  window._wiz6PendingExtras = null;
+
+  extras.forEach(function(ext) {
+    var extNome = ext.nome || 'Ambiente detectado';
+    // Check if environment already exists
+    var existingIdx = _wiz6Ambientes.indexOf(extNome);
+    var targetIdx;
+    if (existingIdx >= 0) {
+      targetIdx = existingIdx;
+    } else {
+      targetIdx = _wiz6Ambientes.length;
+      _wiz6Ambientes.push(extNome);
+    }
+    // Move detected photos
+    var extFotos = (ext.fotos || []).map(function(n) { return n - 1; });
+    var movedFotos = [];
+    extFotos.forEach(function(fi) {
+      if (wizard.itensData[ambIdx] && wizard.itensData[ambIdx].fotos && wizard.itensData[ambIdx].fotos[fi]) {
+        movedFotos.push(wizard.itensData[ambIdx].fotos[fi]);
+      }
+    });
+    if (!wizard.itensData[targetIdx]) {
+      wizard.itensData[targetIdx] = {fotos:[], testes:{}, obs:'', resumo:'', jaAnalisou:false, estado_geral:'Bom'};
+    }
+    wizard.itensData[targetIdx].fotos = wizard.itensData[targetIdx].fotos.concat(movedFotos);
+    console.log('[AI] Fotos movidas para: ' + extNome + ' (' + movedFotos.length + ' fotos)');
+  });
+
+  // Remove moved photos from original (reverse order)
+  extras.forEach(function(ext) {
+    var extFotos = (ext.fotos || []).map(function(n) { return n - 1; }).sort(function(a,b){return b-a;});
+    extFotos.forEach(function(fi) {
+      if (wizard.itensData[ambIdx] && wizard.itensData[ambIdx].fotos && fi < wizard.itensData[ambIdx].fotos.length) {
+        wizard.itensData[ambIdx].fotos.splice(fi, 1);
+      }
+    });
+  });
+
+  // Clear source if empty
+  if (wizard.itensData[ambIdx] && wizard.itensData[ambIdx].fotos && wizard.itensData[ambIdx].fotos.length === 0) {
+    wizard.itensData[ambIdx].resumo = '';
+    wizard.itensData[ambIdx].jaAnalisou = false;
+    wizard.itensData[ambIdx].estado_geral = 'Bom';
+  }
+
+  // Re-render tabs and current card
+  wiz6RenderTabs();
+  wiz6RenderAmbCard(ambIdx);
+  wiz6AtualizarProgress();
+
+  // Navigate to new environments and trigger AI analysis
+  var newEnvs = [];
+  extras.forEach(function(ext) {
+    var extNome = ext.nome || 'Ambiente detectado';
+    var eiIdx = _wiz6Ambientes.indexOf(extNome);
+    if (eiIdx >= 0 && eiIdx !== ambIdx) newEnvs.push(eiIdx);
+  });
+  if (newEnvs.length > 0) {
+    _wiz6AmbIdx = newEnvs[0];
+    wiz6RenderAmbCard(newEnvs[0]);
+    wiz6RenderTabs();
+    newEnvs.forEach(function(newIdx) {
+      if (wizard.itensData[newIdx] && wizard.itensData[newIdx].fotos && wizard.itensData[newIdx].fotos.length > 0) {
+        wizard.itensData[newIdx].jaAnalisou = false;
+        wizard.itensData[newIdx].resumo = '';
+        setTimeout(function() { wiz6AnalisarBatch(newIdx); }, 500);
+      }
+    });
+  }
+}
+
 function wiz6RenderAmbCard(idx) {
   var card = document.getElementById('wiz6-amb-card');
   if (!card) return;
@@ -5971,82 +6046,39 @@ function wiz6AnalisarBatch(ambIdx) {
     wiz6RenderAmbCard(ambIdx);
     wiz6AtualizarProgress();
 
-    // Handle ambientes_extras detected by AI
+    // Handle ambientes_extras detected by AI - ask user first
     var extras = dados.ambientes_extras || [];
     if (extras.length > 0) {
-      extras.forEach(function(ext) {
-        var extNome = ext.nome || 'Ambiente detectado';
-        // Check if this environment already exists
-        if (_wiz6Ambientes.indexOf(extNome) !== -1) return;
-        // Add new environment
-        var newIdx = _wiz6Ambientes.length;
-        _wiz6Ambientes.push(extNome);
-        // Move detected photos to new environment
-        var extFotos = (ext.fotos || []).map(function(n) { return n - 1; }); // 1-based to 0-based
-        var movedFotos = [];
-        extFotos.forEach(function(fi) {
-          if (wizard.itensData[ambIdx] && wizard.itensData[ambIdx].fotos && wizard.itensData[ambIdx].fotos[fi]) {
-            movedFotos.push(wizard.itensData[ambIdx].fotos[fi]);
-          }
-        });
-        // Create itensData for the new environment
-        wizard.itensData[newIdx] = {
-          fotos: movedFotos,
-          testes: {},
-          obs: '',
-          resumo: ext.descricao || '',
-          jaAnalisou: true,
-          estado_geral: ext.estado || 'Bom'
-        };
-        console.log('[AI] Ambiente extra detectado: ' + extNome + ' com ' + movedFotos.length + ' foto(s)');
-      });
-      // Remove moved photos from original environment (reverse order)
-      extras.forEach(function(ext) {
-        var extFotos = (ext.fotos || []).map(function(n) { return n - 1; }).sort(function(a,b){return b-a;});
-        extFotos.forEach(function(fi) {
-          if (wizard.itensData[ambIdx] && wizard.itensData[ambIdx].fotos && fi < wizard.itensData[ambIdx].fotos.length) {
-            wizard.itensData[ambIdx].fotos.splice(fi, 1);
-          }
-        });
-      });
-      // If all photos were moved out, clear the source environment resumo
-      if (wizard.itensData[ambIdx] && wizard.itensData[ambIdx].fotos && wizard.itensData[ambIdx].fotos.length === 0) {
-        wizard.itensData[ambIdx].resumo = '';
-        wizard.itensData[ambIdx].jaAnalisou = false;
-        wizard.itensData[ambIdx].estado_geral = 'Bom';
-      }
-      // Re-render current card and update progress
-      wiz6RenderAmbCard(ambIdx);
-      wiz6AtualizarProgress();
-      // Auto-navigate to new environments and trigger full AI analysis
-      var newEnvIndexes = [];
-      for (var ei = 0; ei < extras.length; ei++) {
-        var eiNome = extras[ei].nome || 'Ambiente detectado';
-        var eiIdx = _wiz6Ambientes.indexOf(eiNome);
-        if (eiIdx >= 0 && eiIdx !== ambIdx) {
-          newEnvIndexes.push(eiIdx);
-        }
-      }
-      if (newEnvIndexes.length > 0) {
-        // Navigate to first new environment
-        _wiz6AmbIdx = newEnvIndexes[0];
-        wiz6RenderAmbCard(newEnvIndexes[0]);
-        // Auto-trigger full AI analysis for each new environment
-        newEnvIndexes.forEach(function(newIdx) {
-          if (wizard.itensData[newIdx] && wizard.itensData[newIdx].fotos && wizard.itensData[newIdx].fotos.length > 0) {
-            console.log('[AI] Auto-analisando novo ambiente: ' + _wiz6Ambientes[newIdx]);
-            // Mark as not analyzed so full analysis runs
-            wizard.itensData[newIdx].jaAnalisou = false;
-            wizard.itensData[newIdx].resumo = '';
-            // Trigger analysis after short delay to let UI update
-            setTimeout(function() { wiz6AnalisarBatch(newIdx); }, 500);
-          }
-        });
-      }
-      // Show notification
-      var extraNames = extras.map(function(e){return e.nome;}).join(', ');
+      var extraNames = extras.map(function(e){return e.nome || 'Ambiente';}).join(', ');
+      var fotosCount = 0;
+      extras.forEach(function(ext){ fotosCount += (ext.fotos || []).length; });
+      // Show confirmation banner instead of auto-moving
       if (statusEl) {
-        statusEl.innerHTML += '<div style="margin-top:8px;padding:8px;background:#e8f5e9;border-radius:6px;color:#2e7d32;font-size:12px">\u2728 Ambiente(s) detectado(s) pela IA: <strong>' + extraNames + '</strong></div>';
+        statusEl.style.display = 'block';
+        statusEl.innerHTML =
+          '<div style="padding:12px;background:#fff3cd;border:1px solid #ffc107;border-radius:8px;margin-top:8px">' +
+            '<div style="font-size:13px;color:#856404;font-weight:600;margin-bottom:8px">' +
+              '⚠️ A IA identificou que ' + (fotosCount === 1 ? 'esta foto pertence' : 'estas fotos pertencem') +
+              ' ao ambiente: <strong>' + extraNames + '</strong>' +
+            '</div>' +
+            '<div style="font-size:12px;color:#856404;margin-bottom:10px">' +
+              'Deseja mover ' + (fotosCount === 1 ? 'a foto' : 'as ' + fotosCount + ' fotos') +
+              ' para o ambiente <strong>' + extraNames + '</strong>?' +
+            '</div>' +
+            '<div style="display:flex;gap:8px">' +
+              '<button onclick="wiz6AceitarMoverExtras(' + ambIdx + ')" ' +
+                'style="padding:8px 16px;background:#28a745;color:#fff;border:none;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer">' +
+                '✅ Sim, mover para ' + extraNames +
+              '</button>' +
+              '<button onclick="this.closest(\'.wiz6-extras-confirm\').style.display=\'none\'" ' +
+                'style="padding:8px 16px;background:#6c757d;color:#fff;border:none;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer">' +
+                '❌ N\u00e3o, manter aqui' +
+              '</button>' +
+            '</div>' +
+          '</div>';
+        statusEl.querySelector('div').classList.add('wiz6-extras-confirm');
+        // Store extras data for when user accepts
+        window._wiz6PendingExtras = {ambIdx: ambIdx, extras: extras};
       }
     }
   })
