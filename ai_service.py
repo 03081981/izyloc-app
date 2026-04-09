@@ -19,7 +19,8 @@ REGRAS ABSOLUTAS â NUNCA VIOLE:
    - Se nao tiver certeza do material â descreva apenas a cor e aparencia visual
 3. MEDIDAS: NUNCA mencione dimensoes, medidas ou estimativas de tamanho
 4. CORES: Descreva cores visiveis de forma simples â "branco", "bege claro", "cinza"
-5. LUMINARIAS: "Ponto de iluminacao sem lampada ativa" â nunca "falta luminaria" ou "buraco no teto"
+5. LUMINARIAS: So mencione "ponto de iluminacao sem lampada" se for INEQUIVOCAMENTE visivel — nunca "falta luminaria" ou "buraco no teto". Se ha luminaria com luz acesa, descreva como "em funcionamento". NAO invente pontos sem lampada.
+5b. NUNCA INVENTE AUSENCIAS: Nunca diga que algo "nao esta instalado" (ex: "chuveiro nao instalado"). Se o item aparece na foto, descreva como PRESENTE. Se nao aparece, simplesmente nao mencione.
 6. Estado: use apenas Bom, Regular ou Com avaria â nunca "Excelente"
 7. Seja objetivo e direto â sem floreios ou suposicoes
 8. IDIOMA: Use portugues brasileiro com acentuacao completa e correta
@@ -286,17 +287,33 @@ def analisar_batch(imagens: list, nome_ambiente: str, tipo_vistoria: str = "entr
 Tipo de vistoria: {tipo_vistoria}
 Cada foto esta numerada (FOTO 1, FOTO 2, etc).
 
-PASSO 1 â CLASSIFICAR CADA FOTO:
-Para cada foto identifique:
-a) FOTO AMPLA â mostra o ambiente inteiro
-   Use para: cores gerais, layout, presenca de elementos
-b) FOTO DE ITEM â focada em elemento especifico (armario, movel, equipamento)
-   Use para: descrever aquele item em detalhe
-c) FOTO DE AVARIA/CLOSE-UP â focada diretamente em problema ou detalhe
-   Use para: descrever o defeito com precisao maxima
+PASSO 1 — CLASSIFICAR CADA FOTO (REGRA FUNDAMENTAL):
+Para cada foto, primeiro determine o TIPO:
 
-PASSO 2 â EXAMINAR DEFEITOS EM CADA FOTO:
-Para cada foto, verifique obrigatoriamente:
+a) FOTO AMPLA (sem zoom) — mostra visao geral do ambiente, distancia maior
+   - Faca descricao SUPERFICIAL: cores, materiais, itens presentes, layout geral
+   - NAO aponte defeitos ou avarias em fotos amplas — a distancia nao permite precisao
+   - NAO invente problemas que nao sao claramente visiveis
+   - Apenas descreva o que ve de forma geral: "parede branca", "piso ceramico claro", "luminaria no teto"
+
+b) FOTO EM FOCO/ZOOM — focada em elemento especifico (close-up)
+   - Esta foto foi tirada INTENCIONALMENTE para mostrar algo especifico
+   - Faca ANALISE CLINICA PONTUAL: marca, tipo, estado de conservacao, avarias, manchas, trincas
+   - Se mostra um item (fechadura, torneira, chuveiro) — descreva marca/tipo/estado com precisao
+   - Se mostra avaria/defeito — descreva o defeito com precisao maxima
+   - Se mostra item sem defeito — descreva o item e confirme "sem avaria identificada"
+
+REGRAS CRITICAS DE DESCRICAO:
+- NUNCA afirme que algo NAO esta instalado (ex: "chuveiro nao instalado") — se nao ve com certeza, NAO mencione
+- NUNCA invente defeitos que nao sao CLARAMENTE visiveis na foto
+- Se um item aparece na foto (ex: chuveiro na parede), descreva como PRESENTE/INSTALADO
+- So aponte avaria quando for INEQUIVOCAMENTE visivel
+- Em fotos amplas, use linguagem neutra: "estado aparentemente bom" ou apenas descreva o que ve
+- Em fotos em zoom/foco, seja preciso e clinico: descreva exatamente o que o foco revela
+- Se a foto mostra item sem problema evidente, diga "sem avaria identificada" — NAO force defeitos
+
+PASSO 2 — EXAMINAR DEFEITOS (SOMENTE SE CLARAMENTE VISIVEIS):
+Para cada foto, verifique APENAS o que e claramente visivel:
 - Furos ou buracos no piso, paredes ou teto?
 - Manchas escuras, mofo, bolor, umidade?
 - Fissuras, trincas ou rachaduras?
@@ -306,6 +323,7 @@ Para cada foto, verifique obrigatoriamente:
 - Rejuntes falhos, escurecidos ou com mofo?
 - Pontos escuros dispersos no piso (sujidade grave ou infestacao)?
 - Oxidacao, ferrugem ou deterioracao em metais?
+IMPORTANTE: So reporte um defeito se voce tem CERTEZA VISUAL. Em fotos amplas, nao force deteccao de defeitos.
 
 PASSO 3 â REGRAS DE DESCRICAO:
 - SO descreva teto se aparecer claramente em alguma foto â se nao aparecer, OMITA a secao Teto
