@@ -424,7 +424,7 @@ def add_foto_item(story, s, item, numero_inicio=1):
                 ('BOTTOMPADDING', (-1,0),(-1,-1), 2),
             ]))
             story.append(Spacer(1, 5))
-            story.append(bloco)
+            story.append(KeepTogether([bloco]))
         except Exception:
             story.append(Paragraph(
                 f'[Foto {n} \u2014 imagem n\u00e3o dispon\u00edvel]',
