@@ -6370,22 +6370,26 @@ async function wiz6UploadVideo(input) {
 }
 
 async function wiz6PollVideo() {
-  if (!_wiz6VideoJobId) return;
   try {
-    var r = await fetch('/api/video/status/' + _wiz6VideoJobId);
-    var d = await r.json();
-    var statusEl = document.getElementById('wiz6-video-status');
-    if (statusEl) statusEl.textContent = d.mensagem || 'Processando...';
+    const r = await fetch('/api/video/status/' + _wiz6VideoJobId);
+    const d = await r.json();
+    console.log('[wiz6PollVideo] status:', d.status, 'mensagem:', d.mensagem);
+    
+    const el = document.getElementById('wiz6-video-status');
+    if (el && d.mensagem) el.textContent = d.mensagem;
+    
     if (d.status === 'ok') {
-      clearInterval(_wiz6VideoPolling);
       wiz6MostrarRevisaoVideo(d.ambientes || {});
     } else if (d.status === 'erro') {
-      clearInterval(_wiz6VideoPolling);
-      alert('Erro no processamento: ' + (d.mensagem || 'Tente novamente'));
-      document.getElementById('wiz6-video-upload-tela').style.display = 'block';
+      alert('Erro no processamento: ' + (d.mensagem || 'erro desconhecido'));
       document.getElementById('wiz6-video-processando').style.display = 'none';
+    } else {
+      setTimeout(wiz6PollVideo, 3000);
     }
-  } catch(e) {}
+  } catch(e) {
+    console.error('[wiz6PollVideo] fetch error:', e);
+    setTimeout(wiz6PollVideo, 5000);
+  }
 }
 
 // Store global dos frames do video para revisao
