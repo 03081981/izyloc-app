@@ -481,8 +481,8 @@ def add_ambientes(story, s, ambientes):
             s['vistoria_box']))
         return
 
-    foto_global = 1
     for amb in ambientes:
+        foto_global = 1  # Reset numbering per environment
         # Garante espaço mínimo antes do título (evita título grudado no final da página)
         story.append(CondPageBreak(3.5*cm))
         # Nome do ambiente com linha abaixo bold - KeepTogether garante que titulo + HR + primeiro item fiquem juntos
