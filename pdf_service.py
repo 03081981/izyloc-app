@@ -482,7 +482,7 @@ def add_ambientes(story, s, ambientes):
         return
 
     for amb in ambientes:
-        foto_global = 1  # Reset numbering per environment
+        foto_global = 1  # Reinicia numeracao por ambiente
         # Garante espaço mínimo antes do título (evita título grudado no final da página)
         story.append(CondPageBreak(3.5*cm))
         # Nome do ambiente com linha abaixo bold - KeepTogether garante que titulo + HR + primeiro item fiquem juntos
