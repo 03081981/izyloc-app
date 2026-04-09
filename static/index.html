@@ -5779,6 +5779,15 @@ function wiz6AceitarMoverExtras(ambIdx) {
   wiz6RenderAmbCard(ambIdx);
   wiz6AtualizarProgress();
 
+  // Re-analyze ORIGINAL environment (its photos changed, so resumo and estado_geral are stale)
+  if (wizard.itensData[ambIdx] && wizard.itensData[ambIdx].fotos && wizard.itensData[ambIdx].fotos.length > 0) {
+    wizard.itensData[ambIdx].jaAnalisou = false;
+    wizard.itensData[ambIdx].resumo = '';
+    wizard.itensData[ambIdx].estado_geral = 'Bom';
+    console.log('[AI] Re-analyzing original environment after photo move: ' + _wiz6Ambientes[ambIdx]);
+    setTimeout(function() { wiz6AnalisarBatch(ambIdx); }, 300);
+  }
+
   // Navigate to new environments and trigger AI analysis
   var newEnvs = [];
   extras.forEach(function(ext) {
@@ -5790,11 +5799,13 @@ function wiz6AceitarMoverExtras(ambIdx) {
     _wiz6AmbIdx = newEnvs[0];
     wiz6RenderAmbCard(newEnvs[0]);
     wiz6RenderTabs();
+    var delay = 800;
     newEnvs.forEach(function(newIdx) {
       if (wizard.itensData[newIdx] && wizard.itensData[newIdx].fotos && wizard.itensData[newIdx].fotos.length > 0) {
         wizard.itensData[newIdx].jaAnalisou = false;
         wizard.itensData[newIdx].resumo = '';
-        setTimeout(function() { wiz6AnalisarBatch(newIdx); }, 500);
+        setTimeout(function() { wiz6AnalisarBatch(newIdx); }, delay);
+        delay += 500;
       }
     });
   }
