@@ -6017,17 +6017,30 @@ function wiz6AnalisarBatch(ambIdx) {
       // Re-render current card and update progress
       wiz6RenderAmbCard(ambIdx);
       wiz6AtualizarProgress();
-      // Render cards for newly created environments so user can navigate to them
+      // Auto-navigate to new environments and trigger full AI analysis
+      var newEnvIndexes = [];
       for (var ei = 0; ei < extras.length; ei++) {
         var eiNome = extras[ei].nome || 'Ambiente detectado';
         var eiIdx = _wiz6Ambientes.indexOf(eiNome);
         if (eiIdx >= 0 && eiIdx !== ambIdx) {
-          // Auto-navigate to first new environment so user sees it
-          if (ei === 0) {
-            _wiz6AmbIdx = eiIdx;
-            wiz6RenderAmbCard(eiIdx);
-          }
+          newEnvIndexes.push(eiIdx);
         }
+      }
+      if (newEnvIndexes.length > 0) {
+        // Navigate to first new environment
+        _wiz6AmbIdx = newEnvIndexes[0];
+        wiz6RenderAmbCard(newEnvIndexes[0]);
+        // Auto-trigger full AI analysis for each new environment
+        newEnvIndexes.forEach(function(newIdx) {
+          if (wizard.itensData[newIdx] && wizard.itensData[newIdx].fotos && wizard.itensData[newIdx].fotos.length > 0) {
+            console.log('[AI] Auto-analisando novo ambiente: ' + _wiz6Ambientes[newIdx]);
+            // Mark as not analyzed so full analysis runs
+            wizard.itensData[newIdx].jaAnalisou = false;
+            wizard.itensData[newIdx].resumo = '';
+            // Trigger analysis after short delay to let UI update
+            setTimeout(function() { wiz6AnalisarBatch(newIdx); }, 500);
+          }
+        });
       }
       // Show notification
       var extraNames = extras.map(function(e){return e.nome;}).join(', ');
