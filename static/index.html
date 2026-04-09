@@ -6046,6 +6046,9 @@ function wiz6AnalisarBatch(ambIdx) {
     wiz6RenderAmbCard(ambIdx);
     wiz6AtualizarProgress();
 
+    // Re-query statusEl because wiz6RenderAmbCard rebuilt the DOM
+    statusEl = document.getElementById('wiz6-ai-status-' + ambIdx);
+
     // === KEYWORD-BASED ENVIRONMENT MISMATCH DETECTION ===
     var resumoLower = (dados.resumo || '').toLowerCase();
     var nomeLower = nome.toLowerCase();
