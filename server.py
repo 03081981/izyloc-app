@@ -21,7 +21,6 @@ from dotenv import load_dotenv
 
 from database import get_conn, init_db
 from ai_service import analyze_image, consolidate_environment, analyze_batch
-from video_service import processar_video_completo
 import threading
 
 # Store de jobs de video em memoria
@@ -1474,6 +1473,7 @@ class UploadVideoHandler(BaseHandler):
                     _video_jobs[job_id]['mensagem'] = 'Extraindo frames...'
                     _video_jobs[job_id]['progresso'] = 20
 
+                    from video_service import processar_video_completo
                     resultado = processar_video_completo(video_path, ambientes, output_dir)
 
                     ambientes_fmt = {}
