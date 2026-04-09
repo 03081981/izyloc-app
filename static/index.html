@@ -5718,6 +5718,7 @@ function wiz6RenderTabs() {
 function wiz6RenderAmbCard(idx) {
   var card = document.getElementById('wiz6-amb-card');
   if (!card) return;
+  if (!wizard.itensData) wizard.itensData = {};
   var nome = _wiz6Ambientes[idx] || 'Ambiente';
   var icone = _wiz6AmbIcon(nome);
   var dados = wizard.itensData[idx] || {};
