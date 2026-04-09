@@ -5709,7 +5709,7 @@ function wiz6RenderTabs() {
     var tab = document.createElement('div');
     tab.className = 'wiz6-amb-tab' + (i === _wiz6AmbIdx ? ' active' : '') + (_wiz6AmbDone[i] ? ' done' : '');
     tab.textContent = (_wiz6AmbDone[i] ? '✓ ' : '') + nome;
-    tab.onclick = (function(idx){ return function(){ wiz6RenderAmbCard(idx); }; })(i);
+    tab.onclick = (function(idx){ return function(){ _wiz6AmbIdx = idx; wiz6RenderAmbCard(idx); wiz6RenderTabs(); }; })(i);
     tabs.appendChild(tab);
   });
 }
