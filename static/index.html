@@ -6008,9 +6008,27 @@ function wiz6AnalisarBatch(ambIdx) {
           }
         });
       });
+      // If all photos were moved out, clear the source environment resumo
+      if (wizard.itensData[ambIdx] && wizard.itensData[ambIdx].fotos && wizard.itensData[ambIdx].fotos.length === 0) {
+        wizard.itensData[ambIdx].resumo = '';
+        wizard.itensData[ambIdx].jaAnalisou = false;
+        wizard.itensData[ambIdx].estado_geral = 'Bom';
+      }
       // Re-render current card and update progress
       wiz6RenderAmbCard(ambIdx);
       wiz6AtualizarProgress();
+      // Render cards for newly created environments so user can navigate to them
+      for (var ei = 0; ei < extras.length; ei++) {
+        var eiNome = extras[ei].nome || 'Ambiente detectado';
+        var eiIdx = _wiz6Ambientes.indexOf(eiNome);
+        if (eiIdx >= 0 && eiIdx !== ambIdx) {
+          // Auto-navigate to first new environment so user sees it
+          if (ei === 0) {
+            _wiz6AmbIdx = eiIdx;
+            wiz6RenderAmbCard(eiIdx);
+          }
+        }
+      }
       // Show notification
       var extraNames = extras.map(function(e){return e.nome;}).join(', ');
       if (statusEl) {
