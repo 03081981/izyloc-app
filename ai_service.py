@@ -9,22 +9,38 @@ MODEL = "claude-sonnet-4-5"
 
 SYSTEM_PROMPT = """
 Voce e um perito especializado em vistorias imobiliarias brasileiras.
-Sua funcao e analisar fotografias de ambientes e itens de imoveis.
+Sua funcao e analisar fotografias de ambientes e itens de imoveis com maxima precisao tecnica.
 
-REGRAS ABSOLUTAS:
-1. Descreva APENAS o que e CLARAMENTE visivel - jamais invente ou suponha
-2. MATERIAL: Mencione apenas se identificavel com certeza visual
-3. MEDIDAS: NUNCA mencione dimensoes ou medidas
-4. CORES: Descreva cores visiveis de forma simples - "branco", "bege claro", "cinza"
-5. LUMINARIAS: "Ponto de iluminacao sem lampada ativa" - nunca "falta luminaria"
-6. Estado de conservacao: Bom, Regular ou Com avaria - nunca "Excelente"
-7. Seja objetivo e direto - sem floreios
-10. IDIOMA: Sua resposta DEVE usar portugues brasileiro com acentuacao completa e correta (acentos agudos, circunflexos, til, cedilha). Nunca omita acentos ou cedilhas nas palavras.
+REGRAS ABSOLUTAS — NUNCA VIOLE:
+1. Descreva APENAS o que e CLARAMENTE visivel — jamais invente ou suponha
+2. MATERIAL: Mencione apenas se identificavel com certeza visual absoluta
+   - Pedra com veios visiveis = "pedra natural" ou "marmore" — NUNCA "granito" sem certeza
+   - Cuba esculpida na propria pedra = "cuba em pedra natural esculpida"
+   - Se nao tiver certeza do material — descreva apenas a cor e aparencia visual
+3. MEDIDAS: NUNCA mencione dimensoes, medidas ou estimativas de tamanho
+4. CORES: Descreva cores visiveis de forma simples — "branco", "bege claro", "cinza"
+5. LUMINARIAS: "Ponto de iluminacao sem lampada ativa" — nunca "falta luminaria" ou "buraco no teto"
+6. Estado: use apenas Bom, Regular ou Com avaria — nunca "Excelente"
+7. Seja objetivo e direto — sem floreios ou suposicoes
+8. IDIOMA: Use portugues brasileiro com acentuacao completa e correta
 
-REGRA CRITICA SOBRE DEFEITOS:
-- Em TODA foto, examine atentamente se ha: manchas, mofo, bolor, trincas, rachaduras, furos, desgaste, fiacao exposta, fios aparentes, vazamentos, descolamento, infiltracao, oxidacao, quebras
-- Se uma foto mostra um CLOSE-UP ou ZOOM em algo, o fotografo esta APONTANDO para aquele detalhe - examine com atencao maxima e descreva o que ve
-- NUNCA diga "sem avarias" se ha qualquer irregularidade visivel em qualquer foto
+REGRA CRITICA — SO DESCREVA O QUE APARECE NA FOTO:
+- Teto: SO descreva se aparecer claramente na foto — se nao aparecer, NAO mencione
+- Piso: SO descreva se aparecer claramente na foto — se nao aparecer, NAO mencione
+- Paredes: SO descreva as paredes que aparecem na foto
+
+REGRA CRITICA — DEFEITOS E AVARIAS:
+- Examine CADA foto atentamente buscando: manchas, mofo, furos, trincas, rachaduras,
+  desgaste, fios aparentes, vazamentos, descolamento, oxidacao, quebras, buracos
+- Se uma foto e CLOSE-UP ou ZOOM: o fotografo esta APONTANDO para aquele detalhe — examine com atencao maxima
+- Furos e buracos no piso ou paredes DEVEM ser mencionados obrigatoriamente
+- Pontos escuros dispersos no piso podem indicar sujidade grave ou infestacao — reporte com precisao
+- NUNCA diga "sem avarias" se qualquer irregularidade e visivel
+
+REGRA CRITICA — OBJETOS PESSOAIS:
+- Vistoria de entrada ou saida: IGNORE completamente tapetes, vasos decorativos,
+  produtos de higiene, roupas, itens pessoais do morador — nao fazem parte do laudo
+- Vistoria de temporada/airbnb: inclua inventario completo de todos os itens presentes
 """
 
 def analisar_foto(imagem_base64: str, nome_ambiente: str, mime_type: str = "image/jpeg") -> dict:
@@ -240,7 +256,7 @@ def analisar_imagem(imagem_base64: str, ambiente: str = "Ambiente", modo: str = 
     else:
         return analisar_foto(imagem_base64, ambiente, mime_type)
 
-def analisar_batch(imagens: list, nome_ambiente: str) -> dict:
+def analisar_batch(imagens: list, nome_ambiente: str, tipo_vistoria: str = "entrada") -> dict:
     """
     Analisa um lote de fotos do mesmo ambiente em uma unica chamada.
     """
@@ -267,59 +283,64 @@ def analisar_batch(imagens: list, nome_ambiente: str) -> dict:
             })
 
         prompt = f"""Voce recebeu {len(lote)} foto(s) do ambiente '{nome_ambiente}'.
+Tipo de vistoria: {tipo_vistoria}
 Cada foto esta numerada (FOTO 1, FOTO 2, etc).
 
-INSTRUCAO PRINCIPAL: Examine CADA foto individualmente buscando QUALQUER irregularidade.
+PASSO 1 — CLASSIFICAR CADA FOTO:
+Para cada foto identifique:
+a) FOTO AMPLA — mostra o ambiente inteiro
+   Use para: cores gerais, layout, presenca de elementos
+b) FOTO DE ITEM — focada em elemento especifico (armario, movel, equipamento)
+   Use para: descrever aquele item em detalhe
+c) FOTO DE AVARIA/CLOSE-UP — focada diretamente em problema ou detalhe
+   Use para: descrever o defeito com precisao maxima
 
-PASSO 1 - EXAMINAR CADA FOTO:
-Para cada foto, pergunte-se:
-- Esta foto mostra um CLOSE-UP de algo? Se sim, o fotografo esta documentando aquele detalhe
-- Ha manchas escuras em paredes ou teto? (pode ser mofo, infiltracao, bolor)
-- Ha fiacao ou fios aparentes/expostos? (em chuveiros, tomadas, teto)
-- Ha furos, buracos ou falhas no piso, paredes ou teto?
-- Ha trincas, rachaduras ou fissuras?
-- Ha desgaste, descascamento ou descolamento de pintura/revestimento?
-- Ha vazamentos, umidade ou marcas de agua?
-- Rodapes estao soltos ou descolados?
-- Rejuntes estao falhos, escurecidos ou com mofo?
+PASSO 2 — EXAMINAR DEFEITOS EM CADA FOTO:
+Para cada foto, verifique obrigatoriamente:
+- Furos ou buracos no piso, paredes ou teto?
+- Manchas escuras, mofo, bolor, umidade?
+- Fissuras, trincas ou rachaduras?
+- Fios ou fiacao aparente/exposta?
+- Descolamento, descascamento ou desgaste?
+- Rodapes soltos ou afastados da parede?
+- Rejuntes falhos, escurecidos ou com mofo?
+- Pontos escuros dispersos no piso (sujidade grave ou infestacao)?
+- Oxidacao, ferrugem ou deterioracao em metais?
 
-PASSO 2 - HIERARQUIA DAS FOTOS:
-- FOTOS AMPLAS (ambiente inteiro): use para cores, layout, presenca de itens
-- FOTOS EM CLOSE-UP (zoom em algo): o fotografo esta APONTANDO para aquele detalhe
-  * Se e um item: descreva-o detalhadamente
-  * Se e um defeito: descreva com PRECISAO (localizacao, extensao, tipo)
+PASSO 3 — REGRAS DE DESCRICAO:
+- SO descreva teto se aparecer claramente em alguma foto — se nao aparecer, OMITA a secao Teto
+- SO descreva piso se aparecer claramente em alguma foto — se nao aparecer, OMITA a secao Piso
+- Pedra com veios visiveis = "pedra natural" ou "marmore" — NUNCA "granito" sem certeza
+- NUNCA mencione medidas ou dimensoes
+- Material apenas com certeza visual absoluta
+- Ignore elementos ao fundo atraves de portas/aberturas
+- {"IGNORE objetos pessoais: tapetes, vasos, produtos de higiene, roupas, itens do morador" if tipo_vistoria in ["entrada", "saida"] else "INVENTARIE todos os itens presentes incluindo decoracao, utensilios e equipamentos"}
 
-PASSO 3 - SINTETIZAR COM REFERENCIAS:
-Compile tudo em uma descricao unica. Para CADA elemento ou defeito descrito, inclua entre parenteses o numero da foto de origem. Exemplo: "Geladeira marca Consul cor branca (foto 2)", "Mancha escura no piso proximo a porta (foto 5)".
-
-PASSO 4 - DETECTAR AMBIENTES DIFERENTES:
+PASSO 4 — DETECTAR AMBIENTES DIFERENTES:
 Se alguma foto mostra CLARAMENTE um ambiente DIFERENTE de '{nome_ambiente}' (exemplo: corredor, hall, lavabo, area de servico, varanda, despensa), identifique:
 - Numero da(s) foto(s) que pertencem a esse outro ambiente
 - Nome correto do ambiente (ex: 'Corredor interno', 'Hall de entrada')
 - Descricao breve e estado de conservacao
 So reporte se tiver CERTEZA VISUAL. Na duvida, mantenha no ambiente atual.
 
-REGRAS:
-- SEMPRE referencie a foto de origem entre parenteses: (foto N)
-- NUNCA diga "sem avarias" se qualquer foto mostra irregularidade
-- NUNCA mencione medidas ou dimensoes
-- Material APENAS se tiver certeza visual
-- Se ha duvida se algo e defeito, REPORTE como observacao
-- Ignore elementos ao fundo atraves de portas/aberturas
+PASSO 5 — SINTETIZAR:
+Compile tudo em descricao unica sem omitir nenhum defeito.
+Para CADA elemento ou defeito, inclua entre parenteses o numero da foto: (foto N)
+Prioridade: fotos de avaria > fotos de item > fotos amplas.
 
 Retorne APENAS este JSON sem markdown:
-{{
-  "resumo": "SINTESE DO AMBIENTE:\n\nPiso: [descricao com (foto N) para cada observacao]\n\nParedes: [descricao com (foto N)]\n\nTeto: [descricao com (foto N)]\n\nEsquadrias: [descricao com (foto N)]\n\nInstalacoes: [descricao com (foto N)]\n\nMoveis e equipamentos: [descricao com (foto N)]\n\nObservacoes: [defeitos com (foto N)]\n\nEstado geral: [Bom / Regular / Com avaria]  - [justificativa]",
+{{{{
+  "resumo": "SINTESE DO AMBIENTE:\n\nPiso: [revestimento, cor, estado com (foto N) — furos/manchas/danos se houver — OMITIR se nao aparece]\n\nParedes: [acabamento, cor, estado com (foto N) — mofo/manchas/trincas se houver]\n\nTeto: [OMITIR COMPLETAMENTE se nao aparecer em nenhuma foto — acabamento, cor, estado com (foto N) se aparecer]\n\nEsquadrias: [portas e janelas visiveis com (foto N), estado]\n\nInstalacoes: [tomadas, interruptores, pontos de luz, chuveiro com (foto N) — fios aparentes DEVEM ser reportados]\n\nMoveis e equipamentos: [itens presentes com (foto N) e estados detalhados]\n\nObservacoes: [LISTA COMPLETA de todos os defeitos com (foto N)]\n\nEstado geral: [Bom / Regular / Com avaria] — [justificativa]",
   "estado_geral": "Bom ou Regular ou Com avaria",
   "ambientes_extras": [
-    {{
+    {{{{
       "nome": "Nome do ambiente detectado",
       "fotos": [1],
       "descricao": "Descricao do ambiente...",
       "estado": "Bom ou Regular ou Com avaria"
-    }}
+    }}}}
   ]
-}}
+}}}}
 Se TODAS as fotos pertencem ao ambiente "{nome_ambiente}", retorne "ambientes_extras": []"""
 
         content.append({"type": "text", "text": prompt})
@@ -338,6 +359,9 @@ Se TODAS as fotos pertencem ao ambiente "{nome_ambiente}", retorne "ambientes_ex
                 texto = texto.strip()
                 dados = json.loads(texto, strict=False)
                 resumos.append(dados.get("resumo", ""))
+                extras = dados.get("ambientes_extras", [])
+                if extras:
+                    all_extras.extend(extras)
                 break
             except Exception as e:
                 last_error = str(e)
@@ -358,8 +382,8 @@ Se TODAS as fotos pertencem ao ambiente "{nome_ambiente}", retorne "ambientes_ex
     return result
 
 
-def analyze_batch(images: list, environment_name: str) -> dict:
-    return analisar_batch(images, environment_name)
+def analyze_batch(images: list, environment_name: str, tipo_vistoria: str = "entrada") -> dict:
+    return analisar_batch(images, environment_name, tipo_vistoria)
 
 
 # Aliases em ingles para compatibilidade com server.py
