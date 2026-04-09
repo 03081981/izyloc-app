@@ -112,6 +112,15 @@ def mk_styles():
         'obs': ParagraphStyle('obs',
             fontName='Helvetica', fontSize=8, textColor=PRETO,
             leading=12, spaceAfter=3, alignment=TA_JUSTIFY),
+        'conclusao_titulo': ParagraphStyle('conclusao_titulo',
+            fontName='Helvetica-Bold', fontSize=9, textColor=HexColor('#1a3a5c'),
+            leading=12, spaceBefore=8, spaceAfter=3),
+        'conclusao_texto': ParagraphStyle('conclusao_texto',
+            fontName='Helvetica', fontSize=8, textColor=PRETO,
+            leading=12, spaceAfter=3, alignment=TA_JUSTIFY),
+        'conclusao_estado': ParagraphStyle('conclusao_estado',
+            fontName='Helvetica-Bold', fontSize=10, textColor=HexColor('#CC0000'),
+            leading=14, spaceBefore=4, spaceAfter=6),
         'vistoria_box': ParagraphStyle('vistoria_box',
             fontName='Helvetica', fontSize=9, textColor=CINZA,
             leading=13, alignment=TA_CENTER, spaceAfter=6),
@@ -393,30 +402,8 @@ def add_card_imob_corretor(story, s, dados_imobiliaria, dados_corretor):
     story.append(t)
 
 def add_foto_item(story, s, item, numero_inicio=1):
-    estado  = item.get('estado', '')
-    bg_cor, tx_cor = _badge_estado(estado)
+    """Renders only the photos with numbers (no description, no badge)."""
     fotos = item.get('fotos', [])
-    desc  = item.get('descricao_ia', '')
-    obs   = item.get('observacao', '')
-
-    # Header
-    nome_p  = Paragraph(f'<b>{item["nome"]}</b>', s['item_nome'])
-    badge_p = Paragraph(
-        u'\u25cf ' + estado.upper() if estado else '',
-        ParagraphStyle('badge', fontName='Helvetica-Bold', fontSize=7.5,
-                       textColor=tx_cor, leading=11))
-    hdr = Table([[nome_p, badge_p]], colWidths=[TW*0.75, TW*0.25])
-    hdr.setStyle(TableStyle([
-        ('BACKGROUND',    (0,0), (-1,-1), CINZA_LEVE),
-        ('LINEBEFORE',    (0,0), (0,-1),  2.5, HexColor('#999999')),
-        ('LEFTPADDING',   (0,0), (-1,-1), 8),
-        ('RIGHTPADDING',  (0,0), (-1,-1), 8),
-        ('TOPPADDING',    (0,0), (-1,-1), 4),
-        ('BOTTOMPADDING', (0,0), (-1,-1), 4),
-        ('VALIGN',        (0,0), (-1,-1), 'MIDDLE'),
-        ('ALIGN',         (1,0), (1,-1),  'RIGHT'),
-        ('BACKGROUND',    (1,0), (1,-1),  bg_cor),
-    ]))
 
     for i, foto_bytes in enumerate(fotos):
         n = numero_inicio + i
@@ -427,47 +414,21 @@ def add_foto_item(story, s, item, numero_inicio=1):
                 [Paragraph(f'Foto {n}', s['foto_num'])],
                 [img],
             ]
-            if desc and i == len(fotos) - 1:
-                conteudo += [
-                    [Paragraph(u'\u2726 IA izyLAUDO', s['ia_label'])],
-                    [Paragraph(desc, s['foto_desc'])],
-                ]
             bloco = Table(conteudo, colWidths=[TW])
             bloco.setStyle(TableStyle([
                 ('BOX',           (0,0), (-1,-1), 0.5, CINZA_AMB),
-                ('BACKGROUND',    (0,0), (0,0),   HexColor('#fafafa')),
-                ('BACKGROUND',    (-1,0),(-1,-1), HexColor('#fafafa')),
-                ('LEFTPADDING',   (0,0), (0,0),   8),
-                ('LEFTPADDING',   (1,0), (1,-1),  0),
-                ('RIGHTPADDING',  (1,0), (1,-1),  0),
-                ('LEFTPADDING',   (2,0), (-1,-1), 8),
-                ('RIGHTPADDING',  (2,0), (-1,-1), 8),
+                ('BACKGROUND',    (0,0), (-1,-1), HexColor('#fafafa')),
+                ('LEFTPADDING',   (0,0), (-1,-1), 8),
+                ('RIGHTPADDING',  (0,0), (-1,-1), 8),
                 ('TOPPADDING',    (0,0), (0,0),   3),
-                ('BOTTOMPADDING', (0,0), (0,0),   2),
-                ('TOPPADDING',    (1,0), (1,-1),  0),
-                ('BOTTOMPADDING', (1,0), (1,-1),  0),
-                ('TOPPADDING',    (2,0), (-1,-1), 4),
-                ('BOTTOMPADDING', (-1,0),(-1,-1), 6),
+                ('BOTTOMPADDING', (-1,0),(-1,-1), 2),
             ]))
-            # Header + bloco ficam SEMPRE juntos
             story.append(Spacer(1, 5))
-            story.append(KeepTogether([hdr, bloco]))
+            story.append(bloco)
         except Exception:
             story.append(Paragraph(
                 f'[Foto {n} \u2014 imagem n\u00e3o dispon\u00edvel]',
                 s['foto_desc']))
-            if desc:
-                story.append(Paragraph(u'\u2726 IA izyLAUDO', s['ia_label']))
-                story.append(Paragraph(desc, s['foto_desc']))
-
-    if not fotos and desc:
-        story.append(Spacer(1, 5))
-        story.append(KeepTogether([hdr,
-            Paragraph(u'\u2726 IA izyLAUDO', s['ia_label']),
-            Paragraph(desc, s['foto_desc'])]))
-
-    if obs:
-        story.append(Paragraph(f'Observa\u00e7\u00e3o: {obs}', s['obs']))
 
     story.append(Spacer(1, 3))
 def add_ambientes(story, s, ambientes):
@@ -495,6 +456,36 @@ def add_ambientes(story, s, ambientes):
         for item in amb.get('itens', []):
             add_foto_item(story, s, item, foto_global)
             foto_global += len(item.get('fotos', [])) or 1
+
+
+        # === SINTESE / CONCLUSAO FINAL DO AMBIENTE ===
+        # Collect description and estado from items
+        desc_ambiente = ''
+        estado_ambiente = ''
+        for item in amb.get('itens', []):
+            d = item.get('descricao_ia', '')
+            if d and not desc_ambiente:
+                desc_ambiente = d
+            e = item.get('estado', '')
+            if e and not estado_ambiente:
+                estado_ambiente = e
+
+        if desc_ambiente:
+            story.append(Spacer(1, 6))
+            story.append(HRFlowable(width='100%', thickness=0.5, color=HexColor('#cccccc'),
+                                    spaceBefore=2, spaceAfter=4))
+            story.append(Paragraph(
+                f'\u2726 CONCLUS\u00c3O \u2014 {amb["nome"].upper()}',
+                s['conclusao_titulo']))
+            story.append(Paragraph(
+                f'A presente conclus\u00e3o baseia-se nas condi\u00e7\u00f5es gerais do ambiente <b>{amb["nome"]}</b>, '
+                f'conforme registrado nas fotos acima.',
+                s['conclusao_texto']))
+            story.append(Paragraph(desc_ambiente, s['conclusao_texto']))
+            if estado_ambiente:
+                story.append(Paragraph(
+                    f'AVALIA\u00c7\u00c3O: {estado_ambiente.upper()}',
+                    s['conclusao_estado']))
 
         verif = amb.get('verificacoes', {})
         if verif:
