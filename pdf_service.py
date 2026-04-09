@@ -105,7 +105,7 @@ def mk_styles():
             leading=10, spaceAfter=2),
         'ambiente_titulo': ParagraphStyle('ambiente_titulo',
             fontName='Helvetica-Bold', fontSize=10, textColor=PRETO,
-            leading=13, spaceBefore=10, spaceAfter=3),
+            leading=13, spaceBefore=10, spaceAfter=3, keepWithNext=True),
         'verif_label': ParagraphStyle('verif_label',
             fontName='Helvetica', fontSize=8, textColor=CINZA,
             leading=12),
@@ -483,10 +483,14 @@ def add_ambientes(story, s, ambientes):
 
     foto_global = 1
     for amb in ambientes:
-        # Nome do ambiente com linha abaixo bold
-        story.append(Paragraph(amb['nome'].upper(), s['ambiente_titulo']))
-        story.append(HRFlowable(width='100%', thickness=1.5, color=PRETO,
+        # Garante espaço mínimo antes do título (evita título grudado no final da página)
+        story.append(CondPageBreak(3.5*cm))
+        # Nome do ambiente com linha abaixo bold - KeepTogether garante que titulo + HR + primeiro item fiquem juntos
+        titulo_block = []
+        titulo_block.append(Paragraph(amb['nome'].upper(), s['ambiente_titulo']))
+        titulo_block.append(HRFlowable(width='100%', thickness=1.5, color=PRETO,
                                 spaceBefore=0, spaceAfter=4))
+        story.append(KeepTogether(titulo_block))
 
         for item in amb.get('itens', []):
             add_foto_item(story, s, item, foto_global)
