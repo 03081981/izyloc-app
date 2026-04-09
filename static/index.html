@@ -531,7 +531,7 @@ body {
   text-transform: uppercase; letter-spacing: .3px;
 }
 .badge-rascunho { background: var(--warn-bg); color: var(--warn); }
-.badge-concluido { background: var(--success-bg); color: var(--success); }
+.badge-concluído { background: var(--success-bg); color: var(--success); }
 .badge-andamento { background: var(--blue-light); color: var(--blue); }
 .insp-right {
   display: flex; flex-direction: column; align-items: flex-end; gap: 4px;
@@ -1016,7 +1016,7 @@ body {
 .tc-sub { font-size: 11px; color: var(--text-3); }
 .tc-tag { position: absolute; top: 10px; left: 10px; padding: 3px 8px; border-radius: 20px; font-size: 10px; font-weight: 700; color: #fff; text-transform: uppercase; letter-spacing: .4px; z-index: 2; }
 .tc-tag-entrada { background: rgba(34,139,34,.85); }
-.tc-tag-saida { background: rgba(220,100,0,.85); }
+.tc-tag-saída { background: rgba(220,100,0,.85); }
 .tc-tag-temporada { background: rgba(21,101,216,.85); }
 .tc-checkmark { position: absolute; top: 10px; right: 10px; width: 22px; height: 22px; border-radius: 50%; background: #2d7dd2; display: none; align-items: center; justify-content: center; z-index: 2; }
 .tipo-card.selected .tc-checkmark { display: flex; }
@@ -1420,7 +1420,7 @@ canvas { display: block; }
   .db-hero { flex-direction: column; align-items: flex-start; }
   .db-btn-nova { width: 100%; justify-content: center; }
     /* Dashboard mobile */
-    .db-creditos-banner { flex-direction: column; align-items: flex-start; padding: 16px; gap: 12px; }
+    .db-créditos-banner { flex-direction: column; align-items: flex-start; padding: 16px; gap: 12px; }
     .db-cred-right { width: 100%; align-items: stretch; }
     .db-btn-adicionar { width: 100%; justify-content: center; }
     .db-btn-extrato { width: 100%; text-align: center; justify-content: center; }
@@ -1596,8 +1596,8 @@ textarea.obs-geral{width:100%;background:#f8fafc;border:.5px solid #dce3ed;borde
 .db-greeting{font-size:22px;font-weight:700;color:#1a2540}
 .db-subtitle{font-size:13px;color:#8898aa;margin-top:2px}
 .db-btn-nova{background:#2d7dd2;color:#fff;border:none;border-radius:10px;padding:10px 20px;font-size:13px;font-weight:700;cursor:pointer;box-shadow:0 4px 14px rgba(45,125,210,0.4)}
-.db-creditos-banner{background:linear-gradient(135deg,#0f2a4a 0%,#1565c0 100%);border-radius:16px;padding:22px 28px;margin-bottom:22px;display:flex;align-items:center;justify-content:space-between;position:relative;overflow:hidden}
-.db-creditos-banner::before{content:'';position:absolute;top:-40px;right:-40px;width:180px;height:180px;border-radius:50%;background:rgba(255,255,255,0.04)}
+.db-créditos-banner{background:linear-gradient(135deg,#0f2a4a 0%,#1565c0 100%);border-radius:16px;padding:22px 28px;margin-bottom:22px;display:flex;align-items:center;justify-content:space-between;position:relative;overflow:hidden}
+.db-créditos-banner::before{content:'';position:absolute;top:-40px;right:-40px;width:180px;height:180px;border-radius:50%;background:rgba(255,255,255,0.04)}
 .db-cred-left{position:relative;z-index:1}
 .db-cred-label{font-size:11px;font-weight:600;color:rgba(255,255,255,0.6);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:6px}
 .db-cred-count{display:flex;align-items:baseline;gap:6px}
@@ -1732,7 +1732,7 @@ textarea.obs-geral{width:100%;background:#f8fafc;border:.5px solid #dce3ed;borde
 .wiz6-fotos-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
 .wiz6-foto-thumb{width:72px;height:72px;border-radius:8px;object-fit:cover;border:0.5px solid #e2e8f0;cursor:pointer}
 .wiz6-add-foto{width:72px;height:72px;border-radius:8px;border:1.5px dashed #2d7dd2;background:#f0f7ff;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;font-size:10px;color:#2d7dd2;font-weight:600}
-.wiz6-creditos-warn{background:#fff8e1;border:0.5px solid #fcd34d;border-radius:8px;padding:10px 14px;font-size:12px;color:#92400e;display:flex;align-items:center;gap:8px;margin-bottom:12px}
+.wiz6-créditos-warn{background:#fff8e1;border:0.5px solid #fcd34d;border-radius:8px;padding:10px 14px;font-size:12px;color:#92400e;display:flex;align-items:center;gap:8px;margin-bottom:12px}
 .wiz6-progress-bar{height:4px;background:#e2e8f0;border-radius:2px;margin-bottom:16px}
 .wiz6-progress-fill{height:100%;background:#2d7dd2;border-radius:2px;transition:width .4s}
 .wiz6-nav{display:flex;justify-content:space-between;align-items:center;padding:14px 0;margin-top:8px}
@@ -1913,7 +1913,7 @@ window._openFotoModal = function(imgSrc) {
     <div>
       <span style="font-size:20px;font-weight:400;color:#2d7dd2;font-family:Helvetica,Arial,sans-serif">izy</span><span style="font-size:20px;font-weight:900;color:#fff;font-family:Helvetica,Arial,sans-serif">LAUDO</span>
     </div>
-    <div style="font-size:7px;color:rgba(255,255,255,0.28);letter-spacing:2px;text-transform:uppercase;margin-top:2px;font-weight:400">Vistorias Imobiliarias</div>
+    <div style="font-size:7px;color:rgba(255,255,255,0.28);letter-spacing:2px;text-transform:uppercase;margin-top:2px;font-weight:400">Vistorias Imobiliárias</div>
   </div>
 
   <!-- NAV PRINCIPAL -->
@@ -1922,20 +1922,20 @@ window._openFotoModal = function(imgSrc) {
     <div class="nav-item" id="nav-laudos" onclick="switchTab('vistorias',this)">Meus laudos</div>
 
     <div class="nav-divider"></div>
-    <div class="nav-section-label">Fotos e creditos</div>
+    <div class="nav-section-label">Fotos e créditos</div>
     <div class="nav-item nav-item-cred" id="nav-fotos" onclick="switchTab('estatisticas',this)">
       <span id="nav-saldo-fotos" style="color:#4fc3f7;font-weight:600">Fotos restantes</span>
     </div>
-    <div class="nav-item" id="nav-recarga" onclick="switchTab('estatisticas',this)">+ Adicionar creditos</div>
+    <div class="nav-item" id="nav-recarga" onclick="switchTab('estatisticas',this)">+ Adicionar créditos</div>
     <div class="nav-item" id="nav-extrato" onclick="switchTab('estatisticas',this)">Extrato de uso</div>
 
     <div class="nav-divider"></div>
     <div class="nav-section-label">Ajuda</div>
-    <div class="nav-item" id="nav-manual" onclick="showManual()">Manual do usuario</div>
+    <div class="nav-item" id="nav-manual" onclick="showManual()">Manual do usuário</div>
 
     <div class="nav-divider"></div>
     <div class="nav-section-label">Conta</div>
-    <div class="nav-item" id="nav-config" onclick="switchTab('perfil',this)">Configuracoes</div>
+    <div class="nav-item" id="nav-config" onclick="switchTab('perfil',this)">Configurações</div>
     <div class="nav-item" onclick="if(confirm('Sair da conta?')){logout()}">Sair</div>
   </nav>
 
@@ -1998,14 +1998,14 @@ window._openFotoModal = function(imgSrc) {
       </div>
 
       <!-- BANNER CREDITOS -->
-      <div class="db-creditos-banner">
+      <div class="db-créditos-banner">
         <div class="db-cred-left">
           <div class="db-cred-label">&#x1F4F8; Saldo de fotos disponiveis</div>
           <div class="db-cred-count">
             <span class="db-cred-num" id="db-saldo-display">--</span>
             <span class="db-cred-unit">fotos restantes</span>
           </div>
-          <div class="db-cred-sub">Cada foto analisada pela IA consome 1 credito &middot; <span id="db-preco-display">R$ 0,50</span></div>
+          <div class="db-cred-sub">Cada foto analisada pela IA consome 1 crédito &middot; <span id="db-preco-display">R$ 0,50</span></div>
           <div class="db-cred-bar-wrap">
             <div class="db-cred-bar-bg"><div class="db-cred-bar-fill" id="db-cred-bar-fill"></div></div>
             <div class="db-cred-bar-label">
@@ -2015,7 +2015,7 @@ window._openFotoModal = function(imgSrc) {
           </div>
         </div>
         <div class="db-cred-right">
-          <button class="db-btn-adicionar" onclick="showRecarga()">+ Adicionar creditos <span class="db-mp-badge">Mercado Pago</span></button>
+          <button class="db-btn-adicionar" onclick="showRecarga()">+ Adicionar créditos <span class="db-mp-badge">Mercado Pago</span></button>
           <button class="db-btn-extrato" onclick="showExtrato()">&#x1F4CB; Ver extrato de uso</button>
           <div class="db-custo-info">20 fotos R$ 10,00 &middot; 50 fotos R$ 25,00 &middot; 100 fotos R$ 50,00 &middot; 200 fotos R$ 100,00</div>
         </div>
@@ -2031,7 +2031,7 @@ window._openFotoModal = function(imgSrc) {
         <div class="db-metric-card">
           <div class="db-metric-label">Total de laudos</div>
           <div class="db-metric-val" id="stat-total">--</div>
-          <div class="db-metric-sub">Desde o inicio</div>
+          <div class="db-metric-sub">Desde o início</div>
         </div>
         <div class="db-metric-card">
           <div class="db-metric-label">Fotos usadas</div>
@@ -2041,8 +2041,8 @@ window._openFotoModal = function(imgSrc) {
         <div class="db-metric-card">
           <div class="db-metric-label">Em andamento</div>
           <div class="db-metric-val db-metric-warn" id="stat-andamento">--</div>
-<div id="stat-concluido" style="display:none"></div>
-          <div class="db-metric-sub">Nao concluidos</div>
+<div id="stat-concluído" style="display:none"></div>
+          <div class="db-metric-sub">Não concluídos</div>
         </div>
       </div>
 
@@ -2082,16 +2082,16 @@ window._openFotoModal = function(imgSrc) {
             <div style="font-size:13px;font-weight:700;color:rgba(255,255,255,0.6);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:12px;position:relative;z-index:1">Como funciona</div>
             <div class="db-como-logo">
               <span class="db-logo-izy">izy</span><span class="db-logo-laudo">LAUDO</span>
-              <span class="db-logo-sub">Vistorias Imobiliarias</span>
+              <span class="db-logo-sub">Vistorias Imobiliárias</span>
             </div>
             <div class="db-como-title">Passo a passo</div>
             <div class="db-passos">
               <div class="db-passo"><div class="db-passo-l"><div class="db-passo-num">1</div><div class="db-passo-line"></div></div><div class="db-passo-info"><div class="db-passo-title">Clique em + Nova vistoria</div><div class="db-passo-desc">Inicie um novo laudo a qualquer momento</div></div></div>
-              <div class="db-passo"><div class="db-passo-l"><div class="db-passo-num">2</div><div class="db-passo-line"></div></div><div class="db-passo-info"><div class="db-passo-title">Escolha o tipo de vistoria</div><div class="db-passo-desc">Entrada, Saida ou Temporada</div></div></div>
-              <div class="db-passo"><div class="db-passo-l"><div class="db-passo-num">3</div><div class="db-passo-line"></div></div><div class="db-passo-info"><div class="db-passo-title">Informe quem realiza</div><div class="db-passo-desc">Imobiliaria, corretor ou proprietario</div></div></div>
-              <div class="db-passo"><div class="db-passo-l"><div class="db-passo-num">4</div><div class="db-passo-line"></div></div><div class="db-passo-info"><div class="db-passo-title">Preencha os dados do imovel</div><div class="db-passo-desc">CEP busca o endereco automaticamente</div></div></div>
-              <div class="db-passo"><div class="db-passo-l"><div class="db-passo-num">5</div><div class="db-passo-line"></div></div><div class="db-passo-info"><div class="db-passo-title">Cadastre as partes envolvidas</div><div class="db-passo-desc">Locador, locatario e corretor</div></div></div>
-              <div class="db-passo"><div class="db-passo-l"><div class="db-passo-num">6</div><div class="db-passo-line"></div></div><div class="db-passo-info"><div class="db-passo-title">Selecione os ambientes</div><div class="db-passo-desc">Defina os comodos a vistoriar</div></div></div>
+              <div class="db-passo"><div class="db-passo-l"><div class="db-passo-num">2</div><div class="db-passo-line"></div></div><div class="db-passo-info"><div class="db-passo-title">Escolha o tipo de vistoria</div><div class="db-passo-desc">Entrada, Saída ou Temporada</div></div></div>
+              <div class="db-passo"><div class="db-passo-l"><div class="db-passo-num">3</div><div class="db-passo-line"></div></div><div class="db-passo-info"><div class="db-passo-title">Informe quem realiza</div><div class="db-passo-desc">Imobiliária, corretor ou proprietário</div></div></div>
+              <div class="db-passo"><div class="db-passo-l"><div class="db-passo-num">4</div><div class="db-passo-line"></div></div><div class="db-passo-info"><div class="db-passo-title">Preencha os dados do imóvel</div><div class="db-passo-desc">CEP busca o endereço automaticamente</div></div></div>
+              <div class="db-passo"><div class="db-passo-l"><div class="db-passo-num">5</div><div class="db-passo-line"></div></div><div class="db-passo-info"><div class="db-passo-title">Cadastre as partes envolvidas</div><div class="db-passo-desc">Locador, locatário e corretor</div></div></div>
+              <div class="db-passo"><div class="db-passo-l"><div class="db-passo-num">6</div><div class="db-passo-line"></div></div><div class="db-passo-info"><div class="db-passo-title">Selecione os ambientes</div><div class="db-passo-desc">Defina os cômodos a vistoriar</div></div></div>
               <div class="db-passo"><div class="db-passo-l"><div class="db-passo-num">7</div><div class="db-passo-line"></div></div><div class="db-passo-info"><div class="db-passo-title">Fotografe e registre os itens</div><div class="db-passo-desc">A IA descreve cada foto automaticamente</div></div></div>
               <div class="db-passo db-passo-last"><div class="db-passo-l"><div class="db-passo-num db-passo-num-ok">8</div></div><div class="db-passo-info"><div class="db-passo-title">Gere o PDF do laudo</div><div class="db-passo-desc">Pronto para baixar e assinar digitalmente</div></div></div>
             </div>
@@ -2208,23 +2208,23 @@ window._openFotoModal = function(imgSrc) {
   <aside class="sidebar">
       <div class="sidebar-logo">
         <div><span style="font-size:20px;font-weight:400;color:#2d7dd2;font-family:Helvetica,Arial,sans-serif">izy</span><span style="font-size:20px;font-weight:900;color:#fff;font-family:Helvetica,Arial,sans-serif">LAUDO</span></div>
-        <div style="font-size:7px;color:rgba(255,255,255,0.28);letter-spacing:2px;text-transform:uppercase;margin-top:2px;font-weight:400">Vistorias Imobiliarias</div>
+        <div style="font-size:7px;color:rgba(255,255,255,0.28);letter-spacing:2px;text-transform:uppercase;margin-top:2px;font-weight:400">Vistorias Imobiliárias</div>
       </div>
       <nav class="sidebar-nav">
         <div class="nav-item" onclick="showPage('page-dashboard')">Painel</div>
         <div class="nav-item active">+ Nova vistoria</div>
         <div class="nav-item" onclick="showPage('page-dashboard')">Meus laudos</div>
         <div class="nav-divider"></div>
-        <div class="nav-section-label">Fotos e creditos</div>
+        <div class="nav-section-label">Fotos e créditos</div>
         <div class="nav-item nav-item-cred"><span id="wiz-nav-saldo" style="color:#4fc3f7;font-weight:600">📸 Fotos restantes</span></div>
-        <div class="nav-item" onclick="showPage('page-dashboard')">+ Adicionar creditos</div>
+        <div class="nav-item" onclick="showPage('page-dashboard')">+ Adicionar créditos</div>
         <div class="nav-item" onclick="showPage('page-dashboard')">📋 Extrato de uso</div>
         <div class="nav-divider"></div>
         <div class="nav-section-label">Ajuda</div>
-        <div class="nav-item" onclick="showManual()">📖 Manual do usuario</div>
+        <div class="nav-item" onclick="showManual()">📖 Manual do usuário</div>
         <div class="nav-divider"></div>
         <div class="nav-section-label">Conta</div>
-        <div class="nav-item" onclick="showPage('page-dashboard')">Configuracoes</div>
+        <div class="nav-item" onclick="showPage('page-dashboard')">Configurações</div>
         <div class="nav-item" onclick="if(confirm('Sair da conta?')){logout()}">Sair</div>
       </nav>
       <div class="sidebar-bottom">
@@ -2280,16 +2280,16 @@ window._openFotoModal = function(imgSrc) {
             <svg width="64" height="50" viewBox="0 0 56 44" fill="none"><rect x="10" y="4" width="26" height="36" rx="2" fill="#dbeafe" stroke="#2d7dd2" stroke-width="1.5"/><path d="M36 4 Q46 14 46 22 Q46 30 36 40" fill="#bfdbfe" stroke="#2d7dd2" stroke-width="1.5"/><circle cx="33" cy="22" r="2.5" fill="#2d7dd2"/><circle cx="46" cy="10" r="4" fill="none" stroke="#2d7dd2" stroke-width="1.5"/><line x1="46" y1="14" x2="46" y2="24" stroke="#2d7dd2" stroke-width="1.5" stroke-linecap="round"/><line x1="46" y1="20" x2="49" y2="20" stroke="#2d7dd2" stroke-width="1.5" stroke-linecap="round"/><line x1="46" y1="23" x2="49" y2="23" stroke="#2d7dd2" stroke-width="1.5" stroke-linecap="round"/></svg>
           </div>
           <div style="font-size:14px;font-weight:600;color:#1a2540">Entrada</div>
-          <div style="font-size:12px;color:#8898aa;margin-top:4px;line-height:1.4">Inicio de locacao — estado inicial do imovel</div>
+          <div style="font-size:12px;color:#8898aa;margin-top:4px;line-height:1.4">Início de locação — estado inicial do imóvel</div>
         </div>
 
-        <div class="tipo-card" data-tipo="saida" onclick="selectTipoCard(this)" style="border-radius:12px;overflow:hidden;border:1.5px solid #e2e8f0;cursor:pointer;background:#fff;position:relative;text-align:center;padding:20px 14px;transition:all .2s">
+        <div class="tipo-card" data-tipo="saída" onclick="selectTipoCard(this)" style="border-radius:12px;overflow:hidden;border:1.5px solid #e2e8f0;cursor:pointer;background:#fff;position:relative;text-align:center;padding:20px 14px;transition:all .2s">
           <div style="position:absolute;top:10px;right:10px;width:20px;height:20px;border-radius:50%;background:#2d7dd2;color:#fff;font-size:10px;display:none;align-items:center;justify-content:center;font-weight:700" class="tc-checkmark">✓</div>
           <div style="width:64px;height:50px;margin:0 auto 12px;display:flex;align-items:center;justify-content:center">
             <svg width="64" height="50" viewBox="0 0 56 44" fill="none"><rect x="14" y="4" width="26" height="36" rx="2" fill="#dbeafe" stroke="#2d7dd2" stroke-width="1.5"/><circle cx="36" cy="22" r="2.5" fill="#2d7dd2"/><line x1="42" y1="22" x2="52" y2="22" stroke="#2d7dd2" stroke-width="2" stroke-linecap="round"/><polyline points="48,18 52,22 48,26" fill="none" stroke="#2d7dd2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><rect x="2" y="28" width="10" height="10" rx="1" fill="#93c5fd" stroke="#2d7dd2" stroke-width="1"/></svg>
           </div>
-          <div style="font-size:14px;font-weight:600;color:#1a2540">Saida</div>
-          <div style="font-size:12px;color:#8898aa;margin-top:4px;line-height:1.4">Fim de locacao — comparativo com entrada</div>
+          <div style="font-size:14px;font-weight:600;color:#1a2540">Saída</div>
+          <div style="font-size:12px;color:#8898aa;margin-top:4px;line-height:1.4">Fim de locação — comparativo com entrada</div>
         </div>
 
         <div class="tipo-card" data-tipo="temporada" onclick="selectTipoCard(this)" style="border-radius:12px;overflow:hidden;border:1.5px solid #e2e8f0;cursor:pointer;background:#fff;position:relative;text-align:center;padding:20px 14px;transition:all .2s">
@@ -2298,7 +2298,7 @@ window._openFotoModal = function(imgSrc) {
             <svg width="64" height="50" viewBox="0 0 56 44" fill="none"><rect x="6" y="8" width="36" height="30" rx="3" fill="#dbeafe" stroke="#2d7dd2" stroke-width="1.5"/><rect x="6" y="8" width="36" height="10" rx="3" fill="#2d7dd2"/><line x1="16" y1="4" x2="16" y2="14" stroke="#2d7dd2" stroke-width="2" stroke-linecap="round"/><line x1="32" y1="4" x2="32" y2="14" stroke="#2d7dd2" stroke-width="2" stroke-linecap="round"/><circle cx="16" cy="26" r="2" fill="#2d7dd2"/><circle cx="24" cy="26" r="2" fill="#2d7dd2"/><circle cx="32" cy="26" r="2" fill="#93c5fd"/><circle cx="46" cy="10" r="5" fill="#fbbf24"/></svg>
           </div>
           <div style="font-size:14px;font-weight:600;color:#1a2540">Temporada</div>
-          <div style="font-size:12px;color:#8898aa;margin-top:4px;line-height:1.4">Locacao por periodo — check-in e check-out</div>
+          <div style="font-size:12px;color:#8898aa;margin-top:4px;line-height:1.4">Locação por periodo — check-in e check-out</div>
         </div>
 
       </div>
@@ -2318,21 +2318,21 @@ window._openFotoModal = function(imgSrc) {
 
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:24px">
 
-        <div class="realiza-card selected" data-realiza="imobiliaria" onclick="selectRealizaCard(this)" style="border-radius:12px;border:1.5px solid #2d7dd2;cursor:pointer;background:#f0f7ff;position:relative;text-align:center;padding:20px 14px;transition:all .2s">
+        <div class="realiza-card selected" data-realiza="imobiliária" onclick="selectRealizaCard(this)" style="border-radius:12px;border:1.5px solid #2d7dd2;cursor:pointer;background:#f0f7ff;position:relative;text-align:center;padding:20px 14px;transition:all .2s">
           <div class="realiza-ck" style="position:absolute;top:10px;right:10px;width:20px;height:20px;border-radius:50%;background:#2d7dd2;color:#fff;font-size:10px;display:none;align-items:center;justify-content:center;font-weight:700">✓</div>
           <div style="width:64px;height:50px;margin:0 auto 12px;display:flex;align-items:center;justify-content:center">
             <svg width="64" height="50" viewBox="0 0 56 44" fill="none"><rect x="8" y="6" width="40" height="34" rx="2" fill="#dbeafe" stroke="#2d7dd2" stroke-width="1.5"/><rect x="8" y="6" width="40" height="10" rx="2" fill="#2d7dd2"/><rect x="12" y="20" width="7" height="6" rx="1" fill="#93c5fd" stroke="#2d7dd2" stroke-width="0.8"/><rect x="24" y="20" width="7" height="6" rx="1" fill="#93c5fd" stroke="#2d7dd2" stroke-width="0.8"/><rect x="36" y="20" width="7" height="6" rx="1" fill="#93c5fd" stroke="#2d7dd2" stroke-width="0.8"/><rect x="22" y="30" width="12" height="10" rx="1" fill="#2d7dd2"/><circle cx="32" cy="35" r="1" fill="#fff"/><circle cx="50" cy="12" r="3" fill="#fff" stroke="#2d7dd2" stroke-width="1"/><path d="M46 20c0-2.2 1.8-4 4-4s4 1.8 4 4" fill="#dbeafe" stroke="#2d7dd2" stroke-width="1"/></svg>
           </div>
-          <div style="font-size:14px;font-weight:600;color:#1a2540">Imobiliaria / Corretor</div>
+          <div style="font-size:14px;font-weight:600;color:#1a2540">Imobiliária / Corretor</div>
           <div style="font-size:12px;color:#8898aa;margin-top:4px;line-height:1.4">Profissional habilitado realiza a vistoria</div>
         </div>
 
-        <div class="realiza-card" data-realiza="proprietario" onclick="selectRealizaCard(this)" style="border-radius:12px;border:1.5px solid #e2e8f0;cursor:pointer;background:#fff;position:relative;text-align:center;padding:20px 14px;transition:all .2s">
+        <div class="realiza-card" data-realiza="proprietário" onclick="selectRealizaCard(this)" style="border-radius:12px;border:1.5px solid #e2e8f0;cursor:pointer;background:#fff;position:relative;text-align:center;padding:20px 14px;transition:all .2s">
           <div style="position:absolute;top:10px;right:10px;width:20px;height:20px;border-radius:50%;background:#2d7dd2;color:#fff;font-size:10px;display:none;align-items:center;justify-content:center;font-weight:700" class="realiza-ck">✓</div>
           <div style="width:64px;height:50px;margin:0 auto 12px;display:flex;align-items:center;justify-content:center">
             <svg width="64" height="50" viewBox="0 0 56 50" fill="none"><circle cx="28" cy="12" r="9" fill="#dbeafe" stroke="#2d7dd2" stroke-width="1.5"/><circle cx="25" cy="11" r="1.2" fill="#2d7dd2"/><circle cx="31" cy="11" r="1.2" fill="#2d7dd2"/><path d="M25 15 Q28 17.5 31 15" stroke="#2d7dd2" stroke-width="1.2" stroke-linecap="round" fill="none"/><path d="M12 44 C12 34 18 30 28 30 C38 30 44 34 44 44" fill="#dbeafe" stroke="#2d7dd2" stroke-width="1.5" stroke-linecap="round"/><path d="M26 30 L28 36 L30 30" fill="#2d7dd2" stroke="#2d7dd2" stroke-width="0.5" stroke-linejoin="round"/><circle cx="44" cy="36" r="3.5" fill="none" stroke="#2d7dd2" stroke-width="1.5"/><line x1="44" y1="39.5" x2="44" y2="47" stroke="#2d7dd2" stroke-width="1.5" stroke-linecap="round"/><line x1="44" y1="44" x2="47" y2="44" stroke="#2d7dd2" stroke-width="1.5" stroke-linecap="round"/><line x1="44" y1="46" x2="47" y2="46" stroke="#2d7dd2" stroke-width="1.5" stroke-linecap="round"/></svg>
           </div>
-          <div style="font-size:14px;font-weight:600;color:#1a2540">Proprietario direto</div>
+          <div style="font-size:14px;font-weight:600;color:#1a2540">Proprietário direto</div>
           <div style="font-size:12px;color:#8898aa;margin-top:4px;line-height:1.4">O proprio dono realiza a vistoria</div>
         </div>
 
@@ -2362,8 +2362,8 @@ window._openFotoModal = function(imgSrc) {
 
     <!-- STEP 1: DADOS DO IMÓVEL -->
     <div id="wstep-1" style="display:none">
-      <div class="wiz-section-title">Dados do imovel</div>
-      <div class="wiz-section-sub">Preencha o endereco completo do imovel vistoriado.</div>
+      <div class="wiz-section-title">Dados do imóvel</div>
+      <div class="wiz-section-sub">Preencha o endereço completo do imóvel vistoriado.</div>
 
       <!-- Context tag -->
       <div id="wi-context-tag" class="wi-context-tag">
@@ -2389,17 +2389,17 @@ window._openFotoModal = function(imgSrc) {
             <button onclick="buscarCep(document.getElementById('wi-cep').value)" style="padding:9px 14px;border-radius:8px;background:#eef4ff;color:#2d7dd2;border:0.5px solid #bfdbfe;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap">🔍 Buscar CEP</button>
           </div>
         </div>
-        <div id="wi-cep-tip" style="font-size:11px;color:#2d7dd2;margin-bottom:10px;display:none">✓ Endereco preenchido automaticamente via ViaCEP</div>
+        <div id="wi-cep-tip" style="font-size:11px;color:#2d7dd2;margin-bottom:10px;display:none">✓ Endereço preenchido automaticamente via ViaCEP</div>
 
         <div style="display:flex;flex-direction:column;gap:4px;margin-bottom:10px">
-          <label style="font-size:12px;font-weight:600;color:#4a5568">Endereco</label>
+          <label style="font-size:12px;font-weight:600;color:#4a5568">Endereço</label>
           <input id="wi-address" type="text" placeholder="Rua, Av., Travessa..." style="border:0.5px solid #e2e8f0;border-radius:8px;padding:9px 12px;font-size:13px;color:#1a2540;font-family:inherit;background:#fff;outline:none"/>
         </div>
 
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
           <div style="display:flex;flex-direction:column;gap:4px">
-            <label style="font-size:12px;font-weight:600;color:#4a5568">Numero</label>
-            <input id="wi-numero" type="text" placeholder="123" style="border:0.5px solid #e2e8f0;border-radius:8px;padding:9px 12px;font-size:13px;color:#1a2540;font-family:inherit;background:#fff;outline:none"/>
+            <label style="font-size:12px;font-weight:600;color:#4a5568">Número</label>
+            <input id="wi-número" type="text" placeholder="123" style="border:0.5px solid #e2e8f0;border-radius:8px;padding:9px 12px;font-size:13px;color:#1a2540;font-family:inherit;background:#fff;outline:none"/>
           </div>
           <div style="display:flex;flex-direction:column;gap:4px">
             <label style="font-size:12px;font-weight:600;color:#4a5568">Complemento</label>
@@ -2419,7 +2419,7 @@ window._openFotoModal = function(imgSrc) {
         </div>
       </div>
 
-      <!-- TIPO DO IMOVEL -->
+      <!-- TIPO DO IMÓVEL -->
       <div style="font-size:11px;font-weight:700;color:#8898aa;text-transform:uppercase;letter-spacing:0.5px;margin:0 0 10px">Tipo do imóvel</div>
 <select id="wi-prop-type" style="display:none">
   <option value="">Selecione...</option>
@@ -2437,61 +2437,61 @@ window._openFotoModal = function(imgSrc) {
 <div id="wi-tipo-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px">
 
   <!-- CASA -->
-  <div class="wi-tipo-btn" data-val="Casa" onclick="selectTipoImovel(this)" style="border:1px solid #e2e8f0;border-radius:8px;padding:10px 8px;cursor:pointer;background:#fff;display:flex;flex-direction:column;align-items:center;gap:6px;transition:all .15s">
+  <div class="wi-tipo-btn" data-val="Casa" onclick="selectTipoImóvel(this)" style="border:1px solid #e2e8f0;border-radius:8px;padding:10px 8px;cursor:pointer;background:#fff;display:flex;flex-direction:column;align-items:center;gap:6px;transition:all .15s">
     <svg width="32" height="32" viewBox="0 0 56 44" fill="none"><polygon points="28,4 54,22 2,22" fill="#2d7dd2"/><rect x="6" y="22" width="44" height="18" rx="2" fill="#dbeafe" stroke="#2d7dd2" stroke-width="1.5"/><rect x="22" y="28" width="12" height="12" rx="1" fill="#2d7dd2"/><rect x="8" y="26" width="8" height="7" rx="1" fill="#93c5fd" stroke="#2d7dd2" stroke-width="0.8"/><rect x="38" y="26" width="8" height="7" rx="1" fill="#93c5fd" stroke="#2d7dd2" stroke-width="0.8"/></svg>
     <span style="font-size:11px;font-weight:600;color:#1a2540;text-align:center">Casa</span>
   </div>
 
   <!-- APARTAMENTO / COBERTURA -->
-  <div class="wi-tipo-btn" data-val="Apartamento / Cobertura" onclick="selectTipoImovel(this)" style="border:1px solid #e2e8f0;border-radius:8px;padding:10px 8px;cursor:pointer;background:#fff;display:flex;flex-direction:column;align-items:center;gap:6px;transition:all .15s">
+  <div class="wi-tipo-btn" data-val="Apartamento / Cobertura" onclick="selectTipoImóvel(this)" style="border:1px solid #e2e8f0;border-radius:8px;padding:10px 8px;cursor:pointer;background:#fff;display:flex;flex-direction:column;align-items:center;gap:6px;transition:all .15s">
     <svg width="32" height="32" viewBox="0 0 56 44" fill="none"><rect x="8" y="2" width="40" height="40" rx="2" fill="#dbeafe" stroke="#2d7dd2" stroke-width="1.5"/><rect x="8" y="2" width="40" height="8" rx="2" fill="#2d7dd2"/><rect x="12" y="14" width="8" height="7" rx="1" fill="#93c5fd" stroke="#2d7dd2" stroke-width="0.8"/><rect x="24" y="14" width="8" height="7" rx="1" fill="#93c5fd" stroke="#2d7dd2" stroke-width="0.8"/><rect x="36" y="14" width="8" height="7" rx="1" fill="#93c5fd" stroke="#2d7dd2" stroke-width="0.8"/><rect x="12" y="25" width="8" height="7" rx="1" fill="#93c5fd" stroke="#2d7dd2" stroke-width="0.8"/><rect x="24" y="25" width="8" height="7" rx="1" fill="#93c5fd" stroke="#2d7dd2" stroke-width="0.8"/><rect x="36" y="25" width="8" height="7" rx="1" fill="#93c5fd" stroke="#2d7dd2" stroke-width="0.8"/></svg>
     <span style="font-size:11px;font-weight:600;color:#1a2540;text-align:center">Apartamento / Cobertura</span>
   </div>
 
   <!-- STUDIO / KITNET -->
-  <div class="wi-tipo-btn" data-val="Studio / Kitnet" onclick="selectTipoImovel(this)" style="border:1px solid #e2e8f0;border-radius:8px;padding:10px 8px;cursor:pointer;background:#fff;display:flex;flex-direction:column;align-items:center;gap:6px;transition:all .15s">
+  <div class="wi-tipo-btn" data-val="Studio / Kitnet" onclick="selectTipoImóvel(this)" style="border:1px solid #e2e8f0;border-radius:8px;padding:10px 8px;cursor:pointer;background:#fff;display:flex;flex-direction:column;align-items:center;gap:6px;transition:all .15s">
     <svg width="32" height="32" viewBox="0 0 56 44" fill="none"><rect x="8" y="4" width="40" height="36" rx="2" fill="#dbeafe" stroke="#2d7dd2" stroke-width="1.5"/><rect x="8" y="4" width="40" height="8" rx="2" fill="#2d7dd2"/><rect x="14" y="18" width="12" height="10" rx="1" fill="#93c5fd" stroke="#2d7dd2" stroke-width="0.8"/><rect x="30" y="18" width="12" height="10" rx="1" fill="#93c5fd" stroke="#2d7dd2" stroke-width="0.8"/><rect x="14" y="30" width="28" height="6" rx="1" fill="#93c5fd" stroke="#2d7dd2" stroke-width="0.8"/></svg>
     <span style="font-size:11px;font-weight:600;color:#1a2540;text-align:center">Studio / Kitnet</span>
   </div>
 
   <!-- SALA COMERCIAL -->
-  <div class="wi-tipo-btn" data-val="Sala comercial" onclick="selectTipoImovel(this)" style="border:1px solid #e2e8f0;border-radius:8px;padding:10px 8px;cursor:pointer;background:#fff;display:flex;flex-direction:column;align-items:center;gap:6px;transition:all .15s">
+  <div class="wi-tipo-btn" data-val="Sala comercial" onclick="selectTipoImóvel(this)" style="border:1px solid #e2e8f0;border-radius:8px;padding:10px 8px;cursor:pointer;background:#fff;display:flex;flex-direction:column;align-items:center;gap:6px;transition:all .15s">
     <svg width="32" height="32" viewBox="0 0 56 44" fill="none"><rect x="4" y="8" width="48" height="32" rx="2" fill="#dbeafe" stroke="#2d7dd2" stroke-width="1.5"/><rect x="4" y="8" width="48" height="10" rx="2" fill="#2d7dd2"/><rect x="8" y="22" width="18" height="14" rx="1" fill="#fff" stroke="#93c5fd" stroke-width="1"/><rect x="30" y="22" width="18" height="14" rx="1" fill="#fff" stroke="#93c5fd" stroke-width="1"/></svg>
     <span style="font-size:11px;font-weight:600;color:#1a2540;text-align:center">Sala comercial</span>
   </div>
 
   <!-- PRÉDIO COMERCIAL -->
-  <div class="wi-tipo-btn" data-val="Predio comercial" onclick="selectTipoImovel(this)" style="border:1px solid #e2e8f0;border-radius:8px;padding:10px 8px;cursor:pointer;background:#fff;display:flex;flex-direction:column;align-items:center;gap:6px;transition:all .15s">
+  <div class="wi-tipo-btn" data-val="Predio comercial" onclick="selectTipoImóvel(this)" style="border:1px solid #e2e8f0;border-radius:8px;padding:10px 8px;cursor:pointer;background:#fff;display:flex;flex-direction:column;align-items:center;gap:6px;transition:all .15s">
     <svg width="32" height="32" viewBox="0 0 56 44" fill="none"><rect x="8" y="2" width="40" height="40" rx="2" fill="#dbeafe" stroke="#2d7dd2" stroke-width="1.5"/><rect x="8" y="2" width="40" height="7" rx="2" fill="#2d7dd2"/><rect x="12" y="13" width="7" height="6" rx="1" fill="#93c5fd" stroke="#2d7dd2" stroke-width="0.8"/><rect x="24" y="13" width="7" height="6" rx="1" fill="#93c5fd" stroke="#2d7dd2" stroke-width="0.8"/><rect x="36" y="13" width="7" height="6" rx="1" fill="#93c5fd" stroke="#2d7dd2" stroke-width="0.8"/><rect x="12" y="22" width="7" height="6" rx="1" fill="#93c5fd" stroke="#2d7dd2" stroke-width="0.8"/><rect x="24" y="22" width="7" height="6" rx="1" fill="#93c5fd" stroke="#2d7dd2" stroke-width="0.8"/><rect x="36" y="22" width="7" height="6" rx="1" fill="#93c5fd" stroke="#2d7dd2" stroke-width="0.8"/><rect x="12" y="31" width="7" height="6" rx="1" fill="#93c5fd" stroke="#2d7dd2" stroke-width="0.8"/><rect x="24" y="31" width="7" height="6" rx="1" fill="#93c5fd" stroke="#2d7dd2" stroke-width="0.8"/><rect x="36" y="31" width="7" height="6" rx="1" fill="#93c5fd" stroke="#2d7dd2" stroke-width="0.8"/></svg>
     <span style="font-size:11px;font-weight:600;color:#1a2540;text-align:center">Prédio comercial</span>
   </div>
 
   <!-- LOJA / SALÃO -->
-  <div class="wi-tipo-btn" data-val="Loja / Salão comercial" onclick="selectTipoImovel(this)" style="border:1px solid #e2e8f0;border-radius:8px;padding:10px 8px;cursor:pointer;background:#fff;display:flex;flex-direction:column;align-items:center;gap:6px;transition:all .15s">
+  <div class="wi-tipo-btn" data-val="Loja / Salão comercial" onclick="selectTipoImóvel(this)" style="border:1px solid #e2e8f0;border-radius:8px;padding:10px 8px;cursor:pointer;background:#fff;display:flex;flex-direction:column;align-items:center;gap:6px;transition:all .15s">
     <svg width="32" height="32" viewBox="0 0 56 44" fill="none"><rect x="2" y="16" width="52" height="26" rx="2" fill="#dbeafe" stroke="#2d7dd2" stroke-width="1.5"/><rect x="2" y="16" width="52" height="8" rx="2" fill="#2d7dd2"/><path d="M2 16 Q14 4 28 8 Q42 4 54 16" fill="#dbeafe" stroke="#2d7dd2" stroke-width="1.5"/><rect x="18" y="28" width="20" height="14" rx="1" fill="#2d7dd2"/><rect x="8" y="26" width="8" height="6" rx="1" fill="#93c5fd" stroke="#2d7dd2" stroke-width="0.8"/><rect x="40" y="26" width="8" height="6" rx="1" fill="#93c5fd" stroke="#2d7dd2" stroke-width="0.8"/></svg>
     <span style="font-size:11px;font-weight:600;color:#1a2540;text-align:center">Loja / Salão</span>
   </div>
 
   <!-- GALPÃO / BARRACÃO -->
-  <div class="wi-tipo-btn" data-val="Galpão / Barracão" onclick="selectTipoImovel(this)" style="border:1px solid #e2e8f0;border-radius:8px;padding:10px 8px;cursor:pointer;background:#fff;display:flex;flex-direction:column;align-items:center;gap:6px;transition:all .15s">
+  <div class="wi-tipo-btn" data-val="Galpão / Barracão" onclick="selectTipoImóvel(this)" style="border:1px solid #e2e8f0;border-radius:8px;padding:10px 8px;cursor:pointer;background:#fff;display:flex;flex-direction:column;align-items:center;gap:6px;transition:all .15s">
     <svg width="32" height="32" viewBox="0 0 56 44" fill="none"><path d="M2 22 L28 4 L54 22" fill="#2d7dd2" stroke="#2d7dd2" stroke-width="1"/><rect x="2" y="22" width="52" height="20" rx="1" fill="#dbeafe" stroke="#2d7dd2" stroke-width="1.5"/><rect x="8" y="28" width="16" height="14" rx="1" fill="#2d7dd2"/><rect x="32" y="28" width="16" height="14" rx="1" fill="#93c5fd" stroke="#2d7dd2" stroke-width="0.8"/></svg>
     <span style="font-size:11px;font-weight:600;color:#1a2540;text-align:center">Galpão / Barracão</span>
   </div>
 
   <!-- TERRENO -->
-  <div class="wi-tipo-btn" data-val="Terreno" onclick="selectTipoImovel(this)" style="border:1px solid #e2e8f0;border-radius:8px;padding:10px 8px;cursor:pointer;background:#fff;display:flex;flex-direction:column;align-items:center;gap:6px;transition:all .15s">
+  <div class="wi-tipo-btn" data-val="Terreno" onclick="selectTipoImóvel(this)" style="border:1px solid #e2e8f0;border-radius:8px;padding:10px 8px;cursor:pointer;background:#fff;display:flex;flex-direction:column;align-items:center;gap:6px;transition:all .15s">
     <svg width="32" height="32" viewBox="0 0 56 44" fill="none"><rect x="2" y="28" width="52" height="12" rx="1" fill="#86efac" stroke="#16a34a" stroke-width="1"/><line x1="2" y1="4" x2="2" y2="40" stroke="#2d7dd2" stroke-width="2" stroke-linecap="round"/><line x1="54" y1="4" x2="54" y2="40" stroke="#2d7dd2" stroke-width="2" stroke-linecap="round"/><line x1="2" y1="4" x2="54" y2="4" stroke="#2d7dd2" stroke-width="2" stroke-linecap="round"/><line x1="2" y1="40" x2="54" y2="40" stroke="#2d7dd2" stroke-width="2" stroke-linecap="round"/><line x1="2" y1="4" x2="54" y2="40" stroke="#2d7dd2" stroke-width="0.8" stroke-dasharray="3 3"/><line x1="54" y1="4" x2="2" y2="40" stroke="#2d7dd2" stroke-width="0.8" stroke-dasharray="3 3"/></svg>
     <span style="font-size:11px;font-weight:600;color:#1a2540;text-align:center">Terreno</span>
   </div>
 
   <!-- CHÁCARA / SÍTIO / RURAL -->
-  <div class="wi-tipo-btn" data-val="Chácara / Sítio / Rural" onclick="selectTipoImovel(this)" style="border:1px solid #e2e8f0;border-radius:8px;padding:10px 8px;cursor:pointer;background:#fff;display:flex;flex-direction:column;align-items:center;gap:6px;transition:all .15s">
+  <div class="wi-tipo-btn" data-val="Chácara / Sítio / Rural" onclick="selectTipoImóvel(this)" style="border:1px solid #e2e8f0;border-radius:8px;padding:10px 8px;cursor:pointer;background:#fff;display:flex;flex-direction:column;align-items:center;gap:6px;transition:all .15s">
     <svg width="32" height="32" viewBox="0 0 56 44" fill="none"><rect x="2" y="28" width="52" height="12" rx="1" fill="#86efac" stroke="#16a34a" stroke-width="1"/><polygon points="20,4 44,18 44,32 20,32" fill="#dbeafe" stroke="#2d7dd2" stroke-width="1.5"/><rect x="20" y="18" width="24" height="14" rx="1" fill="#dbeafe" stroke="#2d7dd2" stroke-width="1.5"/><rect x="28" y="22" width="8" height="10" rx="1" fill="#2d7dd2"/><circle cx="8" cy="22" r="8" fill="#4ade80" stroke="#16a34a" stroke-width="1"/><circle cx="48" cy="24" r="6" fill="#4ade80" stroke="#16a34a" stroke-width="1"/></svg>
     <span style="font-size:11px;font-weight:600;color:#1a2540;text-align:center">Chácara / Sítio / Rural</span>
   </div>
 
   <!-- OUTRO -->
-  <div class="wi-tipo-btn" data-val="Outro" onclick="selectTipoImovel(this)" style="border:1px solid #e2e8f0;border-radius:8px;padding:10px 8px;cursor:pointer;background:#fff;display:flex;flex-direction:column;align-items:center;gap:6px;transition:all .15s">
+  <div class="wi-tipo-btn" data-val="Outro" onclick="selectTipoImóvel(this)" style="border:1px solid #e2e8f0;border-radius:8px;padding:10px 8px;cursor:pointer;background:#fff;display:flex;flex-direction:column;align-items:center;gap:6px;transition:all .15s">
     <svg width="32" height="32" viewBox="0 0 56 44" fill="none"><circle cx="28" cy="22" r="20" fill="#dbeafe" stroke="#2d7dd2" stroke-width="1.5" stroke-dasharray="4 2"/><line x1="28" y1="12" x2="28" y2="32" stroke="#2d7dd2" stroke-width="2" stroke-linecap="round"/><line x1="18" y1="22" x2="38" y2="22" stroke="#2d7dd2" stroke-width="2" stroke-linecap="round"/></svg>
     <span style="font-size:11px;font-weight:600;color:#1a2540;text-align:center">Outro</span>
   </div>
@@ -2499,11 +2499,11 @@ window._openFotoModal = function(imgSrc) {
 </div>
 
       <!-- INFORMACOES ADICIONAIS -->
-      <div style="font-size:11px;font-weight:700;color:#8898aa;text-transform:uppercase;letter-spacing:0.5px;margin:0 0 10px">Informacoes adicionais</div>
+      <div style="font-size:11px;font-weight:700;color:#8898aa;text-transform:uppercase;letter-spacing:0.5px;margin:0 0 10px">Informações adicionais</div>
       <div style="background:#fff;border-radius:12px;border:0.5px solid #e2e8f0;padding:18px;margin-bottom:14px">
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
           <div style="display:flex;flex-direction:column;gap:4px">
-            <label style="font-size:12px;font-weight:600;color:#4a5568">Area aproximada (m²)</label>
+            <label style="font-size:12px;font-weight:600;color:#4a5568">Area apróximada (m²)</label>
             <input id="wi-area" type="number" placeholder="Ex: 80" min="0" step="0.01" style="border:0.5px solid #e2e8f0;border-radius:8px;padding:9px 12px;font-size:13px;color:#1a2540;font-family:inherit;background:#fff;outline:none"/>
           </div>
           <div style="display:flex;flex-direction:column;gap:4px">
@@ -2527,10 +2527,10 @@ window._openFotoModal = function(imgSrc) {
 
     <div id="wstep-2" style="display:none">
 <div class="wiz-section-title">Partes envolvidas</div>
-<div class="wiz-section-sub">Preencha os dados do locador, locatario e corretor avaliador.</div>
+<div class="wiz-section-sub">Preencha os dados do locador, locatário e corretor avaliador.</div>
 
 <!-- LOCADORES -->
-<div style="font-size:11px;font-weight:700;color:#8898aa;text-transform:uppercase;letter-spacing:0.5px;margin:16px 0 10px">Locador(es) — Proprietario</div>
+<div style="font-size:11px;font-weight:700;color:#8898aa;text-transform:uppercase;letter-spacing:0.5px;margin:16px 0 10px">Locador(es) — Proprietário</div>
 <div id="locadores-container">
   <div class="person-block" id="loc-block-0" style="background:#fff;border-radius:12px;border:0.5px solid #e2e8f0;padding:16px;margin-bottom:10px">
     <div style="font-size:13px;font-weight:600;color:#1a2540;margin-bottom:12px;display:flex;align-items:center;gap:8px">
@@ -2564,17 +2564,17 @@ window._openFotoModal = function(imgSrc) {
 <div style="display:flex;align-items:center;gap:6px;padding:10px 16px;border-radius:8px;border:1.5px dashed #2d7dd2;background:#f0f7ff;color:#2d7dd2;font-size:13px;font-weight:500;cursor:pointer;margin-bottom:4px;width:fit-content" onclick="addLocador ? addLocador() : null">+ Adicionar outro locador</div>
 
 <!-- LOCATÁRIOS -->
-<div style="font-size:11px;font-weight:700;color:#8898aa;text-transform:uppercase;letter-spacing:0.5px;margin:16px 0 10px">Locatario(s) — Inquilino</div>
-<div id="locatarios-container">
+<div style="font-size:11px;font-weight:700;color:#8898aa;text-transform:uppercase;letter-spacing:0.5px;margin:16px 0 10px">Locatário(s) — Inquilino</div>
+<div id="locatários-container">
   <div class="person-block" id="locat-block-0" style="background:#fff;border-radius:12px;border:0.5px solid #e2e8f0;padding:16px;margin-bottom:10px">
     <div style="font-size:13px;font-weight:600;color:#1a2540;margin-bottom:12px;display:flex;align-items:center;gap:8px">
       <div style="width:22px;height:22px;border-radius:50%;background:#2d7dd2;color:#fff;font-size:10px;display:flex;align-items:center;justify-content:center;font-weight:700">1</div>
-      Locatario
+      Locatário
     </div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
       <div style="grid-column:1/-1;display:flex;flex-direction:column;gap:4px">
         <label style="font-size:12px;font-weight:600;color:#4a5568">Nome completo</label>
-        <input id="locat-name-0" type="text" placeholder="Nome do locatario" style="border:0.5px solid #e2e8f0;border-radius:8px;padding:9px 12px;font-size:13px;color:#1a2540;font-family:inherit;background:#fff;outline:none"/>
+        <input id="locat-name-0" type="text" placeholder="Nome do locatário" style="border:0.5px solid #e2e8f0;border-radius:8px;padding:9px 12px;font-size:13px;color:#1a2540;font-family:inherit;background:#fff;outline:none"/>
       </div>
       <div style="display:flex;flex-direction:column;gap:4px">
         <label style="font-size:12px;font-weight:600;color:#4a5568">CPF</label>
@@ -2595,7 +2595,7 @@ window._openFotoModal = function(imgSrc) {
     </div>
   </div>
 </div>
-<div style="display:flex;align-items:center;gap:6px;padding:10px 16px;border-radius:8px;border:1.5px dashed #2d7dd2;background:#f0f7ff;color:#2d7dd2;font-size:13px;font-weight:500;cursor:pointer;margin-bottom:4px;width:fit-content" onclick="addLocatario ? addLocatario() : null">+ Adicionar outro locatario</div>
+<div style="display:flex;align-items:center;gap:6px;padding:10px 16px;border-radius:8px;border:1.5px dashed #2d7dd2;background:#f0f7ff;color:#2d7dd2;font-size:13px;font-weight:500;cursor:pointer;margin-bottom:4px;width:fit-content" onclick="addLocatário ? addLocatário() : null">+ Adicionar outro locatário</div>
 
 <!-- CORRETOR -->
 <div id="corretor-block">
@@ -2627,19 +2627,19 @@ window._openFotoModal = function(imgSrc) {
   </div>
 <!-- BOTÃO ADICIONAR IMOBILIÁRIA -->
   <div id="btn-add-imob" onclick="document.getElementById('btn-add-imob').style.display='none';document.getElementById('imob-expand').style.display='block'" style="display:flex;align-items:center;gap:6px;padding:10px 16px;border-radius:8px;border:1.5px dashed #2d7dd2;background:#f0f7ff;color:#2d7dd2;font-size:13px;font-weight:500;cursor:pointer;margin-top:14px;width:100%">
-    🏢 + Adicionar imobiliaria <span style="font-size:11px;color:#8898aa;font-weight:400;margin-left:4px">(se representando uma imobiliaria)</span>
+    🏢 + Adicionar imobiliária <span style="font-size:11px;color:#8898aa;font-weight:400;margin-left:4px">(se representando uma imobiliária)</span>
   </div>
 
   <!-- CARD IMOBILIÁRIA -->
   <div id="imob-expand" style="display:none;background:#f8fafc;border-radius:10px;border:0.5px solid #e2e8f0;padding:14px;margin-top:12px">
     <div style="font-size:12px;font-weight:600;color:#1a2540;margin-bottom:10px;display:flex;align-items:center;gap:6px">
-      🏢 Dados da imobiliaria
+      🏢 Dados da imobiliária
       <span onclick="document.getElementById('imob-expand').style.display='none';document.getElementById('btn-add-imob').style.display='flex'" style="margin-left:auto;font-size:11px;color:#dc2626;cursor:pointer;padding:3px 8px;border-radius:5px;border:0.5px solid #fca5a5;background:#fff5f5">✕ Remover</span>
     </div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
       <div style="grid-column:1/-1;display:flex;flex-direction:column;gap:4px">
-        <label style="font-size:12px;font-weight:600;color:#4a5568">Nome da imobiliaria</label>
-        <input id="wi-imob-name" type="text" placeholder="Nome da imobiliaria" style="border:0.5px solid #e2e8f0;border-radius:8px;padding:9px 12px;font-size:13px;color:#1a2540;font-family:inherit;background:#fff;outline:none"/>
+        <label style="font-size:12px;font-weight:600;color:#4a5568">Nome da imobiliária</label>
+        <input id="wi-imob-name" type="text" placeholder="Nome da imobiliária" style="border:0.5px solid #e2e8f0;border-radius:8px;padding:9px 12px;font-size:13px;color:#1a2540;font-family:inherit;background:#fff;outline:none"/>
       </div>
       <div style="display:flex;flex-direction:column;gap:4px">
         <label style="font-size:12px;font-weight:600;color:#4a5568">CNPJ</label>
@@ -2651,7 +2651,7 @@ window._openFotoModal = function(imgSrc) {
       </div>
       <div style="display:flex;flex-direction:column;gap:4px">
         <label style="font-size:12px;font-weight:600;color:#4a5568">E-mail</label>
-        <input id="wi-imob-email" type="email" placeholder="email@imobiliaria.com" style="border:0.5px solid #e2e8f0;border-radius:8px;padding:9px 12px;font-size:13px;color:#1a2540;font-family:inherit;background:#fff;outline:none"/>
+        <input id="wi-imob-email" type="email" placeholder="email@imobiliária.com" style="border:0.5px solid #e2e8f0;border-radius:8px;padding:9px 12px;font-size:13px;color:#1a2540;font-family:inherit;background:#fff;outline:none"/>
       </div>
     </div>
   </div>
@@ -2720,9 +2720,9 @@ window._openFotoModal = function(imgSrc) {
       </div>
 
       <!-- AVISO DE CRÉDITOS -->
-      <div id="wiz6-creditos-warn" class="wiz6-creditos-warn" style="display:none">
+      <div id="wiz6-créditos-warn" class="wiz6-créditos-warn" style="display:none">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#92400e" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><circle cx="12" cy="16" r="0.5" fill="#92400e"/></svg>
-        <span id="wiz6-creditos-texto">Você tem <strong>0 créditos</strong> disponíveis.</span>
+        <span id="wiz6-créditos-texto">Você tem <strong>0 créditos</strong> disponíveis.</span>
       </div>
 
       <!-- MODO FOTO -->
@@ -2892,7 +2892,7 @@ function switchTab(tab, el) {
       }
     });
     obs.observe(n, { childList: true, characterData: true, subtree: true });
-    // Tenta imediatamente caso ja esteja populado
+    // Tenta imediatamente caso já esteja populado
     syncProfile();
   }
 
@@ -2948,14 +2948,14 @@ function switchTab(tab, el) {
 const API = '';
 let currentUser = null, currentToken = null, currentInspection = null;
 let pageHistory = [], signaturePads = {};
-let wizard = { step: 1, inspectionId: null, selectedRooms: [], realizador: 'imobiliaria', tipo: '' };
+let wizard = { step: 1, inspectionId: null, selectedRooms: [], realizador: 'imobiliária', tipo: '' };
     var _savedInspId = localStorage.getItem('izylo_current_inspection');
     if (_savedInspId) wizard.inspectionId = _savedInspId;
 
 // ─── BOOT ─────────────────────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
-  var cardPadrao = document.querySelector('[data-realiza].selected');
-  if (cardPadrao) wizard.realizador = cardPadrao.dataset.realiza;
+  var cardPadrão = document.querySelector('[data-realiza].selected');
+  if (cardPadrão) wizard.realizador = cardPadrão.dataset.realiza;
   const tok = localStorage.getItem('izylo_token');
   const usr = localStorage.getItem('izylo_user');
   if (tok && usr) {
@@ -3143,13 +3143,13 @@ async function loadDashboard() {
     const d = new Date(i.created_at); return d.getMonth()===m && d.getFullYear()===y;
   }).length;
   const emAndamento = list.filter(i => i.status==='rascunho' || i.status==='assinado' || i.status==='processando').length;
-  const concluidas = list.filter(i => i.status==='concluido').length;
+  const concluidas = list.filter(i => i.status==='concluído').length;
 
   // Dashboard principal
   document.getElementById('stat-total').textContent = total;
   document.getElementById('stat-mes').textContent = estesMes;
   document.getElementById('stat-andamento').textContent = emAndamento;
-  document.getElementById('stat-concluido').textContent = concluidas;
+  document.getElementById('stat-concluído').textContent = concluidas;
 
   // Aba estatísticas (manter sincronizado)
   const t2 = document.getElementById('stat-total-2');
@@ -3187,15 +3187,15 @@ async function loadDashboard() {
     const tipo = i.type === 'entrada' ? 'Entrada' : 'Saída';
     const icon = i.type === 'entrada'
       ? `<svg width="32" height="26" viewBox="0 0 56 44" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="10" y="4" width="26" height="36" rx="2" fill="#dbeafe" stroke="#2d7dd2" stroke-width="1.5"/><path d="M36 4 Q46 14 46 22 Q46 30 36 40" fill="#bfdbfe" stroke="#2d7dd2" stroke-width="1.5"/><circle cx="33" cy="22" r="2.5" fill="#2d7dd2"/><circle cx="46" cy="10" r="4" fill="none" stroke="#2d7dd2" stroke-width="1.5"/><line x1="46" y1="14" x2="46" y2="24" stroke="#2d7dd2" stroke-width="1.5" stroke-linecap="round"/><line x1="46" y1="20" x2="49" y2="20" stroke="#2d7dd2" stroke-width="1.5" stroke-linecap="round"/><line x1="46" y1="23" x2="49" y2="23" stroke="#2d7dd2" stroke-width="1.5" stroke-linecap="round"/></svg>`
-      : i.type === 'saida'
+      : i.type === 'saída'
       ? `<svg width="32" height="26" viewBox="0 0 56 44" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="14" y="4" width="26" height="36" rx="2" fill="#dbeafe" stroke="#2d7dd2" stroke-width="1.5"/><circle cx="36" cy="22" r="2.5" fill="#2d7dd2"/><line x1="42" y1="22" x2="52" y2="22" stroke="#2d7dd2" stroke-width="2" stroke-linecap="round"/><polyline points="48,18 52,22 48,26" fill="none" stroke="#2d7dd2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><rect x="2" y="28" width="10" height="10" rx="1" fill="#93c5fd" stroke="#2d7dd2" stroke-width="1"/></svg>`
       : `<svg width="32" height="26" viewBox="0 0 56 44" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="6" y="8" width="36" height="30" rx="3" fill="#dbeafe" stroke="#2d7dd2" stroke-width="1.5"/><rect x="6" y="8" width="36" height="10" rx="3" fill="#2d7dd2"/><line x1="16" y1="4" x2="16" y2="14" stroke="#2d7dd2" stroke-width="2" stroke-linecap="round"/><line x1="32" y1="4" x2="32" y2="14" stroke="#2d7dd2" stroke-width="2" stroke-linecap="round"/><circle cx="16" cy="26" r="2" fill="#2d7dd2"/><circle cx="24" cy="26" r="2" fill="#2d7dd2"/><circle cx="32" cy="26" r="2" fill="#93c5fd"/><circle cx="46" cy="10" r="5" fill="#fbbf24"/></svg>`;
-    const statusLabel = i.status === 'concluido' ? 'Concluída'
+    const statusLabel = i.status === 'concluído' ? 'Concluída'
       : i.status === 'rascunho' ? 'Em andamento'
       : i.status === 'assinado' ? 'Assinado'
       : i.status === 'processando' ? 'Processando'
       : i.status;
-    const badgeClass = i.status === 'concluido' ? 'badge-concluido'
+    const badgeClass = i.status === 'concluído' ? 'badge-concluído'
       : i.status === 'rascunho' ? 'badge-rascunho'
       : 'badge-andamento';
     const date = i.inspection_date || formatDate(i.created_at);
@@ -3221,7 +3221,7 @@ function formatDate(str) {
 
 // ─── NEW INSPECTION WIZARD ────────────────────────────────────────────────────
 function showNewInspection() {
-  wizard = { step: 1, inspectionId: null, selectedRooms: [], realizador: 'imobiliaria', tipo: '' };
+  wizard = { step: 1, inspectionId: null, selectedRooms: [], realizador: 'imobiliária', tipo: '' };
   // Reset forms
   ['wi-address','wi-area','wi-imob-name','wi-imob-cnpj','wi-imob-phone','wi-imob-address',
    'wi-loc-name','wi-loc-cpf','wi-loc-rg','wi-loc-phone','wi-loc-email',
@@ -3254,7 +3254,7 @@ function selectRealizaCard(card) {
   if (typeof wizard !== 'undefined') wizard.realizador = card.dataset.realiza || '';
 }
 function updateContextTag() {
-  // Fix stepper: Tipo(sc-0) done, Quem realiza(sc-1) done, Imovel(sc-2) active
+  // Fix stepper: Tipo(sc-0) done, Quem realiza(sc-1) done, Imóvel(sc-2) active
   [0,1].forEach(i => {
     const c = document.getElementById('sc-'+i);
     if(c){c.classList.remove('active');c.classList.add('done');}
@@ -3271,8 +3271,8 @@ function updateContextTag() {
   // Read realizador from selected card (fallback to wizard)
   const realizaCard = document.querySelector('.realiza-card.selected');
   const realizaVal = realizaCard ? (realizaCard.dataset.realiza||'') : ((typeof wizard!=='undefined'&&wizard.realizador)?wizard.realizador:'');
-  const tMap = {entrada:'Vistoria de Entrada',saida:'Vistoria de Saída',temporada:'Temporada / Airbnb'};
-  const rMap = {imobiliaria:'Imobiliária / Corretor',proprietario:'Proprietário',terceiro:'Vistoriador'};
+  const tMap = {entrada:'Vistoria de Entrada',saída:'Vistoria de Saída',temporada:'Temporada / Airbnb'};
+  const rMap = {imobiliária:'Imobiliária / Corretor',proprietário:'Proprietário',terceiro:'Vistoriador'};
   const tLabel = tMap[tipoVal]||tipoVal||'—';
   const rLabel = rMap[realizaVal]||realizaVal||'—';
   const tag = document.getElementById('wi-ctx-label');
@@ -3363,7 +3363,7 @@ async function wizardNext(step) {
     const fmtDate = dateVal ? new Date(dateVal+'T12:00:00').toLocaleDateString('pt-BR') : '';
     var _tp = (typeof wizard !== 'undefined' && wizard.tipo) || (document.getElementById('wi-type')||{}).value || '';
         if (!_tp) { var _sel = document.querySelector('.tipo-card.selected'); if (_sel) _tp = _sel.getAttribute('data-tipo') || ''; }
-        if (['entrada','saida','temporada'].indexOf(_tp) < 0) { hideLoading(); return toast('Selecione o tipo de vistoria antes de continuar', 'error'); }
+        if (['entrada','saída','temporada'].indexOf(_tp) < 0) { hideLoading(); return toast('Selecione o tipo de vistoria antes de continuar', 'error'); }
         if (typeof wizard !== 'undefined') wizard.tipo = _tp;
         var _wi = document.getElementById('wi-type'); if (_wi) _wi.value = _tp;
         showLoading('Criando vistoria...');
@@ -3373,10 +3373,10 @@ async function wizardNext(step) {
       property_type: document.getElementById('wi-prop-type').value,
       property_area: document.getElementById('wi-area').value,
       inspection_date: fmtDate,
-      imobiliaria_name: document.getElementById('wi-imob-name').value.trim(),
-      imobiliaria_cnpj: document.getElementById('wi-imob-cnpj').value.trim(),
-      imobiliaria_phone: document.getElementById('wi-imob-phone').value.trim(),
-      imobiliaria_address: document.getElementById('wi-imob-address').value.trim(),
+      imobiliária_name: document.getElementById('wi-imob-name').value.trim(),
+      imobiliária_cnpj: document.getElementById('wi-imob-cnpj').value.trim(),
+      imobiliária_phone: document.getElementById('wi-imob-phone').value.trim(),
+      imobiliária_address: document.getElementById('wi-imob-address').value.trim(),
     });
     hideLoading();
     if (!r.ok) return toast(r.error || 'Erro ao criar vistoria', 'error');
@@ -3389,8 +3389,8 @@ async function wizardNext(step) {
     const r = await api('PUT', `/api/inspections/${wizard.inspectionId}`, {
       locador_name: v('wi-loc-name'), locador_cpf: v('wi-loc-cpf'),
       locador_rg: v('wi-loc-rg'), locador_phone: v('wi-loc-phone'), locador_email: v('wi-loc-email'),
-      locatario_name: v('wi-locat-name'), locatario_cpf: v('wi-locat-cpf'),
-      locatario_rg: v('wi-locat-rg'), locatario_phone: v('wi-locat-phone'), locatario_email: v('wi-locat-email'),
+      locatário_name: v('wi-locat-name'), locatário_cpf: v('wi-locat-cpf'),
+      locatário_rg: v('wi-locat-rg'), locatário_phone: v('wi-locat-phone'), locatário_email: v('wi-locat-email'),
       corretor_name: v('wi-corr-name'), corretor_creci: v('wi-corr-creci'),
       corretor_phone: v('wi-corr-phone'), corretor_email: v('wi-corr-email'),
     });
@@ -3404,8 +3404,8 @@ async function wizardNext(step) {
     const r = await api('PUT', `/api/inspections/${wizard.inspectionId}`, {
       locador_name: v('wi-loc-name'), locador_cpf: v('wi-loc-cpf'),
       locador_rg: v('wi-loc-rg'), locador_phone: v('wi-loc-phone'), locador_email: v('wi-loc-email'),
-      locatario_name: v('wi-locat-name'), locatario_cpf: v('wi-locat-cpf'),
-      locatario_rg: v('wi-locat-rg'), locatario_phone: v('wi-locat-phone'), locatario_email: v('wi-locat-email'),
+      locatário_name: v('wi-locat-name'), locatário_cpf: v('wi-locat-cpf'),
+      locatário_rg: v('wi-locat-rg'), locatário_phone: v('wi-locat-phone'), locatário_email: v('wi-locat-email'),
       corretor_name: v('wi-corr-name'), corretor_creci: v('wi-corr-creci'),
       corretor_phone: v('wi-corr-phone'), corretor_email: v('wi-corr-email'),
     });
@@ -3756,7 +3756,7 @@ async function deleteItem(itemId, roomId) {
 
 // ─── SIGNATURES ───────────────────────────────────────────────────────────────
 function initSigPads() {
-  ['locador','locatario','corretor'].forEach(p => {
+  ['locador','locatário','corretor'].forEach(p => {
     const canvas = document.getElementById(`canvas-${p}`);
     if (!canvas) return;
     if (signaturePads[p]) { signaturePads[p].clear(); }
@@ -3769,7 +3769,7 @@ function initSigPads() {
   });
   const n = currentInspection || {};
   if(n.locador_name) document.getElementById('signame-locador').textContent = n.locador_name;
-  if(n.locatario_name) document.getElementById('signame-locatario').textContent = n.locatario_name;
+  if(n.locatário_name) document.getElementById('signame-locatário').textContent = n.locatário_name;
   if(n.corretor_name) document.getElementById('signame-corretor').textContent = n.corretor_name;
 }
 
@@ -3786,7 +3786,7 @@ async function saveSig(party) {
   if (!pad || pad.isEmpty()) return toast('Por favor, assine antes de confirmar', 'error');
   const names = {
     locador: currentInspection?.locador_name||'',
-    locatario: currentInspection?.locatario_name||'',
+    locatário: currentInspection?.locatário_name||'',
     corretor: currentInspection?.corretor_name||''
   };
   showLoading('Salvando assinatura...');
@@ -3837,29 +3837,29 @@ async function gerarLaudo() {
     locador_rg: (document.getElementById('loc-rg-0') || {}).value || '',
     locador_phone: (document.getElementById('loc-phone-0') || {}).value || '',
     locador_email: (document.getElementById('loc-email-0') || {}).value || '',
-    locatario_name: (document.getElementById('locat-name-0') || {}).value || '',
-    locatario_cpf: (document.getElementById('locat-cpf-0') || {}).value || '',
-    locatario_rg: (document.getElementById('locat-rg-0') || {}).value || '',
-    locatario_phone: (document.getElementById('locat-phone-0') || {}).value || '',
-    locatario_email: (document.getElementById('locat-email-0') || {}).value || '',
-    imobiliaria_name: (document.getElementById('wi-imob-name') || {}).value || '',
-    imobiliaria_cnpj: (document.getElementById('wi-imob-cnpj') || {}).value || '',
-    imobiliaria_phone: (document.getElementById('wi-imob-phone') || {}).value || '',
-    imobiliaria_address: (document.getElementById('wi-imob-address') || {}).value || '',
+    locatário_name: (document.getElementById('locat-name-0') || {}).value || '',
+    locatário_cpf: (document.getElementById('locat-cpf-0') || {}).value || '',
+    locatário_rg: (document.getElementById('locat-rg-0') || {}).value || '',
+    locatário_phone: (document.getElementById('locat-phone-0') || {}).value || '',
+    locatário_email: (document.getElementById('locat-email-0') || {}).value || '',
+    imobiliária_name: (document.getElementById('wi-imob-name') || {}).value || '',
+    imobiliária_cnpj: (document.getElementById('wi-imob-cnpj') || {}).value || '',
+    imobiliária_phone: (document.getElementById('wi-imob-phone') || {}).value || '',
+    imobiliária_address: (document.getElementById('wi-imob-address') || {}).value || '',
     corretor_name: (document.getElementById('wi-corr-name') || {}).value || '',
     corretor_creci: (document.getElementById('wi-corr-creci') || {}).value || '',
     corretor_phone: (document.getElementById('wi-corr-phone') || {}).value || '',
     corretor_email: (document.getElementById('wi-corr-email') || {}).value || '',
-    responsavel: (typeof wizard !== 'undefined' && wizard.realizador) ? wizard.realizador : 'proprietario'
+    responsável: (typeof wizard !== 'undefined' && wizard.realizador) ? wizard.realizador : 'proprietário'
   };
     var ambArr = [];
     Object.keys(window._fotoStore || {}).forEach(function(amb) {
       var fotos = (window._fotoStore[amb] || []).map(function(f, fi8) {
-        return {src: f.src||'', item: f.item || '', estado: f.estado || '', desc: f.desc || '', foto_numero: fi8+1};
+        return {src: f.src||'', item: f.item || '', estado: f.estado || '', desc: f.desc || '', foto_número: fi8+1};
       });
       var verifs = (window._ambStore && window._ambStore[amb]) ? window._ambStore[amb].verificacoes || {} : {};
       var obsAmb = (window._ambStore && window._ambStore[amb]) ? window._ambStore[amb].obs || '' : '';
-      ambArr.push({nome: amb, fotos: fotos, verificacoes: verifs, observacoes: obsAmb});
+      ambArr.push({nome: amb, fotos: fotos, verificacoes: verifs, observações: obsAmb});
     });
     body.ambientes_json = JSON.stringify(ambArr);
     // Coletar todos locadores do DOM
@@ -3873,9 +3873,9 @@ async function gerarLaudo() {
         email: (document.getElementById('loc-email-'+x)||{}).value||''
       });
     });
-    // Coletar todos locatarios do DOM
+    // Coletar todos locatários do DOM
     var _tenArr = [];
-    document.querySelectorAll('#locatarios-container .person-block').forEach(function(b) {
+    document.querySelectorAll('#locatários-container .person-block').forEach(function(b) {
       var prefix = b.id.indexOf('locat-block-') === 0 ? 'locat' : 'ten';
       var x = b.id.replace('locat-block-','').replace('ten-block-','');
       _tenArr.push({
@@ -3886,7 +3886,7 @@ async function gerarLaudo() {
       });
     });
     if (_locArr.length) body.locadores_json = JSON.stringify(_locArr);
-    if (_tenArr.length) body.locatarios_json = JSON.stringify(_tenArr);
+    if (_tenArr.length) body.locatários_json = JSON.stringify(_tenArr);
     var r;
   if (wizard.inspectionId) {
     r = await api('PUT', '/api/inspections/' + wizard.inspectionId, body);
@@ -3980,17 +3980,17 @@ function renderDetail(insp) {
       <div style="font-size:17px;font-weight:800">${insp.property_address||'—'}</div>
       <div class="text-small mt-4">${insp.property_type||''} ${insp.property_area?'· '+insp.property_area+'m²':''}</div>
       <div class="text-small mt-2">📅 ${insp.inspection_date||'—'}</div>
-      ${insp.imobiliaria_name?`<div class="text-small mt-2">🏢 ${insp.imobiliaria_name}</div>`:''}
+      ${insp.imobiliária_name?`<div class="text-small mt-2">🏢 ${insp.imobiliária_name}</div>`:''}
     </div>
     <div class="card">
       <div class="card-title">Partes Envolvidas</div>
       ${insp.locador_name?`<div class="mb-8"><div class="form-label">Locador</div><div>${insp.locador_name}</div>${insp.locador_cpf?`<div class="text-small">CPF: ${insp.locador_cpf}</div>`:''}</div>`:''}
-      ${insp.locatario_name?`<div class="mb-8"><div class="form-label">Locatário</div><div>${insp.locatario_name}</div>${insp.locatario_cpf?`<div class="text-small">CPF: ${insp.locatario_cpf}</div>`:''}</div>`:''}
+      ${insp.locatário_name?`<div class="mb-8"><div class="form-label">Locatário</div><div>${insp.locatário_name}</div>${insp.locatário_cpf?`<div class="text-small">CPF: ${insp.locatário_cpf}</div>`:''}</div>`:''}
       ${insp.corretor_name?`<div><div class="form-label">Corretor</div><div>${insp.corretor_name} ${insp.corretor_creci?'· CRECI '+insp.corretor_creci:''}</div></div>`:''}
     </div>
     ${rooms.length?`<div style="font-size:15px;font-weight:700;margin:12px 0 8px">Ambientes (${rooms.length})</div>${roomsHtml}`:''}
     ${sigs.length?`<div class="card"><div class="card-title">✍️ Assinaturas</div>
-      ${sigs.map(s=>`<div class="flex gap-8 mb-8"><span class="tag tag-concluido">✓</span>
+      ${sigs.map(s=>`<div class="flex gap-8 mb-8"><span class="tag tag-concluído">✓</span>
         <span class="text-small">${s.party_type} — ${s.party_name||''}</span></div>`).join('')}
     </div>`:''}
     <button class="btn btn-primary btn-full mt-8 mb-16" onclick="dlPDF('${insp.id}')">
@@ -4056,14 +4056,14 @@ window.addEventListener('resize', () => {
   // === ETAPA 4 FIXES (stepper, add persons, corretor visibility, next button) ===
   (function() {
     var locadorCount = 1;
-    var locatarioCount = 1;
+    var locatárioCount = 1;
 
     // FIX 1: Override gotoWStep stepper index mapping
     var _orig = gotoWStep;
     gotoWStep = function(step) {
       wizard.step = step;
       // Map code step to visual stepper circle index
-      // code 0=Tipo(sc0), 1=Imovel(sc2), 2=Partes(sc3), 3=Ambientes(sc4), 4=Itens(sc5), 5=Revisao(sc6)
+      // code 0=Tipo(sc0), 1=Imóvel(sc2), 2=Partes(sc3), 3=Ambientes(sc4), 4=Itens(sc5), 5=Revisao(sc6)
       var si = step;
       for (var i = 0; i <= 7; i++) {
         var c = document.getElementById('sc-' + i);
@@ -4123,7 +4123,7 @@ if (typeof initAmbientes === 'function') initAmbientes();
       if (prev !== undefined) gotoWStep(prev);
     };
 
-    // FIX 2: addLocador / addLocatario
+    // FIX 2: addLocador / addLocatário
     function mkBlock(prefix, idx, label, removable) {
       var d = document.createElement('div');
       d.className = 'person-block';
@@ -4141,15 +4141,15 @@ if (typeof initAmbientes === 'function') initAmbientes();
       var c = document.getElementById('locadores-container');
       if (c) { c.appendChild(mkBlock('loc', locadorCount, 'Locador', true)); locadorCount++; }
     };
-    window.addLocatario = function() {
-      var c = document.getElementById('locatarios-container');
-      if (c) { c.appendChild(mkBlock('ten', locatarioCount, 'Locat\u00e1rio', true)); locatarioCount++; }
+    window.addLocatário = function() {
+      var c = document.getElementById('locatários-container');
+      if (c) { c.appendChild(mkBlock('ten', locatárioCount, 'Locat\u00e1rio', true)); locatárioCount++; }
     };
 
     // FIX 3: corretor visibility on entering step 2
     function updateCorretorVisibility() {
       var cb = document.getElementById('corretor-block');
-      if (cb) cb.style.display = (wizard.realizador === 'proprietario') ? 'none' : 'block';
+      if (cb) cb.style.display = (wizard.realizador === 'proprietário') ? 'none' : 'block';
     }
 
     // FIX 4: Override wizardNext for step 2
@@ -4176,11 +4176,11 @@ if (typeof initAmbientes === 'function') initAmbientes();
             email: (b.querySelector('[id=loc-email-'+idx+']') || {}).value || ''
           });
         });
-        var locatarios = [];
-          document.querySelectorAll('#locatarios-container .person-block').forEach(function(b) {
+        var locatários = [];
+          document.querySelectorAll('#locatários-container .person-block').forEach(function(b) {
               var prefix = b.id.indexOf('locat-block-') === 0 ? 'locat' : 'ten';
               var idx = b.id.replace('locat-block-', '').replace('ten-block-', '');
-              locatarios.push({
+              locatários.push({
                   name: (document.getElementById(prefix+'-name-'+idx) || {}).value || '',
                   cpf: (document.getElementById(prefix+'-cpf-'+idx) || {}).value || '',
                   rg: (document.getElementById(prefix+'-rg-'+idx) || {}).value || '',
@@ -4193,12 +4193,12 @@ if (typeof initAmbientes === 'function') initAmbientes();
           locador_cpf: locadores[0] ? locadores[0].cpf : '',
           locador_phone: locadores[0] ? locadores[0].phone : '',
           locador_email: locadores[0] ? locadores[0].email : '',
-          locatario_name: locatarios[0] ? locatarios[0].name : '',
-          locatario_cpf: locatarios[0] ? locatarios[0].cpf : '',
-          locatario_phone: locatarios[0] ? locatarios[0].phone : '',
-          locatario_email: locatarios[0] ? locatarios[0].email : '',
+          locatário_name: locatários[0] ? locatários[0].name : '',
+          locatário_cpf: locatários[0] ? locatários[0].cpf : '',
+          locatário_phone: locatários[0] ? locatários[0].phone : '',
+          locatário_email: locatários[0] ? locatários[0].email : '',
           locadores_json: JSON.stringify(locadores),
-          locatarios_json: JSON.stringify(locatarios),
+          locatários_json: JSON.stringify(locatários),
           corretor_name: v('wi-corr-name'), corretor_creci: v('wi-corr-creci'),
           corretor_phone: v('wi-corr-phone'), corretor_email: v('wi-corr-email')
         };
@@ -4550,12 +4550,12 @@ if (typeof initAmbientes === 'function') initAmbientes();
         }
       }
 
-      // Card 1: Dados do imovel
+      // Card 1: Dados do imóvel
       var tipo = '';
       var btnCI = document.getElementById('btn-checkin');
       var btnCO = document.getElementById('btn-checkout');
       if (btnCI && btnCI.classList.contains('active')) tipo = 'Vistoria de Entrada';
-      else if (btnCO && btnCO.classList.contains('active')) tipo = 'Vistoria de Saida';
+      else if (btnCO && btnCO.classList.contains('active')) tipo = 'Vistoria de Saída';
       var end = (document.getElementById('wi-address') || {}).value || '-';
       var bairro = (document.getElementById('wi-bairro') || {}).value || '-';
       var cidade = (document.getElementById('wi-cidade') || {}).value || '-';
@@ -4563,27 +4563,27 @@ if (typeof initAmbientes === 'function') initAmbientes();
       var propType = (document.getElementById('wi-prop-type') || {}).value || '-';
       var now = new Date();
       var dataHora = now.toLocaleDateString('pt-BR') + ' ' + now.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
-      h += '<div class="rev-card"><div class="rev-card-title">Dados do imovel</div>';
+      h += '<div class="rev-card"><div class="rev-card-title">Dados do imóvel</div>';
       h += '<div class="rev-row"><span class="rev-label">Tipo:</span><span class="rev-val">' + tipo + '</span></div>';
-      h += '<div class="rev-row"><span class="rev-label">Endereco:</span><span class="rev-val">' + end + '</span></div>';
+      h += '<div class="rev-row"><span class="rev-label">Endereço:</span><span class="rev-val">' + end + '</span></div>';
       h += '<div class="rev-row"><span class="rev-label">Bairro:</span><span class="rev-val">' + bairro + '</span></div>';
       h += '<div class="rev-row"><span class="rev-label">Cidade/UF:</span><span class="rev-val">' + cidade + '/' + estado + '</span></div>';
-      h += '<div class="rev-row"><span class="rev-label">Tipo imovel:</span><span class="rev-val">' + propType + '</span></div>';
+      h += '<div class="rev-row"><span class="rev-label">Tipo imóvel:</span><span class="rev-val">' + propType + '</span></div>';
       h += '<div class="rev-row"><span class="rev-label">Data/Hora:</span><span class="rev-val">' + dataHora + '</span></div>';
       h += '</div>';
 
       // Card 2: Quem realiza
       var quemCards = document.querySelectorAll('[data-realiza]');
       var quem = '-';
-      quemCards.forEach(function(el) { if (el.classList.contains('selected')) quem = el.getAttribute('data-realiza') === 'imobiliaria' ? 'Imobiliaria / Corretor' : 'Proprietario'; });
+      quemCards.forEach(function(el) { if (el.classList.contains('selected')) quem = el.getAttribute('data-realiza') === 'imobiliária' ? 'Imobiliária / Corretor' : 'Proprietário'; });
       var imobName = (document.getElementById('wi-imob-name') || {}).value || '';
       var corrName = (document.getElementById('wi-corr-name') || {}).value || '';
       var corrCreci = (document.getElementById('wi-corr-creci') || {}).value || '';
       var corrPhone = (document.getElementById('wi-corr-phone') || {}).value || '';
       var corrEmail = (document.getElementById('wi-corr-email') || {}).value || '';
       h += '<div class="rev-card"><div class="rev-card-title">Quem realiza</div>';
-      h += '<div class="rev-row"><span class="rev-label">Responsavel:</span><span class="rev-val">' + quem + '</span></div>';
-      if (imobName) h += '<div class="rev-row"><span class="rev-label">Imobiliaria:</span><span class="rev-val">' + imobName + '</span></div>';
+      h += '<div class="rev-row"><span class="rev-label">Responsável:</span><span class="rev-val">' + quem + '</span></div>';
+      if (imobName) h += '<div class="rev-row"><span class="rev-label">Imobiliária:</span><span class="rev-val">' + imobName + '</span></div>';
       if (corrName) h += '<div class="rev-row"><span class="rev-label">Corretor:</span><span class="rev-val">' + corrName + '</span></div>';
       if (corrCreci) h += '<div class="rev-row"><span class="rev-label">CRECI:</span><span class="rev-val">' + corrCreci + '</span></div>';
       if (corrPhone) h += '<div class="rev-row"><span class="rev-label">Telefone:</span><span class="rev-val">' + corrPhone + '</span></div>';
@@ -4811,20 +4811,20 @@ function mostrarTodosLaudos() {
   if (!list.length) return;
   var container = document.getElementById('inspections-list');
   container.innerHTML = list.map(function(i) {
-    var tipo = i.type === 'entrada' ? 'Entrada' : i.type === 'saida' ? 'Saida' : 'Temporada';
+    var tipo = i.type === 'entrada' ? 'Entrada' : i.type === 'saída' ? 'Saída' : 'Temporada';
     var icon = i.type === 'entrada'
       ? '<svg width="32" height="26" viewBox="0 0 56 44" fill="none"><rect x="10" y="4" width="26" height="36" rx="2" fill="#dbeafe" stroke="#2d7dd2" stroke-width="1.5"/><path d="M36 4 Q46 14 46 22 Q46 30 36 40" fill="#bfdbfe" stroke="#2d7dd2" stroke-width="1.5"/><circle cx="33" cy="22" r="2.5" fill="#2d7dd2"/><circle cx="46" cy="10" r="4" fill="none" stroke="#2d7dd2" stroke-width="1.5"/><line x1="46" y1="14" x2="46" y2="24" stroke="#2d7dd2" stroke-width="1.5" stroke-linecap="round"/></svg>'
-      : i.type === 'saida'
+      : i.type === 'saída'
       ? '<svg width="32" height="26" viewBox="0 0 56 44" fill="none"><rect x="14" y="4" width="26" height="36" rx="2" fill="#dbeafe" stroke="#2d7dd2" stroke-width="1.5"/><circle cx="36" cy="22" r="2.5" fill="#2d7dd2"/><line x1="42" y1="22" x2="52" y2="22" stroke="#2d7dd2" stroke-width="2" stroke-linecap="round"/><polyline points="48,18 52,22 48,26" fill="none" stroke="#2d7dd2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>'
       : '<svg width="32" height="26" viewBox="0 0 56 44" fill="none"><rect x="6" y="8" width="36" height="30" rx="3" fill="#dbeafe" stroke="#2d7dd2" stroke-width="1.5"/><rect x="6" y="8" width="36" height="10" rx="3" fill="#2d7dd2"/><circle cx="16" cy="26" r="2" fill="#2d7dd2"/><circle cx="24" cy="26" r="2" fill="#2d7dd2"/><circle cx="46" cy="10" r="5" fill="#fbbf24"/></svg>';
-    var statusLabel = i.status === 'concluido' ? 'Concluida' : i.status === 'rascunho' ? 'Em andamento' : i.status === 'assinado' ? 'Assinado' : i.status;
-    var badgeClass = i.status === 'concluido' ? 'badge-concluido' : i.status === 'rascunho' ? 'badge-rascunho' : 'badge-andamento';
+    var statusLabel = i.status === 'concluído' ? 'Concluida' : i.status === 'rascunho' ? 'Em andamento' : i.status === 'assinado' ? 'Assinado' : i.status;
+    var badgeClass = i.status === 'concluído' ? 'badge-concluído' : i.status === 'rascunho' ? 'badge-rascunho' : 'badge-andamento';
     var date = i.inspection_date || formatDate(i.created_at);
-    return '<div class="insp-card" onclick="openInspection(\''+ i.id +'\')"><div class="insp-thumb" style="background:#eef4ff;border-radius:8px;width:48px;height:48px;display:flex;align-items:center;justify-content:center;flex-shrink:0">' + icon + '</div><div class="insp-info"><div class="insp-address">' + (i.property_address || 'Endereco nao informado') + '</div><div class="insp-meta"><span>' + tipo + '</span><span>' + date + '</span></div></div><div class="insp-right"><span class="insp-badge ' + badgeClass + '">' + statusLabel + '</span></div></div>';
+    return '<div class="insp-card" onclick="openInspection(\''+ i.id +'\')"><div class="insp-thumb" style="background:#eef4ff;border-radius:8px;width:48px;height:48px;display:flex;align-items:center;justify-content:center;flex-shrink:0">' + icon + '</div><div class="insp-info"><div class="insp-address">' + (i.property_address || 'Endereço nao informado') + '</div><div class="insp-meta"><span>' + tipo + '</span><span>' + date + '</span></div></div><div class="insp-right"><span class="insp-badge ' + badgeClass + '">' + statusLabel + '</span></div></div>';
   }).join('');
 }
 
-// Sync wizard sidebar com dados do usuario
+// Sync wizard sidebar com dados do usuário
 function syncWizSidebar() {
   var n = document.getElementById('profile-name');
   var wn = document.getElementById('wiz-profile-name');
@@ -4836,7 +4836,7 @@ function syncWizSidebar() {
   if (ds && ws) ws.textContent = ds.textContent;
 }
 
-function selectTipoImovel(el) {
+function selectTipoImóvel(el) {
   document.querySelectorAll('.wi-tipo-btn').forEach(function(b){ b.classList.remove('sel'); });
   el.classList.add('sel');
   var sel = document.getElementById('wi-prop-type');
@@ -5275,7 +5275,7 @@ function renderAmbientesPorTipo() {
       _rowHtml(iDesp,'Despensa','Deposito de alimentos','despensa',0)+
       _rowHtml(iServ,'Area de servico / lavanderia','Lavanderia','servico',0),'ambiente de servico');
     html += _secaoHtml(5,'Acesso e externas',
-      _toggleHtml(iExt,'Fachada / hall de entrada','Area de acesso ao imovel','area_externa',true)+
+      _toggleHtml(iExt,'Fachada / hall de entrada','Area de acesso ao imóvel','area_externa',true)+
       _rowHtml(iVar,'Varanda / sacada','Area externa coberta','varanda',0)+
       _rowHtml(iGar,'Garagem / vaga','Vaga de veiculo','garagem',0),'area externa');
   }
@@ -5290,7 +5290,7 @@ function renderAmbientesPorTipo() {
       _rowHtml(iSala,'Ambiente integrado','Sala e area de estar','sala',1)+
       _rowHtml(iCoz,'Cozinha / kitchenette','Area de cozinha','cozinha',0),'ambiente');
     html += _secaoHtml(4,'Acesso e externas',
-      _toggleHtml(iExt,'Fachada / hall','Acesso ao imovel','area_externa',true)+
+      _toggleHtml(iExt,'Fachada / hall','Acesso ao imóvel','area_externa',true)+
       _rowHtml(iVar,'Varanda','Varanda do studio','varanda',0)+
       _rowHtml(iGar,'Garagem / vaga','Vaga de veiculo','garagem',0),'area externa');
   }
@@ -5301,14 +5301,14 @@ function renderAmbientesPorTipo() {
       _rowHtml(iRecep,'Recepcao / hall','Recepcao de clientes','recepcao',0)+
       _rowHtml(iEscrit,'Sala de reuniao','Sala de reunioes','reuniao',0),'ambiente de trabalho');
     html += _secaoHtml(2,'Banheiros',
-      _rowHtml(iBanh,'Banheiro','Banheiro do imovel','banheiro',1),'banheiro');
+      _rowHtml(iBanh,'Banheiro','Banheiro do imóvel','banheiro',1),'banheiro');
     html += _secaoHtml(3,'Servicos',
-      _rowHtml(iCopa,'Copa','Copa do imovel','copa',0)+
-      _rowHtml(iCoz,'Cozinha','Cozinha do imovel','cozinha_com',0)+
+      _rowHtml(iCopa,'Copa','Copa do imóvel','copa',0)+
+      _rowHtml(iCoz,'Cozinha','Cozinha do imóvel','cozinha_com',0)+
       _rowHtml(iDesp,'Despensa','Deposito de alimentos','despensa',0)+
       _rowHtml(iDepo,'Deposito','Deposito geral','deposito',0),'ambiente de servico');
     html += _secaoHtml(4,'Acesso e externas',
-      _toggleHtml(iExt,'Fachada','Frente do imovel','area_externa',true)+
+      _toggleHtml(iExt,'Fachada','Frente do imóvel','area_externa',true)+
       _rowHtml(iGar,'Estacionamento','Area de estacionamento','garagem',0),'area externa');
   }
 
@@ -5318,7 +5318,7 @@ function renderAmbientesPorTipo() {
       _rowHtml(iEscrit,'Provador','Cabine de prova','provador',0)+
       _rowHtml(iRecep,'Caixa / balcao','Area de atendimento','balcao',0),'ambiente comercial');
     html += _secaoHtml(2,'Banheiros',
-      _rowHtml(iBanh,'Banheiro','Banheiro do imovel','banheiro',1),'banheiro');
+      _rowHtml(iBanh,'Banheiro','Banheiro do imóvel','banheiro',1),'banheiro');
     html += _secaoHtml(3,'Servicos',
       _rowHtml(iDepo,'Estoque / deposito','Area de estoque','deposito',0)+
       _rowHtml(iCopa,'Copa','Copa dos funcionarios','copa',0)+
@@ -5335,7 +5335,7 @@ function renderAmbientesPorTipo() {
       _rowHtml(iDepo,'Deposito / estoque','Area de estoque','deposito',0)+
       _rowHtml(iDoca,'Doca','Area de carga e descarga','doca',0),'ambiente operacional');
     html += _secaoHtml(2,'Banheiros e vestiarios',
-      _rowHtml(iBanh,'Banheiro','Banheiro do imovel','banheiro',1)+
+      _rowHtml(iBanh,'Banheiro','Banheiro do imóvel','banheiro',1)+
       _rowHtml(iVest,'Vestiario','Vestiario dos funcionarios','vestiario',0),'banheiro');
     html += _secaoHtml(3,'Administrativo',
       _rowHtml(iEscrit,'Escritorio','Escritorio administrativo','escritorio',0)+
@@ -5343,7 +5343,7 @@ function renderAmbientesPorTipo() {
       _rowHtml(iCoz,'Cozinha','Cozinha dos funcionarios','cozinha_gal',0)+
       _rowHtml(iDesp,'Despensa','Deposito de alimentos','despensa',0),'ambiente administrativo');
     html += _secaoHtml(4,'Acesso e externas',
-      _toggleHtml(iExt,'Fachada','Frente do imovel','area_externa',true)+
+      _toggleHtml(iExt,'Fachada','Frente do imóvel','area_externa',true)+
       _rowHtml(iPatio,'Patio externo','Area externa de manobra','patio',0)+
       _rowHtml(iGar,'Estacionamento','Area de estacionamento','garagem',0),'area externa');
   }
@@ -5361,7 +5361,7 @@ function renderAmbientesPorTipo() {
       _rowHtml(iEdic,'Casa de caseiro / edicula','Construcao secundaria','edicula',0),'construcao');
     html += _secaoHtml(2,'Areas externas',
       _rowHtml(iPasto,'Area externa / pasto','Terreno e pasto','pasto',0)+
-      _rowHtml(iCerca,'Cerca / muro perimetral','Cercamento do imovel','cerca',0)+
+      _rowHtml(iCerca,'Cerca / muro perimetral','Cercamento do imóvel','cerca',0)+
       _rowHtml(iPoco,'Poco / caixa dagua','Fonte hidrica','poco',0)+
       _rowHtml(iCurral,'Curral / pocilga','Area de animais','curral',0),'area externa');
     html += _secaoHtml(3,'Lazer',
@@ -5374,13 +5374,13 @@ function renderAmbientesPorTipo() {
 
   else {
     html += _secaoHtml(1,'Ambientes',
-      _rowHtml(iSala,'Ambiente principal','Ambiente principal do imovel','sala',1)+
-      _rowHtml(iBanh,'Banheiro','Banheiro do imovel','banheiro',1)+
+      _rowHtml(iSala,'Ambiente principal','Ambiente principal do imóvel','sala',1)+
+      _rowHtml(iBanh,'Banheiro','Banheiro do imóvel','banheiro',1)+
       _rowHtml(iCopa,'Copa / cozinha','Area de alimentacao','cozinha',0)+
       _rowHtml(iDepo,'Deposito','Deposito geral','deposito',0),'ambiente');
     html += _secaoHtml(2,'Areas externas',
-      _toggleHtml(iExt,'Fachada','Frente do imovel','area_externa',true)+
-      _rowHtml(iPatio,'Area externa','Area externa do imovel','patio',0),'area externa');
+      _toggleHtml(iExt,'Fachada','Frente do imóvel','area_externa',true)+
+      _rowHtml(iPatio,'Area externa','Area externa do imóvel','patio',0),'area externa');
   }
 
   html += '<div style="border:1.5px dashed #bfdbfe;border-radius:10px;padding:12px 14px;display:flex;align-items:center;gap:10px;cursor:pointer;margin-bottom:4px" onclick="wizCriarNovoAmbiente(this)">' +
@@ -5390,7 +5390,7 @@ function renderAmbientesPorTipo() {
   '</div>';
 
   container.innerHTML = html;
-  // Atualizar badge com tipo do imovel
+  // Atualizar badge com tipo do imóvel
   var badge = document.getElementById('wiz-tipo-badge');
   if (badge && wizard.propType) badge.innerHTML = wizard.propType;
   wizUpdateResumo();
@@ -5641,7 +5641,7 @@ function wiz6Init() {
     _wiz6Ambientes = window._wiz6AmbientesFinal.slice();
     window._wiz6AmbientesFinal = null;
   } else if (_wiz6Ambientes && _wiz6Ambientes.length > 0) {
-    // Manter o que ja tem - nao zerar se _wiz6AmbientesFinal nao existe
+    // Manter o que já tem - nao zerar se _wiz6AmbientesFinal nao existe
   } else {
     _wiz6Ambientes = [];
     var tags = document.querySelectorAll('[style*="border-radius:20px"]');
@@ -6020,7 +6020,7 @@ async function wiz6AddFotos(input, ambIdx) {
         base64: base64,
         mime: file.type || 'image/jpeg',
         nome: file.name,
-        novaAposAnalise: jaAnalisou
+        novaAposAnálise: jaAnalisou
       });
       wiz6RenderAmbCard(ambIdx);
     };
@@ -6082,7 +6082,7 @@ function wiz6AnalisarBatch(ambIdx) {
     wizard.itensData[ambIdx].resumo = dados.resumo || '';
     wizard.itensData[ambIdx].jaAnalisou = true;
     wizard.itensData[ambIdx].estado_geral = dados.estado_geral || 'Bom';
-    wiz6DescontarCreditos(fotos.length);
+    wiz6DescontarCréditos(fotos.length);
     wiz6RenderAmbCard(ambIdx);
     wiz6AtualizarProgress();
 
@@ -6100,11 +6100,11 @@ function wiz6AnalisarBatch(ambIdx) {
       'Cozinha': ['fogao', 'fogão', 'coifa', 'pia de cozinha', 'cooktop', 'forno embutido'],
       'Area de servico': ['tanque', 'maquina de lavar', 'máquina de lavar', 'varal'],
       'Dormitorio': ['cama de casal', 'cama box', 'guarda-roupa', 'criado-mudo', 'cabeceira'],
-      'Corredor': ['corredor', 'hall', 'passagem', 'circulacao', 'circulação', 'hall de entrada', 'acesso aos comodos'],
+      'Corredor': ['corredor', 'hall', 'passagem', 'circulacao', 'circulação', 'hall de entrada', 'acesso aos cômodos'],
       'Area externa': ['area externa', 'área externa', 'jardim', 'quintal', 'churrasqueira', 'piscina', 'muro externo'],
       'Garagem': ['garagem', 'vaga de garagem', 'portao', 'portão automatico', 'vaga coberta', 'piso cimentado', 'acesso de veiculos', 'portão de garagem', 'vaga de estacionamento']
     ,
-      'Fachada': ['fachada', 'frente da casa', 'frente do imovel', 'frente do imóvel', 'entrada principal', 'fachada frontal', 'fachada lateral']
+      'Fachada': ['fachada', 'frente da casa', 'frente do imóvel', 'frente do imóvel', 'entrada principal', 'fachada frontal', 'fachada lateral']
     };
 
     // Check if resumo contains strong signals of a DIFFERENT environment
@@ -6142,7 +6142,7 @@ function wiz6AnalisarBatch(ambIdx) {
       extras = [{
         nome: mismatchDetected,
         fotos: allFotoNums,
-        descricao: dados.resumo || '',
+        descrição: dados.resumo || '',
         estado: dados.estado_geral || 'Bom'
       }];
     }
@@ -6288,7 +6288,7 @@ function wiz6ProxAmb() {
   // Consolidar em background (so se nao fez batch)
   if (fotos.length > 0 && !dados.jaAnalisou) {
     var descricoes = fotos.map(function(f) {
-      return {item: f.item, descricao: f.descricao, estado: f.estado};
+      return {item: f.item, descrição: f.descrição, estado: f.estado};
     });
     fetch('/api/consolidar-ambiente', {
       method: 'POST',
@@ -6553,7 +6553,7 @@ function wiz6ConfirmarVideo() {
         timestamp: fr.timestamp,
         avaria: fr.avaria || null,
         texto_narrado: fr.texto_narrado || null,
-        novaAposAnalise: false
+        novaAposAnálise: false
       });
     });
   });
@@ -6644,7 +6644,7 @@ function _wiz6EstadoClass(estado) {
   return 'estado-pendente';
 }
 
-function wiz6DescontarCreditos(qtd, tipo) {
+function wiz6DescontarCréditos(qtd, tipo) {
   var preco = tipo === 'video' ? 0.90 : 0.50;
   console.log('Créditos usados:', qtd, tipo, '= R$', (qtd * preco).toFixed(2));
   // TODO: conectar ao sistema de créditos do Mercado Pago
@@ -6699,7 +6699,7 @@ function wiz6Concluir() {
           // Forcar modo foto ANTES do init
           if (typeof _wiz6Modo !== 'undefined') _wiz6Modo = 'foto';
           wiz6Init();
-          // click removido: wiz6Init ja configura modo foto inline
+          // click removido: wiz6Init já configura modo foto inline
         } catch(e) { console.warn('[hook wiz6] err', e); }
       }, 300);
     }
@@ -6707,7 +6707,7 @@ function wiz6Concluir() {
 })();
 // ========== FIM ETAPA 6 ==========
 </script>
-<button class="db-help-btn" onclick="showManual()" title="Manual do usuario">?</button>
+<button class="db-help-btn" onclick="showManual()" title="Manual do usuário">?</button>
 
 <!-- MODAL COMO FUNCIONA -->
 <div id="modal-como-funciona" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;z-index:9999;background:rgba(0,0,0,0.5);align-items:flex-end;justify-content:center">
@@ -6715,18 +6715,18 @@ function wiz6Concluir() {
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
       <div>
         <span style="font-size:16px;font-weight:400;color:#2d7dd2;font-family:Helvetica,Arial,sans-serif">izy</span><span style="font-size:16px;font-weight:900;color:#1a2540;font-family:Helvetica,Arial,sans-serif">LAUDO</span>
-        <div style="font-size:6px;color:#8898aa;letter-spacing:2px;text-transform:uppercase;margin-top:1px">Vistorias Imobiliarias</div>
+        <div style="font-size:6px;color:#8898aa;letter-spacing:2px;text-transform:uppercase;margin-top:1px">Vistorias Imobiliárias</div>
       </div>
       <button onclick="fecharComoFunciona()" style="width:32px;height:32px;border-radius:50%;border:none;background:#e2e8f0;color:#4a5568;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center">✕</button>
     </div>
     <div style="font-size:11px;font-weight:700;color:#8898aa;text-transform:uppercase;letter-spacing:0.8px;margin-bottom:14px">Passo a passo</div>
     <div id="modal-passos">
       <div style="display:flex;gap:10px;margin-bottom:12px"><div style="display:flex;flex-direction:column;align-items:center;flex-shrink:0"><div style="width:24px;height:24px;border-radius:50%;background:#2d7dd2;color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center">1</div><div style="width:1.5px;flex:1;background:#e2e8f0;margin:4px auto;min-height:16px"></div></div><div style="padding-bottom:12px"><div style="font-size:13px;font-weight:600;color:#1a2540">Clique em + Nova vistoria</div><div style="font-size:11px;color:#8898aa;margin-top:2px">Inicie um novo laudo a qualquer momento</div></div></div>
-      <div style="display:flex;gap:10px;margin-bottom:12px"><div style="display:flex;flex-direction:column;align-items:center;flex-shrink:0"><div style="width:24px;height:24px;border-radius:50%;background:#2d7dd2;color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center">2</div><div style="width:1.5px;flex:1;background:#e2e8f0;margin:4px auto;min-height:16px"></div></div><div style="padding-bottom:12px"><div style="font-size:13px;font-weight:600;color:#1a2540">Escolha o tipo de vistoria</div><div style="font-size:11px;color:#8898aa;margin-top:2px">Entrada, Saida ou Temporada</div></div></div>
-      <div style="display:flex;gap:10px;margin-bottom:12px"><div style="display:flex;flex-direction:column;align-items:center;flex-shrink:0"><div style="width:24px;height:24px;border-radius:50%;background:#2d7dd2;color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center">3</div><div style="width:1.5px;flex:1;background:#e2e8f0;margin:4px auto;min-height:16px"></div></div><div style="padding-bottom:12px"><div style="font-size:13px;font-weight:600;color:#1a2540">Informe quem realiza</div><div style="font-size:11px;color:#8898aa;margin-top:2px">Imobiliaria, corretor ou proprietario</div></div></div>
-      <div style="display:flex;gap:10px;margin-bottom:12px"><div style="display:flex;flex-direction:column;align-items:center;flex-shrink:0"><div style="width:24px;height:24px;border-radius:50%;background:#2d7dd2;color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center">4</div><div style="width:1.5px;flex:1;background:#e2e8f0;margin:4px auto;min-height:16px"></div></div><div style="padding-bottom:12px"><div style="font-size:13px;font-weight:600;color:#1a2540">Preencha os dados do imovel</div><div style="font-size:11px;color:#8898aa;margin-top:2px">CEP busca o endereco automaticamente</div></div></div>
-      <div style="display:flex;gap:10px;margin-bottom:12px"><div style="display:flex;flex-direction:column;align-items:center;flex-shrink:0"><div style="width:24px;height:24px;border-radius:50%;background:#2d7dd2;color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center">5</div><div style="width:1.5px;flex:1;background:#e2e8f0;margin:4px auto;min-height:16px"></div></div><div style="padding-bottom:12px"><div style="font-size:13px;font-weight:600;color:#1a2540">Cadastre as partes envolvidas</div><div style="font-size:11px;color:#8898aa;margin-top:2px">Locador, locatario e corretor</div></div></div>
-      <div style="display:flex;gap:10px;margin-bottom:12px"><div style="display:flex;flex-direction:column;align-items:center;flex-shrink:0"><div style="width:24px;height:24px;border-radius:50%;background:#2d7dd2;color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center">6</div><div style="width:1.5px;flex:1;background:#e2e8f0;margin:4px auto;min-height:16px"></div></div><div style="padding-bottom:12px"><div style="font-size:13px;font-weight:600;color:#1a2540">Selecione os ambientes</div><div style="font-size:11px;color:#8898aa;margin-top:2px">Defina os comodos a vistoriar</div></div></div>
+      <div style="display:flex;gap:10px;margin-bottom:12px"><div style="display:flex;flex-direction:column;align-items:center;flex-shrink:0"><div style="width:24px;height:24px;border-radius:50%;background:#2d7dd2;color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center">2</div><div style="width:1.5px;flex:1;background:#e2e8f0;margin:4px auto;min-height:16px"></div></div><div style="padding-bottom:12px"><div style="font-size:13px;font-weight:600;color:#1a2540">Escolha o tipo de vistoria</div><div style="font-size:11px;color:#8898aa;margin-top:2px">Entrada, Saída ou Temporada</div></div></div>
+      <div style="display:flex;gap:10px;margin-bottom:12px"><div style="display:flex;flex-direction:column;align-items:center;flex-shrink:0"><div style="width:24px;height:24px;border-radius:50%;background:#2d7dd2;color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center">3</div><div style="width:1.5px;flex:1;background:#e2e8f0;margin:4px auto;min-height:16px"></div></div><div style="padding-bottom:12px"><div style="font-size:13px;font-weight:600;color:#1a2540">Informe quem realiza</div><div style="font-size:11px;color:#8898aa;margin-top:2px">Imobiliária, corretor ou proprietário</div></div></div>
+      <div style="display:flex;gap:10px;margin-bottom:12px"><div style="display:flex;flex-direction:column;align-items:center;flex-shrink:0"><div style="width:24px;height:24px;border-radius:50%;background:#2d7dd2;color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center">4</div><div style="width:1.5px;flex:1;background:#e2e8f0;margin:4px auto;min-height:16px"></div></div><div style="padding-bottom:12px"><div style="font-size:13px;font-weight:600;color:#1a2540">Preencha os dados do imóvel</div><div style="font-size:11px;color:#8898aa;margin-top:2px">CEP busca o endereço automaticamente</div></div></div>
+      <div style="display:flex;gap:10px;margin-bottom:12px"><div style="display:flex;flex-direction:column;align-items:center;flex-shrink:0"><div style="width:24px;height:24px;border-radius:50%;background:#2d7dd2;color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center">5</div><div style="width:1.5px;flex:1;background:#e2e8f0;margin:4px auto;min-height:16px"></div></div><div style="padding-bottom:12px"><div style="font-size:13px;font-weight:600;color:#1a2540">Cadastre as partes envolvidas</div><div style="font-size:11px;color:#8898aa;margin-top:2px">Locador, locatário e corretor</div></div></div>
+      <div style="display:flex;gap:10px;margin-bottom:12px"><div style="display:flex;flex-direction:column;align-items:center;flex-shrink:0"><div style="width:24px;height:24px;border-radius:50%;background:#2d7dd2;color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center">6</div><div style="width:1.5px;flex:1;background:#e2e8f0;margin:4px auto;min-height:16px"></div></div><div style="padding-bottom:12px"><div style="font-size:13px;font-weight:600;color:#1a2540">Selecione os ambientes</div><div style="font-size:11px;color:#8898aa;margin-top:2px">Defina os cômodos a vistoriar</div></div></div>
       <div style="display:flex;gap:10px;margin-bottom:12px"><div style="display:flex;flex-direction:column;align-items:center;flex-shrink:0"><div style="width:24px;height:24px;border-radius:50%;background:#2d7dd2;color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center">7</div><div style="width:1.5px;flex:1;background:#e2e8f0;margin:4px auto;min-height:16px"></div></div><div style="padding-bottom:12px"><div style="font-size:13px;font-weight:600;color:#1a2540">Fotografe e registre os itens</div><div style="font-size:11px;color:#8898aa;margin-top:2px">A IA descreve cada foto automaticamente</div></div></div>
       <div style="display:flex;gap:10px"><div style="display:flex;flex-direction:column;align-items:center;flex-shrink:0"><div style="width:24px;height:24px;border-radius:50%;background:#059669;color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center">8</div></div><div><div style="font-size:13px;font-weight:600;color:#1a2540">Gere o PDF do laudo</div><div style="font-size:11px;color:#8898aa;margin-top:2px">Pronto para baixar e assinar digitalmente</div></div></div>
     </div>
@@ -6741,7 +6741,7 @@ function wiz6Concluir() {
     try {
       var cb = document.getElementById("corretor-block");
       if (!cb || typeof wizard === "undefined") return;
-      cb.style.display = (wizard.realizador === "imobiliaria") ? "" : "none";
+      cb.style.display = (wizard.realizador === "imobiliária") ? "" : "none";
     } catch(e){}
   }
   var _prevNWS = window.nextWizStep;
