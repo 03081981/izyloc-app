@@ -6388,41 +6388,158 @@ async function wiz6PollVideo() {
   } catch(e) {}
 }
 
+// Store global dos frames do video para revisao
+window._videoFramesStore = {};
+window._videoFramesSelecionados = {};
+
 function wiz6MostrarRevisaoVideo(ambientes) {
-  document.getElementById('wiz6-video-processando').style.display = 'none';
+  window._videoFramesStore = ambientes || {};
+  window._videoFramesSelecionados = {};
+
+  Object.keys(ambientes).forEach(function(amb) {
+    window._videoFramesSelecionados[amb] = {};
+    (ambientes[amb] || []).forEach(function(fr, fi) {
+      window._videoFramesSelecionados[amb][fi] = true;
+    });
+  });
+
+  var proc = document.getElementById('wiz6-video-processando');
   var rev = document.getElementById('wiz6-video-revisao');
-  rev.style.display = 'block';
+  if (proc) proc.style.display = 'none';
+  if (rev) rev.style.display = 'block';
 
-  var html = '<div style="font-size:14px;font-weight:600;color:#1a2540;margin-bottom:12px">Revisão dos frames — confirme os ambientes</div>';
+  var html = '<div style="padding:4px">';
+  html += '<div style="font-size:13px;font-weight:600;color:#1a2540;margin-bottom:4px">Revise os frames capturados</div>';
+  html += '<div style="font-size:11px;color:#8898aa;margin-bottom:14px">Desmarque frames ruins ou borrados antes de analisar. Frames com borda vermelha ser\u00e3o ignorados.</div>';
 
-  Object.entries(ambientes).forEach(function(entry) {
-    var amb = entry[0], frames = entry[1];
-    html += '<div style="margin-bottom:16px">'
-      + '<div style="font-size:12px;font-weight:600;color:#2d7dd2;margin-bottom:6px">' + amb + ' — ' + frames.length + ' frames</div>'
-      + '<div style="display:flex;gap:8px;flex-wrap:wrap">';
-    frames.forEach(function(frame, fi) {
-      html += '<div style="position:relative;cursor:pointer" onclick="wiz6ToggleFrame(this)">'
-        + '<img src="data:image/jpeg;base64,' + (frame.imagem_b64 || '') + '" style="width:80px;height:60px;object-fit:cover;border-radius:6px;border:2px solid #2d7dd2"/>'
-        + '<div style="font-size:9px;text-align:center;color:#8898aa;margin-top:2px">' + (frame.qualidade || '') + '</div>'
-        + '</div>';
+  var totalFrames = 0;
+  Object.keys(ambientes).forEach(function(amb) {
+    var frames = ambientes[amb] || [];
+    totalFrames += frames.length;
+    if (frames.length === 0) return;
+
+    html += '<div style="margin-bottom:18px">';
+    html += '<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;padding:8px 12px;background:linear-gradient(135deg,#1e3a5f,#2d7dd2);border-radius:8px">';
+    html += '<span style="font-size:14px;font-weight:700;color:#fff">' + amb + '</span>';
+    html += '<span style="font-size:11px;color:#93c5fd;margin-left:auto">' + frames.length + ' frame' + (frames.length!==1?'s':'') + '</span>';
+    html += '</div>';
+
+    html += '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px">';
+    frames.forEach(function(fr, fi) {
+      var isAvaria = fr.avaria ? true : false;
+      var borderColor = isAvaria ? '#ef4444' : '#2d7dd2';
+      var bgBadge = isAvaria ? '#fef2f2' : '#eef4ff';
+      var colorBadge = isAvaria ? '#991b1b' : '#185fa5';
+      var labelAvaria = isAvaria ? ('\u26a0 ' + fr.avaria) : ('Frame ' + (fi+1));
+      var seg = fr.segundo ? fr.segundo.toFixed(1) + 's' : '';
+
+      html += '<div id="vframe-' + amb.replace(/\s/g,'_') + '-' + fi + '" ';
+      html += 'onclick="wiz6ToggleFrame(this,\'' + amb.replace(/'/g,"\\'") + '\',' + fi + ')" ';
+      html += 'style="border:2px solid ' + borderColor + ';border-radius:8px;overflow:hidden;cursor:pointer;position:relative;background:#f1f5f9">';
+
+      html += '<img src="data:image/jpeg;base64,' + fr.imagem_b64 + '" ';
+      html += 'style="width:100%;aspect-ratio:4/3;object-fit:cover;display:block">';
+
+      html += '<div style="padding:4px 6px;background:' + bgBadge + '">';
+      html += '<div style="font-size:9px;color:' + colorBadge + ';font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + labelAvaria + '</div>';
+      if (seg) html += '<div style="font-size:9px;color:#8898aa">' + seg + '</div>';
+      if (fr.texto_narrado) html += '<div style="font-size:9px;color:#8898aa;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="' + fr.texto_narrado + '">\uD83C\uDFA4 ' + fr.texto_narrado.substring(0,30) + (fr.texto_narrado.length>30?'...':'') + '</div>';
+      html += '</div>';
+
+      html += '<div id="vframe-overlay-' + amb.replace(/\s/g,'_') + '-' + fi + '" ';
+      html += 'style="display:none;position:absolute;top:0;left:0;width:100%;height:100%;background:rgba(239,68,68,0.5);align-items:center;justify-content:center">';
+      html += '<span style="font-size:24px">\u2715</span>';
+      html += '</div>';
+      html += '</div>';
     });
     html += '</div></div>';
   });
 
-  html += '<button onclick="wiz6ConfirmarVideo()" style="width:100%;padding:12px;border-radius:8px;background:#059669;color:#fff;font-size:14px;font-weight:600;border:none;cursor:pointer;margin-top:8px">✅ Confirmar e continuar →</button>';
-  rev.innerHTML = html;
+  html += '<div style="background:#f0fdf4;border:0.5px solid #bbf7d0;border-radius:10px;padding:14px;text-align:center;margin-top:8px">';
+  html += '<div style="font-size:13px;color:#166534;font-weight:600;margin-bottom:4px">' + totalFrames + ' frames capturados</div>';
+  html += '<div style="font-size:11px;color:#166534;margin-bottom:12px">Desmarque os ruins e confirme para a IA analisar</div>';
+  html += '<button onclick="wiz6ConfirmarVideo()" style="padding:12px 28px;background:#16a34a;color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer">';
+  html += '\u2713 Confirmar e analisar com IA</button>';
+  html += '</div>';
+  html += '</div>';
+
+  if (rev) rev.innerHTML = html;
+
+  Object.keys(ambientes).forEach(function(amb) {
+    (ambientes[amb]||[]).forEach(function(fr, fi) {
+      var ov = document.getElementById('vframe-overlay-' + amb.replace(/\s/g,'_') + '-' + fi);
+      if (ov) ov.style.display = 'none';
+    });
+  });
 }
 
-function wiz6ToggleFrame(el) {
-  var img = el.querySelector('img');
-  if (!img) return;
-  var ativo = img.style.borderColor !== 'rgb(239, 68, 68)';
-  img.style.borderColor = ativo ? '#ef4444' : '#2d7dd2';
-  img.style.opacity = ativo ? '0.4' : '1';
+function wiz6ToggleFrame(el, amb, fi) {
+  var sel = window._videoFramesSelecionados;
+  if (!sel[amb]) sel[amb] = {};
+  var atual = sel[amb][fi] !== false;
+  sel[amb][fi] = !atual;
+
+  var ov = document.getElementById('vframe-overlay-' + amb.replace(/\s/g,'_') + '-' + fi);
+  if (sel[amb][fi]) {
+    el.style.opacity = '1';
+    if (ov) ov.style.display = 'none';
+    var frames = window._videoFramesStore[amb] || [];
+    var fr = frames[fi];
+    el.style.borderColor = (fr && fr.avaria) ? '#ef4444' : '#2d7dd2';
+  } else {
+    el.style.opacity = '0.5';
+    el.style.borderColor = '#ef4444';
+    if (ov) ov.style.display = 'flex';
+  }
 }
 
 function wiz6ConfirmarVideo() {
-  if (typeof nextWizStep === 'function') nextWizStep();
+  var store = window._videoFramesStore || {};
+  var sel = window._videoFramesSelecionados || {};
+  var ambientes = _wiz6Ambientes || [];
+
+  Object.keys(store).forEach(function(ambNome) {
+    var ambIdx = -1;
+    for (var i=0; i<ambientes.length; i++) {
+      if (ambientes[i].toLowerCase().indexOf(ambNome.toLowerCase()) >= 0 ||
+          ambNome.toLowerCase().indexOf(ambientes[i].toLowerCase()) >= 0) {
+        ambIdx = i; break;
+      }
+    }
+
+    if (ambIdx < 0) {
+      ambientes.push(ambNome);
+      ambIdx = ambientes.length - 1;
+      _wiz6Ambientes = ambientes;
+    }
+
+    if (!wizard.itensData[ambIdx]) {
+      wizard.itensData[ambIdx] = {fotos:[], testes:{}, obs:'', resumo:'', jaAnalisou:false};
+    }
+
+    var frames = store[ambNome] || [];
+    frames.forEach(function(fr, fi) {
+      if (sel[ambNome] && sel[ambNome][fi] === false) return;
+      var dataUrl = 'data:image/jpeg;base64,' + fr.imagem_b64;
+      wizard.itensData[ambIdx].fotos.push({
+        preview: dataUrl,
+        base64: fr.imagem_b64,
+        mime: 'image/jpeg',
+        timestamp: fr.timestamp,
+        avaria: fr.avaria || null,
+        texto_narrado: fr.texto_narrado || null,
+        novaAposAnalise: false
+      });
+    });
+  });
+
+  wiz6RenderTabs();
+  wiz6SelecionarModo('foto');
+  wiz6RenderAmbCard(0);
+  wiz6AtualizarProgress();
+
+  var card = document.getElementById('wiz6-amb-card');
+  if (card) card.scrollIntoView({behavior:'smooth', block:'start'});
 }
 
 // ── HELPERS ──────────────────────────────────────────────
