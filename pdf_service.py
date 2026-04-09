@@ -480,19 +480,46 @@ def add_ambientes(story, s, ambientes):
                 estado_ambiente = 'Bom'
 
         if desc_ambiente:
-            # Collect all conclusion elements in a list to keep together
-            _conclusao_parts = []
-            _conclusao_parts.append(Spacer(1, 6))
-            _conclusao_parts.append(HRFlowable(width='100%', thickness=0.5, color=HexColor('#cccccc'),
-                                    spaceBefore=2, spaceAfter=4))
-            _conclusao_parts.append(Paragraph(
-                f'\u2726 CONCLUS\u00c3O \u2014 {amb["nome"].upper()}',
-                s['conclusao_titulo']))
-            _conclusao_parts.append(Paragraph(
-                f'A presente conclus\u00e3o baseia-se nas condi\u00e7\u00f5es gerais do ambiente <b>{amb["nome"]}</b>, '
-                f'conforme registrado nas fotos acima.',
-                s['conclusao_texto']))
-            _conclusao_parts.append(Paragraph(desc_ambiente, s['conclusao_texto']))
+            import re as _re
+            # --- Title + intro kept together so they don't split across pages ---
+            _header_parts = [
+                Spacer(1, 6),
+                HRFlowable(width='100%', thickness=0.5, color=HexColor('#cccccc'),
+                           spaceBefore=2, spaceAfter=4),
+                Paragraph(
+                    f'\u2726 CONCLUS\u00c3O \u2014 {amb["nome"].upper()}',
+                    s['conclusao_titulo']),
+                Paragraph(
+                    f'A presente conclus\u00e3o baseia-se nas condi\u00e7\u00f5es gerais do ambiente <b>{amb["nome"]}</b>, '
+                    f'conforme registrado nas fotos acima.',
+                    s['conclusao_texto']),
+            ]
+            story.append(KeepTogether(_header_parts))
+
+            # --- Split synthesis into separate paragraphs per category ---
+            _categorias = [
+                'S\u00cdNTESE DO AMBIENTE',
+                'Piso', 'Paredes', 'Teto', 'Esquadrias',
+                'Instala\u00e7\u00f5es', 'M\u00f3veis e equipamentos',
+                'Observa\u00e7\u00f5es', 'Estado geral'
+            ]
+            _cat_pattern = '(' + '|'.join(_re.escape(cat) for cat in _categorias) + r')\s*:'
+            _seg = _re.split(_cat_pattern, desc_ambiente)
+            if len(_seg) > 2:
+                # _seg = [before, cat1, text1, cat2, text2, ...]
+                if _seg[0].strip():
+                    story.append(Paragraph(_seg[0].strip(), s['conclusao_texto']))
+                for _j in range(1, len(_seg) - 1, 2):
+                    _cat_name = _seg[_j].strip()
+                    _cat_text = _seg[_j + 1].strip() if _j + 1 < len(_seg) else ''
+                    story.append(Paragraph(
+                        f'<b>{_cat_name}:</b> {_cat_text}',
+                        s['conclusao_texto']))
+            else:
+                # Fallback: no known categories found, render as single block
+                story.append(Paragraph(desc_ambiente, s['conclusao_texto']))
+
+            # --- Color-coded avaliacao ---
             if estado_ambiente:
                 # Color-coded: green=Bom, yellow=Regular, red=Com avaria
                 _cor_mapa = {
@@ -504,11 +531,9 @@ def add_ambientes(story, s, ambientes):
                 _estilo_estado = ParagraphStyle('estado_dyn',
                     fontName='Helvetica-Bold', fontSize=10, textColor=_cor_estado,
                     leading=14, spaceBefore=4, spaceAfter=6)
-                _conclusao_parts.append(Paragraph(
+                story.append(Paragraph(
                     f'AVALIA\u00c7\u00c3O: {estado_ambiente.upper()}',
                     _estilo_estado))
-            # KeepTogether ensures title + text + avaliacao stay on same page
-            story.append(KeepTogether(_conclusao_parts))
 
         verif = amb.get('verificacoes', {})
         if verif:
