@@ -324,13 +324,22 @@ SINAIS DE AMBIENTE ERRADO:
 - Fogao, pia de cozinha, coifa = COZINHA (nao sala, nao dormitorio)
 - Cama, guarda-roupa, criado-mudo = DORMITORIO (nao sala, nao cozinha)
 - Tanque, maquina de lavar = AREA DE SERVICO
+- Portao, vaga de carro, piso cimentado largo, portao automatico = GARAGEM (nao sala)
+- Corredor estreito, passagem entre comodos, hall = CORREDOR (nao sala, nao dormitorio)
+- Jardim, quintal, area descoberta, muro externo, churrasqueira, piscina = AREA EXTERNA
+- Varanda, sacada, area coberta com vista externa = VARANDA
+
+IMPORTANTE: Se a foto mostra um espaco amplo com piso cimentado ou sem acabamento refinado,
+com portao ou acesso de veiculos, E GARAGEM — nao Sala.
+Se a foto mostra area descoberta ou semicoberta com muros, E AREA EXTERNA — nao Sala.
+Se a foto mostra espaco estreito de passagem sem moveis, E CORREDOR — nao Sala.
 
 Se as fotos mostram um ambiente DIFERENTE de '{nome_ambiente}':
 - Liste TODAS as fotos que pertencem ao outro ambiente em "ambientes_extras"
-- Use o nome correto (ex: 'Banheiro', 'Cozinha', 'Dormitorio')
+- Use o nome correto (ex: 'Banheiro', 'Cozinha', 'Dormitorio', 'Garagem', 'Corredor', 'Area externa')
 - Se TODAS as fotos sao de outro ambiente, liste TODAS as fotos em ambientes_extras
 
-ISTO E OBRIGATORIO. Nao descreva fotos de banheiro como se fossem dormitorio.
+ISTO E OBRIGATORIO. Nao descreva fotos de banheiro como se fossem dormitorio, nem fotos de garagem como se fossem sala.
 
 PASSO 5 — SINTETIZAR:
 Compile tudo em descricao unica sem omitir nenhum defeito.
