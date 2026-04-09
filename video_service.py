@@ -6,9 +6,18 @@ import subprocess
 import time
 from pathlib import Path
 
-# OpenAI para Whisper
-from openai import OpenAI
-openai_client = OpenAI(api_key=os.environ.get('OPENAI_API_KEY', ''))
+# OpenAI para Whisper (lazy init)
+openai_client = None
+
+def _get_openai_client():
+    global openai_client
+    if openai_client is None:
+        try:
+            from openai import OpenAI
+            openai_client = OpenAI(api_key=os.environ.get('OPENAI_API_KEY', ''))
+        except Exception:
+            pass
+    return openai_client
 
 # Palavras-chave que disparam frame forcado
 PALAVRAS_AVARIA = [
@@ -142,7 +151,10 @@ def transcrever_audio(video_path: str) -> list:
         
         # Transcrever com Whisper
         with open(audio_path, 'rb') as audio_file:
-            transcript = openai_client.audio.transcriptions.create(
+            client = _get_openai_client()
+        if not client:
+            return []
+        transcript = client.audio.transcriptions.create(
                 model='whisper-1',
                 file=audio_file,
                 language='pt',
