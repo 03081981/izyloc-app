@@ -3801,6 +3801,25 @@ async function saveSig(party) {
 }
 
 async function gerarLaudo() {
+  // Re-populate _fotoStore from latest wizard.itensData to ensure estado_geral and resumo are current
+  if (typeof _wiz6Ambientes !== 'undefined' && wizard && wizard.itensData) {
+    if (!window._fotoStore) window._fotoStore = {};
+    for (var _ri = 0; _ri < _wiz6Ambientes.length; _ri++) {
+      var _rName = _wiz6Ambientes[_ri];
+      var _rData = wizard.itensData[_ri];
+      if (_rData && _rData.fotos && _rData.fotos.length > 0) {
+        window._fotoStore[_rName] = _rData.fotos.map(function(f, fi) {
+          return {
+            src: f.preview || ('data:' + (f.mime || 'image/jpeg') + ';base64,' + f.base64),
+            item: '',
+            estado: _rData.estado_geral || 'Bom',
+            desc: fi === 0 ? (_rData.resumo || '') : ''
+          };
+        });
+      }
+    }
+    console.log('[gerarLaudo] _fotoStore re-populated from latest wizard.itensData');
+  }
   var tipo = document.getElementById('wi-type').value || 'entrada';
   var body = {
     type: tipo,
