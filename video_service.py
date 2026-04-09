@@ -162,8 +162,10 @@ def transcrever_audio(video_path: str) -> list:
                 timestamp_granularities=['segment', 'word']
             )
         
+        print(f"[VIDEO-SVC] transcrever_audio: Whisper retornou, processando segmentos...")
         segmentos = []
         if hasattr(transcript, 'segments') and transcript.segments:
+            print(f"[VIDEO-SVC] transcrever_audio: {len(transcript.segments)} segmentos encontrados")
             for seg in transcript.segments:
                 segmentos.append({
                     'texto': seg.text.strip().lower(),
@@ -361,9 +363,14 @@ def processar_video_completo(video_path: str, ambientes: list, output_dir: str) 
     }
     
     try:
+        print(f"[VIDEO-SVC] processar_video_completo: inicio")
+        print(f"[VIDEO-SVC] video_path={video_path}, exists={os.path.exists(video_path)}, size={os.path.getsize(video_path) if os.path.exists(video_path) else 'N/A'}")
+        print(f"[VIDEO-SVC] ambientes={ambientes}")
+        print(f"[VIDEO-SVC] output_dir={output_dir}")
         # 1. Extrair frames (1 frame a cada 2 segundos)
         frames = extrair_frames(video_path, output_dir, fps=0.5)
         resultado['total_frames'] = len(frames)
+        print(f"[VIDEO-SVC] Frames extraidos: {len(frames)}")
         
         # 2. Transcrever audio
         segmentos = transcrever_audio(video_path)
@@ -392,9 +399,13 @@ def processar_video_completo(video_path: str, ambientes: list, output_dir: str) 
         todos_frames.sort(key=lambda f: f['timestamp'])
         
         # 5. Classificar por ambiente
+        print(f"[VIDEO-SVC] Total frames (normais+forcados): {len(todos_frames)}")
         frames_por_amb = classificar_frames_por_ambiente(todos_frames, eventos, ambientes)
+        for k, v in frames_por_amb.items():
+            print(f"[VIDEO-SVC] Ambiente '{k}': {len(v)} frames")
         
         # Converter frames para base64
+        print(f"[VIDEO-SVC] Convertendo frames para base64...")
         resultado_final = {}
         for amb, frs in frames_por_amb.items():
             resultado_final[amb] = []
@@ -414,9 +425,15 @@ def processar_video_completo(video_path: str, ambientes: list, output_dir: str) 
                     pass
         
         resultado['frames_por_ambiente'] = resultado_final
+        total_b64 = sum(len(v) for v in resultado_final.values())
+        print(f"[VIDEO-SVC] Conversao completa: {total_b64} frames em base64")
         resultado['success'] = True
+        print(f"[VIDEO-SVC] processar_video_completo: SUCESSO")
         
     except Exception as e:
+        import traceback
+        print(f"[VIDEO-SVC] processar_video_completo: EXCEPTION: {str(e)}")
+        traceback.print_exc()
         resultado['erro'] = str(e)
         resultado['success'] = False
     
