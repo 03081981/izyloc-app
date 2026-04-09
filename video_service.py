@@ -150,17 +150,27 @@ def transcrever_audio(video_path: str) -> list:
             return []
         
         # Transcrever com Whisper
-        with open(audio_path, 'rb') as audio_file:
-            client = _get_openai_client()
+        import io
+        with open(audio_path, 'rb') as f:
+            audio_bytes = f.read()
+        audio_buf = io.BytesIO(audio_bytes)
+        audio_buf.name = 'audio.mp3'
+        print(f"[VIDEO-SVC] transcrever_audio: lido {len(audio_bytes)} bytes do audio")
+
+        client = _get_openai_client()
         if not client:
+            print("[VIDEO-SVC] transcrever_audio: FALHOU - OpenAI client nao inicializado")
             return []
+        print("[VIDEO-SVC] transcrever_audio: chamando Whisper API...")
+
         transcript = client.audio.transcriptions.create(
-                model='whisper-1',
-                file=audio_file,
-                language='pt',
-                response_format='verbose_json',
-                timestamp_granularities=['segment', 'word']
-            )
+            model='whisper-1',
+            file=audio_buf,
+            language='pt',
+            response_format='verbose_json',
+            timestamp_granularities=['segment', 'word']
+        )
+
         
         print(f"[VIDEO-SVC] transcrever_audio: Whisper retornou, processando segmentos...")
         segmentos = []
