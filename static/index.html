@@ -6046,8 +6046,54 @@ function wiz6AnalisarBatch(ambIdx) {
     wiz6RenderAmbCard(ambIdx);
     wiz6AtualizarProgress();
 
-    // Handle ambientes_extras detected by AI - ask user first
+    // === KEYWORD-BASED ENVIRONMENT MISMATCH DETECTION ===
+    var resumoLower = (dados.resumo || '').toLowerCase();
+    var nomeLower = nome.toLowerCase();
+    var mismatchDetected = null;
+
+    // Define keyword signatures for each environment type
+    var envSignatures = {
+      'Banheiro': ['vaso sanit', 'caixa acoplada', 'box de chuveiro', 'box com ralo', 'ralo linear', 'descarga', 'chuveiro', 'bacia sanit'],
+      'Cozinha': ['fogao', 'fogão', 'coifa', 'pia de cozinha', 'cooktop', 'forno embutido'],
+      'Area de servico': ['tanque', 'maquina de lavar', 'máquina de lavar', 'varal'],
+      'Dormitorio': ['cama de casal', 'cama box', 'guarda-roupa', 'criado-mudo', 'cabeceira']
+    };
+
+    // Check if resumo contains strong signals of a DIFFERENT environment
+    Object.keys(envSignatures).forEach(function(envName) {
+      // Skip if current ambiente already matches this type
+      if (nomeLower.indexOf(envName.toLowerCase().substring(0, 5)) >= 0) return;
+      if (envName === 'Banheiro' && (nomeLower.indexOf('banhe') >= 0 || nomeLower.indexOf('lavabo') >= 0)) return;
+      if (envName === 'Cozinha' && nomeLower.indexOf('cozinha') >= 0) return;
+      if (envName === 'Dormitorio' && (nomeLower.indexOf('dorm') >= 0 || nomeLower.indexOf('quarto') >= 0 || nomeLower.indexOf('suite') >= 0)) return;
+
+      var matchCount = 0;
+      envSignatures[envName].forEach(function(kw) {
+        if (resumoLower.indexOf(kw) >= 0) matchCount++;
+      });
+      // If 2+ strong signals found, it's likely a mismatch
+      if (matchCount >= 2 && !mismatchDetected) {
+        mismatchDetected = envName;
+        console.log('[AI-KEYWORD] Mismatch detectado: ' + nome + ' parece ser ' + envName + ' (' + matchCount + ' sinais)');
+      }
+    });
+
+    // If keyword mismatch detected but AI didn't return ambientes_extras, create synthetic extras
     var extras = dados.ambientes_extras || [];
+    if (mismatchDetected && extras.length === 0) {
+      console.log('[AI-KEYWORD] Criando ambientes_extras sintetico: ' + mismatchDetected);
+      // All photos belong to the detected environment
+      var allFotoNums = [];
+      for (var fi = 1; fi <= fotos.length; fi++) allFotoNums.push(fi);
+      extras = [{
+        nome: mismatchDetected,
+        fotos: allFotoNums,
+        descricao: dados.resumo || '',
+        estado: dados.estado_geral || 'Bom'
+      }];
+    }
+
+        // Handle ambientes_extras detected by AI - ask user first
     if (extras.length > 0) {
       var extraNames = extras.map(function(e){return e.nome || 'Ambiente';}).join(', ');
       var fotosCount = 0;
