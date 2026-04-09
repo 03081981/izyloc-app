@@ -6559,14 +6559,31 @@ function wiz6ConfirmarVideo() {
   });
 
   wiz6RenderTabs();
-  wiz6SelecionarModo('foto');
-  wiz6RenderAmbCard(0);
-  wiz6AtualizarProgress();
-
-  var card = document.getElementById('wiz6-amb-card');
-  if (card) card.scrollIntoView({behavior:'smooth', block:'start'});
-}
-
+      wiz6SelecionarModo('foto');
+      wiz6RenderAmbCard(0);
+      wiz6AtualizarProgress();
+      var card = document.getElementById('wiz6-amb-card');
+      if (card) card.scrollIntoView({behavior:'smooth', block:'start'});
+      // Auto-trigger AI analysis for all environments with photos from video
+      var ambientesParaAnalisar = [];
+      for (var ai = 0; ai < _wiz6Ambientes.length; ai++) {
+        if (wizard.itensData[ai] && wizard.itensData[ai].fotos && wizard.itensData[ai].fotos.length > 0 && !wizard.itensData[ai].jaAnalisou) {
+          ambientesParaAnalisar.push(ai);
+        }
+      }
+      console.log('[wiz6ConfirmarVideo] Disparando análise IA para ' + ambientesParaAnalisar.length + ' ambientes');
+      if (ambientesParaAnalisar.length > 0) {
+        // Analyze sequentially to avoid overwhelming the server
+        (function analisarProximo(idx) {
+          if (idx >= ambientesParaAnalisar.length) return;
+          var ambIdx = ambientesParaAnalisar[idx];
+          console.log('[wiz6ConfirmarVideo] Analisando ambiente ' + ambIdx + ': ' + _wiz6Ambientes[ambIdx]);
+          wiz6AnalisarBatch(ambIdx);
+          // Wait 2 seconds before starting next to avoid overload
+          setTimeout(function() { analisarProximo(idx + 1); }, 2000);
+        })(0);
+      }
+    }
 // ── HELPERS ──────────────────────────────────────────────
 function _wiz6GetVideoDuration(file) {
   return new Promise(function(res) {
