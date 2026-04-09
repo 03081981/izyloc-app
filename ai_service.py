@@ -316,12 +316,21 @@ PASSO 3 — REGRAS DE DESCRICAO:
 - Ignore elementos ao fundo atraves de portas/aberturas
 - {"IGNORE objetos pessoais: tapetes, vasos, produtos de higiene, roupas, itens do morador" if tipo_vistoria in ["entrada", "saida"] else "INVENTARIE todos os itens presentes incluindo decoracao, utensilios e equipamentos"}
 
-PASSO 4 — DETECTAR AMBIENTES DIFERENTES:
-Se alguma foto mostra CLARAMENTE um ambiente DIFERENTE de '{nome_ambiente}' (exemplo: corredor, hall, lavabo, area de servico, varanda, despensa), identifique:
-- Numero da(s) foto(s) que pertencem a esse outro ambiente
-- Nome correto do ambiente (ex: 'Corredor interno', 'Hall de entrada')
-- Descricao breve e estado de conservacao
-So reporte se tiver CERTEZA VISUAL. Na duvida, mantenha no ambiente atual.
+PASSO 4 — DETECTAR AMBIENTES DIFERENTES (OBRIGATORIO):
+ANTES de sintetizar, verifique: as fotos correspondem ao ambiente '{nome_ambiente}'?
+
+SINAIS DE AMBIENTE ERRADO:
+- Vaso sanitario, box, chuveiro, ralo = BANHEIRO (nao dormitorio, nao sala)
+- Fogao, pia de cozinha, coifa = COZINHA (nao sala, nao dormitorio)
+- Cama, guarda-roupa, criado-mudo = DORMITORIO (nao sala, nao cozinha)
+- Tanque, maquina de lavar = AREA DE SERVICO
+
+Se as fotos mostram um ambiente DIFERENTE de '{nome_ambiente}':
+- Liste TODAS as fotos que pertencem ao outro ambiente em "ambientes_extras"
+- Use o nome correto (ex: 'Banheiro', 'Cozinha', 'Dormitorio')
+- Se TODAS as fotos sao de outro ambiente, liste TODAS as fotos em ambientes_extras
+
+ISTO E OBRIGATORIO. Nao descreva fotos de banheiro como se fossem dormitorio.
 
 PASSO 5 — SINTETIZAR:
 Compile tudo em descricao unica sem omitir nenhum defeito.
