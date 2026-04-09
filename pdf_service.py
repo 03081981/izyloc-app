@@ -459,16 +459,27 @@ def add_ambientes(story, s, ambientes):
 
 
         # === SINTESE / CONCLUSAO FINAL DO AMBIENTE ===
-        # Collect description and estado from items
+        # Collect description from items
         desc_ambiente = ''
-        estado_ambiente = ''
         for item in amb.get('itens', []):
             d = item.get('descricao_ia', '')
             if d and not desc_ambiente:
                 desc_ambiente = d
-            e = item.get('estado', '')
-            if e and not estado_ambiente:
-                estado_ambiente = e
+
+        # Extract estado from AI description text (reliable source)
+        estado_ambiente = 'Bom'
+        if desc_ambiente:
+            import re
+            _dl = desc_ambiente.lower()
+            _m = re.search(r'estado\s*geral[:\s\-\u2014]+(.{5,80})', _dl)
+            if _m:
+                _val = _m.group(1).strip()
+                if 'avaria' in _val:
+                    estado_ambiente = 'Com avaria'
+                elif 'regular' in _val:
+                    estado_ambiente = 'Regular'
+                else:
+                    estado_ambiente = 'Bom'
 
         if desc_ambiente:
             story.append(Spacer(1, 6))
