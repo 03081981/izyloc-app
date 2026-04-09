@@ -21,6 +21,7 @@ from dotenv import load_dotenv
 
 from database import get_conn, init_db
 from ai_service import analyze_image, consolidate_environment, analyze_batch
+from video_service import processar_video_completo
 from pdf_service import generate_pdf
 
 def _jser(obj):
@@ -1421,6 +1422,46 @@ class MainHandler(tornado.web.RequestHandler):
 def make_app():
     static_dir = os.path.join(os.path.dirname(__file__), 'static')
     upload_dir = UPLOAD_DIR
+
+
+class UploadVideoHandler(BaseHandler):
+    async def post(self):
+        try:
+            data = tornado.escape.json_decode(self.request.body)
+            video_b64 = data.get('video', '')
+            ambientes = data.get('ambientes', [])
+            nome_arquivo = data.get('nome', 'video.mp4')
+
+            if not video_b64:
+                self.set_status(400)
+                self.write(json.dumps({'error': 'Video nao enviado', 'success': False}))
+                return
+
+            import tempfile, base64 as b64mod, shutil
+            video_bytes = b64mod.b64decode(video_b64)
+
+            with tempfile.NamedTemporaryFile(suffix='.mp4', delete=False) as tmp:
+                tmp.write(video_bytes)
+                video_path = tmp.name
+
+            output_dir = video_path + '_frames'
+
+            try:
+                resultado = processar_video_completo(video_path, ambientes, output_dir)
+                self.write(json.dumps(resultado, ensure_ascii=False))
+            finally:
+                if os.path.exists(video_path):
+                    os.unlink(video_path)
+
+        except Exception as e:
+            self.set_status(500)
+            self.write(json.dumps({'error': str(e), 'success': False}))
+
+
+class StatusVideoHandler(BaseHandler):
+    def get(self):
+        self.write(json.dumps({'status': 'ok', 'ffmpeg': True, 'whisper': True}))
+
     return tornado.web.Application([
         # Auth (v2)
         (r'/api/auth/register', RegisterHandler),
@@ -1456,6 +1497,8 @@ def make_app():
         (r'/api/analyze-photo', AnalyzePhotoHandler),
         (r'/api/consolidar-ambiente', ConsolidarAmbienteHandler),
         (r'/api/analisar-batch', AnalisarBatchHandler),
+        (r'/api/upload-video', UploadVideoHandler),
+        (r'/api/status-video', StatusVideoHandler),
         # PDF
         (r'/api/inspections/([^/]+)/pdf', GeneratePDFHandler),
         (r'/api/inspections/([^/]+)/diag', DiagLocadoresHandler),
