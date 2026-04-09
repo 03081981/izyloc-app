@@ -480,17 +480,19 @@ def add_ambientes(story, s, ambientes):
                 estado_ambiente = 'Bom'
 
         if desc_ambiente:
-            story.append(Spacer(1, 6))
-            story.append(HRFlowable(width='100%', thickness=0.5, color=HexColor('#cccccc'),
+            # Collect all conclusion elements in a list to keep together
+            _conclusao_parts = []
+            _conclusao_parts.append(Spacer(1, 6))
+            _conclusao_parts.append(HRFlowable(width='100%', thickness=0.5, color=HexColor('#cccccc'),
                                     spaceBefore=2, spaceAfter=4))
-            story.append(Paragraph(
+            _conclusao_parts.append(Paragraph(
                 f'\u2726 CONCLUS\u00c3O \u2014 {amb["nome"].upper()}',
                 s['conclusao_titulo']))
-            story.append(Paragraph(
+            _conclusao_parts.append(Paragraph(
                 f'A presente conclus\u00e3o baseia-se nas condi\u00e7\u00f5es gerais do ambiente <b>{amb["nome"]}</b>, '
                 f'conforme registrado nas fotos acima.',
                 s['conclusao_texto']))
-            story.append(Paragraph(desc_ambiente, s['conclusao_texto']))
+            _conclusao_parts.append(Paragraph(desc_ambiente, s['conclusao_texto']))
             if estado_ambiente:
                 # Color-coded: green=Bom, yellow=Regular, red=Com avaria
                 _cor_mapa = {
@@ -502,9 +504,11 @@ def add_ambientes(story, s, ambientes):
                 _estilo_estado = ParagraphStyle('estado_dyn',
                     fontName='Helvetica-Bold', fontSize=10, textColor=_cor_estado,
                     leading=14, spaceBefore=4, spaceAfter=6)
-                story.append(Paragraph(
+                _conclusao_parts.append(Paragraph(
                     f'AVALIA\u00c7\u00c3O: {estado_ambiente.upper()}',
                     _estilo_estado))
+            # KeepTogether ensures title + text + avaliacao stay on same page
+            story.append(KeepTogether(_conclusao_parts))
 
         verif = amb.get('verificacoes', {})
         if verif:
