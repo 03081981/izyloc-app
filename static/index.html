@@ -5747,15 +5747,25 @@ function wiz6AceitarMoverExtras(ambIdx) {
     console.log('[AI] Fotos movidas para: ' + extNome + ' (' + movedFotos.length + ' fotos)');
   });
 
-  // Remove moved photos from original (reverse order)
+  // Remove moved photos from original by REFERENCE (not index)
+  // First collect all photo objects that were moved
+  var allMovedPhotos = [];
   extras.forEach(function(ext) {
-    var extFotos = (ext.fotos || []).map(function(n) { return n - 1; }).sort(function(a,b){return b-a;});
+    var extFotos = (ext.fotos || []).map(function(n) { return n - 1; });
     extFotos.forEach(function(fi) {
-      if (wizard.itensData[ambIdx] && wizard.itensData[ambIdx].fotos && fi < wizard.itensData[ambIdx].fotos.length) {
-        wizard.itensData[ambIdx].fotos.splice(fi, 1);
+      if (wizard.itensData[ambIdx] && wizard.itensData[ambIdx].fotos && wizard.itensData[ambIdx].fotos[fi]) {
+        allMovedPhotos.push(wizard.itensData[ambIdx].fotos[fi]);
       }
     });
   });
+  // Filter: keep only photos NOT in the moved list
+  if (wizard.itensData[ambIdx] && wizard.itensData[ambIdx].fotos && allMovedPhotos.length > 0) {
+    var before = wizard.itensData[ambIdx].fotos.length;
+    wizard.itensData[ambIdx].fotos = wizard.itensData[ambIdx].fotos.filter(function(foto) {
+      return allMovedPhotos.indexOf(foto) === -1;
+    });
+    console.log('[AI] Removidas ' + (before - wizard.itensData[ambIdx].fotos.length) + ' fotos do original (de ' + before + ')');
+  }
 
   // Clear source if empty
   if (wizard.itensData[ambIdx] && wizard.itensData[ambIdx].fotos && wizard.itensData[ambIdx].fotos.length === 0) {
