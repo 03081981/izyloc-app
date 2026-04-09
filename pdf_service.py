@@ -471,15 +471,13 @@ def add_ambientes(story, s, ambientes):
         if desc_ambiente:
             import re
             _dl = desc_ambiente.lower()
-            _m = re.search(r'estado\s*geral[:\s\-\u2014]+(.{5,80})', _dl)
-            if _m:
-                _val = _m.group(1).strip()
-                if 'avaria' in _val:
-                    estado_ambiente = 'Com avaria'
-                elif 'regular' in _val:
-                    estado_ambiente = 'Regular'
-                else:
-                    estado_ambiente = 'Bom'
+            # Look for exact matches: "com avaria", "regular", or "bom" right after "estado geral"
+            if re.search(r'estado\s*geral[^a-z]*(com\s+avaria)', _dl):
+                estado_ambiente = 'Com avaria'
+            elif re.search(r'estado\s*geral[^a-z]*(regular)', _dl):
+                estado_ambiente = 'Regular'
+            elif re.search(r'estado\s*geral[^a-z]*(bom)', _dl):
+                estado_ambiente = 'Bom'
 
         if desc_ambiente:
             story.append(Spacer(1, 6))
@@ -494,9 +492,19 @@ def add_ambientes(story, s, ambientes):
                 s['conclusao_texto']))
             story.append(Paragraph(desc_ambiente, s['conclusao_texto']))
             if estado_ambiente:
+                # Color-coded: green=Bom, yellow=Regular, red=Com avaria
+                _cor_mapa = {
+                    'Bom': HexColor('#008800'),
+                    'Regular': HexColor('#CC8800'),
+                    'Com avaria': HexColor('#CC0000'),
+                }
+                _cor_estado = _cor_mapa.get(estado_ambiente, HexColor('#CC0000'))
+                _estilo_estado = ParagraphStyle('estado_dyn',
+                    fontName='Helvetica-Bold', fontSize=10, textColor=_cor_estado,
+                    leading=14, spaceBefore=4, spaceAfter=6)
                 story.append(Paragraph(
                     f'AVALIA\u00c7\u00c3O: {estado_ambiente.upper()}',
-                    s['conclusao_estado']))
+                    _estilo_estado))
 
         verif = amb.get('verificacoes', {})
         if verif:
