@@ -22,6 +22,10 @@ from dotenv import load_dotenv
 from database import get_conn, init_db
 from ai_service import analyze_image, consolidate_environment, analyze_batch
 from video_service import processar_video_completo
+import threading
+
+# Store de jobs de video em memoria
+_video_jobs = {}
 from pdf_service import generate_pdf
 
 def _jser(obj):
@@ -1425,20 +1429,39 @@ def make_app():
 
 
 class UploadVideoHandler(BaseHandler):
-    async def post(self):
+    def post(self):
         try:
-            data = tornado.escape.json_decode(self.request.body)
-            video_b64 = data.get('video', '')
-            ambientes = data.get('ambientes', [])
-            nome_arquivo = data.get('nome', 'video.mp4')
+            import tempfile, base64 as b64lib
 
-            if not video_b64:
+            # Suportar FormData e JSON
+            content_type = self.request.headers.get('Content-Type', '')
+            if 'multipart' in content_type:
+                video_bytes = self.request.files.get('video', [{}])[0].get('body', b'')
+                ambientes_str = self.get_argument('ambientes', '[]')
+                ambientes = json.loads(ambientes_str)
+            else:
+                data = tornado.escape.json_decode(self.request.body)
+                video_b64 = data.get('video', '')
+                ambientes = data.get('ambientes', [])
+                if not video_b64:
+                    self.set_status(400)
+                    self.write(json.dumps({'error': 'Video nao enviado', 'success': False}))
+                    return
+                video_bytes = b64lib.b64decode(video_b64)
+
+            if not video_bytes:
                 self.set_status(400)
-                self.write(json.dumps({'error': 'Video nao enviado', 'success': False}))
+                self.write(json.dumps({'error': 'Video vazio', 'success': False}))
                 return
 
-            import tempfile, base64 as b64mod, shutil
-            video_bytes = b64mod.b64decode(video_b64)
+            job_id = str(uuid.uuid4())[:8]
+            _video_jobs[job_id] = {
+                'status': 'processando',
+                'progresso': 0,
+                'mensagem': 'Iniciando processamento...',
+                'resultado': None,
+                'erro': None
+            }
 
             with tempfile.NamedTemporaryFile(suffix='.mp4', delete=False) as tmp:
                 tmp.write(video_bytes)
@@ -1446,12 +1469,46 @@ class UploadVideoHandler(BaseHandler):
 
             output_dir = video_path + '_frames'
 
-            try:
-                resultado = processar_video_completo(video_path, ambientes, output_dir)
-                self.write(json.dumps(resultado, ensure_ascii=False))
-            finally:
-                if os.path.exists(video_path):
-                    os.unlink(video_path)
+            def processar():
+                try:
+                    _video_jobs[job_id]['mensagem'] = 'Extraindo frames...'
+                    _video_jobs[job_id]['progresso'] = 20
+
+                    resultado = processar_video_completo(video_path, ambientes, output_dir)
+
+                    ambientes_fmt = {}
+                    for amb, frames in resultado.get('frames_por_ambiente', {}).items():
+                        ambientes_fmt[amb] = []
+                        for fr in frames:
+                            ambientes_fmt[amb].append({
+                                'imagem_b64': fr.get('base64', ''),
+                                'timestamp': fr.get('timestamp', 0),
+                                'segundo': fr.get('segundo', 0),
+                                'forcado': fr.get('forcado', False),
+                                'avaria': fr.get('avaria', None),
+                                'texto_narrado': fr.get('texto_narrado', None),
+                                'qualidade': 'boa',
+                                'selecionado': True,
+                                'mime_type': 'image/jpeg'
+                            })
+
+                    _video_jobs[job_id]['status'] = 'ok'
+                    _video_jobs[job_id]['progresso'] = 100
+                    _video_jobs[job_id]['mensagem'] = 'Processamento concluido!'
+                    _video_jobs[job_id]['ambientes'] = ambientes_fmt
+                    _video_jobs[job_id]['eventos'] = resultado.get('eventos', [])
+                    _video_jobs[job_id]['total_frames'] = resultado.get('total_frames', 0)
+                except Exception as e:
+                    _video_jobs[job_id]['status'] = 'erro'
+                    _video_jobs[job_id]['mensagem'] = str(e)
+                finally:
+                    if os.path.exists(video_path):
+                        os.unlink(video_path)
+
+            t = threading.Thread(target=processar, daemon=True)
+            t.start()
+
+            self.write(json.dumps({'job_id': job_id, 'success': True}))
 
         except Exception as e:
             self.set_status(500)
@@ -1459,8 +1516,13 @@ class UploadVideoHandler(BaseHandler):
 
 
 class StatusVideoHandler(BaseHandler):
-    def get(self):
-        self.write(json.dumps({'status': 'ok', 'ffmpeg': True, 'whisper': True}))
+    def get(self, job_id):
+        job = _video_jobs.get(job_id)
+        if not job:
+            self.set_status(404)
+            self.write(json.dumps({'error': 'Job nao encontrado'}))
+            return
+        self.write(json.dumps(job, ensure_ascii=False))
 
     return tornado.web.Application([
         # Auth (v2)
@@ -1497,8 +1559,8 @@ class StatusVideoHandler(BaseHandler):
         (r'/api/analyze-photo', AnalyzePhotoHandler),
         (r'/api/consolidar-ambiente', ConsolidarAmbienteHandler),
         (r'/api/analisar-batch', AnalisarBatchHandler),
-        (r'/api/upload-video', UploadVideoHandler),
-        (r'/api/status-video', StatusVideoHandler),
+        (r'/api/video/upload', UploadVideoHandler),
+        (r'/api/video/status/([^/]+)', StatusVideoHandler),
         # PDF
         (r'/api/inspections/([^/]+)/pdf', GeneratePDFHandler),
         (r'/api/inspections/([^/]+)/diag', DiagLocadoresHandler),
