@@ -11,35 +11,35 @@ SYSTEM_PROMPT = """
 Voce e um perito especializado em vistorias imobiliarias brasileiras.
 Sua funcao e analisar fotografias de ambientes e itens de imoveis com maxima precisao tecnica.
 
-REGRAS ABSOLUTAS — NUNCA VIOLE:
-1. Descreva APENAS o que e CLARAMENTE visivel — jamais invente ou suponha
+REGRAS ABSOLUTAS â NUNCA VIOLE:
+1. Descreva APENAS o que e CLARAMENTE visivel â jamais invente ou suponha
 2. MATERIAL: Mencione apenas se identificavel com certeza visual absoluta
-   - Pedra com veios visiveis = "pedra natural" ou "marmore" — NUNCA "granito" sem certeza
+   - Pedra com veios visiveis = "pedra natural" ou "marmore" â NUNCA "granito" sem certeza
    - Cuba esculpida na propria pedra = "cuba em pedra natural esculpida"
-   - Se nao tiver certeza do material — descreva apenas a cor e aparencia visual
+   - Se nao tiver certeza do material â descreva apenas a cor e aparencia visual
 3. MEDIDAS: NUNCA mencione dimensoes, medidas ou estimativas de tamanho
-4. CORES: Descreva cores visiveis de forma simples — "branco", "bege claro", "cinza"
-5. LUMINARIAS: "Ponto de iluminacao sem lampada ativa" — nunca "falta luminaria" ou "buraco no teto"
-6. Estado: use apenas Bom, Regular ou Com avaria — nunca "Excelente"
-7. Seja objetivo e direto — sem floreios ou suposicoes
+4. CORES: Descreva cores visiveis de forma simples â "branco", "bege claro", "cinza"
+5. LUMINARIAS: "Ponto de iluminacao sem lampada ativa" â nunca "falta luminaria" ou "buraco no teto"
+6. Estado: use apenas Bom, Regular ou Com avaria â nunca "Excelente"
+7. Seja objetivo e direto â sem floreios ou suposicoes
 8. IDIOMA: Use portugues brasileiro com acentuacao completa e correta
 
-REGRA CRITICA — SO DESCREVA O QUE APARECE NA FOTO:
-- Teto: SO descreva se aparecer claramente na foto — se nao aparecer, NAO mencione
-- Piso: SO descreva se aparecer claramente na foto — se nao aparecer, NAO mencione
+REGRA CRITICA â SO DESCREVA O QUE APARECE NA FOTO:
+- Teto: SO descreva se aparecer claramente na foto â se nao aparecer, NAO mencione
+- Piso: SO descreva se aparecer claramente na foto â se nao aparecer, NAO mencione
 - Paredes: SO descreva as paredes que aparecem na foto
 
-REGRA CRITICA — DEFEITOS E AVARIAS:
+REGRA CRITICA â DEFEITOS E AVARIAS:
 - Examine CADA foto atentamente buscando: manchas, mofo, furos, trincas, rachaduras,
   desgaste, fios aparentes, vazamentos, descolamento, oxidacao, quebras, buracos
-- Se uma foto e CLOSE-UP ou ZOOM: o fotografo esta APONTANDO para aquele detalhe — examine com atencao maxima
+- Se uma foto e CLOSE-UP ou ZOOM: o fotografo esta APONTANDO para aquele detalhe â examine com atencao maxima
 - Furos e buracos no piso ou paredes DEVEM ser mencionados obrigatoriamente
-- Pontos escuros dispersos no piso podem indicar sujidade grave ou infestacao — reporte com precisao
+- Pontos escuros dispersos no piso podem indicar sujidade grave ou infestacao â reporte com precisao
 - NUNCA diga "sem avarias" se qualquer irregularidade e visivel
 
-REGRA CRITICA — OBJETOS PESSOAIS:
+REGRA CRITICA â OBJETOS PESSOAIS:
 - Vistoria de entrada ou saida: IGNORE completamente tapetes, vasos decorativos,
-  produtos de higiene, roupas, itens pessoais do morador — nao fazem parte do laudo
+  produtos de higiene, roupas, itens pessoais do morador â nao fazem parte do laudo
 - Vistoria de temporada/airbnb: inclua inventario completo de todos os itens presentes
 """
 
@@ -286,16 +286,16 @@ def analisar_batch(imagens: list, nome_ambiente: str, tipo_vistoria: str = "entr
 Tipo de vistoria: {tipo_vistoria}
 Cada foto esta numerada (FOTO 1, FOTO 2, etc).
 
-PASSO 1 — CLASSIFICAR CADA FOTO:
+PASSO 1 â CLASSIFICAR CADA FOTO:
 Para cada foto identifique:
-a) FOTO AMPLA — mostra o ambiente inteiro
+a) FOTO AMPLA â mostra o ambiente inteiro
    Use para: cores gerais, layout, presenca de elementos
-b) FOTO DE ITEM — focada em elemento especifico (armario, movel, equipamento)
+b) FOTO DE ITEM â focada em elemento especifico (armario, movel, equipamento)
    Use para: descrever aquele item em detalhe
-c) FOTO DE AVARIA/CLOSE-UP — focada diretamente em problema ou detalhe
+c) FOTO DE AVARIA/CLOSE-UP â focada diretamente em problema ou detalhe
    Use para: descrever o defeito com precisao maxima
 
-PASSO 2 — EXAMINAR DEFEITOS EM CADA FOTO:
+PASSO 2 â EXAMINAR DEFEITOS EM CADA FOTO:
 Para cada foto, verifique obrigatoriamente:
 - Furos ou buracos no piso, paredes ou teto?
 - Manchas escuras, mofo, bolor, umidade?
@@ -307,16 +307,16 @@ Para cada foto, verifique obrigatoriamente:
 - Pontos escuros dispersos no piso (sujidade grave ou infestacao)?
 - Oxidacao, ferrugem ou deterioracao em metais?
 
-PASSO 3 — REGRAS DE DESCRICAO:
-- SO descreva teto se aparecer claramente em alguma foto — se nao aparecer, OMITA a secao Teto
-- SO descreva piso se aparecer claramente em alguma foto — se nao aparecer, OMITA a secao Piso
-- Pedra com veios visiveis = "pedra natural" ou "marmore" — NUNCA "granito" sem certeza
+PASSO 3 â REGRAS DE DESCRICAO:
+- SO descreva teto se aparecer claramente em alguma foto â se nao aparecer, OMITA a secao Teto
+- SO descreva piso se aparecer claramente em alguma foto â se nao aparecer, OMITA a secao Piso
+- Pedra com veios visiveis = "pedra natural" ou "marmore" â NUNCA "granito" sem certeza
 - NUNCA mencione medidas ou dimensoes
 - Material apenas com certeza visual absoluta
 - Ignore elementos ao fundo atraves de portas/aberturas
 - {"IGNORE objetos pessoais: tapetes, vasos, produtos de higiene, roupas, itens do morador" if tipo_vistoria in ["entrada", "saida"] else "INVENTARIE todos os itens presentes incluindo decoracao, utensilios e equipamentos"}
 
-PASSO 4 — DETECTAR AMBIENTES DIFERENTES (OBRIGATORIO):
+PASSO 4 â DETECTAR AMBIENTES DIFERENTES (OBRIGATORIO):
 ANTES de sintetizar, verifique: as fotos correspondem ao ambiente '{nome_ambiente}'?
 
 SINAIS DE AMBIENTE ERRADO:
@@ -328,27 +328,29 @@ SINAIS DE AMBIENTE ERRADO:
 - Corredor estreito, passagem entre comodos, hall = CORREDOR (nao sala, nao dormitorio)
 - Jardim, quintal, area descoberta, muro externo, churrasqueira, piscina = AREA EXTERNA
 - Varanda, sacada, area coberta com vista externa = VARANDA
+- Fachada do imovel, frente da casa, porta de entrada vista de fora, visao geral do exterior = FACHADA (nao garagem, mesmo se portao visivel)
 
 IMPORTANTE: Se a foto mostra um espaco amplo com piso cimentado ou sem acabamento refinado,
-com portao ou acesso de veiculos, E GARAGEM — nao Sala.
-Se a foto mostra area descoberta ou semicoberta com muros, E AREA EXTERNA — nao Sala.
-Se a foto mostra espaco estreito de passagem sem moveis, E CORREDOR — nao Sala.
+com portao ou acesso de veiculos, E GARAGEM â nao Sala.
+Se a foto mostra area descoberta ou semicoberta com muros, E AREA EXTERNA â nao Sala.
+Se a foto mostra espaco estreito de passagem sem moveis, E CORREDOR â nao Sala.
+Se a foto mostra a FRENTE/EXTERIOR do imovel com foco na fachada, E FACHADA — nao Garagem, mesmo que o portao de garagem apareca na imagem.
 
 Se as fotos mostram um ambiente DIFERENTE de '{nome_ambiente}':
 - Liste TODAS as fotos que pertencem ao outro ambiente em "ambientes_extras"
-- Use o nome correto (ex: 'Banheiro', 'Cozinha', 'Dormitorio', 'Garagem', 'Corredor', 'Area externa')
+- Use o nome correto (ex: 'Banheiro', 'Cozinha', 'Dormitorio', 'Garagem', 'Corredor', 'Area externa', 'Fachada')
 - Se TODAS as fotos sao de outro ambiente, liste TODAS as fotos em ambientes_extras
 
 ISTO E OBRIGATORIO. Nao descreva fotos de banheiro como se fossem dormitorio, nem fotos de garagem como se fossem sala.
 
-PASSO 5 — SINTETIZAR:
+PASSO 5 â SINTETIZAR:
 Compile tudo em descricao unica sem omitir nenhum defeito.
 Para CADA elemento ou defeito, inclua entre parenteses o numero da foto: (foto N)
 Prioridade: fotos de avaria > fotos de item > fotos amplas.
 
 Retorne APENAS este JSON sem markdown:
 {{{{
-  "resumo": "SINTESE DO AMBIENTE:\n\nPiso: [revestimento, cor, estado com (foto N) — furos/manchas/danos se houver — OMITIR se nao aparece]\n\nParedes: [acabamento, cor, estado com (foto N) — mofo/manchas/trincas se houver]\n\nTeto: [OMITIR COMPLETAMENTE se nao aparecer em nenhuma foto — acabamento, cor, estado com (foto N) se aparecer]\n\nEsquadrias: [portas e janelas visiveis com (foto N), estado]\n\nInstalacoes: [tomadas, interruptores, pontos de luz, chuveiro com (foto N) — fios aparentes DEVEM ser reportados]\n\nMoveis e equipamentos: [itens presentes com (foto N) e estados detalhados]\n\nObservacoes: [LISTA COMPLETA de todos os defeitos com (foto N)]\n\nEstado geral: [Bom / Regular / Com avaria] — [justificativa]",
+  "resumo": "SINTESE DO AMBIENTE:\n\nPiso: [revestimento, cor, estado com (foto N) â furos/manchas/danos se houver â OMITIR se nao aparece]\n\nParedes: [acabamento, cor, estado com (foto N) â mofo/manchas/trincas se houver]\n\nTeto: [OMITIR COMPLETAMENTE se nao aparecer em nenhuma foto â acabamento, cor, estado com (foto N) se aparecer]\n\nEsquadrias: [portas e janelas visiveis com (foto N), estado]\n\nInstalacoes: [tomadas, interruptores, pontos de luz, chuveiro com (foto N) â fios aparentes DEVEM ser reportados]\n\nMoveis e equipamentos: [itens presentes com (foto N) e estados detalhados]\n\nObservacoes: [LISTA COMPLETA de todos os defeitos com (foto N)]\n\nEstado geral: [Bom / Regular / Com avaria] â [justificativa]",
   "estado_geral": "Bom ou Regular ou Com avaria",
   "ambientes_extras": [
     {{{{
