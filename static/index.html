@@ -3901,22 +3901,34 @@ async function gerarLaudo() {
 }
 
 
-async function generatePDF(id) {
-  var iid = id || iid || (currentInspection && currentInspection.id);
-  if (!iid) { alert('Inspe&ccedil;&atilde;o n&atilde;o encontrada.'); return; }
+async function generatePDF() {
   showLoading('📄 Gerando laudo PDF...');
-  const r = await api('GET', `/api/inspections/${iid}/pdf`);
-  hideLoading();
-  if (r.blob) {
-    const url = URL.createObjectURL(r.blob);
-    const a = document.createElement('a');
-    a.href = url; a.download = `iZYlOC_Laudo_${iid.substring(0,8).toUpperCase()}.pdf`;
-    document.body.appendChild(a); a.click();
-    document.body.removeChild(a); URL.revokeObjectURL(url);
-    toast('✅ Laudo gerado com sucesso!', 'success');
-      localStorage.removeItem('izylo_current_inspection');
-    setTimeout(() => { showPage('page-dashboard',null,false); loadDashboard(); }, 2000);
-  } else { toast(r.error||'Erro ao gerar PDF', 'error'); }
+  try {
+    var _eMap={'ok':'Funcionando','nao':'Não Funcionando','nt':'Não Testado','nexiste':'N/A'};
+    var _ambData=[];
+    for(var _ai=0;_ai<(wizard.selectedRooms||[]).length;_ai++){
+      var _d=(wizard.itensData&&wizard.itensData[_ai])||{};
+      var _verif={};var _tNomes={};var _tt=_d.testes||{};
+      for(var _tk in _tt){if(_tt[_tk])_verif[_tk]=_eMap[_tt[_tk]]||_tt[_tk];}
+      (_d.testesExtras||[]).forEach(function(ex){_tNomes[ex.k]=ex.n;});
+      var _stdNomes={'porta':'Porta — maçaneta e fechadura','chaves':'Chaves da porta','tomadas':'Tomadas e interruptores','ac':'Ar condicionado','janela':'Janela — abre, fecha e trava','torneira':'Torneira — abre e fecha','chuveiro':'Chuveiro — pressão e temperatura','descarga':'Descarga — funciona','ralo':'Ralo — escoa bem','iluminacao':'Iluminação','piso':'Piso','teto':'Teto','parede':'Parede','janelas':'Janelas','portas':'Portas'};
+      for(var _sk in _stdNomes){if(!_tNomes[_sk])_tNomes[_sk]=_stdNomes[_sk];}
+      _ambData.push({roomName:wizard.selectedRooms[_ai],verificacoes:_verif,testesNomes:_tNomes,observacoes:_d.obs||''});
+    }
+    var _tok=localStorage.getItem('izylo_token');
+    var resp=await fetch('/api/inspections/'+wizard.inspectionId+'/pdf',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+_tok},body:JSON.stringify({ambData:_ambData})});
+    hideLoading();
+    if(resp.ok){
+      var blob=await resp.blob();
+      var url=URL.createObjectURL(blob);
+      var a=document.createElement('a');
+      a.href=url; a.download='iZYlOC_Laudo_'+wizard.inspectionId.substring(0,8).toUpperCase()+'.pdf';
+      document.body.appendChild(a); a.click();
+      document.body.removeChild(a); URL.revokeObjectURL(url);
+      toast('✅ Laudo gerado com sucesso!','success');
+      setTimeout(function(){showPage('page-dashboard',null,false);loadDashboard();},2000);
+    } else { toast('Erro ao gerar PDF','error'); }
+  } catch(e){ hideLoading(); toast('Erro ao gerar PDF','error'); }
 }
 
 // ─── DETAIL PAGE ──────────────────────────────────────────────────────────────
