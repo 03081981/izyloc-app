@@ -3904,12 +3904,12 @@ async function gerarLaudo() {
 async function generatePDF() {
   showLoading('📄 Gerando laudo PDF...');
   try {
-    var _eMap={'ok':'Funcionando','nao':'Não Funcionando','nt':'Não Testado','nexiste':'N/A'};
+    var _eMap={'ok':'Funcionando','nok':'Não Funcionando','nao':'Não Funcionando','nt':'Não Testado','na':'N/A','nexiste':'N/A'};
     var _ambData=[];
     for(var _ai=0;_ai<(wizard.selectedRooms||[]).length;_ai++){
       var _d=(wizard.itensData&&wizard.itensData[_ai])||{};
       var _verif={};var _tNomes={};var _tt=_d.testes||{};
-      for(var _tk in _tt){if(_tt[_tk])_verif[_tk]=_eMap[_tt[_tk]]||_tt[_tk];}
+      for(var _tk in _tt){if(_tt[_tk]&&_tk.indexOf('_obs')<0)_verif[_tk]=_eMap[_tt[_tk]]||_tt[_tk];}
       (_d.testesExtras||[]).forEach(function(ex){_tNomes[ex.k]=ex.n;});
       var _stdNomes={'porta':'Porta — maçaneta e fechadura','chaves':'Chaves da porta','tomadas':'Tomadas e interruptores','ac':'Ar condicionado','janela':'Janela — abre, fecha e trava','torneira':'Torneira — abre e fecha','chuveiro':'Chuveiro — pressão e temperatura','descarga':'Descarga — funciona','ralo':'Ralo — escoa bem','iluminacao':'Iluminação','piso':'Piso','teto':'Teto','parede':'Parede','janelas':'Janelas','portas':'Portas'};
       for(var _sk in _stdNomes){if(!_tNomes[_sk])_tNomes[_sk]=_stdNomes[_sk];}
