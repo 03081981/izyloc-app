@@ -6063,11 +6063,22 @@ function wiz6AnalisarBatch(ambIdx) {
   var btnAnalisar = document.querySelector('[onclick="wiz6AnalisarBatch(' + ambIdx + ')"]');
   if (btnAnalisar) btnAnalisar.closest('div').style.display = 'none';
 
-  var imagens = fotos.map(function(f) {
-    return {base64: f.base64, mime_type: f.mime || 'image/jpeg'};
-  });
-
-  fetch('/api/analisar-batch', {
+  // Limit frames to max 18 per environment to avoid repeated AI synthesis
+      var MAX_FOTOS_IA = 18;
+      var fotosParaIA = fotos;
+      if (fotos.length > MAX_FOTOS_IA) {
+        fotosParaIA = [];
+        var step = fotos.length / MAX_FOTOS_IA;
+        for (var si = 0; si < MAX_FOTOS_IA; si++) {
+          fotosParaIA.push(fotos[Math.floor(si * step)]);
+        }
+        console.log('[wiz6AnalisarBatch] Subsampled ' + fotos.length + ' fotos to ' + fotosParaIA.length);
+        if (statusEl) statusEl.innerHTML = '\u23f3 IA analisando ' + fotosParaIA.length + ' de ' + fotos.length + ' fotos do ' + nome + '... aguarde.';
+      }
+      var imagens = fotosParaIA.map(function(f) {
+        return {base64: f.base64, mime_type: f.mime || 'image/jpeg'};
+      });
+      fetch('/api/analisar-batch', {
     method: 'POST',
     headers: {'Content-Type': 'application/json'},
     body: JSON.stringify({
