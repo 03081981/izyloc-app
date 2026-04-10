@@ -1373,7 +1373,6 @@ class GeneratePDFHandler(BaseHandler):
             tipo = inspection_data.get('type', 'entrada')
             pdf_filename = f"IZYLO_Laudo_{tipo}_{insp_id[:8].upper()}.pdf"
             pdf_path = os.path.join(PDF_DIR, pdf_filename)
-            inspection_data['ambientes_json'] = ''  # POST path: usa rooms_data mergeados
             success = generate_pdf(inspection_data, rooms_list, signatures_list, pdf_path)
             if not success:
                 return self.err('Erro ao gerar PDF', 500)
