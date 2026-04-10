@@ -547,12 +547,13 @@ def add_ambientes(story, s, ambientes):
                 'portas'        : 'Portas / Fechaduras',
             }
             linhas = []
-            for k, label in mapa.items():
-                if k in verif:
-                    linhas.append([
-                        Paragraph(label, s['verif_label']),
-                        Paragraph(f'<b>{verif[k]}</b>', s['verif_label']),
-                    ])
+            testes_nomes = amb.get('testes_nomes', {})
+            for k, v in verif.items():
+                label = mapa.get(k, testes_nomes.get(k, k.replace('_', ' ').capitalize()))
+                linhas.append([
+                    Paragraph(label, s['verif_label']),
+                    Paragraph(f'<b>{v}</b>', s['verif_label']),
+                ])
             if linhas:
                 t = Table(linhas, colWidths=[TW*0.6, TW*0.4])
                 t.setStyle(TableStyle([
@@ -1274,8 +1275,9 @@ def _build_ambientes(rooms_data):
         amb = {
             'nome': _safe(room.get('name'), 'Ambiente'),
             'itens': itens,
-            'verificacoes': {},
-            'observacoes_gerais': _safe(room.get('observations'), ''),
+            'verificacoes': room.get('verificacoes', {}),
+            'testes_nomes': room.get('testes_nomes', {}),
+            'observacoes_gerais': _safe(room.get('observacoes', room.get('observations', '')), ''),
         }
         ambientes.append(amb)
     return ambientes
