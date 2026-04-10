@@ -1386,6 +1386,18 @@ def generate_pdf(inspection_data: dict, rooms_data: list,
         amb_json = insp.get('ambientes_json', '')
         if amb_json:
             ambientes = _build_ambientes_from_json(amb_json)
+            # Overlay POST data: verificacoes, testes_nomes, observacoes_gerais
+            if rooms_data:
+                rooms_by_name = {r.get('name', '').strip(): r for r in rooms_data}
+                for amb in ambientes:
+                    r = rooms_by_name.get(amb.get('nome', '').strip(), {})
+                    if r.get('verificacoes'):
+                        amb['verificacoes'] = r['verificacoes']
+                    if r.get('testes_nomes'):
+                        amb['testes_nomes'] = r.get('testes_nomes', {})
+                    obs = _safe(r.get('observacoes', r.get('observations', '')), '')
+                    if obs:
+                        amb['observacoes_gerais'] = obs
         else:
             ambientes = _build_ambientes(rooms_data)
 
