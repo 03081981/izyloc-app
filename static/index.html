@@ -5868,7 +5868,7 @@ function wiz6RenderAmbCard(idx) {
   else if (nomeL.indexOf('garagem')>=0) tipoTeste='garagem';
   else if (nomeL.indexOf('externa')>=0||nomeL.indexOf('fachada')>=0) tipoTeste='externa';
   else if (nomeL.indexOf('escrit')>=0) tipoTeste='escritorio';
-  var testes = testesMap[tipoTeste] || testesMap['default'];
+  var testes = (testesMap[tipoTeste] || testesMap['default']).concat(dados.testesExtras || []);
   var testesSalvos = dados.testes || {};
 
   var instrucoes = {
