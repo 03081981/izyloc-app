@@ -4509,7 +4509,16 @@ if (typeof initAmbientes === 'function') initAmbientes();
       }
       if (btn) btn.textContent = 'Gerando PDF...';
       try {
-        var r = await fetch('/api/inspections/' + wizard.inspectionId + '/pdf');
+        var _eMap={'ok':'Funcionando','nao':'Não Funcionando','nt':'Não Testado','nexiste':'N/A'};
+          var _ambData=[];
+          for(var _ai=0;_ai<(wizard.selectedRooms||[]).length;_ai++){
+            var _d=(wizard.itensData&&wizard.itensData[_ai])||{};
+            var _verif={};var _tNomes={};var _tt=_d.testes||{};
+            for(var _tk in _tt){if(_tt[_tk])_verif[_tk]=_eMap[_tt[_tk]]||_tt[_tk];}
+            (_d.testesExtras||[]).forEach(function(ex){_tNomes[ex.k]=ex.n;});
+            _ambData.push({roomName:wizard.selectedRooms[_ai],verificacoes:_verif,testesNomes:_tNomes,observacoes:_d.observacoes||''});
+          }
+          var r=await fetch('/api/inspections/'+wizard.inspectionId+'/pdf',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({ambData:_ambData})});
         if (!r.ok) throw new Error('Erro ' + r.status);
         var blob = await r.blob();
         var url = URL.createObjectURL(blob);
