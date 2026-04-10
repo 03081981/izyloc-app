@@ -567,7 +567,9 @@ def add_ambientes(story, s, ambientes):
 
         obs_g = amb.get('observacoes_gerais', '')
         if obs_g:
-            story.append(Paragraph(f'Observa\u00e7\u00f5es gerais: {obs_g}', s['obs']))
+            story.append(Spacer(1, 4))
+            story.append(Paragraph(u'Observa\u00e7\u00e3o geral', s['secao']))
+            story.append(Paragraph(obs_g, s['obs']))
 
         story.append(Spacer(1, 5))
 
