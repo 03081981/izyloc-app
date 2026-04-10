@@ -2703,7 +2703,7 @@ window._openFotoModal = function(imgSrc) {
       <div class="wiz-section-sub">Fotografe cada ambiente em modo horizontal. A IA identifica e descreve cada item automaticamente.</div><div id="wiz6-badge-tipo" style="display:inline-flex;align-items:center;gap:6px;background:#eef4ff;border:0.5px solid #bfdbfe;border-radius:20px;padding:4px 12px;font-size:12px;color:#2d7dd2;font-weight:500;margin-bottom:12px;margin-top:8px"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><polygon points="12,3 22,10 2,10" fill="#2d7dd2"/><rect x="3" y="10" width="18" height="11" rx="1" fill="#dbeafe" stroke="#2d7dd2" stroke-width="1.5"/><rect x="9" y="13" width="6" height="8" rx="1" fill="#2d7dd2"/></svg><span id="wiz6-badge-tipo-txt">Im\u00f3vel selecionado</span></div>
 
       <!-- ESCOLHA DE MODO (aparece só na primeira vez) -->
-      <div style="margin-bottom:12px"><button onclick="prevWizStep ? prevWizStep() : null" style="display:inline-flex;align-items:center;gap:6px;padding:7px 14px;background:#fff;border:0.5px solid #e2e8f0;border-radius:8px;font-size:12px;color:#8898aa;cursor:pointer"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M19 12H5M12 5l-7 7 7 7" stroke="#8898aa" stroke-width="1.5" stroke-linecap="round"/></svg>\u2190 Voltar para ambientes</button></div><div id="wiz6-escolha-modo" style="margin-bottom:16px">
+      <div style="margin-bottom:12px"><button onclick="prevWizStep ? prevWizStep() : null" style="display:inline-flex;align-items:center;gap:6px;padding:7px 14px;background:#fff;border:0.5px solid #e2e8f0;border-radius:8px;font-size:12px;color:#8898aa;cursor:pointer"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M19 12H5M12 5l-7 7 7 7" stroke="#8898aa" stroke-width="1.5" stroke-linecap="round"/></svg>&larr; Voltar para ambientes</button></div><div id="wiz6-escolha-modo" style="margin-bottom:16px">
   <div style="font-size:11px;font-weight:700;color:#8898aa;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:10px">Como deseja registrar a vistoria?</div>
   <div style="display:flex;gap:10px;align-items:stretch">
     <div class="wiz6-modo-btn active" id="wiz6-btn-foto" onclick="wiz6SelecionarModo('foto')" style="display:flex;align-items:center;gap:12px;padding:12px 16px;max-width:220px">
@@ -4421,8 +4421,8 @@ if (typeof initAmbientes === 'function') initAmbientes();
       h += '<textarea class="obs-geral" placeholder="Alguma observação adicional sobre este ambiente?"></textarea>';
 
       h += '<div class="nav-ambiente">';
-      if (idx > 0) h += '<button class="btn-nav" onclick="window._ambGoTo('+(idx-1)+')">\u2190 Anterior</button>';
-      else h += '<button class="btn-nav" disabled style="opacity:0.4">\u2190 Anterior</button>';
+      if (idx > 0) h += '<button class="btn-nav" onclick="window._ambGoTo('+(idx-1)+')">&larr; Anterior</button>';
+      else h += '<button class="btn-nav" disabled style="opacity:0.4">&larr; Anterior</button>';
       h += '<span style="font-size:12px;color:#8a95a3">Ambiente '+(idx+1)+' de '+rooms.length+'</span>';
       if (idx < rooms.length-1) h += '<button class="btn-nav-next" onclick="window._ambGoTo('+(idx+1)+')">'+rooms[idx+1]+' \u2192</button>';
       
@@ -5929,7 +5929,7 @@ function wiz6RenderAmbCard(idx) {
   var isUltimo = idx >= _wiz6Ambientes.length - 1;
   var txtProx = isUltimo ? '\u2713 Finalizar vistoria' : 'Pr\u00f3ximo ambiente \u2192';
   var btnProx = '<button id="wiz6-btn-prox-amb" onclick="wiz6ProxAmb()" style="padding:12px 24px;background:#2d7dd2;color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;flex:1">' + txtProx + '</button>';
-  var btnAnterior = idx > 0 ? '<button onclick="wiz6AmbAnterior()" style="padding:12px 20px;background:#fff;color:#8898aa;border:0.5px solid #e2e8f0;border-radius:10px;font-size:13px;cursor:pointer">\u2190 Anterior</button>' : '';
+  var btnAnterior = idx > 0 ? '<button onclick="wiz6AmbAnterior()" style="padding:12px 20px;background:#fff;color:#8898aa;border:0.5px solid #e2e8f0;border-radius:10px;font-size:13px;cursor:pointer">&larr; Anterior</button>' : '';
 
   card.innerHTML =
     '<div style="background:linear-gradient(135deg,#1e3a5f,#2d7dd2);padding:14px 18px;border-radius:12px 12px 0 0;display:flex;align-items:center;gap:10px">' +
