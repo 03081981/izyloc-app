@@ -1457,6 +1457,8 @@ def generate_pdf(inspection_data: dict, rooms_data: list,
                     r = rooms_data[i]
                     if r.get('verificacoes'):
                         amb['verificacoes'] = r['verificacoes']
+                    if r.get('verificacoes_obs'):
+                        amb['verificacoes_obs'] = r['verificacoes_obs']
                     if r.get('testes_nomes'):
                         amb['testes_nomes'] = r.get('testes_nomes', {})
                     obs = _safe(r.get('observacoes', r.get('observations', '')), '')
