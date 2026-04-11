@@ -3849,7 +3849,7 @@ async function gerarLaudo() {
     corretor_creci: (document.getElementById('wi-corr-creci') || {}).value || '',
     corretor_phone: (document.getElementById('wi-corr-phone') || {}).value || '',
     corretor_email: (document.getElementById('wi-corr-email') || {}).value || '',
-    responsável: (typeof wizard !== 'undefined' && wizard.realizador) ? wizard.realizador : 'proprietário'
+    responsavel: ((typeof wizard !== 'undefined' && wizard.realizador === 'imobiliária') ? 'imobiliaria' : 'proprietario')
   };
     var ambArr = [];
     Object.keys(window._fotoStore || {}).forEach(function(amb) {
