@@ -3914,6 +3914,7 @@ async function generatePDF() {
       for(var _sk in _stdNomes){if(!_tNomes[_sk])_tNomes[_sk]=_stdNomes[_sk];}
       _ambData.push({roomName:wizard.selectedRooms[_ai],verificacoes:_verif,verificacoesObs:_verifObs,testesNomes:_tNomes,observacoes:_d.obs||''});
     }
+    try{window.__izyDbg={itensData:JSON.parse(JSON.stringify(wizard.itensData||[])),ambData:JSON.parse(JSON.stringify(_ambData)),at:Date.now()};sessionStorage.setItem('__izyDbg',JSON.stringify(window.__izyDbg));console.log('[izyDbg] ambData sample:',_ambData&&_ambData[0]);}catch(e){}
     var _tok=localStorage.getItem('izylo_token');
     var resp=await fetch('/api/inspections/'+wizard.inspectionId+'/pdf',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+_tok},body:JSON.stringify({ambData:_ambData})});
     hideLoading();
