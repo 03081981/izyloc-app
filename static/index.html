@@ -4671,6 +4671,20 @@ if (typeof initAmbientes === 'function') initAmbientes();
         h += '<div style="font-size:13px;font-weight:700;color:#0f172a">' + _esc(_rN) + '</div>';
         h += '<div style="font-size:11px;color:#64748b">' + _nF + ' foto' + (_nF === 1 ? '' : 's') + '</div>';
         h += '</div>';
+        if (_rd.fotos && _rd.fotos.length > 0) {
+          h += '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(90px,1fr));gap:6px;margin-bottom:10px">';
+          for (var _fi = 0; _fi < _rd.fotos.length; _fi++) {
+            var _ff = _rd.fotos[_fi];
+            var _fsrc = _ff.preview || (_ff.base64 ? ('data:' + (_ff.mime || 'image/jpeg') + ';base64,' + _ff.base64) : '');
+            if (_fsrc) {
+              h += '<div style="position:relative;aspect-ratio:1;overflow:hidden;border-radius:6px;border:1px solid #cbd5e1;background:#f1f5f9">';
+              h += '<img src="' + _fsrc + '" style="width:100%;height:100%;object-fit:cover;display:block"/>';
+              h += '<div style="position:absolute;left:3px;top:3px;background:rgba(15,23,42,0.75);color:#fff;padding:1px 6px;border-radius:4px;font-size:10px;font-weight:600">' + (_fi + 1) + '</div>';
+              h += '</div>';
+            }
+          }
+          h += '</div>';
+        }
         h += '<div style="margin-bottom:10px"><label style="display:block;font-size:11px;color:#64748b;font-weight:600;margin-bottom:3px">Síntese / Resumo do ambiente</label>';
         h += '<textarea data-kind="resumo" data-aidx="' + _ri + '" rows="5" style="width:100%;padding:7px 9px;border:1px solid #cbd5e1;border-radius:6px;font-size:12px;background:#fff;resize:vertical">' + _esc(_rd.resumo || '') + '</textarea></div>';
         var _tKeys = [];
