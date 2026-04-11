@@ -3907,8 +3907,8 @@ async function generatePDF() {
     var _ambData=[];
     for(var _ai=0;_ai<(wizard.selectedRooms||[]).length;_ai++){
       var _d=(wizard.itensData&&wizard.itensData[_ai])||{};
-      var _verif={};var _tNomes={};var _tt=_d.testes||{};
-      for(var _tk in _tt){if(_tt[_tk]&&_tk.indexOf('_obs')<0)_verif[_tk]=_eMap[_tt[_tk]]||_tt[_tk];}
+      var _verif={};var _verifObs={};var _tNomes={};var _tt=_d.testes||{};
+      for(var _tk in _tt){if(!_tt[_tk])continue;if(_tk.length>4&&_tk.slice(-4)==='_obs'){_verifObs[_tk.slice(0,-4)]=_tt[_tk];}else{_verif[_tk]=_eMap[_tt[_tk]]||_tt[_tk];}}
       (_d.testesExtras||[]).forEach(function(ex){_tNomes[ex.k]=ex.n;});
       var _stdNomes={'porta':'Porta — maçaneta e fechadura','chaves':'Chaves da porta','tomadas':'Tomadas e interruptores','ac':'Ar condicionado','janela':'Janela — abre, fecha e trava','torneira':'Torneira — abre e fecha','chuveiro':'Chuveiro — pressão e temperatura','descarga':'Descarga — funciona','ralo':'Ralo — escoa bem','iluminacao':'Iluminação','piso':'Piso','teto':'Teto','parede':'Parede','janelas':'Janelas','portas':'Portas'};
       for(var _sk in _stdNomes){if(!_tNomes[_sk])_tNomes[_sk]=_stdNomes[_sk];}
