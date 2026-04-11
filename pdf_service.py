@@ -942,8 +942,6 @@ def gerar_laudo_entrada_proprietario(dados_imovel, dados_locador,
         partes_sig.append((_loc['nome'], u'Locador / Propriet\u00e1rio', _loc['cpf']))
     for _ten in locatarios:
         partes_sig.append((_ten['nome'], u'Locat\u00e1rio', _ten['cpf']))
-    if dados_imobiliaria.get('nome'):
-        partes_sig.append((dados_imobiliaria['nome'], u'Imobili\u00e1ria', dados_imobiliaria.get('cnpj', '')))
     if dados_corretor.get('nome'):
         partes_sig.append((dados_corretor['nome'], u'Corretor \u00b7 CRECI ' + dados_corretor.get('creci', ''), ''))
     add_assinaturas(story, s, partes_sig, local_data)
@@ -1003,8 +1001,6 @@ def gerar_laudo_modelo1(dados_imovel, dados_locador, dados_locatario,
         partes_sig.append((_loc['nome'], u'Locador', _loc['cpf']))
     for _ten in locatarios:
         partes_sig.append((_ten['nome'], u'Locat\u00e1rio', _ten['cpf']))
-    if dados_imobiliaria.get('nome'):
-        partes_sig.append((dados_imobiliaria['nome'], u'Imobili\u00e1ria', dados_imobiliaria.get('cnpj', '')))
     if dados_corretor.get('nome'):
         partes_sig.append((dados_corretor['nome'], u'Corretor \u00b7 CRECI ' + dados_corretor.get('creci', ''), ''))
     add_assinaturas(story, s, partes_sig, local_data)
@@ -1053,8 +1049,6 @@ def gerar_laudo_modelo3(dados_imovel, dados_locador, dados_locatario,
         partes_sig.append((_loc['nome'], u'Locador', _loc['cpf']))
     for _ten in locatarios:
         partes_sig.append((_ten['nome'], u'Locat\u00e1rio', _ten['cpf']))
-    if dados_imobiliaria.get('nome'):
-        partes_sig.append((dados_imobiliaria['nome'], u'Imobili\u00e1ria', dados_imobiliaria.get('cnpj', '')))
     if dados_corretor.get('nome'):
         partes_sig.append((dados_corretor['nome'], u'Vistoriador/Corretor \u00b7 CRECI ' + dados_corretor.get('creci', ''), ''))
     add_assinaturas(story, s, partes_sig, local_data)
@@ -1112,8 +1106,6 @@ def gerar_laudo_modelo4(dados_imovel, dados_locador, dados_locatario,
         partes_sig.append((_loc['nome'], u'Locador / Propriet\u00e1rio', _loc['cpf']))
     for _ten in locatarios:
         partes_sig.append((_ten['nome'], u'Locat\u00e1rio', _ten['cpf']))
-    if dados_imobiliaria.get('nome'):
-        partes_sig.append((dados_imobiliaria['nome'], u'Imobili\u00e1ria', dados_imobiliaria.get('cnpj', '')))
     if dados_corretor.get('nome'):
         partes_sig.append((dados_corretor['nome'], u'Corretor \u00b7 CRECI ' + dados_corretor.get('creci', ''), ''))
     add_assinaturas(story, s, partes_sig, local_data)
@@ -1162,8 +1154,6 @@ def gerar_laudo_modelo5(dados_imovel, dados_locador, dados_locatario,
         partes_sig.append((_loc['nome'], u'Anfitri\u00e3o / Locador', _loc['cpf']))
     for _ten in locatarios:
         partes_sig.append((_ten['nome'], u'H\u00f3spede / Ocupante', _ten['cpf']))
-    if dados_imobiliaria.get('nome'):
-        partes_sig.append((dados_imobiliaria['nome'], u'Imobili\u00e1ria', dados_imobiliaria.get('cnpj', '')))
     if dados_corretor.get('nome'):
         partes_sig.append((dados_corretor['nome'], u'Vistoriador/Corretor \u00b7 CRECI ' + dados_corretor.get('creci', ''), ''))
     add_assinaturas(story, s, partes_sig, local_data)
@@ -1221,8 +1211,6 @@ def gerar_laudo_modelo6(dados_imovel, dados_locador, dados_locatario,
         partes_sig.append((_loc['nome'], u'Anfitri\u00e3o / Locador / Propriet\u00e1rio', _loc['cpf']))
     for _ten in locatarios:
         partes_sig.append((_ten['nome'], u'H\u00f3spede / Ocupante', _ten['cpf']))
-    if dados_imobiliaria.get('nome'):
-        partes_sig.append((dados_imobiliaria['nome'], u'Imobili\u00e1ria', dados_imobiliaria.get('cnpj', '')))
     if dados_corretor.get('nome'):
         partes_sig.append((dados_corretor['nome'], u'Corretor \u00b7 CRECI ' + dados_corretor.get('creci', ''), ''))
     add_assinaturas(story, s, partes_sig, local_data)
@@ -1460,6 +1448,8 @@ def generate_pdf(inspection_data: dict, rooms_data: list,
             ambientes = _build_ambientes(rooms_data)
 
         local_data = _format_date_extenso(dt)
+        if cidade_raw:
+            local_data = f'{cidade_raw}, {local_data}'
 
         # ---- Selecao do modelo baseado em tipo x responsavel ----
         tipo = _safe(insp.get('type', 'entrada')).lower().strip()
