@@ -376,59 +376,77 @@ def add_partes_cards(story, s, blocos):
         story.append(t)
 
 def add_card_imob_corretor(story, s, dados_imobiliaria, dados_corretor):
-    """Card Imobiliaria/Corretor com bloco separado da imobiliaria quando presente."""
+    """Card Imobiliaria/Corretor com layout 2 colunas lado a lado."""
     story.append(Paragraph(u'Partes Envolvidas', s['sub']))
-
-    linhas = []
-    title_rows = []
 
     has_imob = bool(dados_imobiliaria and dados_imobiliaria.get('nome'))
 
+    corr_nome  = dados_corretor.get('nome',  u'—') or u'—'
+    corr_creci = dados_corretor.get('creci', u'—') or u'—'
+    corr_tel   = dados_corretor.get('telefone', u'') or u''
+    corr_email = dados_corretor.get('email', u'—') or u'—'
+
+    def _build_block(title, campos):
+        inner_rows = [[Paragraph(title, s['parte_titulo'])]]
+        for lbl, val, style_key in campos:
+            inner_rows.append([Paragraph(lbl, s['parte_label'])])
+            inner_rows.append([Paragraph(val, s[style_key])])
+        inner_t = Table(inner_rows, colWidths=[None])
+        inner_t.setStyle(TableStyle([
+            ('LEFTPADDING',  (0,0), (-1,-1), 0),
+            ('RIGHTPADDING', (0,0), (-1,-1), 0),
+            ('TOPPADDING',   (0,0), (-1,-1), 2),
+            ('BOTTOMPADDING',(0,0), (-1,-1), 1),
+            ('LINEBELOW', (0,0), (0,0), 0.5, HexColor('#ddeeff')),
+        ]))
+        return inner_t
+
     if has_imob:
-        imob_nome = dados_imobiliaria.get('nome', u'\u2014') or u'\u2014'
-        imob_cnpj = dados_imobiliaria.get('cnpj', u'\u2014') or u'\u2014'
-        imob_tel  = dados_imobiliaria.get('telefone', u'\u2014') or u'\u2014'
-        imob_end  = dados_imobiliaria.get('endereco', '') or ''
+        imob_nome  = dados_imobiliaria.get('nome', u'—') or u'—'
+        imob_cnpj  = dados_imobiliaria.get('cnpj', u'—') or u'—'
+        imob_tel   = dados_imobiliaria.get('telefone', u'—') or u'—'
+        imob_email = dados_imobiliaria.get('email', u'—') or u'—'
 
-        title_rows.append(len(linhas))
-        linhas.append([Paragraph(u'Imobili\u00e1ria', s['parte_titulo'])])
-        linhas.append([Paragraph('NOME', s['parte_label'])])
-        linhas.append([Paragraph(maiusculo(imob_nome), s['parte_valor'])])
-        linhas.append([Paragraph('CNPJ', s['parte_label'])])
-        linhas.append([Paragraph(imob_cnpj, s['parte_valor'])])
-        linhas.append([Paragraph('TELEFONE', s['parte_label'])])
-        linhas.append([Paragraph(imob_tel, s['parte_valor'])])
-        if imob_end:
-            linhas.append([Paragraph(u'ENDERE\u00c7O', s['parte_label'])])
-            linhas.append([Paragraph(imob_end, s['parte_valor'])])
+        left_block = _build_block(u'Imobiliária', [
+            ('NOME',     maiusculo(imob_nome),  'parte_valor'),
+            ('CNPJ',     imob_cnpj,             'parte_valor'),
+            ('TELEFONE', imob_tel,              'parte_valor'),
+            ('E-MAIL',   imob_email,            'parte_email'),
+        ])
+        right_block = _build_block(u'Corretor', [
+            ('NOME',     maiusculo(corr_nome),  'parte_valor'),
+            ('CRECI',    maiusculo(corr_creci), 'parte_valor'),
+            ('TELEFONE', corr_tel or u'—', 'parte_valor'),
+            ('E-MAIL',   corr_email,            'parte_email'),
+        ])
 
-    corr_nome  = dados_corretor.get('nome',  u'\u2014') or u'\u2014'
-    corr_creci = dados_corretor.get('creci', u'\u2014') or u'\u2014'
-    corr_email = dados_corretor.get('email', u'\u2014') or u'\u2014'
-
-    title_rows.append(len(linhas))
-    if has_imob:
-        linhas.append([Paragraph(u'Corretor', s['parte_titulo'])])
+        half = (TW - 10) / 2
+        outer = Table([[left_block, right_block]], colWidths=[half, half], spaceAfter=6)
+        outer.setStyle(TableStyle([
+            ('LEFTPADDING',  (0,0), (-1,-1), 0),
+            ('RIGHTPADDING', (0,0), (-1,-1), 0),
+            ('TOPPADDING',   (0,0), (-1,-1), 0),
+            ('BOTTOMPADDING',(0,0), (-1,-1), 0),
+            ('VALIGN',       (0,0), (-1,-1), 'TOP'),
+        ]))
+        story.append(outer)
     else:
-        linhas.append([Paragraph(u'Imobili\u00e1ria / Corretor', s['parte_titulo'])])
-    linhas.append([Paragraph('NOME', s['parte_label'])])
-    linhas.append([Paragraph(maiusculo(corr_nome), s['parte_valor'])])
-    linhas.append([Paragraph('CRECI', s['parte_label'])])
-    linhas.append([Paragraph(maiusculo(corr_creci), s['parte_valor'])])
-    linhas.append([Paragraph('E-MAIL', s['parte_label'])])
-    linhas.append([Paragraph(corr_email, s['parte_email'])])
-
-    t = Table(linhas, colWidths=[TW], spaceAfter=6)
-    _style = [
-        ('LEFTPADDING',  (0,0), (-1,-1), 0),
-        ('RIGHTPADDING', (0,0), (-1,-1), 0),
-        ('TOPPADDING',   (0,0), (-1,-1), 2),
-        ('BOTTOMPADDING',(0,0), (-1,-1), 1),
-    ]
-    for _tr in title_rows:
-        _style.append(('LINEBELOW', (0,_tr), (0,_tr), 0.5, HexColor('#ddeeff')))
-    t.setStyle(TableStyle(_style))
-    story.append(t)
+        linhas = [[Paragraph(u'Imobiliária / Corretor', s['parte_titulo'])]]
+        linhas.append([Paragraph('NOME', s['parte_label'])])
+        linhas.append([Paragraph(maiusculo(corr_nome), s['parte_valor'])])
+        linhas.append([Paragraph('CRECI', s['parte_label'])])
+        linhas.append([Paragraph(maiusculo(corr_creci), s['parte_valor'])])
+        linhas.append([Paragraph('E-MAIL', s['parte_label'])])
+        linhas.append([Paragraph(corr_email, s['parte_email'])])
+        t = Table(linhas, colWidths=[TW], spaceAfter=6)
+        t.setStyle(TableStyle([
+            ('LEFTPADDING',  (0,0), (-1,-1), 0),
+            ('RIGHTPADDING', (0,0), (-1,-1), 0),
+            ('TOPPADDING',   (0,0), (-1,-1), 2),
+            ('BOTTOMPADDING',(0,0), (-1,-1), 1),
+            ('LINEBELOW', (0,0), (0,0), 0.5, HexColor('#ddeeff')),
+        ]))
+        story.append(t)
 
 def add_foto_item(story, s, item, numero_inicio=1):
     """Renders only the photos with numbers (no description, no badge)."""
@@ -1421,6 +1439,7 @@ def generate_pdf(inspection_data: dict, rooms_data: list,
             'cnpj'     : _safe(insp.get('imobiliaria_cnpj'), ''),
             'telefone' : _safe(insp.get('imobiliaria_phone'), ''),
             'endereco' : _safe(insp.get('imobiliaria_address'), ''),
+            'email'    : _safe(insp.get('imobiliaria_email'), ''),
         }
 
         amb_json = insp.get('ambientes_json', '')
