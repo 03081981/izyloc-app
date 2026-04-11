@@ -3369,10 +3369,10 @@ async function wizardNext(step) {
       property_type: document.getElementById('wi-prop-type').value,
       property_area: document.getElementById('wi-area').value,
       inspection_date: fmtDate,
-      imobiliaria_name: document.getElementById('wi-imob-name').value.trim(),
-      imobiliaria_cnpj: document.getElementById('wi-imob-cnpj').value.trim(),
-      imobiliaria_phone: document.getElementById('wi-imob-phone').value.trim(),
-      imobiliaria_address: document.getElementById('wi-imob-address').value.trim(),
+      imobiliaria_name: ((document.getElementById('wi-imob-name') || {}).value || '').trim(),
+      imobiliaria_cnpj: ((document.getElementById('wi-imob-cnpj') || {}).value || '').trim(),
+      imobiliaria_phone: ((document.getElementById('wi-imob-phone') || {}).value || '').trim(),
+      imobiliaria_address: ((document.getElementById('wi-imob-address') || {}).value || '').trim(),
     });
     hideLoading();
     if (!r.ok) return toast(r.error || 'Erro ao criar vistoria', 'error');
