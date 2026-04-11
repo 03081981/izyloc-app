@@ -3372,10 +3372,10 @@ async function wizardNext(step) {
       property_type: document.getElementById('wi-prop-type').value,
       property_area: document.getElementById('wi-area').value,
       inspection_date: fmtDate,
-      imobiliária_name: document.getElementById('wi-imob-name').value.trim(),
-      imobiliária_cnpj: document.getElementById('wi-imob-cnpj').value.trim(),
-      imobiliária_phone: document.getElementById('wi-imob-phone').value.trim(),
-      imobiliária_address: document.getElementById('wi-imob-address').value.trim(),
+      imobiliaria_name: document.getElementById('wi-imob-name').value.trim(),
+      imobiliaria_cnpj: document.getElementById('wi-imob-cnpj').value.trim(),
+      imobiliaria_phone: document.getElementById('wi-imob-phone').value.trim(),
+      imobiliaria_address: document.getElementById('wi-imob-address').value.trim(),
     });
     hideLoading();
     if (!r.ok) return toast(r.error || 'Erro ao criar vistoria', 'error');
@@ -3388,8 +3388,8 @@ async function wizardNext(step) {
     const r = await api('PUT', `/api/inspections/${wizard.inspectionId}`, {
       locador_name: v('wi-loc-name'), locador_cpf: v('wi-loc-cpf'),
       locador_rg: v('wi-loc-rg'), locador_phone: v('wi-loc-phone'), locador_email: v('wi-loc-email'),
-      locatário_name: v('wi-locat-name'), locatário_cpf: v('wi-locat-cpf'),
-      locatário_rg: v('wi-locat-rg'), locatário_phone: v('wi-locat-phone'), locatário_email: v('wi-locat-email'),
+      locatario_name: v('wi-locat-name'), locatario_cpf: v('wi-locat-cpf'),
+      locatario_rg: v('wi-locat-rg'), locatario_phone: v('wi-locat-phone'), locatario_email: v('wi-locat-email'),
       corretor_name: v('wi-corr-name'), corretor_creci: v('wi-corr-creci'),
       corretor_phone: v('wi-corr-phone'), corretor_email: v('wi-corr-email'),
     });
@@ -3403,8 +3403,8 @@ async function wizardNext(step) {
     const r = await api('PUT', `/api/inspections/${wizard.inspectionId}`, {
       locador_name: v('wi-loc-name'), locador_cpf: v('wi-loc-cpf'),
       locador_rg: v('wi-loc-rg'), locador_phone: v('wi-loc-phone'), locador_email: v('wi-loc-email'),
-      locatário_name: v('wi-locat-name'), locatário_cpf: v('wi-locat-cpf'),
-      locatário_rg: v('wi-locat-rg'), locatário_phone: v('wi-locat-phone'), locatário_email: v('wi-locat-email'),
+      locatario_name: v('wi-locat-name'), locatario_cpf: v('wi-locat-cpf'),
+      locatario_rg: v('wi-locat-rg'), locatario_phone: v('wi-locat-phone'), locatario_email: v('wi-locat-email'),
       corretor_name: v('wi-corr-name'), corretor_creci: v('wi-corr-creci'),
       corretor_phone: v('wi-corr-phone'), corretor_email: v('wi-corr-email'),
     });
@@ -3836,15 +3836,15 @@ async function gerarLaudo() {
     locador_rg: (document.getElementById('loc-rg-0') || {}).value || '',
     locador_phone: (document.getElementById('loc-phone-0') || {}).value || '',
     locador_email: (document.getElementById('loc-email-0') || {}).value || '',
-    locatário_name: (document.getElementById('locat-name-0') || {}).value || '',
-    locatário_cpf: (document.getElementById('locat-cpf-0') || {}).value || '',
-    locatário_rg: (document.getElementById('locat-rg-0') || {}).value || '',
-    locatário_phone: (document.getElementById('locat-phone-0') || {}).value || '',
-    locatário_email: (document.getElementById('locat-email-0') || {}).value || '',
-    imobiliária_name: (document.getElementById('wi-imob-name') || {}).value || '',
-    imobiliária_cnpj: (document.getElementById('wi-imob-cnpj') || {}).value || '',
-    imobiliária_phone: (document.getElementById('wi-imob-phone') || {}).value || '',
-    imobiliária_address: (document.getElementById('wi-imob-address') || {}).value || '',
+    locatario_name: (document.getElementById('locat-name-0') || {}).value || '',
+    locatario_cpf: (document.getElementById('locat-cpf-0') || {}).value || '',
+    locatario_rg: (document.getElementById('locat-rg-0') || {}).value || '',
+    locatario_phone: (document.getElementById('locat-phone-0') || {}).value || '',
+    locatario_email: (document.getElementById('locat-email-0') || {}).value || '',
+    imobiliaria_name: (document.getElementById('wi-imob-name') || {}).value || '',
+    imobiliaria_cnpj: (document.getElementById('wi-imob-cnpj') || {}).value || '',
+    imobiliaria_phone: (document.getElementById('wi-imob-phone') || {}).value || '',
+    imobiliaria_address: (document.getElementById('wi-imob-address') || {}).value || '',
     corretor_name: (document.getElementById('wi-corr-name') || {}).value || '',
     corretor_creci: (document.getElementById('wi-corr-creci') || {}).value || '',
     corretor_phone: (document.getElementById('wi-corr-phone') || {}).value || '',
@@ -3885,7 +3885,7 @@ async function gerarLaudo() {
       });
     });
     if (_locArr.length) body.locadores_json = JSON.stringify(_locArr);
-    if (_tenArr.length) body.locatários_json = JSON.stringify(_tenArr);
+    if (_tenArr.length) body.locatarios_json = JSON.stringify(_tenArr);
     var r;
   if (wizard.inspectionId) {
     r = await api('PUT', '/api/inspections/' + wizard.inspectionId, body);
@@ -4204,12 +4204,12 @@ if (typeof initAmbientes === 'function') initAmbientes();
           locador_cpf: locadores[0] ? locadores[0].cpf : '',
           locador_phone: locadores[0] ? locadores[0].phone : '',
           locador_email: locadores[0] ? locadores[0].email : '',
-          locatário_name: locatários[0] ? locatários[0].name : '',
-          locatário_cpf: locatários[0] ? locatários[0].cpf : '',
-          locatário_phone: locatários[0] ? locatários[0].phone : '',
-          locatário_email: locatários[0] ? locatários[0].email : '',
+          locatario_name: locatários[0] ? locatários[0].name : '',
+          locatario_cpf: locatários[0] ? locatários[0].cpf : '',
+          locatario_phone: locatários[0] ? locatários[0].phone : '',
+          locatario_email: locatários[0] ? locatários[0].email : '',
           locadores_json: JSON.stringify(locadores),
-          locatários_json: JSON.stringify(locatários),
+          locatarios_json: JSON.stringify(locatários),
           corretor_name: v('wi-corr-name'), corretor_creci: v('wi-corr-creci'),
           corretor_phone: v('wi-corr-phone'), corretor_email: v('wi-corr-email')
         };
