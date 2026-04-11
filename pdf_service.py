@@ -1312,6 +1312,15 @@ def generate_pdf(inspection_data: dict, rooms_data: list,
 
         cidade_raw = _safe(insp.get('cidade'), '')
         estado_raw = _safe(insp.get('estado'), '')
+        # Fallback: se estado vazio e cidade tem "Cidade / UF" num campo unico, fazer split
+        if cidade_raw and not estado_raw:
+            for _sep in (' / ', '/', ' - ', ','):
+                if _sep in cidade_raw:
+                    _p = cidade_raw.rsplit(_sep, 1)
+                    if len(_p) == 2 and 2 <= len(_p[1].strip()) <= 3:
+                        cidade_raw = _p[0].strip()
+                        estado_raw = _p[1].strip().upper()
+                        break
         if cidade_raw and estado_raw:
             cidade_uf = u'{} / {}'.format(cidade_raw, estado_raw)
         elif cidade_raw:
