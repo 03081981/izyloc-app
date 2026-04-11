@@ -685,7 +685,7 @@ class InspectionsHandler(BaseHandler):
                 'locatario_name', 'locatario_cpf', 'locatario_rg', 'locatario_phone', 'locatario_email',
                 'locadores_json', 'locatarios_json',
                 'corretor_name', 'corretor_creci', 'corretor_phone', 'corretor_email',
-                'imobiliaria_name', 'imobiliaria_cnpj', 'imobiliaria_phone', 'imobiliaria_address',
+                'imobiliaria_name', 'imobiliaria_cnpj', 'imobiliaria_phone', 'imobiliaria_address', 'imobiliaria_email',
                 'observations', 'ambientes_json', 'responsavel', 'created_at', 'updated_at'
             ]
             values = [
@@ -702,7 +702,7 @@ class InspectionsHandler(BaseHandler):
                 data.get('corretor_name', ''), data.get('corretor_creci', ''),
                 data.get('corretor_phone', ''), data.get('corretor_email', ''),
                 data.get('imobiliaria_name', ''), data.get('imobiliaria_cnpj', ''),
-                data.get('imobiliaria_phone', ''), data.get('imobiliaria_address', ''),
+                data.get('imobiliaria_phone', ''), data.get('imobiliaria_address', ''), data.get('imobiliaria_email', ''),
                 data.get('observations', ''), data.get('ambientes_json', ''), data.get('responsavel', 'proprietario'), now, now
             ]
             placeholders = ','.join(['?'] * len(fields))
@@ -774,7 +774,7 @@ class InspectionHandler(BaseHandler):
                 'locador_name', 'locador_cpf', 'locador_rg', 'locador_phone', 'locador_email',
                 'locatario_name', 'locatario_cpf', 'locatario_rg', 'locatario_phone', 'locatario_email',
                 'corretor_name', 'corretor_creci', 'corretor_phone', 'corretor_email',
-                'imobiliaria_name', 'imobiliaria_cnpj', 'imobiliaria_phone', 'imobiliaria_address',
+                'imobiliaria_name', 'imobiliaria_cnpj', 'imobiliaria_phone', 'imobiliaria_address', 'imobiliaria_email',
                 'bairro', 'complemento', 'cep', 'cidade', 'estado',
                 'observations', 'ambientes_json', 'responsavel'
             ]
