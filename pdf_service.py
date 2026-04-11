@@ -593,23 +593,41 @@ def add_ambientes(story, s, ambientes):
                 'ar_condicionado': 'Ar-condicionado',
                 'portas'        : 'Portas / Fechaduras',
             }
+            verif_obs = amb.get('verificacoes_obs', {}) or {}
             linhas = []
+            obs_rows = []
             testes_nomes = amb.get('testes_nomes', {})
             for k, v in verif.items():
+                if k.endswith('_obs'):
+                    continue
                 label = mapa.get(k, testes_nomes.get(k, k.replace('_', ' ').capitalize()))
                 linhas.append([
                     Paragraph(label, s['verif_label']),
                     Paragraph(f'<b>{v}</b>', s['verif_label']),
                 ])
+                obs_txt = verif_obs.get(k, '') or verif.get(k + '_obs', '') or ''
+                if obs_txt:
+                    obs_esc = str(obs_txt).replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;')
+                    obs_rows.append(len(linhas))
+                    linhas.append([
+                        Paragraph(f'<font color="#64748b" size="7"><i>Obs.: {obs_esc}</i></font>', s['verif_label']),
+                        Paragraph('', s['verif_label']),
+                    ])
             if linhas:
                 t = Table(linhas, colWidths=[TW*0.6, TW*0.4])
-                t.setStyle(TableStyle([
+                _vstyle = [
                     ('FONTSIZE',    (0,0), (-1,-1), 8),
                     ('TOPPADDING',  (0,0), (-1,-1), 3),
                     ('BOTTOMPADDING',(0,0),(-1,-1), 3),
                     ('LINEBELOW',   (0,0), (-1,-2), 0.3, CINZA),
                     ('LEFTPADDING', (0,0), (-1,-1), 0),
-                ]))
+                ]
+                for _or in obs_rows:
+                    _vstyle.append(('SPAN', (0, _or), (-1, _or)))
+                    _vstyle.append(('LEFTPADDING', (0, _or), (-1, _or), 12))
+                    _vstyle.append(('TOPPADDING', (0, _or), (-1, _or), 0))
+                    _vstyle.append(('BOTTOMPADDING', (0, _or), (-1, _or), 2))
+                t.setStyle(TableStyle(_vstyle))
                 story.append(t)
 
         obs_g = amb.get('observacoes_gerais', '')
