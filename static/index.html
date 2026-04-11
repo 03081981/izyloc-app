@@ -3912,7 +3912,7 @@ async function generatePDF() {
       (_d.testesExtras||[]).forEach(function(ex){_tNomes[ex.k]=ex.n;});
       var _stdNomes={'porta':'Porta — maçaneta e fechadura','chaves':'Chaves da porta','tomadas':'Tomadas e interruptores','ac':'Ar condicionado','janela':'Janela — abre, fecha e trava','torneira':'Torneira — abre e fecha','chuveiro':'Chuveiro — pressão e temperatura','descarga':'Descarga — funciona','ralo':'Ralo — escoa bem','iluminacao':'Iluminação','piso':'Piso','teto':'Teto','parede':'Parede','janelas':'Janelas','portas':'Portas'};
       for(var _sk in _stdNomes){if(!_tNomes[_sk])_tNomes[_sk]=_stdNomes[_sk];}
-      _ambData.push({roomName:wizard.selectedRooms[_ai],verificacoes:_verif,testesNomes:_tNomes,observacoes:_d.obs||''});
+      _ambData.push({roomName:wizard.selectedRooms[_ai],verificacoes:_verif,verificacoesObs:_verifObs,testesNomes:_tNomes,observacoes:_d.obs||''});
     }
     var _tok=localStorage.getItem('izylo_token');
     var resp=await fetch('/api/inspections/'+wizard.inspectionId+'/pdf',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+_tok},body:JSON.stringify({ambData:_ambData})});
@@ -4524,8 +4524,8 @@ if (typeof initAmbientes === 'function') initAmbientes();
           var _ambData=[];
           for(var _ai=0;_ai<(wizard.selectedRooms||[]).length;_ai++){
             var _d=(wizard.itensData&&wizard.itensData[_ai])||{};
-            var _verif={};var _tNomes={};var _tt=_d.testes||{};
-            for(var _tk in _tt){if(_tt[_tk])_verif[_tk]=_eMap[_tt[_tk]]||_tt[_tk];}
+            var _verif={};var _verifObs={};var _tNomes={};var _tt=_d.testes||{};
+            for(var _tk in _tt){if(!_tt[_tk])continue;if(_tk.length>4&&_tk.slice(-4)==='_obs'){_verifObs[_tk.slice(0,-4)]=_tt[_tk];}else{_verif[_tk]=_eMap[_tt[_tk]]||_tt[_tk];}}
             (_d.testesExtras||[]).forEach(function(ex){_tNomes[ex.k]=ex.n;});
             var _stdNomes={'porta':'Porta \u2014 ma\u00e7aneta e fechadura','chaves':'Chaves da porta','tomadas':'Tomadas e interruptores','ac':'Ar condicionado','janela':'Janela \u2014 abre, fecha e trava','torneira':'Torneira \u2014 abre e fecha','chuveiro':'Chuveiro \u2014 press\u00e3o e temperatura','descarga':'Descarga \u2014 funciona','ralo':'Ralo \u2014 escoa bem','iluminacao':'Ilumina\u00e7\u00e3o','piso':'Piso','teto':'Teto','parede':'Parede','janelas':'Janelas','portas':'Portas'};
             for(var _sk in _stdNomes){if(!_tNomes[_sk])_tNomes[_sk]=_stdNomes[_sk];}
