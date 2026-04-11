@@ -1364,6 +1364,7 @@ class GeneratePDFHandler(BaseHandler):
                 amb = amb_by_name.get(room_dict.get('name', ''), {})
                 if amb:
                     room_dict['verificacoes'] = amb.get('verificacoes', {})
+                    room_dict['verificacoes_obs'] = amb.get('verificacoesObs', {})
                     room_dict['testes_nomes'] = amb.get('testesNomes', {})
                     room_dict['observacoes'] = amb.get('observacoes', '')
                 rooms_list.append(room_dict)
