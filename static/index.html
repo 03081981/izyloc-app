@@ -4550,154 +4550,207 @@ if (typeof initAmbientes === 'function') initAmbientes();
     window.initRevisao = function() {
       var rc = document.getElementById('rev-content');
       if (!rc) return;
-      var h = '';
 
-      // Populate _fotoStore from wizard.itensData (batch flow)
+      // Populate _fotoStore from wizard.itensData (batch flow) - kept from original
       if (typeof _wiz6Ambientes !== 'undefined' && wizard && wizard.itensData) {
-            if (!window._fotoStore) window._fotoStore = {};
-        for (var ai = 0; ai < _wiz6Ambientes.length; ai++) {
-          var ambName = _wiz6Ambientes[ai];
-          var dados = wizard.itensData[ai];
-          if (dados && dados.fotos && dados.fotos.length > 0 && !window._fotoStore[ambName]) {
-            window._fotoStore[ambName] = dados.fotos.map(function(f, fi) {
-              return {
-                src: f.preview || ('data:' + (f.mime || 'image/jpeg') + ';base64,' + f.base64),
-                item: '',
-                estado: dados.estado_geral || 'Bom',
-                desc: fi === 0 ? (dados.resumo || '') : ''
-              };
-            });
+        if (!window._fotoStore) window._fotoStore = {};
+        for (var _ai = 0; _ai < _wiz6Ambientes.length; _ai++) {
+          var _ambN = _wiz6Ambientes[_ai];
+          var _dd = wizard.itensData[_ai];
+          if (_dd && _dd.fotos && _dd.fotos.length > 0 && !window._fotoStore[_ambN]) {
+            window._fotoStore[_ambN] = _dd.fotos.slice();
           }
         }
       }
 
-      // Card 1: Dados do imóvel
-      var tipo = '';
-      var btnCI = document.getElementById('btn-checkin');
-      var btnCO = document.getElementById('btn-checkout');
-      if (btnCI && btnCI.classList.contains('active')) tipo = 'Vistoria de Entrada';
-      else if (btnCO && btnCO.classList.contains('active')) tipo = 'Vistoria de Saída';
-      var end = (document.getElementById('wi-address') || {}).value || '-';
-      var bairro = (document.getElementById('wi-bairro') || {}).value || '-';
-      var cidade = (document.getElementById('wi-cidade') || {}).value || '-';
-      var estado = (document.getElementById('wi-estado') || {}).value || '-';
-      var propType = (document.getElementById('wi-prop-type') || {}).value || '-';
-      var now = new Date();
-      var dataHora = now.toLocaleDateString('pt-BR') + ' ' + now.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
-      h += '<div class="rev-card"><div class="rev-card-title">Dados do imóvel</div>';
-      h += '<div class="rev-row"><span class="rev-label">Tipo:</span><span class="rev-val">' + tipo + '</span></div>';
-      h += '<div class="rev-row"><span class="rev-label">Endereço:</span><span class="rev-val">' + end + '</span></div>';
-      h += '<div class="rev-row"><span class="rev-label">Bairro:</span><span class="rev-val">' + bairro + '</span></div>';
-      h += '<div class="rev-row"><span class="rev-label">Cidade/UF:</span><span class="rev-val">' + cidade + '/' + estado + '</span></div>';
-      h += '<div class="rev-row"><span class="rev-label">Tipo imóvel:</span><span class="rev-val">' + propType + '</span></div>';
-      h += '<div class="rev-row"><span class="rev-label">Data/Hora:</span><span class="rev-val">' + dataHora + '</span></div>';
-      h += '</div>';
-
-      // Card 2: Quem realiza
-      var quemCards = document.querySelectorAll('[data-realiza]');
-      var quem = '-';
-      quemCards.forEach(function(el) { if (el.classList.contains('selected')) quem = el.getAttribute('data-realiza') === 'imobiliária' ? 'Imobiliária / Corretor' : 'Proprietário'; });
-      var imobName  = (document.getElementById('wi-imob-name')  || {}).value || '';
-      var imobCnpj  = (document.getElementById('wi-imob-cnpj')  || {}).value || '';
-      var imobPhone = (document.getElementById('wi-imob-phone') || {}).value || '';
-      var imobEmail = (document.getElementById('wi-imob-email') || {}).value || '';
-      var corrName  = (document.getElementById('wi-corr-name')  || {}).value || '';
-      var corrCreci = (document.getElementById('wi-corr-creci') || {}).value || '';
-      var corrPhone = (document.getElementById('wi-corr-phone') || {}).value || '';
-      var corrEmail = (document.getElementById('wi-corr-email') || {}).value || '';
-      h += '<div class="rev-card"><div class="rev-card-title">Quem realiza</div>';
-      h += '<div class="rev-row"><span class="rev-label">Responsável:</span><span class="rev-val">' + quem + '</span></div>';
-      if (imobName || imobCnpj || imobPhone || imobEmail) {
-        h += '<div style="margin-top:10px;font-size:11px;font-weight:700;color:#2d7dd2;text-transform:uppercase;letter-spacing:0.5px">Imobiliária</div>';
-        if (imobName)  h += '<div class="rev-row"><span class="rev-label">Nome:</span><span class="rev-val">' + imobName + '</span></div>';
-        if (imobCnpj)  h += '<div class="rev-row"><span class="rev-label">CNPJ:</span><span class="rev-val">' + imobCnpj + '</span></div>';
-        if (imobPhone) h += '<div class="rev-row"><span class="rev-label">Telefone:</span><span class="rev-val">' + imobPhone + '</span></div>';
-        if (imobEmail) h += '<div class="rev-row"><span class="rev-label">E-mail:</span><span class="rev-val">' + imobEmail + '</span></div>';
+      function _esc(s) {
+        return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
       }
-      if (corrName || corrCreci || corrPhone || corrEmail) {
-        h += '<div style="margin-top:10px;font-size:11px;font-weight:700;color:#2d7dd2;text-transform:uppercase;letter-spacing:0.5px">Corretor</div>';
-        if (corrName)  h += '<div class="rev-row"><span class="rev-label">Nome:</span><span class="rev-val">' + corrName + '</span></div>';
-        if (corrCreci) h += '<div class="rev-row"><span class="rev-label">CRECI:</span><span class="rev-val">' + corrCreci + '</span></div>';
-        if (corrPhone) h += '<div class="rev-row"><span class="rev-label">Telefone:</span><span class="rev-val">' + corrPhone + '</span></div>';
-        if (corrEmail) h += '<div class="rev-row"><span class="rev-label">E-mail:</span><span class="rev-val">' + corrEmail + '</span></div>';
+      function _gv(id) { var el = document.getElementById(id); return el ? (el.value || '') : ''; }
+      function _inp(label, srcId, type) {
+        type = type || 'text';
+        var v = _esc(_gv(srcId));
+        return '<div style="margin-bottom:8px"><label style="display:block;font-size:11px;color:#64748b;font-weight:600;margin-bottom:3px">' + _esc(label) + '</label><input type="' + type + '" data-kind="wb" data-srcid="' + srcId + '" value="' + v + '" style="width:100%;padding:7px 9px;border:1px solid #cbd5e1;border-radius:6px;font-size:13px;background:#fff"/></div>';
+      }
+      function _sel(label, srcId) {
+        var el = document.getElementById(srcId);
+        var cur = el ? el.value : '';
+        var opts = '';
+        if (el && el.tagName === 'SELECT') {
+          for (var _oi = 0; _oi < el.options.length; _oi++) {
+            var _o = el.options[_oi];
+            opts += '<option value="' + _esc(_o.value) + '"' + (_o.value === cur ? ' selected' : '') + '>' + _esc(_o.text) + '</option>';
+          }
+        }
+        return '<div style="margin-bottom:8px"><label style="display:block;font-size:11px;color:#64748b;font-weight:600;margin-bottom:3px">' + _esc(label) + '</label><select data-kind="wb" data-srcid="' + srcId + '" style="width:100%;padding:7px 9px;border:1px solid #cbd5e1;border-radius:6px;font-size:13px;background:#fff">' + opts + '</select></div>';
+      }
+
+      var h = '';
+
+      // Card 1 - Dados do imóvel
+      h += '<div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:14px;margin-bottom:12px">';
+      h += '<div style="font-size:14px;font-weight:700;color:#0f172a;margin-bottom:10px">1. Dados do imóvel</div>';
+      h += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">';
+      h += '<div>' + _inp('CEP', 'wi-cep') + '</div>';
+      h += '<div>' + _sel('Tipo', 'wi-prop-type') + '</div>';
+      h += '<div style="grid-column:1/span 2">' + _inp('Endereço', 'wi-address') + '</div>';
+      h += '<div>' + _inp('Número', 'wi-número') + '</div>';
+      h += '<div>' + _inp('Complemento', 'wi-complemento') + '</div>';
+      h += '<div>' + _inp('Bairro', 'wi-bairro') + '</div>';
+      h += '<div>' + _inp('Cidade', 'wi-cidade') + '</div>';
+      h += '<div>' + _inp('Área (m²)', 'wi-area', 'number') + '</div>';
+      h += '<div>' + _inp('Data', 'wi-date', 'date') + '</div>';
+      h += '<div>' + _inp('Hora', 'wi-hora', 'time') + '</div>';
+      h += '</div></div>';
+
+      // Card 2 - Quem realiza
+      h += '<div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:14px;margin-bottom:12px">';
+      h += '<div style="font-size:14px;font-weight:700;color:#0f172a;margin-bottom:10px">2. Quem realiza a vistoria</div>';
+      h += '<div style="font-size:12px;font-weight:600;color:#475569;margin-bottom:6px">Corretor</div>';
+      h += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px">';
+      h += '<div>' + _inp('Nome', 'wi-corr-name') + '</div>';
+      h += '<div>' + _inp('CRECI', 'wi-corr-creci') + '</div>';
+      h += '<div>' + _inp('CPF', 'wi-corr-cpf') + '</div>';
+      h += '<div>' + _inp('Telefone', 'wi-corr-phone', 'tel') + '</div>';
+      h += '<div style="grid-column:1/span 2">' + _inp('E-mail', 'wi-corr-email', 'email') + '</div>';
+      h += '</div>';
+      h += '<div style="font-size:12px;font-weight:600;color:#475569;margin-bottom:6px">Imobiliária</div>';
+      h += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">';
+      h += '<div>' + _inp('Nome', 'wi-imob-name') + '</div>';
+      h += '<div>' + _inp('CNPJ', 'wi-imob-cnpj') + '</div>';
+      h += '<div>' + _inp('Telefone', 'wi-imob-phone', 'tel') + '</div>';
+      h += '<div>' + _inp('E-mail', 'wi-imob-email', 'email') + '</div>';
+      h += '</div></div>';
+
+      // Card 3 - Partes envolvidas
+      h += '<div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:14px;margin-bottom:12px">';
+      h += '<div style="font-size:14px;font-weight:700;color:#0f172a;margin-bottom:10px">3. Partes envolvidas</div>';
+      var _locs = document.querySelectorAll('[id^="loc-name-"]');
+      if (_locs.length > 0) {
+        h += '<div style="font-size:12px;font-weight:600;color:#475569;margin-bottom:6px">Locador(es)</div>';
+        for (var _li = 0; _li < _locs.length; _li++) {
+          var _lid = _locs[_li].id.replace('loc-name-', '');
+          h += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;padding:8px;background:#f8fafc;border-radius:6px">';
+          h += '<div style="grid-column:1/span 2">' + _inp('Nome', 'loc-name-' + _lid) + '</div>';
+          if (document.getElementById('loc-cpf-' + _lid)) h += '<div>' + _inp('CPF', 'loc-cpf-' + _lid) + '</div>';
+          if (document.getElementById('loc-rg-' + _lid)) h += '<div>' + _inp('RG', 'loc-rg-' + _lid) + '</div>';
+          if (document.getElementById('loc-phone-' + _lid)) h += '<div>' + _inp('Telefone', 'loc-phone-' + _lid, 'tel') + '</div>';
+          if (document.getElementById('loc-email-' + _lid)) h += '<div>' + _inp('E-mail', 'loc-email-' + _lid, 'email') + '</div>';
+          h += '</div>';
+        }
+      }
+      var _tens = document.querySelectorAll('[id^="ten-name-"]');
+      if (_tens.length > 0) {
+        h += '<div style="font-size:12px;font-weight:600;color:#475569;margin-bottom:6px">Locatário(s)</div>';
+        for (var _ti = 0; _ti < _tens.length; _ti++) {
+          var _tid = _tens[_ti].id.replace('ten-name-', '');
+          h += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;padding:8px;background:#f8fafc;border-radius:6px">';
+          h += '<div style="grid-column:1/span 2">' + _inp('Nome', 'ten-name-' + _tid) + '</div>';
+          if (document.getElementById('ten-cpf-' + _tid)) h += '<div>' + _inp('CPF', 'ten-cpf-' + _tid) + '</div>';
+          if (document.getElementById('ten-rg-' + _tid)) h += '<div>' + _inp('RG', 'ten-rg-' + _tid) + '</div>';
+          if (document.getElementById('ten-phone-' + _tid)) h += '<div>' + _inp('Telefone', 'ten-phone-' + _tid, 'tel') + '</div>';
+          if (document.getElementById('ten-email-' + _tid)) h += '<div>' + _inp('E-mail', 'ten-email-' + _tid, 'email') + '</div>';
+          h += '</div>';
+        }
       }
       h += '</div>';
 
-      // Card 3: Partes envolvidas
-      h += '<div class="rev-card"><div class="rev-card-title">Partes envolvidas</div>';
-      var locBlocks = document.querySelectorAll('[id^="loc-block-"]');
-      locBlocks.forEach(function(bl) {
-        var x = bl.id.replace('loc-block-','');
-        var nm = (document.getElementById('loc-name-'+x)||{}).value||'-';
-        var cpf = (document.getElementById('loc-cpf-'+x)||{}).value||'-';
-        var ph = (document.getElementById('loc-phone-'+x)||{}).value||'-';
-        var em = (document.getElementById('loc-email-'+x)||{}).value||'-';
-        h += '<div style="padding:6px 0;border-bottom:1px solid #f0f0f0">';
-        h += '<div class="rev-row"><span class="rev-label">Locador:</span><span class="rev-val">' + nm + '</span></div>';
-        h += '<div class="rev-row"><span class="rev-label">CPF:</span><span class="rev-val">' + cpf + '</span></div>';
-        h += '<div class="rev-row"><span class="rev-label">Telefone:</span><span class="rev-val">' + ph + '</span></div>';
-        h += '<div class="rev-row"><span class="rev-label">E-mail:</span><span class="rev-val">' + em + '</span></div>';
+      // Card 4 - Ambientes
+      var _stdNomes = {'porta':'Porta — maçaneta e fechadura','chaves':'Chaves da porta','tomadas':'Tomadas e interruptores','ac':'Ar condicionado','janela':'Janela — abre, fecha e trava','torneira':'Torneira — abre e fecha','chuveiro':'Chuveiro — pressão e temperatura','descarga':'Descarga — funciona','ralo':'Ralo — escoa bem','iluminacao':'Iluminação','piso':'Piso','teto':'Teto','parede':'Parede','janelas':'Janelas','portas':'Portas'};
+      var _rooms = (wizard && wizard.selectedRooms) || [];
+      h += '<div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:14px;margin-bottom:12px">';
+      h += '<div style="font-size:14px;font-weight:700;color:#0f172a;margin-bottom:10px">4. Ambientes (' + _rooms.length + ')</div>';
+      for (var _ri = 0; _ri < _rooms.length; _ri++) {
+        var _rN = _rooms[_ri];
+        var _rd = (wizard.itensData && wizard.itensData[_ri]) || {};
+        var _tst = _rd.testes || {};
+        var _xtr = _rd.testesExtras || [];
+        var _nF = (_rd.fotos || []).length;
+        h += '<div style="border:1px solid #e2e8f0;border-radius:8px;padding:12px;margin-bottom:12px;background:#fafbfc">';
+        h += '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">';
+        h += '<div style="font-size:13px;font-weight:700;color:#0f172a">' + _esc(_rN) + '</div>';
+        h += '<div style="font-size:11px;color:#64748b">' + _nF + ' foto' + (_nF === 1 ? '' : 's') + '</div>';
         h += '</div>';
-      });
-      var locatBlocks = document.querySelectorAll('[id^="locat-block-"], [id^="ten-block-"]');
-      locatBlocks.forEach(function(bl) {
-        var prefix = bl.id.indexOf('locat-block-') === 0 ? 'locat' : 'ten'; var x = bl.id.replace('locat-block-','').replace('ten-block-','');
-        var nm = (document.getElementById(prefix+'-name-'+x)||{}).value||'-';
-        var cpf = (document.getElementById(prefix+'-cpf-'+x)||{}).value||'-';
-        var ph = (document.getElementById(prefix+'-phone-'+x)||{}).value||'-';
-        var em = (document.getElementById(prefix+'-email-'+x)||{}).value||'-';
-        h += '<div style="padding:6px 0;border-bottom:1px solid #f0f0f0">';
-        h += '<div class="rev-row"><span class="rev-label">Locat&aacute;rio:</span><span class="rev-val">' + nm + '</span></div>';
-        h += '<div class="rev-row"><span class="rev-label">CPF:</span><span class="rev-val">' + cpf + '</span></div>';
-        h += '<div class="rev-row"><span class="rev-label">Telefone:</span><span class="rev-val">' + ph + '</span></div>';
-        h += '<div class="rev-row"><span class="rev-label">E-mail:</span><span class="rev-val">' + em + '</span></div>';
-        h += '</div>';
-      });
-      h += '</div>';
-
-      // Card 4: Ambientes vistoriados
-      h += '<div class="rev-card"><div class="rev-card-title">Ambientes vistoriados</div>';
-      var fs = window._fotoStore || {};
-      var ambKeys = Object.keys(fs);
-      if (ambKeys.length === 0) {
-        h += '<div style="color:#94a3b8;font-size:13px;font-style:italic">Nenhuma foto registrada</div>';
-      } else {
-        ambKeys.forEach(function(ambNome) {
-          var fotos = fs[ambNome];
-          h += '<div style="margin-bottom:12px;padding-bottom:10px;border-bottom:1px solid #e2e8f0">';
-          h += '<div style="font-weight:600;font-size:14px;margin-bottom:6px">' + ambNome + ' <span style="color:#64748b;font-weight:400;font-size:12px">(' + fotos.length + ' foto' + (fotos.length>1?'s':'') + ')</span></div>';
-          fotos.forEach(function(f, fi7) {
-            var ec = f.estado==='Ruim'?'#c62828':f.estado==='Regular'?'#854f0b':'#2e7d32';
-            var eb = f.estado==='Ruim'?'#fde8e8':f.estado==='Regular'?'#fff8e8':'#e8f4eb';
-            h += '<div style="display:flex;gap:10px;margin-bottom:8px;align-items:flex-start">';
-            h += '<div style="position:relative;flex-shrink:0"><img src="'+f.src+'" style="width:60px;height:45px;object-fit:cover;border-radius:6px"><div style="position:absolute;bottom:1px;left:1px;background:rgba(0,0,0,0.7);color:#fff;font-size:9px;font-weight:700;padding:1px 4px;border-radius:6px">F' + (fi7+1) + '</div></div>';
-            h += '<div style="flex:1;min-width:0">';
-            h += '<div style="font-size:13px;font-weight:500">' + (f.item||'') + '</div>';
-            if (f.estado) h += '<span style="display:inline-block;padding:1px 8px;border-radius:10px;font-size:11px;font-weight:600;background:'+eb+';color:'+ec+';margin:2px 0">' + f.estado + '</span>';
-            if (f.desc) h += '<div style="font-size:12px;color:#475569;margin-top:2px;word-break:break-word">' + f.desc + '</div>';
-            h += '</div></div>';
-          });
-          // Verificacoes e obs do _ambStore
-          var _as = (window._ambStore && window._ambStore[ambNome]) ? window._ambStore[ambNome] : null;
-          if (_as) {
-            var vk = Object.keys(_as.verificacoes || {});
-            if (vk.length > 0) {
-              h += '<div style="margin-top:6px;font-size:12px;color:#334155"><strong>Verifica&ccedil;&otilde;es:</strong></div>';
-              vk.forEach(function(vn) {
-                h += '<div style="font-size:12px;color:#475569;padding:2px 0">' + vn + ': <strong>' + _as.verificacoes[vn] + '</strong></div>';
-              });
-            }
-            if (_as.obs) {
-              h += '<div style="margin-top:6px;font-size:12px;color:#334155"><strong>Observa&ccedil;&otilde;es:</strong></div>';
-              h += '<div style="font-size:12px;color:#475569;font-style:italic;padding:2px 0">' + _as.obs + '</div>';
-            }
+        h += '<div style="margin-bottom:10px"><label style="display:block;font-size:11px;color:#64748b;font-weight:600;margin-bottom:3px">Síntese / Resumo do ambiente</label>';
+        h += '<textarea data-kind="resumo" data-aidx="' + _ri + '" rows="5" style="width:100%;padding:7px 9px;border:1px solid #cbd5e1;border-radius:6px;font-size:12px;background:#fff;resize:vertical">' + _esc(_rd.resumo || '') + '</textarea></div>';
+        var _tKeys = [];
+        var _seen = {};
+        for (var _sk in _stdNomes) {
+          if (_tst.hasOwnProperty(_sk)) { _tKeys.push({k:_sk, n:_stdNomes[_sk]}); _seen[_sk] = 1; }
+        }
+        for (var _ex = 0; _ex < _xtr.length; _ex++) {
+          if (!_seen[_xtr[_ex].k]) { _tKeys.push({k:_xtr[_ex].k, n:_xtr[_ex].n || _xtr[_ex].k}); _seen[_xtr[_ex].k] = 1; }
+        }
+        for (var _tk in _tst) {
+          if (_tk.length > 4 && _tk.slice(-4) === '_obs') continue;
+          if (!_seen[_tk]) { _tKeys.push({k:_tk, n:_tk}); _seen[_tk] = 1; }
+        }
+        if (_tKeys.length > 0) {
+          h += '<div style="font-size:11px;color:#64748b;font-weight:600;margin-bottom:5px">Verificações técnicas</div>';
+          h += '<div style="display:flex;flex-direction:column;gap:6px;margin-bottom:10px">';
+          for (var _tki = 0; _tki < _tKeys.length; _tki++) {
+            var _tk2 = _tKeys[_tki].k;
+            var _tn = _tKeys[_tki].n;
+            var _stat = _tst[_tk2] || '';
+            if (_stat === 'nao') _stat = 'nok';
+            var _obsV = _tst[_tk2 + '_obs'] || '';
+            h += '<div style="display:grid;grid-template-columns:1.2fr 90px 2fr;gap:6px;align-items:center;padding:4px 0">';
+            h += '<div style="font-size:12px;color:#334155">' + _esc(_tn) + '</div>';
+            h += '<select data-kind="testeStatus" data-aidx="' + _ri + '" data-tk="' + _esc(_tk2) + '" style="padding:5px 7px;border:1px solid #cbd5e1;border-radius:5px;font-size:11px;background:#fff">';
+            h += '<option value=""' + (_stat === '' ? ' selected' : '') + '>—</option>';
+            h += '<option value="ok"' + (_stat === 'ok' ? ' selected' : '') + '>OK</option>';
+            h += '<option value="nok"' + (_stat === 'nok' ? ' selected' : '') + '>NOK</option>';
+            h += '<option value="nt"' + (_stat === 'nt' ? ' selected' : '') + '>NT</option>';
+            h += '<option value="na"' + (_stat === 'na' ? ' selected' : '') + '>N/A</option>';
+            h += '</select>';
+            h += '<input type="text" data-kind="testeObs" data-aidx="' + _ri + '" data-tk="' + _esc(_tk2) + '" value="' + _esc(_obsV) + '" placeholder="observação" style="padding:5px 7px;border:1px solid #cbd5e1;border-radius:5px;font-size:11px;background:#fff"/>';
+            h += '</div>';
           }
           h += '</div>';
-        });
+        }
+        h += '<div><label style="display:block;font-size:11px;color:#64748b;font-weight:600;margin-bottom:3px">Observações gerais</label>';
+        h += '<textarea data-kind="obs" data-aidx="' + _ri + '" rows="2" style="width:100%;padding:7px 9px;border:1px solid #cbd5e1;border-radius:6px;font-size:12px;background:#fff;resize:vertical">' + _esc(_rd.obs || '') + '</textarea></div>';
+        h += '</div>';
       }
       h += '</div>';
 
       rc.innerHTML = h;
+
+      function _hChg(ev) {
+        var t = ev.target;
+        if (!t || !t.dataset || !t.dataset.kind) return;
+        var k = t.dataset.kind;
+        var v = t.value;
+        if (k === 'wb') {
+          var sr = document.getElementById(t.dataset.srcid);
+          if (sr) {
+            sr.value = v;
+            try { sr.dispatchEvent(new Event('change', {bubbles:true})); } catch (e) {}
+            try { sr.dispatchEvent(new Event('input', {bubbles:true})); } catch (e) {}
+          }
+        } else if (k === 'resumo' || k === 'obs') {
+          var ai = parseInt(t.dataset.aidx, 10);
+          if (wizard && wizard.itensData && wizard.itensData[ai]) {
+            wizard.itensData[ai][k] = v;
+          }
+        } else if (k === 'testeStatus') {
+          var ai2 = parseInt(t.dataset.aidx, 10);
+          var tk3 = t.dataset.tk;
+          if (wizard && wizard.itensData && wizard.itensData[ai2]) {
+            if (!wizard.itensData[ai2].testes) wizard.itensData[ai2].testes = {};
+            wizard.itensData[ai2].testes[tk3] = v;
+          }
+        } else if (k === 'testeObs') {
+          var ai3 = parseInt(t.dataset.aidx, 10);
+          var tk4 = t.dataset.tk;
+          if (wizard && wizard.itensData && wizard.itensData[ai3]) {
+            if (!wizard.itensData[ai3].testes) wizard.itensData[ai3].testes = {};
+            wizard.itensData[ai3].testes[tk4 + '_obs'] = v;
+          }
+        }
+      }
+      rc.addEventListener('input', _hChg);
+      rc.addEventListener('change', _hChg);
     };
 
 if (!window._fotoStore) window._fotoStore = {};
