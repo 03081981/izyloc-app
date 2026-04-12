@@ -6653,7 +6653,7 @@ function _wiz6RenderSubsBlock(ambIdx, dados) {
     h += '<div style="background:linear-gradient(135deg,#2d5a8e,#4a90d9);padding:12px 16px;display:flex;align-items:center;gap:10px">';
     h += '<span style="font-size:16px">\ud83d\udccd</span>';
     h += '<div style="flex:1"><div style="font-size:13px;font-weight:600;color:#fff">' + subNome + '</div></div>';
-    h += badge + '</div>';
+    h += badge + '<button onclick="wiz6ExcluirSubAmb(' + ambIdx + ',\'' + subNome.replace(/'/g,"\\\\'") + '\')" style="background:rgba(255,255,255,0.2);border:none;border-radius:6px;color:#fff;font-size:11px;padding:3px 8px;cursor:pointer;margin-left:8px">\u2715 Excluir</button></div>';
     h += '<div style="padding:14px 16px">';
     var htmlFotos = '';
     fotos.forEach(function(f, fi) {
@@ -6690,23 +6690,25 @@ function _wiz6RenderSubsBlock(ambIdx, dados) {
     else tipoSub = 'default';
     var testes = (testesMapSub[tipoSub] || testesMapSub['default']).concat(sd.testesExtras || []);
     var testesSalvos = sd.testes || {};
-    h += '<div style="border-top:0.5px solid #e2e8f0;margin:14px 0"></div>';
+        h += '<div style="border-top:0.5px solid #e2e8f0;margin:14px 0"></div>';
     h += '<div style="font-size:10px;font-weight:600;color:#8898aa;letter-spacing:0.5px;margin-bottom:8px">TESTES FUNCIONAIS</div>';
+    h += '<div style="background:#f8fafc;border-radius:8px;padding:8px 10px;margin-bottom:10px">';
     testes.forEach(function(t) {
       var val = testesSalvos[t.k] || 'nt';
-      h += '<div style="margin-bottom:10px">';
-      h += '<div style="font-size:11px;color:#475569;margin-bottom:5px">' + t.n + '</div>';
-      h += '<div style="display:flex;gap:4px;flex-wrap:wrap">';
-      h += '<button onclick="wiz6TesteSub(' + ambIdx + ',\'' + subNome.replace(/'/g,"\\\'") + '\',\'' + t.k + '\',\'nt\')" style="padding:4px 7px;border-radius:6px;font-size:10px;border:0.5px solid;cursor:pointer;font-weight:500;' + (val==='nt'?'background:#1e3a5f;color:#fff;border-color:#1e3a5f':'background:#f8fafc;color:#8898aa;border-color:#e2e8f0') + '">\u25a1 N\u00e3o testado</button>';
-      h += '<button onclick="wiz6TesteSub(' + ambIdx + ',\'' + subNome.replace(/'/g,"\\\'") + '\',\'' + t.k + '\',\'ok\')" style="padding:4px 7px;border-radius:6px;font-size:10px;border:0.5px solid;cursor:pointer;font-weight:500;' + (val==='ok'?'background:#16a34a;color:#fff;border-color:#16a34a':'background:#f0fdf4;color:#166534;border-color:#bbf7d0') + '">\u2713 Funcionando</button>';
-      h += '<button onclick="wiz6TesteSub(' + ambIdx + ',\'' + subNome.replace(/'/g,"\\\'") + '\',\'' + t.k + '\',\'nok\')" style="padding:4px 7px;border-radius:6px;font-size:10px;border:0.5px solid;cursor:pointer;font-weight:500;' + (val==='nok'?'background:#dc2626;color:#fff;border-color:#dc2626':'background:#fef2f2;color:#991b1b;border-color:#fecaca') + '">\u2717 Com problema</button>';
-      h += '<button onclick="wiz6TesteSub(' + ambIdx + ',\'' + subNome.replace(/'/g,"\\\'") + '\',\'' + t.k + '\',\'na\')" style="padding:4px 7px;border-radius:6px;font-size:10px;border:0.5px solid;cursor:pointer;font-weight:500;' + (val==='na'?'background:#6b7280;color:#fff;border-color:#6b7280':'background:#f8fafc;color:#8898aa;border-color:#e2e8f0') + '">N/A</button>';
-      h += '</div>';
-      if (val !== 'nt') {
-        h += '<input type="text" placeholder="Obs: (opcional)" value="' + ((sd.testes && sd.testes[t.k + '_obs']) || '').replace(/"/g,'&quot;') + '" onchange="wiz6TesteObsSub(' + ambIdx + ',\'' + subNome.replace(/'/g,"\\\'") + '\',\'' + t.k + '\',this.value)" style="width:100%;padding:5px 9px;border:0.5px solid #e2e8f0;border-radius:6px;font-size:10px;color:#1a2540;background:#fff;font-family:inherit;margin-top:4px">';
-      }
-      h += '</div>';
+      h += '<div style="display:flex;align-items:center;padding:8px 0;border-bottom:0.5px solid #f1f5f9">';
+      h += '<span style="flex:1;font-size:12px;color:#1a2540">' + t.n + '</span>';
+      h += '<div style="display:flex;gap:4px">';
+      ['nt','ok','nao','nexiste'].forEach(function(v) {
+        var labels = {nt:'\u25a1 N\u00e3o testado',ok:'\u2713 Funcionando',nao:'\u2717 Com problema',nexiste:'N\u00e3o existe'};
+        var isAtivo = val === v;
+        var style = isAtivo
+          ? (v==='nt' ? 'background:#1e3a5f;color:#fff' : v==='ok' ? 'background:#16a34a;color:#fff' : v==='nao' ? 'background:#ef4444;color:#fff' : 'background:#6b7280;color:#fff')
+          : (v==='ok' ? 'background:#f0fdf4;color:#166534;border:0.5px solid #bbf7d0' : v==='nao' ? 'background:#fef2f2;color:#991b1b;border:0.5px solid #fca5a5' : 'background:#f8fafc;color:#8898aa;border:0.5px solid #e2e8f0');
+        h += '<button onclick="wiz6TesteSub(' + ambIdx + ',\'' + subNome.replace(/'/g,"\\\'") + '\',\'' + t.k + '\',\'' + v + '\')" style="font-size:10px;padding:3px 8px;border-radius:10px;border:none;cursor:pointer;' + style + '">' + labels[v] + '</button>';
+      });
+      h += '</div></div>';
     });
+    h += '</div>';
     h += '<button onclick="wiz6AdicionarTesteSub(' + ambIdx + ',\'' + subNome.replace(/'/g,"\\\'") + '\')" style="width:100%;padding:7px;border:1.5px dashed #bfdbfe;border-radius:8px;font-size:11px;color:#2d7dd2;background:transparent;cursor:pointer;margin-bottom:14px">+ Adicionar outro teste</button>';
     h += '<div style="border-top:0.5px solid #e2e8f0;margin:14px 0"></div>';
     h += '<div style="font-size:10px;font-weight:600;color:#8898aa;letter-spacing:0.5px;margin-bottom:6px">OBSERVA\u00c7\u00c3O GERAL</div>';
@@ -6714,6 +6716,15 @@ function _wiz6RenderSubsBlock(ambIdx, dados) {
     h += '</div></div>';
   });
   return h;
+}
+
+function wiz6ExcluirSubAmb(idx, subNome) {
+  if (!confirm('Excluir sub-ambiente "' + subNome + '"?')) return;
+  var d = wizard.itensData[idx];
+  if (!d) return;
+  d.subAmbientes = (d.subAmbientes || []).filter(function(s){ return s !== subNome; });
+  if (d.subs) delete d.subs[subNome];
+  wiz6RenderAtual();
 }
 
 function wiz6RenderAtual() {
