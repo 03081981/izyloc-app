@@ -6589,6 +6589,10 @@ function wiz6ConfirmarSubAmb(idx) {
   wiz6RenderAtual();
 }
 
+function wiz6RenderAtual() {
+  wiz6RenderAmbCard(_wiz6AmbIdx);
+}
+
 function wiz6AddFotos(input, ambIdx) {
   var files = input.files;
   if (!files || !files.length) return;
