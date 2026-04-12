@@ -6665,13 +6665,26 @@ function _wiz6RenderSubsBlock(ambIdx, dados) {
     h += htmlFotos;
     if (!jaAnalisou) h += htmlBtnFoto;
     h += '</div>';
-    if (fotos.length > 0) {
-      h += '<div style="background:#f0fdf4;border:0.5px solid #bbf7d0;border-radius:10px;padding:12px;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between">';
-      h += '<div style="display:flex;align-items:center;gap:8px">';
-      h += '<span style="font-size:11px;color:#166534;font-weight:600">' + fotos.length + ' foto' + (fotos.length > 1 ? 's' : '') + ' prontas</span></div>';
-      h += '<button onclick="wiz6AnalisarBatchSub(' + ambIdx + ',\'' + subNome.replace(/'/g,"\\\'") + '\',' + si + ')" style="padding:10px 24px;background:#16a34a;color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer">';
-      h += jaAnalisou ? '\ud83d\udd04 Re-analisar com IA' : '\ud83e\udd16 Analisar com IA';
-      h += '</button></div></div>';
+    if (fotos.length > 0 && !jaAnalisou) {
+      h += '<div style="background:#f0fdf4;border:0.5px solid #bbf7d0;border-radius:10px;padding:12px;margin-bottom:14px;text-align:center">';
+      h += '<div style="font-size:12px;color:#166534;margin-bottom:8px">' + fotos.length + ' foto' + (fotos.length > 1 ? 's' : '') + ' pronta' + (fotos.length > 1 ? 's' : '') + ' para an\u00e1lise</div>';
+      h += '<div style="display:flex;gap:8px;justify-content:center">';
+      h += '<label style="display:flex;align-items:center;gap:6px;padding:8px 14px;border:0.5px solid #e2e8f0;border-radius:8px;background:#fff;font-size:12px;color:#8898aa;cursor:pointer">';
+      h += '+ Adicionar mais fotos';
+      h += '<input type="file" accept="image/*" capture="environment" multiple style="display:none" onchange="wiz6AddFotosSub(this,' + ambIdx + ',\'' + subNome.replace(/'/g,"\\\'") + '\')">';
+      h += '</label>';
+      h += '<button onclick="wiz6AnalisarBatchSub(' + ambIdx + ',\'' + subNome.replace(/'/g,"\\\'") + '\',' + si + ')" style="background:#16a34a;color:#fff;border:none;border-radius:8px;padding:8px 16px;font-size:12px;font-weight:600;cursor:pointer">\ud83e\udd16 Analisar com IA</button>';
+      h += '</div></div>';
+    }
+    if (fotos.length > 0 && jaAnalisou) {
+      h += '<div style="display:flex;gap:8px;align-items:center;margin-bottom:14px">';
+      h += '<label style="display:flex;align-items:center;gap:6px;padding:7px 12px;border:0.5px solid #e2e8f0;border-radius:8px;background:#fff;font-size:12px;color:#8898aa;cursor:pointer">';
+      h += '+ Adicionar mais fotos';
+      h += '<input type="file" accept="image/*" capture="environment" multiple style="display:none" onchange="wiz6AddFotosSub(this,' + ambIdx + ',\'' + subNome.replace(/'/g,"\\\'") + '\')">';
+      h += '</label>';
+      h += '<button onclick="wiz6AnalisarBatchSub(' + ambIdx + ',\'' + subNome.replace(/'/g,"\\\'") + '\',' + si + ')" style="background:#2d7dd2;color:#fff;border:none;border-radius:8px;padding:7px 14px;font-size:12px;font-weight:600;cursor:pointer">\ud83d\udd04 Re-analisar com IA</button>';
+      h += '<span style="font-size:11px;color:#8898aa">Novas fotos ser\u00e3o cobradas</span>';
+      h += '</div>';
     }
     if (resumo) {
       h += '<div style="background:#f8fafc;border:0.5px solid #e2e8f0;border-radius:10px;padding:14px;margin-bottom:14px">';
