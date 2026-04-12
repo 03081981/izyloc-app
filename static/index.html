@@ -6537,8 +6537,13 @@ function wiz6AnalisarBatchSub(idx, subNome, si) {
 }
 
 function wiz6TesteSub(idx, subNome, key, val) {
-  var sd = wizard.itensData[idx] && wizard.itensData[idx].subs && wizard.itensData[idx].subs[subNome];
-  if (sd) { if (!sd.testes) sd.testes = {}; sd.testes[key] = val; wiz6RenderAmbCard(_wiz6AmbIdx); }
+  if (!wizard.itensData[idx]) return;
+  if (!wizard.itensData[idx].subs) return;
+  if (!wizard.itensData[idx].subs[subNome]) return;
+  var sd = wizard.itensData[idx].subs[subNome];
+  if (!sd.testes) sd.testes = {};
+  sd.testes[key] = val;
+  wiz6RenderAtual();
 }
 
 function wiz6TesteObsSub(idx, subNome, key, val) {
@@ -6722,7 +6727,8 @@ function _wiz6RenderSubsBlock(ambIdx, dados) {
       });
       h += '</div>';
       h += '</div>';
-      h += '<div style="padding:4px 0 2px 0">';
+      var mostrarObs = val !== 'nt';
+      h += '<div style="padding:4px 0 2px 0;display:' + (mostrarObs ? 'block' : 'none') + '">';
       h += '<input type="text" placeholder="Obs: (opcional)" onblur="wiz6TesteObsSub(' + ambIdx + ',\'' + subNome.replace(/'/g,'') + '\',\'' + t.k.replace(/'/g,'') + '\',this.value)" value="' + ((sd.testesObs && sd.testesObs[t.k]) || '').replace(/"/g,'&quot;') + '" style="width:100%;padding:5px 8px;border:0.5px solid #e2e8f0;border-radius:6px;font-size:11px;color:#8898aa;background:#f8fafc">';
       h += '</div>';
       h += '</div>';
