@@ -6708,7 +6708,7 @@ function _wiz6RenderSubsBlock(ambIdx, dados) {
     h += '<div style="background:#f8fafc;border-radius:8px;padding:8px 10px;margin-bottom:10px">';
     testes.forEach(function(t) {
       var val = testesSalvos[t.k] || 'nt';
-      var obsVal = (testesSalvos[t] && testesSalvos[t]._obs) || '';
+      var obsVal = (testesSalvos[t.k] && testesSalvos[t.k]._obs) || '';
       h += '<div style="display:flex;align-items:center;padding:8px 0;border-bottom:0.5px solid #f1f5f9">';
       h += '<span style="flex:1;font-size:12px;color:#1a2540">' + t.n + '</span>';
       h += '<div style="display:flex;gap:4px">';
@@ -6721,7 +6721,7 @@ function _wiz6RenderSubsBlock(ambIdx, dados) {
         h += '<button onclick="wiz6TesteSub(' + ambIdx + ',\'' + subNome.replace(/'/g,"\\\'") + '\',\'' + t.k + '\',\'' + v + '\')" style="font-size:10px;padding:3px 8px;border-radius:10px;border:none;cursor:pointer;' + style + '">' + labels[v] + '</button>';
       });
       h += '</div>' +
-      '<div style="padding:2px 8px"><input type="text" placeholder="Obs: (opcional)" value="' + obsVal.replace(/"/g,'&amp;quot;') + '" onchange="wiz6TesteObsSub(' + ambIdx + ',\x27' + subNome.replace(/'/g,"\\'") + '\x27,\x27' + t.replace(/'/g,"\\'") + '\x27,this.value)" style="width:100%;padding:4px 8px;border:1px solid #e2e8f0;border-radius:4px;font-size:13px;background:#f8fafc;color:#64748b"/></div>' +
+      '<div style="padding:2px 8px"><input type="text" placeholder="Obs: (opcional)" value="' + obsVal.replace(/"/g,'&amp;quot;') + '" onchange="wiz6TesteObsSub(' + ambIdx + ',\x27' + subNome.replace(/'/g,"\\'") + '\x27,\x27' + t.k.replace(/'/g,"\\'") + '\x27,this.value)" style="width:100%;padding:4px 8px;border:1px solid #e2e8f0;border-radius:4px;font-size:13px;background:#f8fafc;color:#64748b"/></div>' +
       '</div>';
     });
     h += '</div>';
