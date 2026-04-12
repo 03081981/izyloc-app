@@ -4639,23 +4639,26 @@ if (typeof initAmbientes === 'function') initAmbientes();
           h += '</div>';
         }
       }
-      var _tens = document.querySelectorAll('[id^="ten-name-"]');
-      if (_tens.length > 0) {
-        h += '<div style="font-size:12px;font-weight:600;color:#475569;margin-bottom:6px">Locatário(s)</div>';
-        for (var _ti = 0; _ti < _tens.length; _ti++) {
-          var _tid = _tens[_ti].id.replace('ten-name-', '');
-          h += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;padding:8px;background:#f8fafc;border-radius:6px">';
-          h += '<div style="grid-column:1/span 2">' + _inp('Nome', 'ten-name-' + _tid) + '</div>';
-          if (document.getElementById('ten-cpf-' + _tid)) h += '<div>' + _inp('CPF', 'ten-cpf-' + _tid) + '</div>';
-          if (document.getElementById('ten-rg-' + _tid)) h += '<div>' + _inp('RG', 'ten-rg-' + _tid) + '</div>';
-          if (document.getElementById('ten-phone-' + _tid)) h += '<div>' + _inp('Telefone', 'ten-phone-' + _tid, 'tel') + '</div>';
-          if (document.getElementById('ten-email-' + _tid)) h += '<div>' + _inp('E-mail', 'ten-email-' + _tid, 'email') + '</div>';
-          h += '</div>';
+      var _tenAll = [];
+        document.querySelectorAll('[id^="locat-name-"]').forEach(function(el) { _tenAll.push({prefix:'locat', idx: el.id.replace('locat-name-','')}); });
+        document.querySelectorAll('[id^="ten-name-"]').forEach(function(el) { _tenAll.push({prefix:'ten', idx: el.id.replace('ten-name-','')}); });
+        if (_tenAll.length > 0) {
+          h += '<div style="font-size:12px;font-weight:600;color:#475569;margin-bottom:6px">Locatário(s)</div>';
+          for (var _ti = 0; _ti < _tenAll.length; _ti++) {
+            var _tp = _tenAll[_ti].prefix;
+            var _tid = _tenAll[_ti].idx;
+            h += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;padding:8px;background:#f8fafc;border-radius:6px">';
+            h += '<div style="grid-column:1/span 2">' + _inp('Nome', _tp + '-name-' + _tid) + '</div>';
+            if (document.getElementById(_tp + '-cpf-' + _tid)) h += '<div>' + _inp('CPF', _tp + '-cpf-' + _tid) + '</div>';
+            if (document.getElementById(_tp + '-rg-' + _tid)) h += '<div>' + _inp('RG', _tp + '-rg-' + _tid) + '</div>';
+            if (document.getElementById(_tp + '-phone-' + _tid)) h += '<div>' + _inp('Telefone', _tp + '-phone-' + _tid, 'tel') + '</div>';
+            if (document.getElementById(_tp + '-email-' + _tid)) h += '<div>' + _inp('E-mail', _tp + '-email-' + _tid, 'email') + '</div>';
+            h += '</div>';
+          }
         }
-      }
-      h += '</div>';
+        h += '</div>';
 
-      // Card 4 - Ambientes
+        // Card 4 - Ambientes
       var _stdNomes = {'porta':'Porta — maçaneta e fechadura','chaves':'Chaves da porta','tomadas':'Tomadas e interruptores','ac':'Ar condicionado','janela':'Janela — abre, fecha e trava','torneira':'Torneira — abre e fecha','chuveiro':'Chuveiro — pressão e temperatura','descarga':'Descarga — funciona','ralo':'Ralo — escoa bem','iluminacao':'Iluminação','piso':'Piso','teto':'Teto','parede':'Parede','janelas':'Janelas','portas':'Portas'};
       var _rooms = (wizard && wizard.selectedRooms) || [];
       h += '<div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:14px;margin-bottom:12px">';
