@@ -4693,6 +4693,38 @@ if (typeof initAmbientes === 'function') initAmbientes();
       for (var _ri = 0; _ri < _rooms.length; _ri++) {
         var _rN = _rooms[_ri];
         var _rd = (wizard.itensData && wizard.itensData[_ri]) || {};
+        // Suite review: render sub-ambientes
+        if (_rd.isSuite && _rd.subs) {
+          var _stf = 0;
+          (_rd.subAmbientes || []).forEach(function(_sn) { _stf += ((_rd.subs[_sn] || {}).fotos || []).length; });
+          h += '<div style="border:1px solid #e2e8f0;border-radius:8px;padding:12px;margin-bottom:12px;background:#fafbfc">';
+          h += '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">';
+          h += '<div style="font-size:13px;font-weight:700;color:#0f172a">' + _esc(_rN) + ' (Su\u00EDte)</div>';
+          h += '<div style="font-size:11px;color:#64748b">' + _stf + ' foto' + (_stf === 1 ? '' : 's') + '</div>';
+          h += '</div>';
+          (_rd.subAmbientes || []).forEach(function(_sn) {
+            var _sd = _rd.subs[_sn] || {};
+            var _sf = _sd.fotos || [];
+            h += '<div style="border:0.5px solid #cbd5e1;border-radius:6px;padding:10px;margin-bottom:8px;background:#fff">';
+            h += '<div style="font-size:12px;font-weight:600;color:#475569;margin-bottom:6px">' + _esc(_sn) + '</div>';
+            if (_sf.length > 0) {
+              h += '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(70px,1fr));gap:4px;margin-bottom:8px">';
+              for (var _sfi = 0; _sfi < _sf.length; _sfi++) {
+                var _ssrc = _sf[_sfi].preview || (_sf[_sfi].base64 ? ('data:' + (_sf[_sfi].mime || 'image/jpeg') + ';base64,' + _sf[_sfi].base64) : '');
+                if (_ssrc) h += '<div style="aspect-ratio:1;overflow:hidden;border-radius:4px;border:0.5px solid #e2e8f0"><img src="' + _ssrc + '" style="width:100%;height:100%;object-fit:cover"/></div>';
+              }
+              h += '</div>';
+            }
+            h += '<label style="display:block;font-size:10px;color:#64748b;font-weight:600;margin-bottom:2px">Resumo</label>';
+            h += '<textarea rows="3" style="width:100%;padding:6px;border:0.5px solid #cbd5e1;border-radius:4px;font-size:11px;background:#f8fafc;resize:vertical;box-sizing:border-box">' + _esc(_sd.resumo || '') + '</textarea>';
+            h += '</div>';
+          });
+          h += '<label style="display:block;font-size:11px;color:#64748b;font-weight:600;margin-bottom:3px">Observa\u00e7\u00f5es gerais</label>';
+          h += '<textarea data-kind="obs" data-aidx="' + _ri + '" rows="2" style="width:100%;padding:7px 9px;border:1px solid #cbd5e1;border-radius:6px;font-size:12px;background:#fff;resize:vertical">' + _esc(_rd.obs || '') + '</textarea>';
+          h += '</div>';
+          continue;
+        }
+
         var _tst = _rd.testes || {};
         var _xtr = _rd.testesExtras || [];
         var _nF = (_rd.fotos || []).length;
@@ -6270,6 +6302,15 @@ function wiz6BuildSuiteHtml(idx) {
   // Add sub-ambiente button
   h += '<div style="padding:12px 16px;border-top:0.5px solid #e2e8f0">';
   h += '<button onclick="wiz6AddSubAmb(' + idx + ')" style="width:100%;background:none;border:0.5px dashed #cbd5e1;border-radius:8px;padding:9px;font-size:12px;color:#8898aa;cursor:pointer">+ Adicionar sub-ambiente</button>';
+  h += '</div>';
+
+    // Navigation buttons
+  var isUltimo = idx >= _wiz6Ambientes.length - 1;
+  var txtProx = isUltimo ? '\u2713 Finalizar vistoria' : 'Pr\u00f3ximo ambiente \u2192';
+  h += '<div style="padding:0 16px 16px;display:flex;gap:10px;align-items:center">';
+  if (idx > 0) h += '<button onclick="wiz6AmbAnterior()" style="padding:12px 20px;background:#fff;color:#8898aa;border:0.5px solid #e2e8f0;border-radius:10px;font-size:13px;cursor:pointer">\u2190 Anterior</button>';
+  h += '<div style="flex:1;text-align:center;font-size:11px;color:#8898aa">' + (idx+1) + ' de ' + _wiz6Ambientes.length + '</div>';
+  h += '<button id="wiz6-btn-prox-amb" onclick="wiz6ProxAmb()" style="padding:12px 24px;background:#2d7dd2;color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;flex:1">' + txtProx + '</button>';
   h += '</div>';
 
   return h;
