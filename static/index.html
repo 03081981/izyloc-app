@@ -5861,6 +5861,9 @@ function wiz6Init() {
     _wiz6Ambientes = ['Ambiente 1'];
   }
 
+  // Sync wizard.selectedRooms with _wiz6Ambientes so Etapa 7 and PDF use same order
+  wizard.selectedRooms = _wiz6Ambientes.slice();
+
   // Detect suites and init sub-ambientes
   if (!wizard.itensData) wizard.itensData = {};
   for (var _si = 0; _si < _wiz6Ambientes.length; _si++) {
