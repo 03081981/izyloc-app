@@ -6472,6 +6472,17 @@ function wiz6TesteObsSub(idx, subNome, key, val) {
   if (sd) { if (!sd.testes) sd.testes = {}; sd.testes[key + '_obs'] = val; }
 }
 
+function wiz6AdicionarTesteSub(ambIdx, subNome) {
+  var nome = prompt('Nome do teste funcional:');
+  if (!nome || !nome.trim()) return;
+  var key = nome.trim().toLowerCase().replace(/[^a-z0-9]/g,'_');
+  var sd = wizard.itensData[ambIdx] && wizard.itensData[ambIdx].subs && wizard.itensData[ambIdx].subs[subNome];
+  if (!sd) return;
+  if (!sd.testesExtras) sd.testesExtras = [];
+  sd.testesExtras.push({k: key, n: nome.trim()});
+  wiz6RenderAmbCard(ambIdx);
+}
+
 function wiz6SalvarResumoSub(idx, subNome, val) {
   var sd = wizard.itensData[idx] && wizard.itensData[idx].subs && wizard.itensData[idx].subs[subNome];
   if (sd) sd.resumo = val;
