@@ -3941,6 +3941,28 @@ async function generatePDF() {
         _ambData.push({roomName:wizard.selectedRooms[_ai],verificacoes:_verif,verificacoesObs:_verifObs,testesNomes:_tNomes,observacoes:_d.obs||''});
       };
     }
+    // === Save ambientes_json to DB before PDF generation ===
+    var _ambArr=[];
+    for(var _bi=0;_bi<(wizard.selectedRooms||[]).length;_bi++){
+      var _bd=(wizard.itensData&&wizard.itensData[_bi])||{};
+      if(_bd.isSuite&&_bd.subs){
+        var _sFotos=[];
+        (_bd.subAmbientes||[]).forEach(function(_sn){
+          var _sd=_bd.subs[_sn]||{};
+          (_sd.fotos||[]).forEach(function(f){
+            _sFotos.push({item:f.item||_sn,estado:f.estado||'',desc:f.descri\u00e7\u00e3o||f.descricao||'',src:f.base64?('data:'+(f.mime||'image/jpeg')+';base64,'+f.base64):(f.preview||'')});
+          });
+        });
+        _ambArr.push({nome:wizard.selectedRooms[_bi],fotos:_sFotos,verificacoes:{},observa\u00e7\u00f5es:_bd.obs||''});
+      } else {
+        var _bFotos=[];
+        (_bd.fotos||[]).forEach(function(f){
+          _bFotos.push({item:f.item||'',estado:f.estado||'',desc:f.descri\u00e7\u00e3o||f.descricao||'',src:f.base64?('data:'+(f.mime||'image/jpeg')+';base64,'+f.base64):(f.preview||'')});
+        });
+        _ambArr.push({nome:wizard.selectedRooms[_bi],fotos:_bFotos,verificacoes:_bd.testes||{},observa\u00e7\u00f5es:_bd.obs||''});
+      }
+    }
+    await fetch('/api/inspections/'+wizard.inspectionId,{method:'PUT',headers:{'Content-Type':'application/json','Authorization':'Bearer '+localStorage.getItem('izylo_token')},body:JSON.stringify({ambientes_json:JSON.stringify(_ambArr)})});
     var _tok=localStorage.getItem('izylo_token');
     var resp=await fetch('/api/inspections/'+wizard.inspectionId+'/pdf',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+_tok},body:JSON.stringify({ambData:_ambData})});
     hideLoading();
