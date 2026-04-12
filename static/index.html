@@ -3945,24 +3945,37 @@ async function generatePDF() {
     var _ambArr=[];
     for(var _bi=0;_bi<(wizard.selectedRooms||[]).length;_bi++){
       var _bd=(wizard.itensData&&wizard.itensData[_bi])||{};
+      var _bName=wizard.selectedRooms[_bi];
       if(_bd.isSuite&&_bd.subs){
+        // Suite: collect photos from all sub-ambientes
         var _sFotos=[];
         (_bd.subAmbientes||[]).forEach(function(_sn){
           var _sd=_bd.subs[_sn]||{};
-          (_sd.fotos||[]).forEach(function(f){
-            _sFotos.push({item:f.item||_sn,estado:f.estado||'',desc:f.descri\u00e7\u00e3o||f.descricao||'',src:f.base64?('data:'+(f.mime||'image/jpeg')+';base64,'+f.base64):(f.preview||'')});
+          var _subResumo=_sd.resumo||"";
+          var _subEstado=_sd.estado_geral||"Bom";
+          (_sd.fotos||[]).forEach(function(f,fi){
+            _sFotos.push({item:_sn,estado:fi===0?_subEstado:"",desc:fi===0?_subResumo:"",src:f.base64?("data:"+(f.mime||"image/jpeg")+";base64,"+f.base64):(f.preview||"")});
           });
+          if((_sd.fotos||[]).length===0&&_subResumo){
+            _sFotos.push({item:_sn,estado:_subEstado,desc:_subResumo,src:""});
+          }
         });
-        _ambArr.push({nome:wizard.selectedRooms[_bi],fotos:_sFotos,verificacoes:{},observacoes:_bd.obs||''});
+        _ambArr.push({nome:_bName,fotos:_sFotos,verificacoes:{},observacoes:_bd.obs||""});
       } else {
+        // Regular room: one item per photo, resumo on first
         var _bFotos=[];
-        (_bd.fotos||[]).forEach(function(f){
-          _bFotos.push({item:f.item||'',estado:f.estado||'',desc:f.descri\u00e7\u00e3o||f.descricao||'',src:f.base64?('data:'+(f.mime||'image/jpeg')+';base64,'+f.base64):(f.preview||'')});
+        var _bResumo=_bd.resumo||"";
+        var _bEstado=_bd.estado_geral||"Bom";
+        (_bd.fotos||[]).forEach(function(f,fi){
+          _bFotos.push({item:_bName,estado:fi===0?_bEstado:"",desc:fi===0?_bResumo:"",src:f.base64?("data:"+(f.mime||"image/jpeg")+";base64,"+f.base64):(f.preview||"")});
         });
-        _ambArr.push({nome:wizard.selectedRooms[_bi],fotos:_bFotos,verificacoes:_bd.testes||{},observacoes:_bd.obs||''});
+        if((_bd.fotos||[]).length===0&&_bResumo){
+          _bFotos.push({item:_bName,estado:_bEstado,desc:_bResumo,src:""});
+        }
+        _ambArr.push({nome:_bName,fotos:_bFotos,verificacoes:_bd.testes||{},observacoes:_bd.obs||""});
       }
     }
-    await fetch('/api/inspections/'+wizard.inspectionId,{method:'PUT',headers:{'Content-Type':'application/json','Authorization':'Bearer '+localStorage.getItem('izylo_token')},body:JSON.stringify({ambientes_json:JSON.stringify(_ambArr)})});
+    await fetch("/api/inspections/"+wizard.inspectionId,{method:"PUT",headers:{"Content-Type":"application/json","Authorization":"Bearer "+localStorage.getItem("izylo_token")},body:JSON.stringify({ambientes_json:JSON.stringify(_ambArr)})});
     var _tok=localStorage.getItem('izylo_token');
     var resp=await fetch('/api/inspections/'+wizard.inspectionId+'/pdf',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+_tok},body:JSON.stringify({ambData:_ambData})});
     hideLoading();
