@@ -6272,12 +6272,6 @@ function wiz6RenderAmbCard(idx) {
           // === Sub-ambientes added to normal room ===
     _wiz6RenderSubsBlock(idx, dados) +
 
-    // Add sub-ambiente button
-    '<div style="padding:14px 16px;border-top:0.5px solid #e2e8f0">' +
-    '<div style="font-size:11px;color:#8898aa;margin-bottom:8px">Quer adicionar mais um c\u00f4modo vinculado a este ambiente? Ex: <strong style=\"color:#2d7dd2\">Closet</strong>, <strong style=\"color:#2d7dd2\">Varanda</strong>, <strong style=\"color:#2d7dd2\">Despensa</strong>...</div>' +
-    '<button onclick="wiz6AddSubAmb(' + idx + ')" style="width:100%;background:#2d7dd2;border:none;border-radius:8px;padding:11px;font-size:13px;color:#fff;cursor:pointer;font-weight:600">+ Adicionar sub-ambiente</button>' +
-  '</div>' +
-
     '<div style="border-top:0.5px solid #e2e8f0;margin:14px 0"></div>' +
     '<div style="font-size:10px;font-weight:600;color:#8898aa;letter-spacing:0.5px;margin-bottom:8px">TESTES FUNCIONAIS</div>' +
     htmlTestes +
@@ -6288,6 +6282,12 @@ function wiz6RenderAmbCard(idx) {
     '<textarea id="wiz6-obs-' + idx + '" placeholder="Observa&ccedil;&atilde;o sobre o ambiente (opcional)..." style="width:100%;padding:9px 12px;border:0.5px solid #e2e8f0;border-radius:8px;font-size:12px;color:#1a2540;resize:none;font-family:inherit;line-height:1.5;margin-bottom:14px" rows="2" onchange="wiz6SalvarObs(' + idx + ',this.value)">' + (dados.obs||'') + '</textarea>' +
 
     '</div>' +
+
+    // Add sub-ambiente button
+    '<div style="padding:14px 16px;border-top:0.5px solid #e2e8f0">' +
+    '<div style="font-size:11px;color:#8898aa;margin-bottom:8px">Quer adicionar mais um c\u00f4modo vinculado a este ambiente? Ex: <strong style=\"color:#2d7dd2\">Closet</strong>, <strong style=\"color:#2d7dd2\">Varanda</strong>, <strong style=\"color:#2d7dd2\">Despensa</strong>...</div>' +
+    '<button onclick="wiz6AddSubAmb(' + idx + ')" style="width:100%;background:#2d7dd2;border:none;border-radius:8px;padding:11px;font-size:13px;color:#fff;cursor:pointer;font-weight:600">+ Adicionar sub-ambiente</button>' +
+  '</div>' +
 
     '<div style="display:flex;gap:10px;align-items:center">' +
       btnAnterior +
