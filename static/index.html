@@ -6589,8 +6589,10 @@ function wiz6AddSubAmb(idx) {
 function wiz6ConfirmarSubAmb(idx) {
   var nome = document.getElementById('inp-subamb').value.trim();
   if (!nome) return;
-  document.getElementById('modal-subamb').remove();
+  var modal = document.getElementById('modal-subamb');
+  if (modal) modal.remove();
   var d = wizard.itensData[idx];
+  if (!d) d = wizard.itensData[idx] = {};
   if (!d.subAmbientes) d.subAmbientes = [];
   if (!d.subs) d.subs = {};
   d.subAmbientes.push(nome);
@@ -6682,7 +6684,8 @@ function _wiz6RenderSubsBlock(ambIdx, dados) {
 }
 
 function wiz6RenderAtual() {
-  var idx = _wiz6AmbIdx !== undefined ? _wiz6AmbIdx : 0;
+  var idx = (typeof _wiz6AmbIdx !== 'undefined') ? _wiz6AmbIdx :
+            (wizard.currentAmbIdx !== undefined ? wizard.currentAmbIdx : 0);
   wiz6RenderAmbCard(idx);
 }
 
