@@ -6723,7 +6723,7 @@ function _wiz6RenderSubsBlock(ambIdx, dados) {
         var style = isAtivo
           ? (v==='nt' ? 'background:#1e3a5f;color:#fff' : v==='ok' ? 'background:#16a34a;color:#fff' : v==='nao' ? 'background:#ef4444;color:#fff' : 'background:#6b7280;color:#fff')
           : (v==='ok' ? 'background:#f0fdf4;color:#166534;border:0.5px solid #bbf7d0' : v==='nao' ? 'background:#fef2f2;color:#991b1b;border:0.5px solid #fca5a5' : 'background:#f8fafc;color:#8898aa;border:0.5px solid #e2e8f0');
-        h += '<button onclick="wiz6TesteSub(' + ambIdx + ',\'' + subNome.replace(/'/g,"\\\'")+',\'' + t.k + '\',\'' + v + '\')" style="font-size:10px;padding:3px 8px;border-radius:10px;border:none;cursor:pointer;' + style + '">' + labels[v] + '</button>';
+        h += '<button onclick="wiz6TesteSub(' + ambIdx + ',\'' + subNome.replace(/'/g,"\\\'")+'\',\'' + t.k + '\',\'' + v + '\')" style="font-size:10px;padding:3px 8px;border-radius:10px;border:none;cursor:pointer;' + style + '">' + labels[v] + '</button>';
       });
       h += '</div>';
       h += '</div>';
