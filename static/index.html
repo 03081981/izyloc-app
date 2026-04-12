@@ -6634,6 +6634,7 @@ function wiz6ConfirmarSubAmb(idx) {
   if (!d) d = wizard.itensData[idx] = {};
   if (!d.subAmbientes) d.subAmbientes = [];
   if (!d.subs) d.subs = {};
+  d.isSuite = true;
   d.subAmbientes.push(nome);
   d.subs[nome] = {fotos:[], testes:{}, jaAnalisou:false, resumo:'', obs:'', testesExtras:[]};
   wiz6RenderAtual();
