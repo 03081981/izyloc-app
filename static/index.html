@@ -4900,6 +4900,28 @@ if (typeof initAmbientes === 'function') initAmbientes();
             if (!wizard.itensData[ai3].testes) wizard.itensData[ai3].testes = {};
             wizard.itensData[ai3].testes[tk4 + '_obs'] = v;
           }
+        } else if (k === 'resumoSub' || k === 'obsSub') {
+          var aiS = parseInt(t.dataset.aidx, 10);
+          var subN = t.dataset.sub;
+          if (wizard && wizard.itensData && wizard.itensData[aiS] && wizard.itensData[aiS].subs && wizard.itensData[aiS].subs[subN]) {
+            wizard.itensData[aiS].subs[subN][k === 'resumoSub' ? 'resumo' : 'obs'] = v;
+          }
+        } else if (k === 'testeStatusSub') {
+          var aiS2 = parseInt(t.dataset.aidx, 10);
+          var subN2 = t.dataset.sub;
+          var tkS = t.dataset.tk;
+          if (wizard && wizard.itensData && wizard.itensData[aiS2] && wizard.itensData[aiS2].subs && wizard.itensData[aiS2].subs[subN2]) {
+            if (!wizard.itensData[aiS2].subs[subN2].testes) wizard.itensData[aiS2].subs[subN2].testes = {};
+            wizard.itensData[aiS2].subs[subN2].testes[tkS] = v;
+          }
+        } else if (k === 'testeObsSub') {
+          var aiS3 = parseInt(t.dataset.aidx, 10);
+          var subN3 = t.dataset.sub;
+          var tkS2 = t.dataset.tk;
+          if (wizard && wizard.itensData && wizard.itensData[aiS3] && wizard.itensData[aiS3].subs && wizard.itensData[aiS3].subs[subN3]) {
+            if (!wizard.itensData[aiS3].subs[subN3].testes) wizard.itensData[aiS3].subs[subN3].testes = {};
+            wizard.itensData[aiS3].subs[subN3].testes[tkS2 + '_obs'] = v;
+          }
         }
       }
       rc.addEventListener('input', _hChg);
