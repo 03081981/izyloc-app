@@ -6232,73 +6232,105 @@ function wiz6BuildSuiteHtml(idx) {
   var subs = d.subAmbientes || [];
   var concluidos = 0;
   subs.forEach(function(sn) { if (d.subs[sn] && d.subs[sn].jaAnalisou) concluidos++; });
+  var suiteName = _wiz6Ambientes[idx] || 'Su\u00EDte';
+  var icone = _wiz6AmbIcon(suiteName);
 
   var h = '';
-  // Header principal
-  h += '<div style="background:linear-gradient(135deg,#1e3a5f,#2d7dd2);padding:14px 18px;border-radius:12px 12px 0 0">';
-  h += '<div style="font-size:14px;font-weight:600;color:#fff">' + (_wiz6Ambientes[idx] || 'Su&iacute;te') + '</div>';
-  h += '<div style="font-size:11px;color:#93c5fd;margin-top:2px">' + concluidos + ' de ' + subs.length + ' sub-ambientes conclu&iacute;dos</div>';
-  h += '</div>';
+  // Suite header - same style as regular room
+  h += '<div style="background:linear-gradient(135deg,#1e3a5f,#2d7dd2);padding:14px 18px;border-radius:12px 12px 0 0;display:flex;align-items:center;gap:10px">';
+  h += '<span style="font-size:22px">' + icone + '</span>';
+  h += '<div style="flex:1">';
+  h += '<div style="font-size:15px;font-weight:700;color:#fff">' + suiteName + '</div>';
+  h += '<div style="font-size:11px;color:#93c5fd">' + concluidos + ' de ' + subs.length + ' sub-ambientes conclu\u00EDdos</div>';
+  h += '</div></div>';
+
+  h += '<div style="padding:16px">';
 
   subs.forEach(function(subNome, si) {
     var sd = d.subs[subNome];
     if (!sd) { sd = {fotos:[], testes:{}, jaAnalisou:false, resumo:'', obs:'', testesExtras:[]}; d.subs[subNome] = sd; }
     var fotos = sd.fotos || [];
-    // Badge
-    var badge = '';
-    if (sd.jaAnalisou) badge = '<span style="background:#f0fdf4;color:#166534;border:0.5px solid #bbf7d0;border-radius:10px;font-size:10px;padding:2px 8px">Conclu&iacute;do</span>';
-    else if (fotos.length > 0) badge = '<span style="background:#fffbeb;color:#92400e;border:0.5px solid #fed7aa;border-radius:10px;font-size:10px;padding:2px 8px">Em andamento</span>';
-    else badge = '<span style="background:#f8fafc;color:#8898aa;border:0.5px solid #e2e8f0;border-radius:10px;font-size:10px;padding:2px 8px">N&atilde;o iniciado</span>';
+    var jaAnalisou = sd.jaAnalisou || false;
+    var resumo = sd.resumo || '';
 
-    // Sub-header
-    h += '<div style="border-top:0.5px solid #e2e8f0">';
-    h += '<div style="background:#2d5a8e;padding:9px 16px;display:flex;align-items:center;justify-content:space-between">';
-    h += '<span style="font-size:12px;font-weight:600;color:#fff">' + subNome + '</span>' + badge;
+    // Sub-ambiente header bar
+    var badge = '';
+    if (jaAnalisou) badge = '<span style="background:#f0fdf4;color:#166534;border:0.5px solid #bbf7d0;border-radius:10px;font-size:10px;padding:2px 8px">Conclu\u00EDdo</span>';
+    else if (fotos.length > 0) badge = '<span style="background:#fffbeb;color:#92400e;border:0.5px solid #fed7aa;border-radius:10px;font-size:10px;padding:2px 8px">Em andamento</span>';
+    else badge = '<span style="background:#f8fafc;color:#8898aa;border:0.5px solid #e2e8f0;border-radius:10px;font-size:10px;padding:2px 8px">N\u00e3o iniciado</span>';
+
+    h += '<div style="border:1px solid #e2e8f0;border-radius:10px;margin-bottom:14px;overflow:hidden">';
+    h += '<div style="background:#2d5a8e;padding:10px 16px;display:flex;align-items:center;justify-content:space-between">';
+    h += '<span style="font-size:13px;font-weight:600;color:#fff">' + subNome + '</span>' + badge;
     h += '</div>';
 
-    // Body
     h += '<div style="padding:14px 16px">';
 
-    // Photos grid
-    h += '<div style="font-size:10px;font-weight:700;color:#8898aa;letter-spacing:.05em;margin-bottom:7px">FOTOS</div>';
-    h += '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:5px;margin-bottom:10px">';
+    // === PHOTOS GRID - same as regular room ===
+    var htmlFotos = '';
     fotos.forEach(function(f, fi) {
       var src = f.preview || (f.base64 ? ('data:' + (f.mime || 'image/jpeg') + ';base64,' + f.base64) : '');
-      h += '<div style="position:relative;aspect-ratio:4/3;border-radius:6px;overflow:hidden;background:#f1f5f9">';
-      if (src) h += '<img src="' + src + '" style="width:100%;height:100%;object-fit:cover;display:block">';
-      h += '<button onclick="wiz6RemoverFotoSub(' + idx + ',\'' + subNome.replace(/'/g,"\\'") + '\',' + fi + ')" style="position:absolute;top:3px;right:3px;background:rgba(0,0,0,.5);color:#fff;border:none;border-radius:50%;width:18px;height:18px;font-size:10px;cursor:pointer;line-height:1">&times;</button>';
-      h += '</div>';
+      var podRemover = !jaAnalisou;
+      htmlFotos +=
+        '<div style="position:relative;border-radius:8px;overflow:hidden;aspect-ratio:4/3;background:#f1f5f9">' +
+          (src ? '<img src="' + src + '" style="width:100%;height:100%;object-fit:contain;display:block;background:#f1f5f9;cursor:pointer" onclick="window._openFotoModal(this.src)">' : '') +
+          '<div style="position:absolute;bottom:4px;left:4px;background:rgba(0,0,0,0.7);color:#fff;font-size:11px;font-weight:700;padding:2px 8px;border-radius:10px">Foto ' + (fi+1) + '</div>' +
+          '<button onclick="wiz6RemoverFotoSub(' + idx + ',\'' + subNome.replace(/'/g,"\\\'") + '\',' + fi + ')" style="position:absolute;top:4px;right:4px;width:24px;height:24px;background:rgba(' + (podRemover ? '239,68,68' : '107,114,128') + ',0.9);border:none;border-radius:50%;color:#fff;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1">\u00d7</button>' +
+        '</div>';
     });
-    if (fotos.length < 9) {
-      h += '<label style="aspect-ratio:4/3;border:0.5px dashed #cbd5e1;border-radius:6px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:10px;color:#8898aa;flex-direction:column;gap:3px">';
-      h += '<span style="font-size:18px">+</span><span>foto</span>';
-      h += '<input type="file" accept="image/*" multiple style="display:none" onchange="wiz6AddFotosSub(this,' + idx + ',\'' + subNome.replace(/'/g,"\\'") + '\')">';
-      h += '</label>';
-    }
+
+    var htmlBtnFoto =
+      '<label style="display:flex;flex-direction:column;align-items:center;justify-content:center;aspect-ratio:4/3;border:2px dashed #bfdbfe;border-radius:8px;cursor:pointer;background:#f8fbff">' +
+        '<svg width="28" height="28" viewBox="0 0 24 24" fill="none"><rect x="3" y="6" width="18" height="14" rx="2" fill="#dbeafe" stroke="#2d7dd2" stroke-width="1.5"/><circle cx="12" cy="13" r="4" fill="#93c5fd" stroke="#2d7dd2" stroke-width="1"/><circle cx="17" cy="9" r="1" fill="#2d7dd2"/></svg>' +
+        '<span style="font-size:11px;color:#2d7dd2;font-weight:600;margin-top:6px">+ Foto</span>' +
+        '<span style="font-size:9px;color:#8898aa;margin-top:2px">vertical</span>' +
+        '<input type="file" accept="image/*" capture="environment" multiple style="display:none" onchange="wiz6AddFotosSub(this,' + idx + ',\'' + subNome.replace(/'/g,"\\\'") + '\')">' +
+      '</label>';
+
+    h += '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px">';
+    h += htmlFotos;
+    if (!jaAnalisou) h += htmlBtnFoto;
     h += '</div>';
 
-    // AI status area
-    h += '<div id="wiz6-ai-status-sub-' + idx + '-' + si + '" style="display:none;padding:8px;border-radius:8px;font-size:12px;margin-bottom:10px;background:#eef4ff;color:#2d7dd2"></div>';
-
-    // Analyze button
-    if (fotos.length > 0 && !sd.jaAnalisou) {
-      h += '<div style="margin-bottom:10px"><button onclick="wiz6AnalisarBatchSub(' + idx + ',\'' + subNome.replace(/'/g,"\\'") + '\',' + si + ')" style="background:#2d7dd2;color:#fff;border:none;border-radius:8px;padding:8px 16px;font-size:12px;font-weight:600;width:100%;cursor:pointer">Analisar com IA</button></div>';
+    // === GREEN BOX with fotos count + Analyze button - same as regular room ===
+    if (fotos.length > 0) {
+      h += '<div style="background:#f0fdf4;border:0.5px solid #bbf7d0;border-radius:10px;padding:14px;margin-bottom:14px;text-align:center">';
+      h += '<div style="font-size:13px;color:#166534;font-weight:600;margin-bottom:8px">' + fotos.length + ' foto' + (fotos.length!==1?'s':'') + ' prontas para an\u00e1lise</div>';
+      h += '<div style="display:flex;gap:8px;justify-content:center">';
+      h += '<label style="padding:10px 18px;background:#fff;color:#2d7dd2;border:1px solid #2d7dd2;border-radius:8px;font-size:12px;font-weight:500;cursor:pointer">';
+      h += '+ Adicionar mais fotos';
+      h += '<input type="file" accept="image/*" capture="environment" multiple style="display:none" onchange="wiz6AddFotosSub(this,' + idx + ',\'' + subNome.replace(/'/g,"\\\'") + '\')">';
+      h += '</label>';
+      h += '<button onclick="wiz6AnalisarBatchSub(' + idx + ',\'' + subNome.replace(/'/g,"\\\'") + '\',' + si + ')" style="padding:10px 24px;background:#16a34a;color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer">';
+      h += jaAnalisou ? '\ud83d\udd04 Re-analisar com IA' : '\ud83e\udd16 Analisar com IA';
+      h += '</button></div></div>';
     }
 
-    // AI description (resumo)
-    if (sd.resumo) {
-      h += '<div style="font-size:10px;font-weight:700;color:#8898aa;letter-spacing:.05em;margin-bottom:7px">DESCRI&Ccedil;&Atilde;O DA IA</div>';
-      h += '<textarea onblur="wiz6SalvarResumoSub(' + idx + ',\'' + subNome.replace(/'/g,"\\'") + '\',this.value)" style="width:100%;border:0.5px solid #e2e8f0;border-radius:8px;padding:10px;font-size:12px;color:#1a2540;background:#f8fafc;resize:vertical;min-height:80px;margin-bottom:10px;font-family:inherit;box-sizing:border-box">' + (sd.resumo || '').replace(/</g,'&lt;').replace(/>/g,'&gt;') + '</textarea>';
+    // AI status
+    h += '<div id="wiz6-ai-status-sub-' + idx + '-' + si + '" style="display:none;background:#eef4ff;border-left:3px solid #2d7dd2;border-radius:0 8px 8px 0;padding:12px 14px;margin-bottom:14px;font-size:12px;color:#185fa5;line-height:1.6"></div>';
+
+    // === AI DESCRIPTION - same style as regular room ===
+    if (resumo) {
+      h += '<div style="background:#f8fafc;border:0.5px solid #e2e8f0;border-radius:10px;padding:14px;margin-bottom:14px">';
+      h += '<div style="font-size:11px;font-weight:600;color:#2d7dd2;letter-spacing:0.5px;margin-bottom:8px">\ud83e\udd16 DESCRI\u00c7\u00c3O DA IA \u2014 ' + subNome.toUpperCase() + '</div>';
+      h += '<textarea onblur="wiz6SalvarResumoSub(' + idx + ',\'' + subNome.replace(/'/g,"\\\'") + '\',this.value)" style="width:100%;font-size:12px;color:#1a2540;line-height:1.8;border:0.5px solid #e2e8f0;border-radius:8px;padding:10px;resize:none;font-family:inherit;min-height:120px;background:#fafbfc;field-sizing:content;overflow:hidden;box-sizing:border-box">' + (resumo || '').replace(/</g,'&lt;').replace(/>/g,'&gt;') + '</textarea>';
+      h += '<div style="margin-top:10px;padding-top:10px;border-top:0.5px solid #e2e8f0">';
+      h += '<label style="padding:7px 14px;background:#fff;color:#2d7dd2;border:1px solid #2d7dd2;border-radius:7px;font-size:11px;font-weight:500;cursor:pointer">';
+      h += '+ Adicionar mais fotos';
+      h += '<input type="file" accept="image/*" capture="environment" multiple style="display:none" onchange="wiz6AddFotosSub(this,' + idx + ',\'' + subNome.replace(/'/g,"\\\'") + '\')">';
+      h += '</label>';
+      h += '<span style="font-size:10px;color:#8898aa;margin-left:10px">Novas fotos ser\u00e3o cobradas</span>';
+      h += '</div></div>';
     }
 
-    // Tests
+    // === TESTS - same style as regular room ===
     var tipoSub = 'default';
     var snL = subNome.toLowerCase();
     if (snL.indexOf('banheiro') >= 0) tipoSub = 'banheiro';
     else if (snL.indexOf('closet') >= 0) tipoSub = 'closet';
     else if (snL.indexOf('dorm') >= 0 || snL.indexOf('suite') >= 0 || snL.indexOf('su\u00EDte') >= 0) tipoSub = 'suite';
     var testesMapSub = {
-      'suite':    [{k:'porta',n:'Porta &mdash; ma&ccedil;aneta e fechadura'},{k:'chaves',n:'Chaves da porta'},{k:'tomadas',n:'Tomadas e interruptores'},{k:'ac',n:'Ar condicionado'},{k:'janela',n:'Janela &mdash; abre, fecha e trava'}],
+      'suite':    [{k:'porta',n:'Porta &mdash; ma&ccedil;aneta e fechadura'},{k:'chaves',n:'Chaves da porta &mdash; presentes'},{k:'tomadas',n:'Tomadas e interruptores'},{k:'ac',n:'Ar condicionado'},{k:'janela',n:'Janela &mdash; abre, fecha e trava'}],
       'banheiro': [{k:'torneira',n:'Torneira &mdash; abre e fecha'},{k:'chuveiro',n:'Chuveiro &mdash; press&atilde;o e temperatura'},{k:'descarga',n:'Descarga &mdash; funciona'},{k:'ralo',n:'Ralo &mdash; escoa bem'},{k:'iluminacao',n:'Ilumina&ccedil;&atilde;o'}],
       'closet':   [{k:'porta',n:'Porta &mdash; abre e fecha'},{k:'iluminacao',n:'Ilumina&ccedil;&atilde;o'}],
       'default':  [{k:'tomadas',n:'Tomadas e interruptores'},{k:'iluminacao',n:'Ilumina&ccedil;&atilde;o'},{k:'porta',n:'Porta &mdash; chave e fechadura'}]
@@ -6306,33 +6338,31 @@ function wiz6BuildSuiteHtml(idx) {
     var testes = (testesMapSub[tipoSub] || testesMapSub['default']).concat(sd.testesExtras || []);
     var testesSalvos = sd.testes || {};
 
-    h += '<div style="font-size:10px;font-weight:700;color:#8898aa;letter-spacing:.05em;margin-bottom:7px">VERIFICA&Ccedil;&Otilde;ES T&Eacute;CNICAS</div>';
-    h += '<div style="background:#f8fafc;border-radius:8px;padding:8px 10px;margin-bottom:10px">';
+    h += '<div style="border-top:0.5px solid #e2e8f0;margin:14px 0"></div>';
+    h += '<div style="font-size:10px;font-weight:600;color:#8898aa;letter-spacing:0.5px;margin-bottom:8px">TESTES FUNCIONAIS</div>';
     testes.forEach(function(t) {
-      var val = testesSalvos[t.k] || '';
-      h += '<div style="display:flex;align-items:center;padding:6px 0;border-bottom:0.5px solid #f1f5f9">';
-      h += '<span style="flex:1;font-size:11px;color:#1a2540">' + t.n + '</span>';
-      h += '<div style="display:flex;gap:4px">';
-      var opts = [
-        {v:'',   l:'\u2014',  sel:'background:#e2e8f0;color:#475569',  def:'background:#f8fafc;color:#94a3b8;border:0.5px solid #e2e8f0'},
-        {v:'ok', l:'OK', sel:'background:#16a34a;color:#fff',  def:'background:#f0fdf4;color:#166534;border:0.5px solid #bbf7d0'},
-        {v:'nok',l:'NOK',sel:'background:#ef4444;color:#fff',  def:'background:#fef2f2;color:#991b1b;border:0.5px solid #fca5a5'},
-        {v:'na', l:'N/A',sel:'background:#6b7280;color:#fff',  def:'background:#f8fafc;color:#94a3b8;border:0.5px solid #e2e8f0'}
-      ];
-      opts.forEach(function(o) {
-        var isActive = val === o.v;
-        h += '<button onclick="wiz6TesteSub(' + idx + ',\'' + subNome.replace(/'/g,"\\'") + '\',\'' + t.k + '\',\'' + o.v + '\')" style="font-size:10px;padding:3px 7px;border-radius:10px;border:none;cursor:pointer;' + (isActive ? o.sel : o.def) + '">' + o.l + '</button>';
-      });
+      var val = testesSalvos[t.k] || 'nt';
+      var obsVal = testesSalvos[t.k+'_obs'] || '';
+      h += '<div style="padding:9px 12px;background:#f8fafc;border:0.5px solid #e2e8f0;border-radius:9px;margin-bottom:5px">';
+      h += '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:' + (val!=='nt'?'6':'0') + 'px">';
+      h += '<span style="font-size:12px;color:#1a2540;flex:1">' + t.n + '</span>';
+      h += '<div style="display:flex;gap:4px;flex-shrink:0">';
+      h += '<button onclick="wiz6TesteSub(' + idx + ',\'' + subNome.replace(/'/g,"\\\'") + '\',\'' + t.k + '\',\'nt\')" style="padding:4px 7px;border-radius:6px;font-size:10px;border:0.5px solid;cursor:pointer;font-weight:500;' + (val==='nt'?'background:#1e3a5f;color:#fff;border-color:#1e3a5f':'background:#f8fafc;color:#8898aa;border-color:#e2e8f0') + '">\u25a1 N&atilde;o testado</button>';
+      h += '<button onclick="wiz6TesteSub(' + idx + ',\'' + subNome.replace(/'/g,"\\\'") + '\',\'' + t.k + '\',\'ok\')" style="padding:4px 7px;border-radius:6px;font-size:10px;border:0.5px solid;cursor:pointer;font-weight:500;' + (val==='ok'?'background:#16a34a;color:#fff;border-color:#16a34a':'background:#f0fdf4;color:#166534;border-color:#bbf7d0') + '">\u2713 Funcionando</button>';
+      h += '<button onclick="wiz6TesteSub(' + idx + ',\'' + subNome.replace(/'/g,"\\\'") + '\',\'' + t.k + '\',\'nok\')" style="padding:4px 7px;border-radius:6px;font-size:10px;border:0.5px solid;cursor:pointer;font-weight:500;' + (val==='nok'?'background:#ef4444;color:#fff;border-color:#ef4444':'background:#fef2f2;color:#991b1b;border-color:#fca5a5') + '">\u2717 Com problema</button>';
+      h += '<button onclick="wiz6TesteSub(' + idx + ',\'' + subNome.replace(/'/g,"\\\'") + '\',\'' + t.k + '\',\'na\')" style="padding:4px 7px;border-radius:6px;font-size:10px;border:0.5px solid;cursor:pointer;font-weight:500;' + (val==='na'?'background:#888780;color:#fff;border-color:#888780':'background:#f8fafc;color:#8898aa;border-color:#e2e8f0') + '">N&atilde;o existe</button>';
       h += '</div></div>';
-      // Obs field for this test
-      var obsVal = testesSalvos[t.k + '_obs'] || '';
-      h += '<div style="padding:0 0 4px 0"><input type="text" placeholder="obs..." value="' + (obsVal || '').replace(/"/g,'&quot;') + '" onblur="wiz6TesteObsSub(' + idx + ',\'' + subNome.replace(/'/g,"\\'") + '\',\'' + t.k + '\',this.value)" style="width:100%;font-size:10px;color:#64748b;border:none;border-bottom:0.5px solid #f1f5f9;padding:3px 0;background:transparent;outline:none;font-family:inherit"/></div>';
+      if (val !== 'nt') {
+        h += '<input type="text" placeholder="Obs: (opcional)" value="' + (obsVal || '').replace(/"/g,'&quot;') + '" onchange="wiz6TesteObsSub(' + idx + ',\'' + subNome.replace(/'/g,"\\\'") + '\',\'' + t.k + '\',this.value)" style="width:100%;padding:5px 9px;border:0.5px solid #e2e8f0;border-radius:6px;font-size:10px;color:#1a2540;background:#fff;font-family:inherit">';
+      }
+      h += '</div>';
     });
-    h += '</div>';
+    h += '<button onclick="wiz6AdicionarTesteSub(' + idx + ',\'' + subNome.replace(/'/g,"\\\'") + '\')" style="width:100%;padding:7px;border:1.5px dashed #bfdbfe;border-radius:8px;font-size:11px;color:#2d7dd2;background:transparent;cursor:pointer;margin-bottom:14px">+ Adicionar outro teste</button>';
 
-    // General observation
-    h += '<div style="font-size:10px;font-weight:700;color:#8898aa;letter-spacing:.05em;margin-bottom:7px">OBSERVA&Ccedil;&Atilde;O GERAL</div>';
-    h += '<textarea placeholder="Observa&ccedil;&atilde;o sobre ' + subNome + ' (opcional)..." onblur="wiz6SalvarObsSub(' + idx + ',\'' + subNome.replace(/'/g,"\\'") + '\',this.value)" style="width:100%;border:0.5px solid #e2e8f0;border-radius:8px;padding:8px 10px;font-size:11px;color:#475569;background:#f8fafc;resize:none;font-family:inherit;box-sizing:border-box;min-height:44px">' + (sd.obs || '').replace(/</g,'&lt;').replace(/>/g,'&gt;') + '</textarea>';
+    // === OBSERVATION - same style as regular room ===
+    h += '<div style="border-top:0.5px solid #e2e8f0;margin:14px 0"></div>';
+    h += '<div style="font-size:10px;font-weight:600;color:#8898aa;letter-spacing:0.5px;margin-bottom:6px">OBSERVA\u00c7\u00c3O GERAL</div>';
+    h += '<textarea placeholder="Observa&ccedil;&atilde;o sobre ' + subNome + ' (opcional)..." onblur="wiz6SalvarObsSub(' + idx + ',\'' + subNome.replace(/'/g,"\\\'") + '\',this.value)" style="width:100%;padding:9px 12px;border:0.5px solid #e2e8f0;border-radius:8px;font-size:12px;color:#1a2540;resize:none;font-family:inherit;line-height:1.5;box-sizing:border-box" rows="2">' + (sd.obs || '').replace(/</g,'&lt;').replace(/>/g,'&gt;') + '</textarea>';
 
     h += '</div></div>'; // close body and sub-block
   });
@@ -6342,7 +6372,7 @@ function wiz6BuildSuiteHtml(idx) {
   h += '<button onclick="wiz6AddSubAmb(' + idx + ')" style="width:100%;background:none;border:0.5px dashed #cbd5e1;border-radius:8px;padding:9px;font-size:12px;color:#8898aa;cursor:pointer">+ Adicionar sub-ambiente</button>';
   h += '</div>';
 
-    // Navigation buttons
+  // Navigation buttons - same as regular room
   var isUltimo = idx >= _wiz6Ambientes.length - 1;
   var txtProx = isUltimo ? '\u2713 Finalizar vistoria' : 'Pr\u00f3ximo ambiente \u2192';
   h += '<div style="padding:0 16px 16px;display:flex;gap:10px;align-items:center">';
@@ -6351,6 +6381,7 @@ function wiz6BuildSuiteHtml(idx) {
   h += '<button id="wiz6-btn-prox-amb" onclick="wiz6ProxAmb()" style="padding:12px 24px;background:#2d7dd2;color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;flex:1">' + txtProx + '</button>';
   h += '</div>';
 
+  h += '</div>';
   return h;
 }
 
