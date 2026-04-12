@@ -1467,6 +1467,30 @@ def generate_pdf(inspection_data: dict, rooms_data: list,
         else:
             ambientes = _build_ambientes(rooms_data)
 
+        # === Suite sub-ambientes expansion ===
+        _expanded = []
+        for _i, _amb in enumerate(ambientes):
+            _rd = rooms_data[_i] if _i < len(rooms_data) else {}
+            if _rd.get('isSuite') and _rd.get('subAmbientes'):
+                _suite_name = _amb['nome']
+                for _sub in _rd['subAmbientes']:
+                    _sub_nome = _sub.get('nome', '')
+                    _sub_amb = {
+                        'nome': f'{_suite_name} \u2014 {_sub_nome}',
+                        'itens': [],
+                        'verificacoes': _sub.get('verificacoes', {}),
+                        'verificacoes_obs': _sub.get('verificacoesObs', {}),
+                        'testes_nomes': _sub.get('testesNomes', {}),
+                        'observacoes_gerais': _safe(_sub.get('observacoes', ''), ''),
+                    }
+                    _resumo = _sub.get('resumo', '')
+                    if _resumo:
+                        _sub_amb['itens'] = [{'nome': _sub_nome, 'estado': '', 'descricao_ia': _resumo, 'observacao': '', 'fotos': []}]
+                    _expanded.append(_sub_amb)
+            else:
+                _expanded.append(_amb)
+        ambientes = _expanded
+
         local_data = _format_date_extenso(dt)
         if cidade_raw:
             local_data = f'{cidade_raw}, {local_data}'
