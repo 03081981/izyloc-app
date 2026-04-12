@@ -3912,7 +3912,34 @@ async function generatePDF() {
       (_d.testesExtras||[]).forEach(function(ex){_tNomes[ex.k]=ex.n;});
       var _stdNomes={'porta':'Porta — maçaneta e fechadura','chaves':'Chaves da porta','tomadas':'Tomadas e interruptores','ac':'Ar condicionado','janela':'Janela — abre, fecha e trava','torneira':'Torneira — abre e fecha','chuveiro':'Chuveiro — pressão e temperatura','descarga':'Descarga — funciona','ralo':'Ralo — escoa bem','iluminacao':'Iluminação','piso':'Piso','teto':'Teto','parede':'Parede','janelas':'Janelas','portas':'Portas'};
       for(var _sk in _stdNomes){if(!_tNomes[_sk])_tNomes[_sk]=_stdNomes[_sk];}
-      _ambData.push({roomName:wizard.selectedRooms[_ai],verificacoes:_verif,verificacoesObs:_verifObs,testesNomes:_tNomes,observacoes:_d.obs||''});
+      if (_d.isSuite && _d.subs) {
+        var _subAmbs = [];
+        (_d.subAmbientes || []).forEach(function(_subN) {
+          var _sd = _d.subs[_subN] || {};
+          var _sv = {};
+          var _svo = {};
+          var _stn = {};
+          var _stt = _sd.testes || {};
+          for (var _stk in _stt) {
+            if (!_stt[_stk]) continue;
+            if (_stk.length > 4 && _stk.slice(-4) === '_obs') { _svo[_stk.slice(0,-4)] = _stt[_stk]; }
+            else { _sv[_stk] = _eMap[_stt[_stk]] || _stt[_stk]; }
+          }
+          (_sd.testesExtras || []).forEach(function(ex) { _stn[ex.k] = ex.n; });
+          for (var _ssk in _stdNomes) { if (!_stn[_ssk]) _stn[_ssk] = _stdNomes[_ssk]; }
+          _subAmbs.push({
+            nome: _subN,
+            verificacoes: _sv,
+            verificacoesObs: _svo,
+            testesNomes: _stn,
+            observacoes: _sd.obs || '',
+            resumo: _sd.resumo || ''
+          });
+        });
+        _ambData.push({roomName: wizard.selectedRooms[_ai], isSuite: true, subAmbientes: _subAmbs});
+      } else {
+        _ambData.push({roomName:wizard.selectedRooms[_ai],verificacoes:_verif,verificacoesObs:_verifObs,testesNomes:_tNomes,observacoes:_d.obs||''});
+      };
     }
     var _tok=localStorage.getItem('izylo_token');
     var resp=await fetch('/api/inspections/'+wizard.inspectionId+'/pdf',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+_tok},body:JSON.stringify({ambData:_ambData})});
@@ -5767,6 +5794,23 @@ function wiz6Init() {
     _wiz6Ambientes = ['Ambiente 1'];
   }
 
+  // Detect suites and init sub-ambientes
+  if (!wizard.itensData) wizard.itensData = {};
+  for (var _si = 0; _si < _wiz6Ambientes.length; _si++) {
+    var _sn = (_wiz6Ambientes[_si] || '').toLowerCase();
+    if ((_sn.indexOf('suite') >= 0 || _sn.indexOf('su\u00EDte') >= 0) && !(wizard.itensData[_si] && wizard.itensData[_si].isSuite)) {
+      wizard.itensData[_si] = {
+        isSuite: true,
+        subAmbientes: ['Dormit\u00F3rio su\u00EDte', 'Banheiro su\u00EDte'],
+        subs: {
+          'Dormit\u00F3rio su\u00EDte': {fotos:[], testes:{}, jaAnalisou:false, resumo:'', obs:'', testesExtras:[]},
+          'Banheiro su\u00EDte': {fotos:[], testes:{}, jaAnalisou:false, resumo:'', obs:'', testesExtras:[]}
+        },
+        fotos:[], testes:{}, jaAnalisou:false, resumo:'', obs:'', testesExtras:[]
+      };
+    }
+  }
+
   wiz6RenderTabs();
   wiz6RenderAmbCard(_wiz6AmbIdx);
   wiz6AtualizarProgress();
@@ -5939,6 +5983,10 @@ function wiz6RenderAmbCard(idx) {
   var card = document.getElementById('wiz6-amb-card');
   if (!card) return;
   if (!wizard.itensData) wizard.itensData = {};
+  if (wizard.itensData[idx] && wizard.itensData[idx].isSuite) {
+    card.innerHTML = wiz6BuildSuiteHtml(idx);
+    return;
+  }
   var nome = _wiz6Ambientes[idx] || 'Ambiente';
   var icone = _wiz6AmbIcon(nome);
   var dados = wizard.itensData[idx] || {};
@@ -6108,7 +6156,236 @@ function wiz6RenderAmbCard(idx) {
 }
 
 // ── ADICIONAR FOTOS E ANALISAR COM IA ───────────────────
-async function wiz6AddFotos(input, ambIdx) {
+async 
+function wiz6BuildSuiteHtml(idx) {
+  var d = wizard.itensData[idx];
+  if (!d || !d.isSuite) return '';
+  var subs = d.subAmbientes || [];
+  var concluidos = 0;
+  subs.forEach(function(sn) { if (d.subs[sn] && d.subs[sn].jaAnalisou) concluidos++; });
+
+  var h = '';
+  // Header principal
+  h += '<div style="background:linear-gradient(135deg,#1e3a5f,#2d7dd2);padding:14px 18px;border-radius:12px 12px 0 0">';
+  h += '<div style="font-size:14px;font-weight:600;color:#fff">' + (_wiz6Ambientes[idx] || 'Su&iacute;te') + '</div>';
+  h += '<div style="font-size:11px;color:#93c5fd;margin-top:2px">' + concluidos + ' de ' + subs.length + ' sub-ambientes conclu&iacute;dos</div>';
+  h += '</div>';
+
+  subs.forEach(function(subNome, si) {
+    var sd = d.subs[subNome];
+    if (!sd) { sd = {fotos:[], testes:{}, jaAnalisou:false, resumo:'', obs:'', testesExtras:[]}; d.subs[subNome] = sd; }
+    var fotos = sd.fotos || [];
+    // Badge
+    var badge = '';
+    if (sd.jaAnalisou) badge = '<span style="background:#f0fdf4;color:#166534;border:0.5px solid #bbf7d0;border-radius:10px;font-size:10px;padding:2px 8px">Conclu&iacute;do</span>';
+    else if (fotos.length > 0) badge = '<span style="background:#fffbeb;color:#92400e;border:0.5px solid #fed7aa;border-radius:10px;font-size:10px;padding:2px 8px">Em andamento</span>';
+    else badge = '<span style="background:#f8fafc;color:#8898aa;border:0.5px solid #e2e8f0;border-radius:10px;font-size:10px;padding:2px 8px">N&atilde;o iniciado</span>';
+
+    // Sub-header
+    h += '<div style="border-top:0.5px solid #e2e8f0">';
+    h += '<div style="background:#2d5a8e;padding:9px 16px;display:flex;align-items:center;justify-content:space-between">';
+    h += '<span style="font-size:12px;font-weight:600;color:#fff">' + subNome + '</span>' + badge;
+    h += '</div>';
+
+    // Body
+    h += '<div style="padding:14px 16px">';
+
+    // Photos grid
+    h += '<div style="font-size:10px;font-weight:700;color:#8898aa;letter-spacing:.05em;margin-bottom:7px">FOTOS</div>';
+    h += '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:5px;margin-bottom:10px">';
+    fotos.forEach(function(f, fi) {
+      var src = f.preview || (f.base64 ? ('data:' + (f.mime || 'image/jpeg') + ';base64,' + f.base64) : '');
+      h += '<div style="position:relative;aspect-ratio:4/3;border-radius:6px;overflow:hidden;background:#f1f5f9">';
+      if (src) h += '<img src="' + src + '" style="width:100%;height:100%;object-fit:cover;display:block">';
+      h += '<button onclick="wiz6RemoverFotoSub(' + idx + ',\'' + subNome.replace(/'/g,"\\'") + '\',' + fi + ')" style="position:absolute;top:3px;right:3px;background:rgba(0,0,0,.5);color:#fff;border:none;border-radius:50%;width:18px;height:18px;font-size:10px;cursor:pointer;line-height:1">&times;</button>';
+      h += '</div>';
+    });
+    if (fotos.length < 9) {
+      h += '<label style="aspect-ratio:4/3;border:0.5px dashed #cbd5e1;border-radius:6px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:10px;color:#8898aa;flex-direction:column;gap:3px">';
+      h += '<span style="font-size:18px">+</span><span>foto</span>';
+      h += '<input type="file" accept="image/*" multiple style="display:none" onchange="wiz6AddFotosSub(this,' + idx + ',\'' + subNome.replace(/'/g,"\\'") + '\')">';
+      h += '</label>';
+    }
+    h += '</div>';
+
+    // AI status area
+    h += '<div id="wiz6-ai-status-sub-' + idx + '-' + si + '" style="display:none;padding:8px;border-radius:8px;font-size:12px;margin-bottom:10px;background:#eef4ff;color:#2d7dd2"></div>';
+
+    // Analyze button
+    if (fotos.length > 0 && !sd.jaAnalisou) {
+      h += '<div style="margin-bottom:10px"><button onclick="wiz6AnalisarBatchSub(' + idx + ',\'' + subNome.replace(/'/g,"\\'") + '\',' + si + ')" style="background:#2d7dd2;color:#fff;border:none;border-radius:8px;padding:8px 16px;font-size:12px;font-weight:600;width:100%;cursor:pointer">Analisar com IA</button></div>';
+    }
+
+    // AI description (resumo)
+    if (sd.resumo) {
+      h += '<div style="font-size:10px;font-weight:700;color:#8898aa;letter-spacing:.05em;margin-bottom:7px">DESCRI&Ccedil;&Atilde;O DA IA</div>';
+      h += '<textarea onblur="wiz6SalvarResumoSub(' + idx + ',\'' + subNome.replace(/'/g,"\\'") + '\',this.value)" style="width:100%;border:0.5px solid #e2e8f0;border-radius:8px;padding:10px;font-size:12px;color:#1a2540;background:#f8fafc;resize:vertical;min-height:80px;margin-bottom:10px;font-family:inherit;box-sizing:border-box">' + (sd.resumo || '').replace(/</g,'&lt;').replace(/>/g,'&gt;') + '</textarea>';
+    }
+
+    // Tests
+    var tipoSub = 'default';
+    var snL = subNome.toLowerCase();
+    if (snL.indexOf('banheiro') >= 0) tipoSub = 'banheiro';
+    else if (snL.indexOf('closet') >= 0) tipoSub = 'closet';
+    else if (snL.indexOf('dorm') >= 0 || snL.indexOf('suite') >= 0 || snL.indexOf('su\u00EDte') >= 0) tipoSub = 'suite';
+    var testesMapSub = {
+      'suite':    [{k:'porta',n:'Porta &mdash; ma&ccedil;aneta e fechadura'},{k:'chaves',n:'Chaves da porta'},{k:'tomadas',n:'Tomadas e interruptores'},{k:'ac',n:'Ar condicionado'},{k:'janela',n:'Janela &mdash; abre, fecha e trava'}],
+      'banheiro': [{k:'torneira',n:'Torneira &mdash; abre e fecha'},{k:'chuveiro',n:'Chuveiro &mdash; press&atilde;o e temperatura'},{k:'descarga',n:'Descarga &mdash; funciona'},{k:'ralo',n:'Ralo &mdash; escoa bem'},{k:'iluminacao',n:'Ilumina&ccedil;&atilde;o'}],
+      'closet':   [{k:'porta',n:'Porta &mdash; abre e fecha'},{k:'iluminacao',n:'Ilumina&ccedil;&atilde;o'}],
+      'default':  [{k:'tomadas',n:'Tomadas e interruptores'},{k:'iluminacao',n:'Ilumina&ccedil;&atilde;o'},{k:'porta',n:'Porta &mdash; chave e fechadura'}]
+    };
+    var testes = (testesMapSub[tipoSub] || testesMapSub['default']).concat(sd.testesExtras || []);
+    var testesSalvos = sd.testes || {};
+
+    h += '<div style="font-size:10px;font-weight:700;color:#8898aa;letter-spacing:.05em;margin-bottom:7px">VERIFICA&Ccedil;&Otilde;ES T&Eacute;CNICAS</div>';
+    h += '<div style="background:#f8fafc;border-radius:8px;padding:8px 10px;margin-bottom:10px">';
+    testes.forEach(function(t) {
+      var val = testesSalvos[t.k] || '';
+      h += '<div style="display:flex;align-items:center;padding:6px 0;border-bottom:0.5px solid #f1f5f9">';
+      h += '<span style="flex:1;font-size:11px;color:#1a2540">' + t.n + '</span>';
+      h += '<div style="display:flex;gap:4px">';
+      var opts = [
+        {v:'',   l:'\u2014',  sel:'background:#e2e8f0;color:#475569',  def:'background:#f8fafc;color:#94a3b8;border:0.5px solid #e2e8f0'},
+        {v:'ok', l:'OK', sel:'background:#16a34a;color:#fff',  def:'background:#f0fdf4;color:#166534;border:0.5px solid #bbf7d0'},
+        {v:'nok',l:'NOK',sel:'background:#ef4444;color:#fff',  def:'background:#fef2f2;color:#991b1b;border:0.5px solid #fca5a5'},
+        {v:'na', l:'N/A',sel:'background:#6b7280;color:#fff',  def:'background:#f8fafc;color:#94a3b8;border:0.5px solid #e2e8f0'}
+      ];
+      opts.forEach(function(o) {
+        var isActive = val === o.v;
+        h += '<button onclick="wiz6TesteSub(' + idx + ',\'' + subNome.replace(/'/g,"\\'") + '\',\'' + t.k + '\',\'' + o.v + '\')" style="font-size:10px;padding:3px 7px;border-radius:10px;border:none;cursor:pointer;' + (isActive ? o.sel : o.def) + '">' + o.l + '</button>';
+      });
+      h += '</div></div>';
+      // Obs field for this test
+      var obsVal = testesSalvos[t.k + '_obs'] || '';
+      h += '<div style="padding:0 0 4px 0"><input type="text" placeholder="obs..." value="' + (obsVal || '').replace(/"/g,'&quot;') + '" onblur="wiz6TesteObsSub(' + idx + ',\'' + subNome.replace(/'/g,"\\'") + '\',\'' + t.k + '\',this.value)" style="width:100%;font-size:10px;color:#64748b;border:none;border-bottom:0.5px solid #f1f5f9;padding:3px 0;background:transparent;outline:none;font-family:inherit"/></div>';
+    });
+    h += '</div>';
+
+    // General observation
+    h += '<div style="font-size:10px;font-weight:700;color:#8898aa;letter-spacing:.05em;margin-bottom:7px">OBSERVA&Ccedil;&Atilde;O GERAL</div>';
+    h += '<textarea placeholder="Observa&ccedil;&atilde;o sobre ' + subNome + ' (opcional)..." onblur="wiz6SalvarObsSub(' + idx + ',\'' + subNome.replace(/'/g,"\\'") + '\',this.value)" style="width:100%;border:0.5px solid #e2e8f0;border-radius:8px;padding:8px 10px;font-size:11px;color:#475569;background:#f8fafc;resize:none;font-family:inherit;box-sizing:border-box;min-height:44px">' + (sd.obs || '').replace(/</g,'&lt;').replace(/>/g,'&gt;') + '</textarea>';
+
+    h += '</div></div>'; // close body and sub-block
+  });
+
+  // Add sub-ambiente button
+  h += '<div style="padding:12px 16px;border-top:0.5px solid #e2e8f0">';
+  h += '<button onclick="wiz6AddSubAmb(' + idx + ')" style="width:100%;background:none;border:0.5px dashed #cbd5e1;border-radius:8px;padding:9px;font-size:12px;color:#8898aa;cursor:pointer">+ Adicionar sub-ambiente</button>';
+  h += '</div>';
+
+  return h;
+}
+
+// === Auxiliary functions for suite sub-ambientes ===
+
+function wiz6AddFotosSub(input, idx, subNome) {
+  var files = input.files;
+  if (!files || !files.length) return;
+  var sd = wizard.itensData[idx].subs[subNome];
+  if (!sd) { sd = {fotos:[], testes:{}, jaAnalisou:false, resumo:'', obs:'', testesExtras:[]}; wizard.itensData[idx].subs[subNome] = sd; }
+  var jaAnalisou = sd.jaAnalisou || false;
+  Array.from(files).forEach(function(file) {
+    var reader = new FileReader();
+    reader.onload = function(e) {
+      var dataUrl = e.target.result;
+      var base64 = dataUrl.split(',')[1];
+      sd.fotos.push({
+        preview: dataUrl,
+        base64: base64,
+        mime: file.type || 'image/jpeg',
+        nome: file.name,
+        novaAposAnÃ¡lise: jaAnalisou
+      });
+      wiz6RenderAmbCard(_wiz6AmbIdx);
+    };
+    reader.readAsDataURL(file);
+  });
+  input.value = '';
+}
+
+function wiz6RemoverFotoSub(idx, subNome, fi) {
+  var sd = wizard.itensData[idx] && wizard.itensData[idx].subs && wizard.itensData[idx].subs[subNome];
+  if (sd && sd.fotos) { sd.fotos.splice(fi, 1); wiz6RenderAmbCard(_wiz6AmbIdx); }
+}
+
+function wiz6AnalisarBatchSub(idx, subNome, si) {
+  var sd = wizard.itensData[idx].subs[subNome];
+  if (!sd || !sd.fotos || sd.fotos.length === 0) return;
+  var fotos = sd.fotos;
+  var statusEl = document.getElementById('wiz6-ai-status-sub-' + idx + '-' + si);
+  if (statusEl) {
+    statusEl.style.display = 'block';
+    statusEl.innerHTML = '\u23f3 IA analisando ' + fotos.length + ' foto' + (fotos.length !== 1 ? 's' : '') + ' de ' + subNome + '... aguarde.';
+  }
+  var MAX_FOTOS_IA = 18;
+  var fotosParaIA = fotos;
+  if (fotos.length > MAX_FOTOS_IA) {
+    fotosParaIA = [];
+    var step = fotos.length / MAX_FOTOS_IA;
+    for (var fi = 0; fi < MAX_FOTOS_IA; fi++) fotosParaIA.push(fotos[Math.floor(fi * step)]);
+  }
+  var imagens = fotosParaIA.map(function(f) {
+    return {base64: f.base64, mime_type: f.mime || 'image/jpeg'};
+  });
+  fetch('/api/analisar-batch', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({
+      imagens: imagens,
+      ambiente: subNome,
+      tipo_vistoria: (typeof wizard !== 'undefined' && wizard.tipo) || 'entrada'
+    })
+  })
+  .then(function(resp) { return resp.json(); })
+  .then(function(dados) {
+    sd.resumo = dados.resumo || '';
+    sd.jaAnalisou = true;
+    sd.estado_geral = dados.estado_geral || 'Bom';
+    wiz6RenderAmbCard(_wiz6AmbIdx);
+    wiz6AtualizarProgress();
+  })
+  .catch(function(err) {
+    console.error('Erro batch sub:', err);
+    statusEl = document.getElementById('wiz6-ai-status-sub-' + idx + '-' + si);
+    if (statusEl) { statusEl.innerHTML = '\u26a0 Erro ao analisar. Tente novamente.'; statusEl.style.background = '#fef2f2'; statusEl.style.color = '#991b1b'; }
+    sd.jaAnalisou = false;
+    wiz6RenderAmbCard(_wiz6AmbIdx);
+  });
+}
+
+function wiz6TesteSub(idx, subNome, key, val) {
+  var sd = wizard.itensData[idx] && wizard.itensData[idx].subs && wizard.itensData[idx].subs[subNome];
+  if (sd) { if (!sd.testes) sd.testes = {}; sd.testes[key] = val; wiz6RenderAmbCard(_wiz6AmbIdx); }
+}
+
+function wiz6TesteObsSub(idx, subNome, key, val) {
+  var sd = wizard.itensData[idx] && wizard.itensData[idx].subs && wizard.itensData[idx].subs[subNome];
+  if (sd) { if (!sd.testes) sd.testes = {}; sd.testes[key + '_obs'] = val; }
+}
+
+function wiz6SalvarResumoSub(idx, subNome, val) {
+  var sd = wizard.itensData[idx] && wizard.itensData[idx].subs && wizard.itensData[idx].subs[subNome];
+  if (sd) sd.resumo = val;
+}
+
+function wiz6SalvarObsSub(idx, subNome, val) {
+  var sd = wizard.itensData[idx] && wizard.itensData[idx].subs && wizard.itensData[idx].subs[subNome];
+  if (sd) sd.obs = val;
+}
+
+function wiz6AddSubAmb(idx) {
+  var nome = prompt('Nome do sub-ambiente:');
+  if (!nome || !nome.trim()) return;
+  nome = nome.trim();
+  var d = wizard.itensData[idx];
+  if (!d.subAmbientes) d.subAmbientes = [];
+  if (!d.subs) d.subs = {};
+  d.subAmbientes.push(nome);
+  d.subs[nome] = {fotos:[], testes:{}, jaAnalisou:false, resumo:'', obs:'', testesExtras:[]};
+  wiz6RenderAmbCard(_wiz6AmbIdx);
+}
+
+function wiz6AddFotos(input, ambIdx) {
   var files = input.files;
   if (!files || !files.length) return;
   if (!wizard.itensData[ambIdx]) wizard.itensData[ambIdx] = {fotos:[], testes:{}, obs:'', resumo:'', jaAnalisou:false};
