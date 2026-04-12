@@ -4728,35 +4728,77 @@ if (typeof initAmbientes === 'function') initAmbientes();
       for (var _ri = 0; _ri < _rooms.length; _ri++) {
         var _rN = _rooms[_ri];
         var _rd = (wizard.itensData && wizard.itensData[_ri]) || {};
-        // Suite review: render sub-ambientes
+        // Suite review: render sub-ambientes as individual room cards
         if (_rd.isSuite && _rd.subs) {
-          var _stf = 0;
-          (_rd.subAmbientes || []).forEach(function(_sn) { _stf += ((_rd.subs[_sn] || {}).fotos || []).length; });
-          h += '<div style="border:1px solid #e2e8f0;border-radius:8px;padding:12px;margin-bottom:12px;background:#fafbfc">';
-          h += '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">';
-          h += '<div style="font-size:13px;font-weight:700;color:#0f172a">' + _esc(_rN) + ' (Su\u00EDte)</div>';
-          h += '<div style="font-size:11px;color:#64748b">' + _stf + ' foto' + (_stf === 1 ? '' : 's') + '</div>';
-          h += '</div>';
-          (_rd.subAmbientes || []).forEach(function(_sn) {
+          (_rd.subAmbientes || []).forEach(function(_sn, _si) {
             var _sd = _rd.subs[_sn] || {};
             var _sf = _sd.fotos || [];
-            h += '<div style="border:0.5px solid #cbd5e1;border-radius:6px;padding:10px;margin-bottom:8px;background:#fff">';
-            h += '<div style="font-size:12px;font-weight:600;color:#475569;margin-bottom:6px">' + _esc(_sn) + '</div>';
+            var _sTst = _sd.testes || {};
+            var _sXtr = _sd.testesExtras || [];
+            // Each sub-ambiente rendered as a full room card
+            h += '<div style="border:1px solid #e2e8f0;border-radius:8px;padding:12px;margin-bottom:12px;background:#fafbfc">';
+            h += '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">';
+            h += '<div style="font-size:13px;font-weight:700;color:#0f172a">' + _esc(_rN) + ' \u2014 ' + _esc(_sn) + '</div>';
+            h += '<div style="font-size:11px;color:#64748b">' + _sf.length + ' foto' + (_sf.length === 1 ? '' : 's') + '</div>';
+            h += '</div>';
+            // Photos grid - same as regular rooms with numbering
             if (_sf.length > 0) {
-              h += '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(70px,1fr));gap:4px;margin-bottom:8px">';
+              h += '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(90px,1fr));gap:6px;margin-bottom:10px">';
               for (var _sfi = 0; _sfi < _sf.length; _sfi++) {
                 var _ssrc = _sf[_sfi].preview || (_sf[_sfi].base64 ? ('data:' + (_sf[_sfi].mime || 'image/jpeg') + ';base64,' + _sf[_sfi].base64) : '');
-                if (_ssrc) h += '<div style="aspect-ratio:1;overflow:hidden;border-radius:4px;border:0.5px solid #e2e8f0"><img src="' + _ssrc + '" style="width:100%;height:100%;object-fit:cover"/></div>';
+                if (_ssrc) {
+                  h += '<div style="position:relative;aspect-ratio:1;overflow:hidden;border-radius:6px;border:1px solid #cbd5e1;background:#f1f5f9">';
+                  h += '<img src="' + _ssrc + '" style="width:100%;height:100%;object-fit:cover;display:block"/>';
+                  h += '<div style="position:absolute;left:3px;top:3px;background:rgba(15,23,42,0.75);color:#fff;padding:1px 6px;border-radius:4px;font-size:10px;font-weight:600">' + (_sfi + 1) + '</div>';
+                  h += '</div>';
+                }
               }
               h += '</div>';
             }
-            h += '<label style="display:block;font-size:10px;color:#64748b;font-weight:600;margin-bottom:2px">Resumo</label>';
-            h += '<textarea rows="3" style="width:100%;padding:6px;border:0.5px solid #cbd5e1;border-radius:4px;font-size:11px;background:#f8fafc;resize:vertical;box-sizing:border-box">' + _esc(_sd.resumo || '') + '</textarea>';
+            // Synopsis - same as regular rooms
+            h += '<div style="margin-bottom:10px"><label style="display:block;font-size:11px;color:#64748b;font-weight:600;margin-bottom:3px">S\u00edntese / Resumo do ambiente</label>';
+            h += '<textarea data-kind="resumoSub" data-aidx="' + _ri + '" data-sub="' + _esc(_sn) + '" rows="5" style="width:100%;padding:7px 9px;border:1px solid #cbd5e1;border-radius:6px;font-size:12px;background:#fff;resize:vertical">' + _esc(_sd.resumo || '') + '</textarea></div>';
+            // Verifica\u00e7\u00f5es t\u00e9cnicas - same layout as regular rooms
+            var _sTKeys = [];
+            var _sSeen = {};
+            for (var _ssk in _stdNomes) {
+              if (_sTst.hasOwnProperty(_ssk)) { _sTKeys.push({k:_ssk, n:_stdNomes[_ssk]}); _sSeen[_ssk] = 1; }
+            }
+            for (var _sex = 0; _sex < _sXtr.length; _sex++) {
+              if (!_sSeen[_sXtr[_sex].k]) { _sTKeys.push({k:_sXtr[_sex].k, n:_sXtr[_sex].n || _sXtr[_sex].k}); _sSeen[_sXtr[_sex].k] = 1; }
+            }
+            for (var _stk in _sTst) {
+              if (_stk.length > 4 && _stk.slice(-4) === '_obs') continue;
+              if (!_sSeen[_stk]) { _sTKeys.push({k:_stk, n:_stk}); _sSeen[_stk] = 1; }
+            }
+            if (_sTKeys.length > 0) {
+              h += '<div style="font-size:11px;color:#64748b;font-weight:600;margin-bottom:5px">Verifica\u00e7\u00f5es t\u00e9cnicas</div>';
+              h += '<div style="display:flex;flex-direction:column;gap:6px;margin-bottom:10px">';
+              for (var _stki = 0; _stki < _sTKeys.length; _stki++) {
+                var _stk2 = _sTKeys[_stki].k;
+                var _stn = _sTKeys[_stki].n;
+                var _sStat = _sTst[_stk2] || '';
+                if (_sStat === 'nao') _sStat = 'nok';
+                var _sObsV = _sTst[_stk2 + '_obs'] || '';
+                h += '<div style="display:grid;grid-template-columns:1.2fr 90px 2fr;gap:6px;align-items:center;padding:4px 0">';
+                h += '<div style="font-size:12px;color:#334155">' + _esc(_stn) + '</div>';
+                h += '<select data-kind="testeStatusSub" data-aidx="' + _ri + '" data-sub="' + _esc(_sn) + '" data-tk="' + _esc(_stk2) + '" style="padding:5px 7px;border:1px solid #cbd5e1;border-radius:5px;font-size:11px;background:#fff">';
+                h += '<option value=""' + (_sStat === '' ? ' selected' : '') + '>\u2014</option>';
+                h += '<option value="ok"' + (_sStat === 'ok' ? ' selected' : '') + '>OK</option>';
+                h += '<option value="nok"' + (_sStat === 'nok' ? ' selected' : '') + '>NOK</option>';
+                h += '<option value="nt"' + (_sStat === 'nt' ? ' selected' : '') + '>NT</option>';
+                h += '<option value="na"' + (_sStat === 'na' ? ' selected' : '') + '>N/A</option>';
+                h += '</select>';
+                h += '<input type="text" data-kind="testeObsSub" data-aidx="' + _ri + '" data-sub="' + _esc(_sn) + '" data-tk="' + _esc(_stk2) + '" value="' + _esc(_sObsV) + '" placeholder="observa\u00e7\u00e3o" style="padding:5px 7px;border:1px solid #cbd5e1;border-radius:5px;font-size:11px;background:#fff"/>';
+                h += '</div>';
+              }
+              h += '</div>';
+            }
+            // Observa\u00e7\u00f5es gerais - same as regular rooms
+            h += '<div><label style="display:block;font-size:11px;color:#64748b;font-weight:600;margin-bottom:3px">Observa\u00e7\u00f5es gerais</label>';
+            h += '<textarea data-kind="obsSub" data-aidx="' + _ri + '" data-sub="' + _esc(_sn) + '" rows="2" style="width:100%;padding:7px 9px;border:1px solid #cbd5e1;border-radius:6px;font-size:12px;background:#fff;resize:vertical">' + _esc(_sd.obs || '') + '</textarea></div>';
             h += '</div>';
           });
-          h += '<label style="display:block;font-size:11px;color:#64748b;font-weight:600;margin-bottom:3px">Observa\u00e7\u00f5es gerais</label>';
-          h += '<textarea data-kind="obs" data-aidx="' + _ri + '" rows="2" style="width:100%;padding:7px 9px;border:1px solid #cbd5e1;border-radius:6px;font-size:12px;background:#fff;resize:vertical">' + _esc(_rd.obs || '') + '</textarea>';
-          h += '</div>';
           continue;
         }
 
