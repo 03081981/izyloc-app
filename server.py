@@ -1373,6 +1373,10 @@ class GeneratePDFHandler(BaseHandler):
                     room_dict['verificacoes_obs'] = amb.get('verificacoesObs', {})
                     room_dict['testes_nomes'] = amb.get('testesNomes', {})
                     room_dict['observacoes'] = amb.get('observacoes', '')
+                    # Pass suite data through to pdf_service
+                    if amb.get('isSuite'):
+                        room_dict['isSuite'] = True
+                        room_dict['subAmbientes'] = amb.get('subAmbientes', [])
                 rooms_list.append(room_dict)
             sigs = conn.execute(
                 'SELECT * FROM signatures WHERE inspection_id=?', (insp_id,)).fetchall()
