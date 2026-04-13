@@ -1385,6 +1385,7 @@ class GeneratePDFHandler(BaseHandler):
                         room_dict['inventarioExtras'] = amb.get('inventarioExtras', [])
                     if amb.get('inventarioNomes'):
                         room_dict['inventarioNomes'] = amb.get('inventarioNomes', [])
+                    print('[DEBUG] room inventario keys:', list(room_dict.get('inventario', {}).keys())[:5])
                 rooms_list.append(room_dict)
             sigs = conn.execute(
                 'SELECT * FROM signatures WHERE inspection_id=?', (insp_id,)).fetchall()
