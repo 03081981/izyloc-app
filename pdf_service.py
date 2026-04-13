@@ -1495,31 +1495,34 @@ def generate_pdf(inspection_data: dict, rooms_data: list,
                     _expanded.append(_main_amb)
                 for _sub in _rd['subAmbientes']:
                     _sub_nome = _sub.get('nome', '')
+                    _resumo = _sub.get('resumo', '')
                     # Get photos for this sub-ambiente from the original ambientes_json data
                     _sub_fotos = _foto_lookup.get(_sub_nome, [])
                     _sub_display = f'{_sub_nome} ({_suite_name})' if not _rd.get('isSuite') else f'{_suite_name} \u2014 {_sub_nome}'
+                    # Build itens from photos
+                    _sub_itens = []
+                    if _sub_fotos:
+                        for _fi, _fb in enumerate(_sub_fotos):
+                            _sub_itens.append({
+                                'nome': _sub_nome,
+                                'estado': '',
+                                'descricao_ia': _resumo if _fi == 0 else '',
+                                'observacao': '',
+                                'fotos': [_fb] if _fb else [],
+                            })
+                    # Ensure resumo is always present even without photos
+                    if not _sub_itens and _resumo:
+                        _sub_itens = [{'nome': _sub_nome, 'estado': '', 'descricao_ia': _resumo, 'observacao': '', 'fotos': []}]
+                    elif _sub_itens and _resumo and not _sub_itens[0].get('descricao_ia'):
+                        _sub_itens[0]['descricao_ia'] = _resumo
                     _sub_amb = {
                         'nome': _sub_display,
-                        'itens': [],
+                        'itens': _sub_itens,
                         'verificacoes': _sub.get('verificacoes', {}),
                         'verificacoes_obs': _sub.get('verificacoesObs', {}),
                         'testes_nomes': _sub.get('testesNomes', {}),
                         'observacoes_gerais': _safe(_sub.get('observacoes', ''), ''),
                     }
-                    _resumo = _sub.get('resumo', '')
-                    if _sub_fotos:
-                        # Create one item per photo, first item gets resumo and estado
-                        _sub_amb['itens'] = []
-                        for _fi, _fb in enumerate(_sub_fotos):
-                            _sub_amb['itens'].append({
-                                'nome': _sub_nome,
-                                'estado': '' if _fi > 0 else '',
-                                'descricao_ia': _resumo if _fi == 0 else '',
-                                'observacao': '',
-                                'fotos': [_fb] if _fb else [],
-                            })
-                    elif _resumo:
-                        _sub_amb['itens'] = [{'nome': _sub_nome, 'estado': '', 'descricao_ia': _resumo, 'observacao': '', 'fotos': []}]
                     _expanded.append(_sub_amb)
             else:
                 _expanded.append(_amb)
