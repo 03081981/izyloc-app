@@ -3912,7 +3912,7 @@ async function generatePDF() {
       (_d.testesExtras||[]).forEach(function(ex){_tNomes[ex.k]=ex.n;});
       var _stdNomes={'porta':'Porta — maçaneta e fechadura','chaves':'Chaves da porta','tomadas':'Tomadas e interruptores','ac':'Ar condicionado','janela':'Janela — abre, fecha e trava','torneira':'Torneira — abre e fecha','chuveiro':'Chuveiro — pressão e temperatura','descarga':'Descarga — funciona','ralo':'Ralo — escoa bem','iluminacao':'Iluminação','piso':'Piso','teto':'Teto','parede':'Parede','janelas':'Janelas','portas':'Portas'};
       for(var _sk in _stdNomes){if(!_tNomes[_sk])_tNomes[_sk]=_stdNomes[_sk];}
-      if (_d.isSuite && _d.subs) {
+      if ((_d.isSuite || (_d.subAmbientes && _d.subAmbientes.length > 0)) && _d.subs) {
         var _subAmbs = [];
         (_d.subAmbientes || []).forEach(function(_subN) {
           var _sd = _d.subs[_subN] || {};
@@ -3946,7 +3946,7 @@ async function generatePDF() {
     for(var _bi=0;_bi<(wizard.selectedRooms||[]).length;_bi++){
       var _bd=(wizard.itensData&&wizard.itensData[_bi])||{};
       var _bName=wizard.selectedRooms[_bi];
-      if(_bd.isSuite&&_bd.subs){
+      if((_bd.isSuite||(_bd.subAmbientes&&_bd.subAmbientes.length>0))&&_bd.subs){
         // Suite: collect photos from all sub-ambientes
         var _sFotos=[];
         (_bd.subAmbientes||[]).forEach(function(_sn){
@@ -4729,7 +4729,7 @@ if (typeof initAmbientes === 'function') initAmbientes();
         var _rN = _rooms[_ri];
         var _rd = (wizard.itensData && wizard.itensData[_ri]) || {};
         // Suite review: render sub-ambientes as individual room cards
-        if (_rd.isSuite && _rd.subs) {
+        if ((_rd.isSuite || (_rd.subAmbientes && _rd.subAmbientes.length > 0)) && _rd.subs) {
           (_rd.subAmbientes || []).forEach(function(_sn, _si) {
             var _sd = _rd.subs[_sn] || {};
             var _sf = _sd.fotos || [];
@@ -6634,7 +6634,6 @@ function wiz6ConfirmarSubAmb(idx) {
   if (!d) d = wizard.itensData[idx] = {};
   if (!d.subAmbientes) d.subAmbientes = [];
   if (!d.subs) d.subs = {};
-  d.isSuite = true;
   d.subAmbientes.push(nome);
   d.subs[nome] = {fotos:[], testes:{}, jaAnalisou:false, resumo:'', obs:'', testesExtras:[]};
   wiz6RenderAtual();
