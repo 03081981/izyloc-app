@@ -4613,6 +4613,33 @@ if (typeof initAmbientes === 'function') initAmbientes();
       var rc = document.getElementById('rev-content');
       if (!rc) return;
 
+      // Collect locadores/locatarios from Etapa 4 DOM into global arrays
+      window._wiz7Locs = [];
+      document.querySelectorAll('#locadores-container .person-block').forEach(function(b) {
+        var x = b.id.replace('loc-block-','');
+        window._wiz7Locs.push({
+          name: (document.getElementById('loc-name-'+x)||{}).value||'',
+          cpf: (document.getElementById('loc-cpf-'+x)||{}).value||'',
+          rg: (document.getElementById('loc-rg-'+x)||{}).value||'',
+          phone: (document.getElementById('loc-phone-'+x)||{}).value||'',
+          email: (document.getElementById('loc-email-'+x)||{}).value||''
+        });
+      });
+      if (window._wiz7Locs.length === 0) window._wiz7Locs.push({name:'',cpf:'',rg:'',phone:'',email:''});
+      window._wiz7Tens = [];
+      document.querySelectorAll('#locat\\u00e1rios-container .person-block').forEach(function(b) {
+        var prefix = b.id.indexOf('locat-block-') === 0 ? 'locat' : 'ten';
+        var x = b.id.replace('locat-block-','').replace('ten-block-','');
+        window._wiz7Tens.push({
+          name: (document.getElementById(prefix+'-name-'+x)||{}).value||'',
+          cpf: (document.getElementById(prefix+'-cpf-'+x)||{}).value||'',
+          rg: (document.getElementById(prefix+'-rg-'+x)||{}).value||'',
+          phone: (document.getElementById(prefix+'-phone-'+x)||{}).value||'',
+          email: (document.getElementById(prefix+'-email-'+x)||{}).value||''
+        });
+      });
+      if (window._wiz7Tens.length === 0) window._wiz7Tens.push({name:'',cpf:'',rg:'',phone:'',email:''});
+
       // Populate _fotoStore from wizard.itensData (batch flow) - kept from original
       if (typeof _wiz6Ambientes !== 'undefined' && wizard && wizard.itensData) {
         if (!window._fotoStore) window._fotoStore = {};
@@ -4687,60 +4714,8 @@ if (typeof initAmbientes === 'function') initAmbientes();
       // Card 3 - Partes envolvidas
       h += '<div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:14px;margin-bottom:12px">';
       h += '<div style="font-size:14px;font-weight:700;color:#0f172a;margin-bottom:10px">3. Partes envolvidas</div>';
-      // Locadores - collect from DOM
-      var _locArr7 = [];
-      document.querySelectorAll('[id^="loc-name-"]').forEach(function(el) {
-        var _lid = el.id.replace('loc-name-', '');
-        _locArr7.push({
-          idx: _lid,
-          nome: (document.getElementById('loc-name-'+_lid)||{}).value||'',
-          cpf: (document.getElementById('loc-cpf-'+_lid)||{}).value||'',
-          rg: (document.getElementById('loc-rg-'+_lid)||{}).value||'',
-          telefone: (document.getElementById('loc-phone-'+_lid)||{}).value||'',
-          email: (document.getElementById('loc-email-'+_lid)||{}).value||''
-        });
-      });
-      h += '<div style="font-size:11px;font-weight:600;color:#8898aa;letter-spacing:.05em;text-transform:uppercase;margin-bottom:8px">LOCADOR' + (_locArr7.length > 1 ? '(ES)' : '') + '</div>';
-      if (_locArr7.length === 0) {
-        h += '<div style="font-size:12px;color:#94a3b8;margin-bottom:10px">Nenhum locador informado</div>';
-      }
-      _locArr7.forEach(function(_loc7, _li7) {
-        h += '<div style="background:#f8fafc;border:0.5px solid #e2e8f0;border-radius:8px;padding:10px 12px;margin-bottom:8px">';
-        if (_locArr7.length > 1) h += '<div style="font-size:11px;font-weight:600;color:#2d7dd2;margin-bottom:6px">Locador ' + (_li7+1) + '</div>';
-        h += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">';
-        h += '<div style="grid-column:1/span 2">' + _inp('Nome', 'loc-name-' + _loc7.idx) + '</div>';
-        if (_loc7.cpf) h += '<div>' + _inp('CPF', 'loc-cpf-' + _loc7.idx) + '</div>';
-        if (_loc7.rg) h += '<div>' + _inp('RG', 'loc-rg-' + _loc7.idx) + '</div>';
-        if (_loc7.telefone) h += '<div>' + _inp('Telefone', 'loc-phone-' + _loc7.idx, 'tel') + '</div>';
-        if (_loc7.email) h += '<div>' + _inp('E-mail', 'loc-email-' + _loc7.idx, 'email') + '</div>';
-        h += '</div></div>';
-      });
-      // Locatarios - collect from DOM
-      var _tenArr7 = [];
-      document.querySelectorAll('[id^="locat-name-"]').forEach(function(el) { var _x=el.id.replace('locat-name-',''); _tenArr7.push({prefix:'locat',idx:_x}); });
-      document.querySelectorAll('[id^="ten-name-"]').forEach(function(el) { var _x=el.id.replace('ten-name-',''); _tenArr7.push({prefix:'ten',idx:_x}); });
-      h += '<div style="font-size:11px;font-weight:600;color:#8898aa;letter-spacing:.05em;text-transform:uppercase;margin-bottom:8px;margin-top:12px">LOCAT\u00c1RIO' + (_tenArr7.length > 1 ? '(S)' : '') + '</div>';
-      if (_tenArr7.length === 0) {
-        h += '<div style="font-size:12px;color:#94a3b8;margin-bottom:10px">Nenhum locat\u00e1rio informado</div>';
-      }
-      _tenArr7.forEach(function(_ten7, _ti7) {
-        var _tp7 = _ten7.prefix, _tid7 = _ten7.idx;
-        var _tn = (document.getElementById(_tp7+'-name-'+_tid7)||{}).value||'';
-        var _tc = (document.getElementById(_tp7+'-cpf-'+_tid7)||{}).value||'';
-        var _tr = (document.getElementById(_tp7+'-rg-'+_tid7)||{}).value||'';
-        var _tt = (document.getElementById(_tp7+'-phone-'+_tid7)||{}).value||'';
-        var _te = (document.getElementById(_tp7+'-email-'+_tid7)||{}).value||'';
-        h += '<div style="background:#f8fafc;border:0.5px solid #e2e8f0;border-radius:8px;padding:10px 12px;margin-bottom:8px">';
-        if (_tenArr7.length > 1) h += '<div style="font-size:11px;font-weight:600;color:#2d7dd2;margin-bottom:6px">Locat\u00e1rio ' + (_ti7+1) + '</div>';
-        h += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">';
-        h += '<div style="grid-column:1/span 2">' + _inp('Nome', _tp7+'-name-'+_tid7) + '</div>';
-        if (_tc) h += '<div>' + _inp('CPF', _tp7+'-cpf-'+_tid7) + '</div>';
-        if (_tr) h += '<div>' + _inp('RG', _tp7+'-rg-'+_tid7) + '</div>';
-        if (_tt) h += '<div>' + _inp('Telefone', _tp7+'-phone-'+_tid7, 'tel') + '</div>';
-        if (_te) h += '<div>' + _inp('E-mail', _tp7+'-email-'+_tid7, 'email') + '</div>';
-        h += '</div></div>';
-      });
-        h += '</div>';
+      h += '<div id="wiz7-partes-container"></div>';
+      h += '</div>';
 
         // Card 4 - Ambientes
       var _stdNomes = {'porta':'Porta — maçaneta e fechadura','chaves':'Chaves da porta','tomadas':'Tomadas e interruptores','ac':'Ar condicionado','janela':'Janela — abre, fecha e trava','torneira':'Torneira — abre e fecha','chuveiro':'Chuveiro — pressão e temperatura','descarga':'Descarga — funciona','ralo':'Ralo — escoa bem','iluminacao':'Iluminação','piso':'Piso','teto':'Teto','parede':'Parede','janelas':'Janelas','portas':'Portas'};
@@ -4929,6 +4904,7 @@ if (typeof initAmbientes === 'function') initAmbientes();
       h += '</div>';
 
       rc.innerHTML = h;
+      wiz7RenderPartes();
 
       function _hChg(ev) {
         var t = ev.target;
@@ -5719,6 +5695,99 @@ function renderAmbientesPorTipo() {
 }
 // ========== FIM SISTEMA DE AMBIENTES ==========
 
+
+// ── ETAPA 7: PARTES ENVOLVIDAS (editável) ───────────────
+function wiz7BuildPartesHtml() {
+  var locs = window._wiz7Locs || [{name:'',cpf:'',rg:'',phone:'',email:''}];
+  var tens = window._wiz7Tens || [{name:'',cpf:'',rg:'',phone:'',email:''}];
+  function _e(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+  var h = '';
+  // LOCADORES
+  h += '<div style="font-size:11px;font-weight:600;color:#8898aa;letter-spacing:.05em;text-transform:uppercase;margin-bottom:8px">LOCADOR' + (locs.length > 1 ? '(ES)' : '') + '</div>';
+  locs.forEach(function(loc, i) {
+    h += '<div style="background:#fff;border:0.5px solid #e2e8f0;border-radius:10px;padding:14px;margin-bottom:10px">';
+    h += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">';
+    h += '<div style="display:flex;align-items:center;gap:8px">';
+    h += '<div style="width:22px;height:22px;border-radius:50%;background:#2d7dd2;color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center">' + (i+1) + '</div>';
+    h += '<span style="font-size:13px;font-weight:600;color:#1a2540">Locador</span>';
+    h += '</div>';
+    if (i > 0) h += '<button onclick="wiz7RemoverLoc(' + i + ')" style="background:none;border:none;color:#ef4444;font-size:18px;cursor:pointer;line-height:1">×</button>';
+    h += '</div>';
+    h += '<div style="margin-bottom:10px"><div style="font-size:11px;color:#8898aa;margin-bottom:4px">Nome completo</div>';
+    h += '<input type="text" value="' + _e(loc.name) + '" onblur="wiz7SalvarLoc(' + i + ',\x27name\x27,this.value)" placeholder="Nome do locador" style="width:100%;padding:10px 12px;border:0.5px solid #e2e8f0;border-radius:8px;font-size:13px;box-sizing:border-box"></div>';
+    h += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">';
+    h += '<div><div style="font-size:11px;color:#8898aa;margin-bottom:4px">CPF</div><input type="text" value="' + _e(loc.cpf) + '" onblur="wiz7SalvarLoc(' + i + ',\x27cpf\x27,this.value)" placeholder="000.000.000-00" style="width:100%;padding:10px 12px;border:0.5px solid #e2e8f0;border-radius:8px;font-size:13px;box-sizing:border-box"></div>';
+    h += '<div><div style="font-size:11px;color:#8898aa;margin-bottom:4px">RG</div><input type="text" value="' + _e(loc.rg) + '" onblur="wiz7SalvarLoc(' + i + ',\x27rg\x27,this.value)" placeholder="00.000.000-0" style="width:100%;padding:10px 12px;border:0.5px solid #e2e8f0;border-radius:8px;font-size:13px;box-sizing:border-box"></div>';
+    h += '</div>';
+    h += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">';
+    h += '<div><div style="font-size:11px;color:#8898aa;margin-bottom:4px">Telefone</div><input type="text" value="' + _e(loc.phone) + '" onblur="wiz7SalvarLoc(' + i + ',\x27phone\x27,this.value)" placeholder="(00) 00000-0000" style="width:100%;padding:10px 12px;border:0.5px solid #e2e8f0;border-radius:8px;font-size:13px;box-sizing:border-box"></div>';
+    h += '<div><div style="font-size:11px;color:#8898aa;margin-bottom:4px">E-mail</div><input type="text" value="' + _e(loc.email) + '" onblur="wiz7SalvarLoc(' + i + ',\x27email\x27,this.value)" placeholder="email@exemplo.com" style="width:100%;padding:10px 12px;border:0.5px solid #e2e8f0;border-radius:8px;font-size:13px;box-sizing:border-box"></div>';
+    h += '</div></div>';
+  });
+  h += '<button onclick="wiz7AdicionarLoc()" style="display:flex;align-items:center;gap:6px;padding:8px 14px;border:0.5px dashed #2d7dd2;border-radius:20px;background:#f0f7ff;color:#2d7dd2;font-size:12px;font-weight:600;cursor:pointer;margin-bottom:16px">+ Adicionar outro locador</button>';
+  // LOCATARIOS
+  h += '<div style="font-size:11px;font-weight:600;color:#8898aa;letter-spacing:.05em;text-transform:uppercase;margin-bottom:8px;margin-top:4px">LOCATÁRIO' + (tens.length > 1 ? '(S)' : '') + '</div>';
+  tens.forEach(function(ten, i) {
+    h += '<div style="background:#fff;border:0.5px solid #e2e8f0;border-radius:10px;padding:14px;margin-bottom:10px">';
+    h += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">';
+    h += '<div style="display:flex;align-items:center;gap:8px">';
+    h += '<div style="width:22px;height:22px;border-radius:50%;background:#16a34a;color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center">' + (i+1) + '</div>';
+    h += '<span style="font-size:13px;font-weight:600;color:#1a2540">Locatário</span>';
+    h += '</div>';
+    if (i > 0) h += '<button onclick="wiz7RemoverTen(' + i + ')" style="background:none;border:none;color:#ef4444;font-size:18px;cursor:pointer;line-height:1">×</button>';
+    h += '</div>';
+    h += '<div style="margin-bottom:10px"><div style="font-size:11px;color:#8898aa;margin-bottom:4px">Nome completo</div>';
+    h += '<input type="text" value="' + _e(ten.name) + '" onblur="wiz7SalvarTen(' + i + ',\x27name\x27,this.value)" placeholder="Nome do locatário" style="width:100%;padding:10px 12px;border:0.5px solid #e2e8f0;border-radius:8px;font-size:13px;box-sizing:border-box"></div>';
+    h += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">';
+    h += '<div><div style="font-size:11px;color:#8898aa;margin-bottom:4px">CPF</div><input type="text" value="' + _e(ten.cpf) + '" onblur="wiz7SalvarTen(' + i + ',\x27cpf\x27,this.value)" placeholder="000.000.000-00" style="width:100%;padding:10px 12px;border:0.5px solid #e2e8f0;border-radius:8px;font-size:13px;box-sizing:border-box"></div>';
+    h += '<div><div style="font-size:11px;color:#8898aa;margin-bottom:4px">RG</div><input type="text" value="' + _e(ten.rg) + '" onblur="wiz7SalvarTen(' + i + ',\x27rg\x27,this.value)" placeholder="00.000.000-0" style="width:100%;padding:10px 12px;border:0.5px solid #e2e8f0;border-radius:8px;font-size:13px;box-sizing:border-box"></div>';
+    h += '</div>';
+    h += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">';
+    h += '<div><div style="font-size:11px;color:#8898aa;margin-bottom:4px">Telefone</div><input type="text" value="' + _e(ten.phone) + '" onblur="wiz7SalvarTen(' + i + ',\x27phone\x27,this.value)" placeholder="(00) 00000-0000" style="width:100%;padding:10px 12px;border:0.5px solid #e2e8f0;border-radius:8px;font-size:13px;box-sizing:border-box"></div>';
+    h += '<div><div style="font-size:11px;color:#8898aa;margin-bottom:4px">E-mail</div><input type="text" value="' + _e(ten.email) + '" onblur="wiz7SalvarTen(' + i + ',\x27email\x27,this.value)" placeholder="email@exemplo.com" style="width:100%;padding:10px 12px;border:0.5px solid #e2e8f0;border-radius:8px;font-size:13px;box-sizing:border-box"></div>';
+    h += '</div></div>';
+  });
+  h += '<button onclick="wiz7AdicionarTen()" style="display:flex;align-items:center;gap:6px;padding:8px 14px;border:0.5px dashed #16a34a;border-radius:20px;background:#f0fdf4;color:#16a34a;font-size:12px;font-weight:600;cursor:pointer">+ Adicionar outro locatário</button>';
+  return h;
+}
+function wiz7RenderPartes() {
+  var c = document.getElementById('wiz7-partes-container');
+  if (c) c.innerHTML = wiz7BuildPartesHtml();
+}
+function wiz7SalvarLoc(idx, campo, valor) {
+  if (!window._wiz7Locs || !window._wiz7Locs[idx]) return;
+  window._wiz7Locs[idx][campo] = valor;
+  var prefix = 'loc';
+  var el = document.getElementById(prefix + '-' + (campo==='name'?'name':campo==='phone'?'phone':campo) + '-' + idx);
+  if (el) el.value = valor;
+}
+function wiz7SalvarTen(idx, campo, valor) {
+  if (!window._wiz7Tens || !window._wiz7Tens[idx]) return;
+  window._wiz7Tens[idx][campo] = valor;
+  var prefix = 'locat';
+  var el = document.getElementById(prefix + '-' + (campo==='name'?'name':campo==='phone'?'phone':campo) + '-' + idx);
+  if (el) el.value = valor;
+}
+function wiz7AdicionarLoc() {
+  if (!window._wiz7Locs) window._wiz7Locs = [];
+  window._wiz7Locs.push({name:'',cpf:'',rg:'',phone:'',email:''});
+  wiz7RenderPartes();
+}
+function wiz7AdicionarTen() {
+  if (!window._wiz7Tens) window._wiz7Tens = [];
+  window._wiz7Tens.push({name:'',cpf:'',rg:'',phone:'',email:''});
+  wiz7RenderPartes();
+}
+function wiz7RemoverLoc(idx) {
+  if (!window._wiz7Locs || window._wiz7Locs.length <= 1) return;
+  window._wiz7Locs.splice(idx, 1);
+  wiz7RenderPartes();
+}
+function wiz7RemoverTen(idx) {
+  if (!window._wiz7Tens || window._wiz7Tens.length <= 1) return;
+  window._wiz7Tens.splice(idx, 1);
+  wiz7RenderPartes();
+}
 
 // ========== ETAPA 6 — VISTORIA DOS AMBIENTES ==========
 var _wiz6Modo = 'foto';
