@@ -6728,13 +6728,14 @@ function _wiz6RenderSubsBlock(ambIdx, dados) {
       h += '<label style="display:flex;align-items:center;gap:6px;padding:7px 12px;border:0.5px solid #e2e8f0;border-radius:7px;background:#fff;font-size:11px;color:#8898aa;cursor:pointer">+ Adicionar mais fotos<input type="file" accept="image/*" multiple style="display:none" onchange="wiz6AddFotosSub(this,' + ambIdx + ',\'' + subNome.replace(/'/g,"\\\'") + '\')">';
       h += '</label>';
       h += '<button onclick="wiz6AnalisarSub(' + ambIdx + ',\'' + subNome.replace(/'/g,"\\\'") + '\')" style="background:#16a34a;color:#fff;border:none;border-radius:7px;padding:7px 14px;font-size:11px;font-weight:600;cursor:pointer">' + (sd.jaAnalisou ? '\ud83d\udd04 Re-analisar com IA' : '\ud83e\udd16 Analisar com IA') + '</button>';
-      h += '<div id="wiz6-ai-status-sub-' + ambIdx + '-' + _subSi + '" style="display:none"></div>';
-      h += '</div></div>';
+      h += '</div>';
+      h += '<div id="wiz6-ai-status-sub-' + ambIdx + '-' + _subSi + '" style="display:none;margin-top:8px"></div>';
+      h += '</div>';
     }
     // DESCRI\u00c7\u00c3O DA IA
     if (sd.resumo) {
       h += '<div style="font-size:10px;font-weight:700;color:#8898aa;letter-spacing:.05em;margin-bottom:6px">DESCRI\u00c7\u00c3O DA IA \u2014 ' + subNome.toUpperCase() + '</div>';
-      h += '<textarea onblur="wiz6SalvarResumoSub(' + ambIdx + ',\'' + subNome.replace(/'/g,"\\\'") + '\',this.value)" style="width:100%;border:0.5px solid #e2e8f0;border-radius:8px;padding:10px;font-size:12px;color:#1a2540;background:#f8fafc;resize:vertical;min-height:80px;margin-bottom:10px">' + (sd.resumo||'') + '</textarea>';
+      h += '<textarea onblur="wiz6SalvarResumoSub(' + ambIdx + ',\'' + subNome.replace(/'/g,"\\\'") + '\',this.value)" style="width:100%;border:0.5px solid #e2e8f0;border-radius:8px;padding:10px;font-size:12px;color:#1a2540;background:#f8fafc;resize:vertical;min-height:160px;margin-bottom:10px">' + (sd.resumo||'') + '</textarea>';
     }
     // VERIFICA\u00c7\u00d5ES T\u00c9CNICAS
     var tipoSub = subNome.toLowerCase().indexOf('banheiro')>=0?'banheiro':subNome.toLowerCase().indexOf('closet')>=0?'closet':subNome.toLowerCase().indexOf('varanda')>=0?'varanda':'default';
