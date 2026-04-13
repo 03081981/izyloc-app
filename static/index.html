@@ -6575,22 +6575,28 @@ function wiz6AnalisarBatchSub(idx, subNome, si) {
   });
 }
 
-function wiz6TesteSub(idx, subNome, key, val) {
+function wiz6TesteSubClick(idx, subNome, key, val, obsId) {
   if (!wizard.itensData[idx]) return;
   if (!wizard.itensData[idx].subs) return;
   if (!wizard.itensData[idx].subs[subNome]) return;
   var sd = wizard.itensData[idx].subs[subNome];
   if (!sd.testes) sd.testes = {};
   sd.testes[key] = val;
+  var obsEl = document.getElementById(obsId);
+  if (obsEl) obsEl.style.display = val !== 'nt' ? 'block' : 'none';
   wiz6RenderAtual();
+}
+function wiz6TesteSub(idx, subNome, key, val) {
+  wiz6TesteSubClick(idx, subNome, key, val, '');
 }
 
 function wiz6TesteObsSub(idx, subNome, key, val) {
-    var sd = wizard.itensData[idx].subs[subNome];
-    if (!sd) return;
-    if (!sd.testesObs) sd.testesObs = {};
-    sd.testesObs[key] = val;
-  }
+  if (!wizard.itensData[idx] || !wizard.itensData[idx].subs) return;
+  var sd = wizard.itensData[idx].subs[subNome];
+  if (!sd) return;
+  if (!sd.testes) sd.testes = {};
+  sd.testes[key + '_obs'] = val;
+}
 function wiz6AdicionarTesteSub(ambIdx, subNome) {
   var nome = prompt('Nome do teste funcional:');
   if (!nome || !nome.trim()) return;
@@ -6679,109 +6685,109 @@ function wiz6ConfirmarSubAmb(idx) {
 }
 
 function _wiz6RenderSubsBlock(ambIdx, dados) {
-  var subNomes = dados.subAmbientes || [];
-  var subs = dados.subs || {};
-  if (!subNomes.length) return '';
-  var h = '<div style="border-top:0.5px solid #e2e8f0;margin:14px 0"></div>';
-  h += '<div style="font-size:10px;font-weight:600;color:#8898aa;letter-spacing:0.5px;margin-bottom:8px">SUB-AMBIENTES</div>';
-  subNomes.forEach(function(subNome, si) {
-    var sd = subs[subNome];
-    if (!sd) { sd = {fotos:[], testes:{}, jaAnalisou:false, resumo:'', obs:'', testesExtras:[]}; subs[subNome] = sd; }
-    var fotos = sd.fotos || [];
-    var jaAnalisou = sd.jaAnalisou || false;
-    var resumo = sd.resumo || '';
-    var badge = '';
-    if (jaAnalisou) badge = '<span style="background:#f0fdf4;color:#166534;border:0.5px solid #bbf7d0;border-radius:10px;font-size:10px;padding:2px 8px">Conclu\u00eddo</span>';
-    else if (fotos.length > 0) badge = '<span style="background:#fffbeb;color:#92400e;border:0.5px solid #fed7aa;border-radius:10px;font-size:10px;padding:2px 8px">Em andamento</span>';
-    else badge = '<span style="background:#f8fafc;color:#8898aa;border:0.5px solid #e2e8f0;border-radius:10px;font-size:10px;padding:2px 8px">N\u00e3o iniciado</span>';
-    h += '<div style="border:1px solid #e2e8f0;border-radius:10px;margin-bottom:14px;overflow:hidden">';
-    h += '<div style="background:linear-gradient(135deg,#2d5a8e,#4a90d9);padding:12px 16px;display:flex;align-items:center;gap:10px">';
-    h += '<span style="font-size:16px">\ud83d\udccd</span>';
-    h += '<div style="flex:1"><div style="font-size:13px;font-weight:600;color:#fff">' + subNome + '</div></div>';
-    h += badge + '<button onclick="wiz6ExcluirSubAmb(' + ambIdx + ',\'' + subNome.replace(/'/g,"\\\\'") + '\')" style="background:rgba(255,255,255,0.2);border:none;border-radius:6px;color:#fff;font-size:11px;padding:3px 8px;cursor:pointer;margin-left:8px">\u2715 Excluir</button></div>';
-    h += '<div style="padding:14px 16px">';
-    var htmlFotos = '';
-    fotos.forEach(function(f, fi) {
-      var src = f.preview || (f.base64 ? ('data:' + (f.mime || 'image/jpeg') + ';base64,' + f.base64) : '');
-      htmlFotos += '<div style="position:relative;border-radius:8px;overflow:hidden;aspect-ratio:4/3;background:#f1f5f9">' + (src ? '<img src="' + src + '" style="width:100%;height:100%;object-fit:contain;display:block;background:#f1f5f9;cursor:pointer" onclick="window._openFotoModal(this.src)">' : '') + '<div style="position:absolute;bottom:4px;left:4px;background:rgba(0,0,0,0.7);color:#fff;font-size:11px;font-weight:700;padding:2px 8px;border-radius:10px">Foto ' + (fi+1) + '</div></div>';
-    });
-    var htmlBtnFoto = '<label style="display:flex;flex-direction:column;align-items:center;justify-content:center;border:1.5px dashed #bfdbfe;border-radius:8px;aspect-ratio:4/3;cursor:pointer;background:#f8fafc">' + '<svg width="24" height="20" viewBox="0 0 24 20"><rect x="3" y="3" width="18" height="14" rx="2" fill="#dbeafe" stroke="#2d7dd2" stroke-width="1.5"/><circle cx="12" cy="13" r="4" fill="#93c5fd" stroke="#2d7dd2" stroke-width="1"/><circle cx="17" cy="9" r="1" fill="#2d7dd2"/></svg>' + '<span style="font-size:11px;color:#2d7dd2;font-weight:600;margin-top:6px">+ Foto</span>' + '<input type="file" accept="image/*" capture="environment" multiple style="display:none" onchange="wiz6AddFotosSub(this,' + ambIdx + ',\'' + subNome.replace(/'/g,"\\\'") + '\')">' + '</label>';
-    h += '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px">';
-    h += htmlFotos;
-    if (!jaAnalisou) h += htmlBtnFoto;
-    h += '</div>';
-    if (fotos.length > 0 && !jaAnalisou) {
-      h += '<div style="background:#f0fdf4;border:0.5px solid #bbf7d0;border-radius:10px;padding:12px;margin-bottom:14px;text-align:center">';
-      h += '<div style="font-size:12px;color:#166534;margin-bottom:8px">' + fotos.length + ' foto' + (fotos.length > 1 ? 's' : '') + ' pronta' + (fotos.length > 1 ? 's' : '') + ' para an\u00e1lise</div>';
-      h += '<div style="display:flex;gap:8px;justify-content:center">';
-      h += '<label style="display:flex;align-items:center;gap:6px;padding:8px 14px;border:0.5px solid #e2e8f0;border-radius:8px;background:#fff;font-size:12px;color:#8898aa;cursor:pointer">';
-      h += '+ Adicionar mais fotos';
-      h += '<input type="file" accept="image/*" capture="environment" multiple style="display:none" onchange="wiz6AddFotosSub(this,' + ambIdx + ',\'' + subNome.replace(/'/g,"\\\'") + '\')">';
-      h += '</label>';
-      h += '<button onclick="wiz6AnalisarBatchSub(' + ambIdx + ',\'' + subNome.replace(/'/g,"\\\'") + '\',' + si + ')" style="background:#16a34a;color:#fff;border:none;border-radius:8px;padding:8px 16px;font-size:12px;font-weight:600;cursor:pointer">\ud83e\udd16 Analisar com IA</button>';
-      h += '</div></div>';
-
-      h += '<div id="wiz6-ai-status-sub-' + ambIdx + '-' + si + '" style="display:none;background:#eef4ff;border-left:3px solid #2d7dd2;border-radius:0 8px 8px 0;padding:8px 12px;margin-bottom:8px;font-size:12px;color:#2d7dd2"></div>';    }
-    if (fotos.length && jaAnalisou) {
-        h += '<div style="background:#f0fdf4;border:0.5px solid #bbf7d0;border-radius:10px;padding:12px;margin-bottom:10px;text-align:center">';
-        h += '<div style="font-size:12px;color:#166534;margin-bottom:8px">' + fotos.length + ' foto(s) prontas para análise</div>';
-        h += '<div style="display:flex;gap:8px;justify-content:center;align-items:center">';
-        h += '<label style="display:flex;align-items:center;gap:6px;padding:8px 14px;border:0.5px solid #e2e8f0;border-radius:8px;background:#fff;font-size:12px;color:#8898aa;cursor:pointer">+ Adicionar mais fotos<input type="file" accept="image/*" multiple style="display:none" onchange="wiz6AddFotosSub(this,' + ambIdx + ',\'' + subNome.replace(/'/g,'') + '\')"></label>';
-        h += '<button onclick="wiz6AnalisarBatchSub(' + ambIdx + ',\'' + subNome.replace(/'/g,'') + '\',' + si + ')" style="background:#16a34a;color:#fff;border:none;border-radius:8px;padding:8px 16px;font-size:12px;font-weight:600;cursor:pointer">🔄 Re-analisar com IA</button>';
-        h += '</div></div>';
-      }
-    if (resumo) {
-      h += '<div style="background:#f8fafc;border:0.5px solid #e2e8f0;border-radius:10px;padding:14px;margin-bottom:14px">';
-      h += '<div style="font-size:11px;font-weight:600;color:#2d7dd2;letter-spacing:0.5px;margin-bottom:8px">\ud83e\udd16 DESCRI\u00c7\u00c3O DA IA</div>';
-      h += '<textarea onchange="wiz6SalvarResumoSub(' + ambIdx + ',\'' + subNome.replace(/'/g,"\\\'") + '\',this.value)" style="width:100%;font-size:12px;color:#1a2540;line-height:1.8;border:0.5px solid #e2e8f0;border-radius:8px;padding:10px;resize:none;font-family:inherit;min-height:120px;background:#fafbfc;field-sizing:content;overflow:hidden;box-sizing:border-box">' + (resumo || '').replace(/</g,'&lt;').replace(/>/g,'&gt;') + '</textarea>';
-      h += '</div>';
-    }
-    var testesMapSub = {
-      'banheiro': [{k:'torneira',n:'Torneira'},{k:'chuveiro',n:'Chuveiro'},{k:'descarga',n:'Descarga'},{k:'ralo',n:'Ralo'},{k:'iluminacao',n:'Ilumina\u00e7\u00e3o'}],
-      'closet':   [{k:'porta',n:'Porta'},{k:'iluminacao',n:'Ilumina\u00e7\u00e3o'}],
-      'default':  [{k:'tomadas',n:'Tomadas e interruptores'},{k:'iluminacao',n:'Ilumina\u00e7\u00e3o'},{k:'porta',n:'Porta'}]
-    };
-    var tipoSub = subNome.toLowerCase().replace(/\s+/g,'');
-    if (tipoSub.indexOf('banheiro') !== -1) tipoSub = 'banheiro';
-    else if (tipoSub.indexOf('closet') !== -1) tipoSub = 'closet';
-    else tipoSub = 'default';
-    var testes = (testesMapSub[tipoSub] || testesMapSub['default']).concat(sd.testesExtras || []);
-    var testesSalvos = sd.testes || {};
-        h += '<div style="border-top:0.5px solid #e2e8f0;margin:14px 0"></div>';
-    h += '<div style="font-size:10px;font-weight:600;color:#8898aa;letter-spacing:0.5px;margin-bottom:8px">TESTES FUNCIONAIS</div>';
-    h += '<div style="background:#f8fafc;border-radius:8px;padding:8px 10px;margin-bottom:10px">';
-    testes.forEach(function(t) {
-      var val = testesSalvos[t.k] || 'nt';
-      h += '<div style="padding:8px 0;border-bottom:0.5px solid #f1f5f9">';
-      h += '<div style="display:flex;align-items:center">';
-      h += '<span style="flex:1;font-size:12px;color:#1a2540">' + t.n + '</span>';
-      h += '<div style="display:flex;gap:4px">';
-      ['nt','ok','nao','nexiste'].forEach(function(v) {
-        var labels = {nt:'\u25a1 N\u00e3o testado',ok:'\u2713 Funcionando',nao:'\u2717 Com problema',nexiste:'N\u00e3o existe'};
-        var isAtivo = val === v;
-        var style = isAtivo
-          ? (v==='nt' ? 'background:#1e3a5f;color:#fff' : v==='ok' ? 'background:#16a34a;color:#fff' : v==='nao' ? 'background:#ef4444;color:#fff' : 'background:#6b7280;color:#fff')
-          : (v==='ok' ? 'background:#f0fdf4;color:#166534;border:0.5px solid #bbf7d0' : v==='nao' ? 'background:#fef2f2;color:#991b1b;border:0.5px solid #fca5a5' : 'background:#f8fafc;color:#8898aa;border:0.5px solid #e2e8f0');
-        h += '<button onclick="wiz6TesteSub(' + ambIdx + ',\'' + subNome.replace(/'/g,"\\\'")+'\',\'' + t.k + '\',\'' + v + '\')" style="font-size:10px;padding:3px 8px;border-radius:10px;border:none;cursor:pointer;' + style + '">' + labels[v] + '</button>';
-      });
-      h += '</div>';
-      h += '</div>';
-      var mostrarObs = val !== 'nt';
-      h += '<div style="padding:4px 0 2px 0;display:' + (mostrarObs ? 'block' : 'none') + '">';
-      h += '<input type="text" placeholder="Obs: (opcional)" onblur="wiz6TesteObsSub(' + ambIdx + ',\'' + subNome.replace(/'/g,'') + '\',\'' + t.k.replace(/'/g,'') + '\',this.value)" value="' + ((sd.testesObs && sd.testesObs[t.k]) || '').replace(/"/g,'&quot;') + '" style="width:100%;padding:5px 8px;border:0.5px solid #e2e8f0;border-radius:6px;font-size:11px;color:#8898aa;background:#f8fafc">';
-      h += '</div>';
-      h += '</div>';
-    });
-    h += '</div>';
-    h += '<button onclick="wiz6AdicionarTesteSub(' + ambIdx + ',\'' + subNome.replace(/'/g,"\\\'") + '\')" style="width:100%;padding:7px;border:1.5px dashed #bfdbfe;border-radius:8px;font-size:11px;color:#2d7dd2;background:transparent;cursor:pointer;margin-bottom:14px">+ Adicionar outro teste</button>';
-    h += '<div style="border-top:0.5px solid #e2e8f0;margin:14px 0"></div>';
-    h += '<div style="font-size:10px;font-weight:600;color:#8898aa;letter-spacing:0.5px;margin-bottom:6px">OBSERVA\u00c7\u00c3O GERAL</div>';
-    h += '<textarea placeholder="Observa\u00e7\u00e3o sobre o sub-ambiente..." style="width:100%;padding:9px 12px;border:0.5px solid #e2e8f0;border-radius:8px;font-size:12px;color:#1a2540;resize:none;font-family:inherit;line-height:1.5" rows="2" onchange="wiz6SalvarObsSub(' + ambIdx + ',\'' + subNome.replace(/'/g,"\\\'") + '\',this.value)">' + (sd.obs || '') + '</textarea>';
+  var h = '';
+  if (!dados || !dados.subAmbientes || !dados.subAmbientes.length) return h;
+  dados.subAmbientes.forEach(function(subNome) {
+    var sd = dados.subs && dados.subs[subNome] ? dados.subs[subNome] : {fotos:[], testes:{}, jaAnalisou:false, resumo:'', obs:''};
+    // === SUB-AMBIENTE HEADER ===
+    h += '<div style="border-top:2px solid #e2e8f0">';
+    h += '<div style="background:#2d5a8e;padding:9px 14px;display:flex;align-items:center;justify-content:space-between">';
+    h += '<span style="font-size:12px;font-weight:600;color:#fff">\ud83d\udccc ' + subNome + '</span>';
+    h += '<div style="display:flex;gap:6px;align-items:center">';
+    var badge = sd.jaAnalisou ? 'background:#f0fdf4;color:#166534;border:0.5px solid #bbf7d0' : (sd.fotos&&sd.fotos.length>0 ? 'background:#fffbeb;color:#92400e;border:0.5px solid #fed7aa' : 'background:#f8fafc;color:#8898aa;border:0.5px solid #e2e8f0');
+    var badgeLabel = sd.jaAnalisou ? 'Conclu\u00eddo' : (sd.fotos&&sd.fotos.length>0 ? 'Em andamento' : 'N\u00e3o iniciado');
+    h += '<span style="font-size:10px;padding:2px 8px;border-radius:10px;' + badge + '">' + badgeLabel + '</span>';
+    h += '<button onclick="wiz6ExcluirSubAmb(' + ambIdx + ',\'' + subNome.replace(/'/g,"\\\'") + '\')" style="background:rgba(255,255,255,.15);border:none;border-radius:5px;color:#fff;font-size:10px;padding:2px 8px;cursor:pointer">\u2715 Excluir</button>';
     h += '</div></div>';
+    // === SUB-AMBIENTE BODY ===
+    h += '<div style="padding:12px 14px">';
+    // FOTOS
+    h += '<div style="font-size:10px;font-weight:700;color:#8898aa;letter-spacing:.05em;margin-bottom:6px">FOTOS</div>';
+    h += '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:5px;margin-bottom:10px">';
+    var fotos = sd.fotos || [];
+    fotos.forEach(function(f, fi) {
+      var fsrc = f.preview || (f.base64 ? ('data:' + (f.mime||'image/jpeg') + ';base64,' + f.base64) : '');
+      h += '<div style="position:relative;aspect-ratio:4/3;border-radius:6px;overflow:hidden">';
+      if (fsrc) h += '<img src="' + fsrc + '" style="width:100%;height:100%;object-fit:cover">';
+      h += '<div style="position:absolute;bottom:4px;left:4px;background:rgba(0,0,0,.6);color:#fff;font-size:9px;padding:1px 5px;border-radius:3px">Foto ' + (fi+1) + '</div>';
+      h += '<button onclick="wiz6RemoverFotoSub(' + ambIdx + ',\'' + subNome.replace(/'/g,"\\\'") + '\',' + fi + ')" style="position:absolute;top:3px;right:3px;background:rgba(239,68,68,.85);color:#fff;border:none;border-radius:50%;width:18px;height:18px;font-size:11px;cursor:pointer;line-height:1">\u00d7</button>';
+      h += '</div>';
+    });
+    if (fotos.length < 9) {
+      h += '<label style="aspect-ratio:4/3;border:0.5px dashed #cbd5e1;border-radius:6px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;gap:3px">';
+      h += '<span style="font-size:18px;color:#8898aa">+</span><span style="font-size:9px;color:#8898aa">foto</span>';
+      h += '<input type="file" accept="image/*" multiple style="display:none" onchange="wiz6AddFotosSub(this,' + ambIdx + ',\'' + subNome.replace(/'/g,"\\\'") + '\')">';
+      h += '</label>';
+    }
+    h += '</div>';
+    // IA BUTTON
+    if (fotos.length > 0) {
+      h += '<div style="background:#f0fdf4;border:0.5px solid #bbf7d0;border-radius:8px;padding:10px;margin-bottom:10px;text-align:center">';
+      h += '<div style="font-size:11px;color:#166534;margin-bottom:7px">' + fotos.length + ' foto(s) pronta(s) para an\u00e1lise</div>';
+      h += '<div style="display:flex;gap:8px;justify-content:center;align-items:center">';
+      h += '<label style="display:flex;align-items:center;gap:6px;padding:7px 12px;border:0.5px solid #e2e8f0;border-radius:7px;background:#fff;font-size:11px;color:#8898aa;cursor:pointer">+ Adicionar mais fotos<input type="file" accept="image/*" multiple style="display:none" onchange="wiz6AddFotosSub(this,' + ambIdx + ',\'' + subNome.replace(/'/g,"\\\'") + '\')">';
+      h += '</label>';
+      h += '<button onclick="wiz6AnalisarSub(' + ambIdx + ',\'' + subNome.replace(/'/g,"\\\'") + '\')" style="background:#16a34a;color:#fff;border:none;border-radius:7px;padding:7px 14px;font-size:11px;font-weight:600;cursor:pointer">' + (sd.jaAnalisou ? '\ud83d\udd04 Re-analisar com IA' : '\ud83e\udd16 Analisar com IA') + '</button>';
+      h += '</div></div>';
+    }
+    // DESCRI\u00c7\u00c3O DA IA
+    if (sd.resumo) {
+      h += '<div style="font-size:10px;font-weight:700;color:#8898aa;letter-spacing:.05em;margin-bottom:6px">DESCRI\u00c7\u00c3O DA IA \u2014 ' + subNome.toUpperCase() + '</div>';
+      h += '<textarea onblur="wiz6SalvarResumoSub(' + ambIdx + ',\'' + subNome.replace(/'/g,"\\\'") + '\',this.value)" style="width:100%;border:0.5px solid #e2e8f0;border-radius:8px;padding:10px;font-size:12px;color:#1a2540;background:#f8fafc;resize:vertical;min-height:80px;margin-bottom:10px">' + (sd.resumo||'') + '</textarea>';
+    }
+    // VERIFICA\u00c7\u00d5ES T\u00c9CNICAS
+    var tipoSub = subNome.toLowerCase().indexOf('banheiro')>=0?'banheiro':subNome.toLowerCase().indexOf('closet')>=0?'closet':subNome.toLowerCase().indexOf('varanda')>=0?'varanda':'default';
+    var testesMapSub = {
+      banheiro:[{k:'torneira',n:'Torneira \u2014 abre e fecha'},{k:'chuveiro',n:'Chuveiro \u2014 press\u00e3o e temperatura'},{k:'descarga',n:'Descarga \u2014 funciona'},{k:'ralo',n:'Ralo \u2014 escoa bem'},{k:'iluminacao',n:'Ilumina\u00e7\u00e3o'}],
+      closet:[{k:'porta',n:'Porta \u2014 abre e fecha'},{k:'iluminacao',n:'Ilumina\u00e7\u00e3o'}],
+      varanda:[{k:'porta',n:'Porta \u2014 abre e fecha'},{k:'iluminacao',n:'Ilumina\u00e7\u00e3o'},{k:'tomadas',n:'Tomadas'}],
+      default:[{k:'porta',n:'Porta \u2014 abre e fecha'},{k:'iluminacao',n:'Ilumina\u00e7\u00e3o'},{k:'tomadas',n:'Tomadas e interruptores'}]
+    };
+    var testesSub = testesMapSub[tipoSub]||testesMapSub.default;
+    // Also add any extra tests from testesExtras
+    if (sd.testesExtras && sd.testesExtras.length) {
+      sd.testesExtras.forEach(function(ex) {
+        var exists = testesSub.some(function(t){return t.k===ex.k;});
+        if (!exists) testesSub.push({k:ex.k, n:ex.n||ex.k});
+      });
+    }
+    h += '<div style="font-size:10px;font-weight:700;color:#8898aa;letter-spacing:.05em;margin-bottom:6px">VERIFICA\u00c7\u00d5ES T\u00c9CNICAS</div>';
+    h += '<div style="background:#f8fafc;border-radius:8px;padding:8px 10px;margin-bottom:10px">';
+    testesSub.forEach(function(t) {
+      var val = (sd.testes && sd.testes[t.k]) || 'nt';
+      var obsVal = (sd.testes && sd.testes[t.k+'_obs']) || '';
+      var obsId = 'obs-sub-' + ambIdx + '-' + subNome.replace(/\W/g,'_') + '-' + t.k;
+      h += '<div style="padding:7px 0;border-bottom:0.5px solid #f1f5f9">';
+      h += '<div style="display:flex;align-items:center;gap:4px">';
+      h += '<span style="flex:1;font-size:12px;color:#1a2540">' + t.n + '</span>';
+      h += '<div style="display:flex;gap:3px">';
+      [{v:'nt',label:'\u25a1 N\u00e3o testado'},{v:'ok',label:'\u2713 Funcionando'},{v:'nao',label:'\u2717 Com problema'},{v:'nexiste',label:'N\u00e3o existe'}].forEach(function(btn) {
+        var isAtivo = val === btn.v;
+        var cor = isAtivo ? (btn.v==='nt'?'background:#1e3a5f;color:#fff;border:none':btn.v==='ok'?'background:#16a34a;color:#fff;border:none':btn.v==='nao'?'background:#ef4444;color:#fff;border:none':'background:#6b7280;color:#fff;border:none') : (btn.v==='ok'?'background:#f0fdf4;color:#166534;border:0.5px solid #bbf7d0':btn.v==='nao'?'background:#fef2f2;color:#991b1b;border:0.5px solid #fca5a5':'background:#f8fafc;color:#8898aa;border:0.5px solid #e2e8f0');
+        h += '<button onclick="wiz6TesteSubClick(' + ambIdx + ',\'' + subNome.replace(/'/g,"\\\'") + '\',\'' + t.k + '\',\'' + btn.v + '\',\'' + obsId + '\')" style="font-size:10px;padding:3px 7px;border-radius:10px;cursor:pointer;' + cor + '">' + btn.label + '</button>';
+      });
+      h += '</div></div>';
+      h += '<div id="' + obsId + '" style="display:' + (val!=='nt'?'block':'none') + ';padding-top:4px">';
+      h += '<input type="text" placeholder="Obs: (opcional)" value="' + (obsVal||'').replace(/"/g,'&quot;') + '" onblur="wiz6TesteObsSub(' + ambIdx + ',\'' + subNome.replace(/'/g,"\\\'") + '\',\'' + t.k + '\',this.value)" style="width:100%;padding:5px 8px;border:0.5px solid #e2e8f0;border-radius:6px;font-size:11px;color:#8898aa;background:#f8fafc">';
+      h += '</div>';
+      h += '</div>';
+    });
+    h += '</div>';
+    // OBSERVA\u00c7\u00c3O GERAL
+    h += '<div style="font-size:10px;font-weight:700;color:#8898aa;letter-spacing:.05em;margin-bottom:6px">OBSERVA\u00c7\u00c3O GERAL</div>';
+    h += '<textarea placeholder="Observa\u00e7\u00e3o sobre ' + subNome + ' (opcional)..." onblur="wiz6SalvarObsSub(' + ambIdx + ',\'' + subNome.replace(/'/g,"\\\'") + '\',this.value)" style="width:100%;border:0.5px solid #e2e8f0;border-radius:8px;padding:8px 10px;font-size:11px;color:#8898aa;background:#f8fafc;resize:none">' + (sd.obs||'') + '</textarea>';
+    h += '</div>'; // close body
+    h += '</div>'; // close sub block
   });
   return h;
 }
 
+function wiz6AnalisarSub(idx, subNome) {
+  var d = wizard.itensData[idx];
+  if (!d || !d.subAmbientes) return;
+  var si = d.subAmbientes.indexOf(subNome);
+  wiz6AnalisarBatchSub(idx, subNome, si >= 0 ? si : 0);
+}
 function wiz6ExcluirSubAmb(idx, subNome) {
   if (!confirm('Excluir sub-ambiente "' + subNome + '"?')) return;
   var d = wizard.itensData[idx];
