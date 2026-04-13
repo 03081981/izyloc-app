@@ -3936,9 +3936,9 @@ async function generatePDF() {
             resumo: _sd.resumo || ''
           });
         });
-        _ambData.push({roomName: wizard.selectedRooms[_ai], isSuite: !!_d.isSuite, subAmbientes: _subAmbs, verificacoes:_verif, verificacoesObs:_verifObs, testesNomes:_tNomes, observacoes:_d.obs||'', inventario:(_d.inventario||{}),inventarioExtras:(_d.inventarioExtras||[])});
+        _ambData.push({roomName: wizard.selectedRooms[_ai], isSuite: !!_d.isSuite, subAmbientes: _subAmbs, verificacoes:_verif, verificacoesObs:_verifObs, testesNomes:_tNomes, observacoes:_d.obs||'', inventario:(_d.inventario||{}),inventarioExtras:(_d.inventarioExtras||[]),inventarioNomes:_getNomesInventario(wizard.selectedRooms[_ai])});
       } else {
-        _ambData.push({roomName:wizard.selectedRooms[_ai],verificacoes:_verif,verificacoesObs:_verifObs,testesNomes:_tNomes,observacoes:_d.obs||'', inventario:(_d.inventario||{}),inventarioExtras:(_d.inventarioExtras||[])});
+        _ambData.push({roomName:wizard.selectedRooms[_ai],verificacoes:_verif,verificacoesObs:_verifObs,testesNomes:_tNomes,observacoes:_d.obs||'', inventario:(_d.inventario||{}),inventarioExtras:(_d.inventarioExtras||[]),inventarioNomes:_getNomesInventario(wizard.selectedRooms[_ai])});
       };
     }
     // === Save ambientes_json to DB before PDF generation ===
@@ -4909,6 +4909,9 @@ if (typeof initAmbientes === 'function') initAmbientes();
         h += '<div><label style="display:block;font-size:11px;color:#64748b;font-weight:600;margin-bottom:3px">Observações gerais</label>';
         h += '<textarea data-kind="obs" data-aidx="' + _ri + '" rows="2" style="width:100%;padding:7px 9px;border:1px solid #cbd5e1;border-radius:6px;font-size:12px;background:#fff;resize:none;field-sizing:content;overflow:hidden;min-height:60px;line-height:1.8">' + _esc(_rd.obs || '') + '</textarea></div>';
         h += '</div>';
+        if (wizard.tipo === 'temporada') {
+          h += _wiz7RenderInventarioRev(_ri, _rN, _rd);
+        }
       }
       h += '</div>';
 
@@ -6608,6 +6611,64 @@ function wiz6RenderAmbCard(idx) {
 
 
 // ── INVENTÁRIO TEMPORADA ───────────────
+function _wiz7RenderInventarioRev(idx, nomeAmb, dados) {
+  var _inv = (dados && dados.inventario) || {};
+  var _extras = (dados && dados.inventarioExtras) || [];
+  var _nomes = _getNomesInventario(nomeAmb);
+  var html = '';
+  var rows = '';
+  var _renderRow = function(item, key) {
+    var _qty = _inv[key + '_qty'] !== undefined ? _inv[key + '_qty'] : 1;
+    var _estado = _inv[key + '_estado'] || '';
+    var _obs = _inv[key + '_obs'] || '';
+    if (!_estado) return;
+    var _cor = _estado === 'bom' ? '#166534' : (_estado === 'avaria' ? '#991b1b' : '#475569');
+    var _bg  = _estado === 'bom' ? '#f0fdf4' : (_estado === 'avaria' ? '#fef2f2' : '#f8fafc');
+    var _label = _estado === 'bom' ? '\u2713 Bom' : (_estado === 'avaria' ? '\u26a0 Avaria' : '\u2717 Ausente');
+    rows += '<div style="display:flex;align-items:center;padding:4px 0;border-bottom:0.5px solid #fef3c7">';
+    rows += '<span style="flex:1;font-size:11px;color:#1a2540">' + item + '</span>';
+    rows += '<span style="font-size:10px;color:#8898aa;margin-right:8px">Qtd: ' + _qty + '</span>';
+    rows += '<span style="font-size:10px;padding:2px 8px;border-radius:6px;background:' + _bg + ';color:' + _cor + '">' + _label + '</span>';
+    rows += '</div>';
+    if (_obs) rows += '<div style="font-size:10px;color:#8898aa;padding:2px 0 4px 0">Obs: ' + _obs + '</div>';
+  };
+  _nomes.forEach(function(item) {
+    var _key = item.replace(/[\s\/\(\)\.]+/g,'_').toLowerCase();
+    _renderRow(item, _key);
+  });
+  _extras.forEach(function(item, ei) {
+    var _key = 'extra_' + ei;
+    _renderRow(item, _key);
+  });
+  if (!rows) return '';
+  html += '<div style="margin-top:8px">';
+  html += '<div style="font-size:11px;font-weight:700;color:#92400e;margin-bottom:6px">\uD83D\uDCE6 Invent\u00e1rio</div>';
+  html += '<div style="background:#fff8e1;border:0.5px solid #fcd34d;border-radius:8px;padding:8px 10px">';
+  html += rows;
+  html += '</div></div>';
+  return html;
+}
+
+function _getNomesInventario(nomeAmb) {
+  var _n = (nomeAmb || '').toLowerCase();
+  var _itensPorAmb = {
+    sala:     ['TV','Sof\u00e1','Poltrona','Mesa de centro','Mesa de jantar','Cadeiras','Tapete','Controle remoto TV','Controle remoto AC'],
+    cozinha:  ['Pratos fundos','Pratos rasos','Pratos de sobremesa','Copos','Ta\u00e7as','X\u00edcaras','Colheres','Garfos','Facas','Panelas','Frigideiras','Escorredor','Abridor de lata','Saca-rolhas','Utensilios de cozinha (espatulas/conchas)','Cafeteira','Liquidificador','Torradeira','Micro-ondas'],
+    dormit:   ['Cama (estrutura/cabeceira)','Colch\u00e3o','Travesseiros','Fronhas','Len\u00e7\u00f3is (jogo)','Cobertores','Edredom','Toalhas de banho','Toalhas de rosto','Cabides'],
+    suite:    ['Cama (estrutura/cabeceira)','Colch\u00e3o','Travesseiros','Fronhas','Len\u00e7\u00f3is (jogo)','Cobertores','Edredom','Toalhas de banho','Toalhas de rosto','Roup\u00e3o','Cabides','Secador de cabelo'],
+    banheiro: ['Toalhas de banho','Toalhas de rosto','Tapete de banheiro','Papel higi\u00eanico (estoque)','Sabonete','Shampoo','Condicionador','Secador de cabelo'],
+    servico:  ['Vassoura','Rodo','Esfregao','Pano de ch\u00e3o','Balde','Detergente','Esponja','Sab\u00e3o em p\u00f3','Amaciante','Desinfetante'],
+    'default':['Chaves do im\u00f3vel','Controles remotos','Manual de equipamentos','Guia da casa']
+  };
+  var _tipo = _n.indexOf('su\u00edte')>=0||_n.indexOf('suite')>=0?'suite':
+              _n.indexOf('dorm')>=0||_n.indexOf('quarto')>=0?'dormit':
+              _n.indexOf('banheiro')>=0?'banheiro':
+              _n.indexOf('cozinha')>=0?'cozinha':
+              _n.indexOf('sala')>=0?'sala':
+              _n.indexOf('servi')>=0||_n.indexOf('lavand')>=0?'servico':'default';
+  return _itensPorAmb[_tipo] || _itensPorAmb['default'];
+}
+
 function _wiz6RenderInventario(idx, nomeAmb) {
   var _n = nomeAmb.toLowerCase();
 
