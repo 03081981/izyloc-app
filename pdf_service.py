@@ -338,10 +338,10 @@ def add_campos_imovel_grid(story, s, dados_imovel):
 
     for lbl_e, val_e, lbl_d, val_d in pares:
         cel_e = [Paragraph(lbl_e.upper(), s['campo_label']),
-                 Paragraph(maiusculo(val_e), s['campo_valor'])]
+                 Paragraph(val_e, s['campo_valor'])]
         if lbl_d:
             cel_d = [Paragraph(lbl_d.upper(), s['campo_label']),
-                     Paragraph(maiusculo(val_d), s['campo_valor'])]
+                     Paragraph(val_d, s['campo_valor'])]
             t = Table([[cel_e, cel_d]], colWidths=[CW, CW])
         else:
             t = Table([[cel_e]], colWidths=[TW])
@@ -362,7 +362,7 @@ def _parte_col(titulo, campos, s):
         is_email = '@' in val
         val_style = s['parte_email'] if is_email else s['parte_valor']
         linhas.append([Paragraph(lbl.upper(), s['parte_label'])])
-        linhas.append([Paragraph(maiusculo(val) if not is_email else val, val_style)])
+        linhas.append([Paragraph(val, val_style)])
     return linhas
 
 
@@ -449,13 +449,13 @@ def add_card_imob_corretor(story, s, dados_imobiliaria, dados_corretor):
         imob_email = dados_imobiliaria.get('email', u'â') or u'â'
 
         left_block = _build_block(u'Imobili\u00e1ria', [
-            ('NOME',     maiusculo(imob_nome),  'parte_valor'),
+            ('NOME',     imob_nome,             'parte_valor'),
             ('CNPJ',     imob_cnpj,             'parte_valor'),
             ('TELEFONE', imob_tel,              'parte_valor'),
             ('E-MAIL',   imob_email,            'parte_email'),
         ])
         right_block = _build_block(u'Corretor', [
-            ('NOME',     maiusculo(corr_nome),  'parte_valor'),
+            ('NOME',     corr_nome,             'parte_valor'),
             ('CRECI',    maiusculo(corr_creci), 'parte_valor'),
             ('TELEFONE', corr_tel or u'â', 'parte_valor'),
             ('E-MAIL',   corr_email,            'parte_email'),
@@ -474,7 +474,7 @@ def add_card_imob_corretor(story, s, dados_imobiliaria, dados_corretor):
     else:
         linhas = [[Paragraph(u'Imobili\u00e1ria / Corretor', s['parte_titulo'])]]
         linhas.append([Paragraph('NOME', s['parte_label'])])
-        linhas.append([Paragraph(maiusculo(corr_nome), s['parte_valor'])])
+        linhas.append([Paragraph(corr_nome, s['parte_valor'])])
         linhas.append([Paragraph('CRECI', s['parte_label'])])
         linhas.append([Paragraph(maiusculo(corr_creci), s['parte_valor'])])
         linhas.append([Paragraph('E-MAIL', s['parte_label'])])
@@ -1479,12 +1479,12 @@ def generate_pdf(inspection_data: dict, rooms_data: list,
             cidade_uf = u'\u2014'
 
         dados_imovel = {
-            'endereco'    : address,
-            'complemento' : _safe(insp.get('complemento'), u'\u2014'),
-            'bairro'      : _safe(insp.get('bairro'), u'\u2014'),
-            'cidade_uf'   : cidade_uf,
-            'cep'         : _safe(insp.get('cep'), u'\u2014'),
-            'tipo'        : _safe(insp.get('property_type'), u'\u2014'),
+            'endereco'    : _title_case(address),
+            'complemento' : _title_case(_safe(insp.get('complemento'), u'\u2014')),
+            'bairro'      : _title_case(_safe(insp.get('bairro'), u'\u2014')),
+            'cidade_uf'   : _title_case(cidade_uf),
+            'cep'         : _fmt_cep(_safe(insp.get('cep'), u'\u2014')),
+            'tipo'        : _title_case(_safe(insp.get('property_type'), u'\u2014')),
             'area'        : _safe(insp.get('property_area'), u'\u2014'),
             'data_hora'   : date_display,
             'numero_laudo': _generate_numero_laudo(insp),
@@ -1502,11 +1502,11 @@ def generate_pdf(inspection_data: dict, rooms_data: list,
                                'rg': insp.get('locador_rg', ''),
                                'phone': insp.get('locador_phone', ''),
                                'email': insp.get('locador_email', '')}]
-        locadores = [{'nome': _safe(loc.get('name', ''), u'\u2014'),
-                      'cpf': _safe(loc.get('cpf', ''), u'\u2014'),
+        locadores = [{'nome': _title_case(_safe(loc.get('name', ''), u'\u2014')),
+                      'cpf': _fmt_cpf(_safe(loc.get('cpf', ''), u'\u2014')),
                       'rg': _safe(loc.get('rg', ''), ''),
-                      'telefone': _safe(loc.get('phone', ''), u'\u2014'),
-                      'email': _safe(loc.get('email', ''), u'\u2014')} for loc in locadores_list]
+                      'telefone': _fmt_tel(_safe(loc.get('phone', ''), u'\u2014')),
+                      'email': (_safe(loc.get('email', ''), u'\u2014') or '').lower().strip()} for loc in locadores_list]
         dados_locador = locadores[0]
 
         # --- Locatarios (lista) ---
@@ -1521,26 +1521,26 @@ def generate_pdf(inspection_data: dict, rooms_data: list,
                                'rg': insp.get('locatario_rg', ''),
                                'phone': insp.get('locatario_phone', ''),
                                'email': insp.get('locatario_email', '')}]
-        locatarios = [{'nome': _safe(loc.get('name', ''), u'\u2014'),
-                       'cpf': _safe(loc.get('cpf', ''), u'\u2014'),
+        locatarios = [{'nome': _title_case(_safe(loc.get('name', ''), u'\u2014')),
+                       'cpf': _fmt_cpf(_safe(loc.get('cpf', ''), u'\u2014')),
                        'rg': _safe(loc.get('rg', ''), ''),
-                       'telefone': _safe(loc.get('phone', ''), u'\u2014'),
-                       'email': _safe(loc.get('email', ''), u'\u2014')} for loc in locatarios_list]
+                       'telefone': _fmt_tel(_safe(loc.get('phone', ''), u'\u2014')),
+                       'email': (_safe(loc.get('email', ''), u'\u2014') or '').lower().strip()} for loc in locatarios_list]
         dados_locatario = locatarios[0]
 
         dados_corretor = {
-            'nome'     : _safe(insp.get('corretor_name'), ''),
+            'nome'     : _title_case(_safe(insp.get('corretor_name'), '')),
             'creci'    : _safe(insp.get('corretor_creci'), ''),
-            'telefone' : _safe(insp.get('corretor_phone'), ''),
-            'email'    : _safe(insp.get('corretor_email'), ''),
+            'telefone' : _fmt_tel(_safe(insp.get('corretor_phone'), '')),
+            'email'    : (_safe(insp.get('corretor_email'), '') or '').lower().strip(),
         }
 
         dados_imobiliaria = {
-            'nome'     : _safe(insp.get('imobiliaria_name'), ''),
-            'cnpj'     : _safe(insp.get('imobiliaria_cnpj'), ''),
-            'telefone' : _safe(insp.get('imobiliaria_phone'), ''),
-            'endereco' : _safe(insp.get('imobiliaria_address'), ''),
-            'email'    : _safe(insp.get('imobiliaria_email'), ''),
+            'nome'     : _title_case(_safe(insp.get('imobiliaria_name'), '')),
+            'cnpj'     : _fmt_cnpj(_safe(insp.get('imobiliaria_cnpj'), '')),
+            'telefone' : _fmt_tel(_safe(insp.get('imobiliaria_phone'), '')),
+            'endereco' : _title_case(_safe(insp.get('imobiliaria_address'), '')),
+            'email'    : (_safe(insp.get('imobiliaria_email'), '') or '').lower().strip(),
         }
 
         amb_json = insp.get('ambientes_json', '')
