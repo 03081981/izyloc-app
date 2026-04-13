@@ -1471,7 +1471,7 @@ def generate_pdf(inspection_data: dict, rooms_data: list,
         _expanded = []
         for _i, _amb in enumerate(ambientes):
             _rd = rooms_data[_i] if _i < len(rooms_data) else {}
-            if _rd.get('isSuite') and _rd.get('subAmbientes'):
+            if _rd.get('subAmbientes'):
                 _suite_name = _amb['nome']
                 # Build photo lookup from original ambientes_json itens by sub-ambiente name
                 _foto_lookup = {}
@@ -1480,12 +1480,26 @@ def generate_pdf(inspection_data: dict, rooms_data: list,
                     if _item_nome not in _foto_lookup:
                         _foto_lookup[_item_nome] = []
                     _foto_lookup[_item_nome].extend(_orig_item.get('fotos', []))
+                # For non-suites, keep the main room with its own photos
+                if not _rd.get('isSuite'):
+                    _main_amb = dict(_amb)
+                    _main_amb['itens'] = [_oi for _oi in _amb.get('itens', []) if _oi.get('nome', '') == _suite_name]
+                    if not _main_amb['itens']:
+                        _main_fotos = _foto_lookup.get(_suite_name, [])
+                        for _fi, _fb in enumerate(_main_fotos):
+                            _main_amb['itens'].append({'nome': _suite_name, 'estado': '', 'descricao_ia': '', 'observacao': '', 'fotos': [_fb] if _fb else []})
+                    _main_amb['verificacoes'] = _rd.get('verificacoes', {})
+                    _main_amb['verificacoes_obs'] = _rd.get('verificacoesObs', {})
+                    _main_amb['testes_nomes'] = _rd.get('testesNomes', {})
+                    _main_amb['observacoes_gerais'] = _safe(_rd.get('observacoes', ''), '')
+                    _expanded.append(_main_amb)
                 for _sub in _rd['subAmbientes']:
                     _sub_nome = _sub.get('nome', '')
                     # Get photos for this sub-ambiente from the original ambientes_json data
                     _sub_fotos = _foto_lookup.get(_sub_nome, [])
+                    _sub_display = f'{_sub_nome} ({_suite_name})' if not _rd.get('isSuite') else f'{_suite_name} \u2014 {_sub_nome}'
                     _sub_amb = {
-                        'nome': f'{_suite_name} \u2014 {_sub_nome}',
+                        'nome': _sub_display,
                         'itens': [],
                         'verificacoes': _sub.get('verificacoes', {}),
                         'verificacoes_obs': _sub.get('verificacoesObs', {}),
