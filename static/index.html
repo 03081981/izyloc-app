@@ -5703,6 +5703,7 @@ var _wiz6Modo = 'foto';
 var _wiz6AmbIdx = 0;
 var _wiz6Ambientes = [];
 var _wiz6AmbDone = {};
+var _wiz6DragIdx = null;
 var _wiz6VideoJobId = null;
 var _wiz6VideoPolling = null;
 
@@ -6048,11 +6049,119 @@ function wiz6RenderTabs() {
   tabs.innerHTML = '';
   _wiz6Ambientes.forEach(function(nome, i) {
     var tab = document.createElement('div');
-    tab.className = 'wiz6-amb-tab' + (i === _wiz6AmbIdx ? ' active' : '') + (_wiz6AmbDone[i] ? ' done' : '');
-    tab.textContent = (_wiz6AmbDone[i] ? '✓ ' : '') + nome;
-    tab.onclick = (function(idx){ return function(){ _wiz6AmbIdx = idx; wiz6RenderAmbCard(idx); wiz6RenderTabs(); }; })(i);
+    tab.draggable = true;
+    tab.setAttribute('data-idx', i);
+    tab.ondragstart = (function(idx){ return function(e){ wiz6DragStart(e, idx); }; })(i);
+    tab.ondragover = function(e){ wiz6DragOver(e); };
+    tab.ondrop = (function(idx){ return function(e){ wiz6Drop(e, idx); }; })(i);
+    tab.onclick = (function(idx){ return function(){ wiz6GoAmb(idx); }; })(i);
+    var isActive = (i === _wiz6AmbIdx);
+    var isDone = _wiz6AmbDone[i];
+    tab.style.cssText = 'padding:6px 14px;border-radius:20px;font-size:12px;font-weight:500;cursor:pointer;border:0.5px solid ' + (isActive?'#2d7dd2':'#e2e8f0') + ';background:' + (isActive?'#2d7dd2':'#fff') + ';color:' + (isActive?'#fff':'#8898aa') + ';display:flex;align-items:center;gap:5px;user-select:none';
+    tab.innerHTML = '<span style="font-size:10px;opacity:.5;cursor:grab">\u2847</span>' + (isDone ? '\u2713 ' : '') + nome;
     tabs.appendChild(tab);
   });
+  // Bot\u00e3o "+ Amb"
+  var btnAmb = document.createElement('button');
+  btnAmb.onclick = function(){ wiz6AdicionarNovoAmb(); };
+  btnAmb.style.cssText = 'padding:6px 12px;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;border:0.5px dashed #2d7dd2;background:#f0f7ff;color:#2d7dd2;white-space:nowrap;flex-shrink:0';
+  btnAmb.textContent = '+ Amb';
+  tabs.appendChild(btnAmb);
+}
+
+// ── DRAG-AND-DROP AMBIENTES ─────────────────────────
+function wiz6DragStart(event, idx) {
+  _wiz6DragIdx = idx;
+  event.dataTransfer.effectAllowed = 'move';
+}
+function wiz6DragOver(event) {
+  event.preventDefault();
+  event.dataTransfer.dropEffect = 'move';
+}
+function wiz6Drop(event, targetIdx) {
+  event.preventDefault();
+  if (_wiz6DragIdx === null || _wiz6DragIdx === targetIdx) return;
+  var rooms = _wiz6Ambientes;
+  var draggedRoom = rooms.splice(_wiz6DragIdx, 1)[0];
+  rooms.splice(targetIdx, 0, draggedRoom);
+  if (wizard.selectedRooms) {
+    var sr = wizard.selectedRooms;
+    var draggedSR = sr.splice(_wiz6DragIdx, 1)[0];
+    sr.splice(targetIdx, 0, draggedSR);
+  }
+  if (wizard.itensData) {
+    var items = wizard.itensData;
+    var draggedItem = items.splice(_wiz6DragIdx, 1)[0];
+    items.splice(targetIdx, 0, draggedItem);
+  }
+  var oldDone = {};
+  for (var k in _wiz6AmbDone) oldDone[k] = _wiz6AmbDone[k];
+  _wiz6AmbDone = {};
+  if (_wiz6AmbIdx === _wiz6DragIdx) {
+    _wiz6AmbIdx = targetIdx;
+  } else if (_wiz6DragIdx < _wiz6AmbIdx && targetIdx >= _wiz6AmbIdx) {
+    _wiz6AmbIdx--;
+  } else if (_wiz6DragIdx > _wiz6AmbIdx && targetIdx <= _wiz6AmbIdx) {
+    _wiz6AmbIdx++;
+  }
+  _wiz6DragIdx = null;
+  wiz6RenderTabs();
+  var wrap = document.getElementById('wiz6-amb-container');
+  if (wrap) wrap.innerHTML = wiz6RenderAmbCard(_wiz6AmbIdx);
+}
+function wiz6GoAmb(idx) {
+  _wiz6AmbIdx = idx;
+  wiz6RenderTabs();
+  var wrap = document.getElementById('wiz6-amb-container');
+  if (wrap) wrap.innerHTML = wiz6RenderAmbCard(idx);
+}
+
+// ── ADICIONAR NOVO AMBIENTE ─────────────────────────
+function wiz6AdicionarNovoAmb() {
+  var sugestoes = ['Dormit\u00f3rio','Banheiro','Sala','Cozinha','\u00c1rea de servi\u00e7o','Garagem','Varanda','Escrit\u00f3rio','\u00c1rea externa','Dep\u00f3sito'];
+  var pills = sugestoes.map(function(s) {
+    return '<div onclick="document.getElementById(\'inp-novoamb\').value=\'' + s.replace(/'/g,"\\\'")+  '\'\'" style="padding:6px 12px;border-radius:20px;background:#dbeafe;border:0.5px solid #93c5fd;font-size:11px;color:#1e40af;cursor:pointer;display:inline-block;margin:3px">' + s + '</div>';
+  }).join('');
+  var modal = document.createElement('div');
+  modal.id = 'modal-novoamb';
+  modal.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.4);z-index:9999;display:flex;align-items:center;justify-content:center';
+  modal.innerHTML = '<div style="background:#fff;border-radius:12px;padding:20px;width:90%;max-width:380px">'
+    + '<div style="font-size:14px;font-weight:600;color:#1a2540;margin-bottom:4px">Novo ambiente</div>'
+    + '<div style="font-size:11px;color:#8898aa;margin-bottom:12px">Selecione ou digite o nome:</div>'
+    + '<div style="margin-bottom:10px">' + pills + '</div>'
+    + '<input id="inp-novoamb" type="text" placeholder="Ou digite o nome..." style="width:100%;padding:9px 12px;border:0.5px solid #e2e8f0;border-radius:8px;font-size:12px;margin-bottom:10px;box-sizing:border-box">'
+    + '<div style="display:flex;gap:8px">'
+    + '<button onclick="wiz6ConfirmarNovoAmb()" style="flex:1;background:#2d7dd2;border:none;border-radius:8px;padding:9px;font-size:12px;color:#fff;font-weight:600;cursor:pointer">Confirmar</button>'
+    + '<button onclick="document.getElementById(\'modal-novoamb\').remove()" style="flex:1;background:#fff;border:0.5px solid #e2e8f0;border-radius:8px;padding:9px;font-size:12px;color:#8898aa;cursor:pointer">Cancelar</button>'
+    + '</div></div>';
+  document.body.appendChild(modal);
+}
+
+function wiz6ConfirmarNovoAmb() {
+  var nome = document.getElementById('inp-novoamb').value.trim();
+  if (!nome) return;
+  var modal = document.getElementById('modal-novoamb');
+  if (modal) modal.remove();
+  if (!wizard.selectedRooms) wizard.selectedRooms = [];
+  wizard.selectedRooms.push(nome);
+  _wiz6Ambientes.push(nome);
+  var newIdx = _wiz6Ambientes.length - 1;
+  if (!wizard.itensData) wizard.itensData = [];
+  wizard.itensData[newIdx] = {
+    fotos: [],
+    testes: {},
+    testesObs: {},
+    testesExtras: [],
+    jaAnalisou: false,
+    resumo: '',
+    obs: '',
+    subAmbientes: [],
+    subs: {}
+  };
+  _wiz6AmbIdx = newIdx;
+  wiz6RenderTabs();
+  var wrap = document.getElementById('wiz6-amb-container');
+  if (wrap) wrap.innerHTML = wiz6RenderAmbCard(newIdx);
 }
 
 // ── CARD DO AMBIENTE ─────────────────────────────────────
