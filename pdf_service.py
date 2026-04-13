@@ -650,9 +650,9 @@ def add_ambientes(story, s, ambientes):
                     _key = 'extra_' + str(_idx_inv - len(_inv_nomes))
                 _estado = _inventario.get(_key + '_estado', '')
                 _qty = _inventario.get(_key + '_qty', 0)
-                if not _estado and (not _qty or _qty == 0):
-                    continue
                 _obs = _inventario.get(_key + '_obs', '') or u''
+                if not _estado and (not _qty or int(_qty) == 0) and not _obs:
+                    continue
                 if _estado == 'bom':
                     _label = u'\u2713 Bom'
                 elif _estado == 'avaria':
