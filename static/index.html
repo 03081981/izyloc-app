@@ -4627,17 +4627,20 @@ if (typeof initAmbientes === 'function') initAmbientes();
       });
       if (window._wiz7Locs.length === 0) window._wiz7Locs.push({name:'',cpf:'',rg:'',phone:'',email:''});
       window._wiz7Tens = [];
-      document.querySelectorAll('#locat\\u00e1rios-container .person-block').forEach(function(b) {
-        var prefix = b.id.indexOf('locat-block-') === 0 ? 'locat' : 'ten';
-        var x = b.id.replace('locat-block-','').replace('ten-block-','');
-        window._wiz7Tens.push({
-          name: (document.getElementById(prefix+'-name-'+x)||{}).value||'',
-          cpf: (document.getElementById(prefix+'-cpf-'+x)||{}).value||'',
-          rg: (document.getElementById(prefix+'-rg-'+x)||{}).value||'',
-          phone: (document.getElementById(prefix+'-phone-'+x)||{}).value||'',
-          email: (document.getElementById(prefix+'-email-'+x)||{}).value||''
+      var _tenCont7 = document.getElementById('locat\u00e1rios-container');
+      if (_tenCont7) {
+        _tenCont7.querySelectorAll('.person-block').forEach(function(b) {
+          var prefix = b.id.indexOf('locat-block-') === 0 ? 'locat' : 'ten';
+          var x = b.id.replace('locat-block-','').replace('ten-block-','');
+          window._wiz7Tens.push({
+            name: (document.getElementById(prefix+'-name-'+x)||{}).value||'',
+            cpf: (document.getElementById(prefix+'-cpf-'+x)||{}).value||'',
+            rg: (document.getElementById(prefix+'-rg-'+x)||{}).value||'',
+            phone: (document.getElementById(prefix+'-phone-'+x)||{}).value||'',
+            email: (document.getElementById(prefix+'-email-'+x)||{}).value||''
+          });
         });
-      });
+      }
       if (window._wiz7Tens.length === 0) window._wiz7Tens.push({name:'',cpf:'',rg:'',phone:'',email:''});
 
       // Populate _fotoStore from wizard.itensData (batch flow) - kept from original
