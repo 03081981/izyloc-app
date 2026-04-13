@@ -636,56 +636,49 @@ def add_ambientes(story, s, ambientes):
             story.append(Paragraph(u'Observa\u00e7\u00e3o geral', s['secao']))
             story.append(Paragraph(obs_g, s['obs']))
 
-        # Inventario (temporada)
+        # Inventario (apenas temporada)
         _inventario = amb.get('inventario', {}) or {}
-        _inv_extras = amb.get('inventarioExtras', []) or []
         _inv_nomes = amb.get('inventarioNomes', []) or []
-        if _inventario and _inv_nomes:
-            _inv_data = [['Item', 'Qtd', 'Estado', u'Observa\u00e7\u00e3o']]
-            for _item in list(_inv_nomes):
-                _key = re.sub(r'[\s/().]+', '_', _item).lower()
+        _inv_extras = amb.get('inventarioExtras', []) or []
+        if _inventario and (_inv_nomes or _inv_extras):
+            _todos = list(_inv_nomes) + list(_inv_extras)
+            _linhas = []
+            for _idx_inv, _item in enumerate(_todos):
+                if _idx_inv < len(_inv_nomes):
+                    _key = re.sub(r'[\s\/\(\)\.]+', '_', _item).lower()
+                else:
+                    _key = 'extra_' + str(_idx_inv - len(_inv_nomes))
                 _estado = _inventario.get(_key + '_estado', '')
-                if not _estado:
+                _qty = _inventario.get(_key + '_qty', 0)
+                if not _estado and (not _qty or _qty == 0):
                     continue
-                _qty = str(_inventario.get(_key + '_qty', 1))
-                _obs = _inventario.get(_key + '_obs', '') or ''
+                _obs = _inventario.get(_key + '_obs', '') or u''
                 if _estado == 'bom':
                     _label = u'\u2713 Bom'
                 elif _estado == 'avaria':
                     _label = u'\u26a0 Avaria'
-                else:
+                elif _estado == 'ausente':
                     _label = u'\u2717 Ausente'
-                _inv_data.append([_item, _qty, _label, _obs])
-            for _ei, _item in enumerate(_inv_extras):
-                _key = 'extra_' + str(_ei)
-                _estado = _inventario.get(_key + '_estado', '')
-                if not _estado:
-                    continue
-                _qty = str(_inventario.get(_key + '_qty', 1))
-                _obs = _inventario.get(_key + '_obs', '') or ''
-                if _estado == 'bom':
-                    _label = u'\u2713 Bom'
-                elif _estado == 'avaria':
-                    _label = u'\u26a0 Avaria'
                 else:
-                    _label = u'\u2717 Ausente'
-                _inv_data.append([_item, _qty, _label, _obs])
-            if len(_inv_data) > 1:
+                    _label = u'\u2014'
+                _linhas.append([_item, str(_qty), _label, _obs])
+            if _linhas:
                 story.append(Spacer(1, 8))
                 story.append(Paragraph(u'Invent\u00e1rio do ambiente', s['secao']))
-                _inv_table = Table(_inv_data, colWidths=[180, 30, 70, 180])
-                _inv_table.setStyle(TableStyle([
-                    ('FONTNAME', (0,0), (-1,0), 'Helvetica-Bold'),
-                    ('FONTSIZE', (0,0), (-1,-1), 8),
-                    ('BACKGROUND', (0,0), (-1,0), HexColor('#fff8e1')),
-                    ('TEXTCOLOR', (0,0), (-1,0), HexColor('#92400e')),
-                    ('GRID', (0,0), (-1,-1), 0.3, HexColor('#fcd34d')),
-                    ('ROWBACKGROUNDS', (0,1), (-1,-1), [colors.white, HexColor('#fffdf0')]),
-                    ('VALIGN', (0,0), (-1,-1), 'MIDDLE'),
-                    ('TOPPADDING', (0,0), (-1,-1), 4),
-                    ('BOTTOMPADDING', (0,0), (-1,-1), 4),
+                _dados = [[u'Item', u'Qtd', u'Estado', u'Observa\u00e7\u00e3o']] + _linhas
+                _t = Table(_dados, colWidths=[180, 30, 70, 180])
+                _t.setStyle(TableStyle([
+                    ('FONTNAME',     (0,0),  (-1,0),  'Helvetica-Bold'),
+                    ('FONTSIZE',     (0,0),  (-1,-1), 8),
+                    ('BACKGROUND',   (0,0),  (-1,0),  HexColor('#fff8e1')),
+                    ('TEXTCOLOR',    (0,0),  (-1,0),  HexColor('#92400e')),
+                    ('GRID',         (0,0),  (-1,-1), 0.3, HexColor('#fcd34d')),
+                    ('ROWBACKGROUNDS',(0,1), (-1,-1), [colors.white, HexColor('#fffdf0')]),
+                    ('VALIGN',       (0,0),  (-1,-1), 'MIDDLE'),
+                    ('TOPPADDING',   (0,0),  (-1,-1), 4),
+                    ('BOTTOMPADDING',(0,0),  (-1,-1), 4),
                 ]))
-                story.append(_inv_table)
+                story.append(_t)
 
         story.append(Spacer(1, 5))
 
