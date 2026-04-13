@@ -3960,7 +3960,7 @@ async function generatePDF() {
             _sFotos.push({item:_sn,estado:_subEstado,desc:_subResumo,src:""});
           }
         });
-        _ambArr.push({nome:_bName,fotos:_sFotos,verificacoes:_bd.isSuite?{}:(_bd.testes||{}),observacoes:_bd.obs||""});
+        _ambArr.push({nome:_bName,fotos:_sFotos,verificacoes:_bd.isSuite?{}:(_bd.testes||{}),observacoes:_bd.obs||"",inventario:(_bd.inventario||{}),inventarioExtras:(_bd.inventarioExtras||[]),inventarioNomes:(typeof _getNomesInventario==="function"?_getNomesInventario(_bName):[])});
       } else {
         // Regular room: one item per photo, resumo on first
         var _bFotos=[];
@@ -3972,7 +3972,7 @@ async function generatePDF() {
         if((_bd.fotos||[]).length===0&&_bResumo){
           _bFotos.push({item:_bName,estado:_bEstado,desc:_bResumo,src:""});
         }
-        _ambArr.push({nome:_bName,fotos:_bFotos,verificacoes:_bd.testes||{},observacoes:_bd.obs||""});
+        _ambArr.push({nome:_bName,fotos:_bFotos,verificacoes:_bd.testes||{},observacoes:_bd.obs||"",inventario:(_bd.inventario||{}),inventarioExtras:(_bd.inventarioExtras||[]),inventarioNomes:(typeof _getNomesInventario==="function"?_getNomesInventario(_bName):[])});
       }
     }
     try{console.log('ambData inventario:',JSON.stringify(_ambArr.map(function(a){return {nome:a.nome,inv:a.inventario,nomes:a.inventarioNomes,extras:a.inventarioExtras};})));}catch(e){} await fetch("/api/inspections/"+wizard.inspectionId,{method:"PUT",headers:{"Content-Type":"application/json","Authorization":"Bearer "+localStorage.getItem("izylo_token")},body:JSON.stringify({ambientes_json:JSON.stringify(_ambArr)})});
