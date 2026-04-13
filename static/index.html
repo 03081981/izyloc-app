@@ -6687,7 +6687,7 @@ function wiz6ConfirmarSubAmb(idx) {
 function _wiz6RenderSubsBlock(ambIdx, dados) {
   var h = '';
   if (!dados || !dados.subAmbientes || !dados.subAmbientes.length) return h;
-  dados.subAmbientes.forEach(function(subNome) {
+  dados.subAmbientes.forEach(function(subNome, _subSi) {
     var sd = dados.subs && dados.subs[subNome] ? dados.subs[subNome] : {fotos:[], testes:{}, jaAnalisou:false, resumo:'', obs:''};
     // === SUB-AMBIENTE HEADER ===
     h += '<div style="border-top:2px solid #e2e8f0">';
@@ -6728,6 +6728,7 @@ function _wiz6RenderSubsBlock(ambIdx, dados) {
       h += '<label style="display:flex;align-items:center;gap:6px;padding:7px 12px;border:0.5px solid #e2e8f0;border-radius:7px;background:#fff;font-size:11px;color:#8898aa;cursor:pointer">+ Adicionar mais fotos<input type="file" accept="image/*" multiple style="display:none" onchange="wiz6AddFotosSub(this,' + ambIdx + ',\'' + subNome.replace(/'/g,"\\\'") + '\')">';
       h += '</label>';
       h += '<button onclick="wiz6AnalisarSub(' + ambIdx + ',\'' + subNome.replace(/'/g,"\\\'") + '\')" style="background:#16a34a;color:#fff;border:none;border-radius:7px;padding:7px 14px;font-size:11px;font-weight:600;cursor:pointer">' + (sd.jaAnalisou ? '\ud83d\udd04 Re-analisar com IA' : '\ud83e\udd16 Analisar com IA') + '</button>';
+      h += '<div id="wiz6-ai-status-sub-' + ambIdx + '-' + _subSi + '" style="display:none"></div>';
       h += '</div></div>';
     }
     // DESCRI\u00c7\u00c3O DA IA
