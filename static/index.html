@@ -6117,14 +6117,12 @@ function wiz6Drop(event, targetIdx) {
   }
   _wiz6DragIdx = null;
   wiz6RenderTabs();
-  var wrap = document.getElementById('wiz6-amb-container');
-  if (wrap) wrap.innerHTML = wiz6RenderAmbCard(_wiz6AmbIdx);
+  wiz6RenderAmbCard(_wiz6AmbIdx);
 }
 function wiz6GoAmb(idx) {
   _wiz6AmbIdx = idx;
   wiz6RenderTabs();
-  var wrap = document.getElementById('wiz6-amb-container');
-  if (wrap) wrap.innerHTML = wiz6RenderAmbCard(idx);
+  wiz6RenderAmbCard(idx);
 }
 
 // ── EXCLUIR AMBIENTE ────────────────────────────────
@@ -6144,8 +6142,7 @@ function wiz6ExcluirAmb(idx) {
     _wiz6AmbIdx--;
   }
   wiz6RenderTabs();
-  var wrap = document.getElementById('wiz6-amb-container');
-  if (wrap) wrap.innerHTML = wiz6RenderAmbCard(_wiz6AmbIdx);
+  wiz6RenderAmbCard(_wiz6AmbIdx);
 }
 
 // ── ADICIONAR NOVO AMBIENTE ─────────────────────────
@@ -6192,8 +6189,7 @@ function wiz6ConfirmarNovoAmb() {
   };
   _wiz6AmbIdx = newIdx;
   wiz6RenderTabs();
-  var wrap = document.getElementById('wiz6-amb-container');
-  if (wrap) wrap.innerHTML = wiz6RenderAmbCard(newIdx);
+  wiz6RenderAmbCard(newIdx);
 }
 
 // ── CARD DO AMBIENTE ─────────────────────────────────────
@@ -6301,7 +6297,7 @@ function wiz6RenderAmbCard(idx) {
     card.innerHTML = wiz6BuildSuiteHtml(idx);
     return;
   }
-  var nome = _wiz6Ambientes[idx] || 'Ambiente';
+  var nome = (wizard.selectedRooms && wizard.selectedRooms[idx]) || _wiz6Ambientes[idx] || 'Ambiente';
   var icone = _wiz6AmbIcon(nome);
   var dados = wizard.itensData[idx] || {};
   var fotos = dados.fotos || [];
@@ -6485,7 +6481,7 @@ function wiz6BuildSuiteHtml(idx) {
   var subs = d.subAmbientes || [];
   var concluidos = 0;
   subs.forEach(function(sn) { if (d.subs[sn] && d.subs[sn].jaAnalisou) concluidos++; });
-  var suiteName = _wiz6Ambientes[idx] || 'Su\u00EDte';
+  var suiteName = (wizard.selectedRooms && wizard.selectedRooms[idx]) || _wiz6Ambientes[idx] || 'Su\u00EDte';
   var icone = _wiz6AmbIcon(suiteName);
 
   var h = '';
