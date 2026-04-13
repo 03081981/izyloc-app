@@ -805,11 +805,16 @@ def add_clausulas_entrada(story, s, email_contestacao, is_imobiliaria=False, cre
         u'para compara\u00e7\u00e3o ao t\u00e9rmino do contrato de loca\u00e7\u00e3o, nos termos do art. 22, inciso V, '
         u'e art. 23, inciso III, da Lei n\u00ba 8.245/91.', s['normal']))
     if is_imobiliaria:
-        story.append(Paragraph(
-            u'Este laudo foi elaborado por vistoriador habilitado, com registro no CRECI n\u00ba '
-            + _safe(creci) +
-            u', utilizando recursos fotogr\u00e1ficos e tecnol\u00f3gicos, constituindo documento '
-            u'de valor jur\u00eddico entre as partes.', s['normal']))
+        _creci = _safe(creci, u'').strip()
+        if _creci:
+            _txt_creci = (u'Este laudo foi elaborado por vistoriador habilitado, '
+                          u'com registro no CRECI n\u00ba ' + _creci + u', utilizando '
+                          u'recursos fotogr\u00e1ficos e tecnol\u00f3gicos do sistema izyLAUDO.')
+        else:
+            _txt_creci = (u'Este laudo foi elaborado por vistoriador habilitado, '
+                          u'utilizando recursos fotogr\u00e1ficos e tecnol\u00f3gicos '
+                          u'do sistema izyLAUDO.')
+        story.append(Paragraph(_txt_creci, s['normal']))
     else:
         story.append(Paragraph(
             u'Esta vistoria foi realizada diretamente pelo propriet\u00e1rio do im\u00f3vel, utilizando '
@@ -881,11 +886,16 @@ def add_clausulas_saida(story, s, email_contestacao, is_imobiliaria=False, creci
         u'possibilitando a compara\u00e7\u00e3o com o Laudo de Vistoria de Entrada, nos termos do '
         u'art. 23, inciso III, da Lei n\u00ba 8.245/91 e do art. 569 do C\u00f3digo Civil Brasileiro.', s['normal']))
     if is_imobiliaria:
-        story.append(Paragraph(
-            u'Este laudo foi elaborado por vistoriador habilitado, com registro no CRECI n\u00ba '
-            + _safe(creci) +
-            u', utilizando recursos fotogr\u00e1ficos e tecnol\u00f3gicos, constituindo documento '
-            u'de valor jur\u00eddico entre as partes.', s['normal']))
+        _creci = _safe(creci, u'').strip()
+        if _creci:
+            _txt_creci = (u'Este laudo foi elaborado por vistoriador habilitado, '
+                          u'com registro no CRECI n\u00ba ' + _creci + u', utilizando '
+                          u'recursos fotogr\u00e1ficos e tecnol\u00f3gicos do sistema izyLAUDO.')
+        else:
+            _txt_creci = (u'Este laudo foi elaborado por vistoriador habilitado, '
+                          u'utilizando recursos fotogr\u00e1ficos e tecnol\u00f3gicos '
+                          u'do sistema izyLAUDO.')
+        story.append(Paragraph(_txt_creci, s['normal']))
     else:
         story.append(Paragraph(
             u'Esta vistoria foi realizada diretamente pelo propriet\u00e1rio do im\u00f3vel, utilizando '

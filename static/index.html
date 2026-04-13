@@ -3365,7 +3365,7 @@ async function wizardNext(step) {
         showLoading('Criando vistoria...');
     const r = await api('POST', '/api/inspections', {
       type: (typeof wizard !== 'undefined' && wizard.tipo) || document.getElementById('wi-type').value,
-      property_address: document.getElementById('wi-address').value.trim(),
+      property_address: (function(){var _a=(document.getElementById('wi-address')||{value:''}).value.trim();var _n=(document.getElementById('wi-n\u00famero')||document.getElementById('wi-numero')||document.getElementById('wi-number')||{value:''}).value.trim();return _n?(_a+', '+_n):_a;})(),
       property_type: document.getElementById('wi-prop-type').value,
       property_area: document.getElementById('wi-area').value,
       inspection_date: fmtDate,
@@ -3820,7 +3820,7 @@ async function gerarLaudo() {
   var tipo = document.getElementById('wi-type').value || 'entrada';
   var body = {
     type: tipo,
-    property_address: document.getElementById('wi-address').value,
+    property_address: (function(){var _a=(document.getElementById('wi-address')||{value:''}).value.trim();var _n=(document.getElementById('wi-n\u00famero')||document.getElementById('wi-numero')||document.getElementById('wi-number')||{value:''}).value.trim();return _n?(_a+', '+_n):_a;})(),
     property_type: document.getElementById('wi-prop-type').value,
     property_area: (document.getElementById('wi-area') || {}).value || '',
     inspection_date: document.getElementById('wi-date').value,
