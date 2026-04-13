@@ -4687,37 +4687,59 @@ if (typeof initAmbientes === 'function') initAmbientes();
       // Card 3 - Partes envolvidas
       h += '<div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:14px;margin-bottom:12px">';
       h += '<div style="font-size:14px;font-weight:700;color:#0f172a;margin-bottom:10px">3. Partes envolvidas</div>';
-      var _locs = document.querySelectorAll('[id^="loc-name-"]');
-      if (_locs.length > 0) {
-        h += '<div style="font-size:12px;font-weight:600;color:#475569;margin-bottom:6px">Locador(es)</div>';
-        for (var _li = 0; _li < _locs.length; _li++) {
-          var _lid = _locs[_li].id.replace('loc-name-', '');
-          h += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;padding:8px;background:#f8fafc;border-radius:6px">';
-          h += '<div style="grid-column:1/span 2">' + _inp('Nome', 'loc-name-' + _lid) + '</div>';
-          if (document.getElementById('loc-cpf-' + _lid)) h += '<div>' + _inp('CPF', 'loc-cpf-' + _lid) + '</div>';
-          if (document.getElementById('loc-rg-' + _lid)) h += '<div>' + _inp('RG', 'loc-rg-' + _lid) + '</div>';
-          if (document.getElementById('loc-phone-' + _lid)) h += '<div>' + _inp('Telefone', 'loc-phone-' + _lid, 'tel') + '</div>';
-          if (document.getElementById('loc-email-' + _lid)) h += '<div>' + _inp('E-mail', 'loc-email-' + _lid, 'email') + '</div>';
-          h += '</div>';
-        }
+      // Locadores - collect from DOM
+      var _locArr7 = [];
+      document.querySelectorAll('[id^="loc-name-"]').forEach(function(el) {
+        var _lid = el.id.replace('loc-name-', '');
+        _locArr7.push({
+          idx: _lid,
+          nome: (document.getElementById('loc-name-'+_lid)||{}).value||'',
+          cpf: (document.getElementById('loc-cpf-'+_lid)||{}).value||'',
+          rg: (document.getElementById('loc-rg-'+_lid)||{}).value||'',
+          telefone: (document.getElementById('loc-phone-'+_lid)||{}).value||'',
+          email: (document.getElementById('loc-email-'+_lid)||{}).value||''
+        });
+      });
+      h += '<div style="font-size:11px;font-weight:600;color:#8898aa;letter-spacing:.05em;text-transform:uppercase;margin-bottom:8px">LOCADOR' + (_locArr7.length > 1 ? '(ES)' : '') + '</div>';
+      if (_locArr7.length === 0) {
+        h += '<div style="font-size:12px;color:#94a3b8;margin-bottom:10px">Nenhum locador informado</div>';
       }
-      var _tenAll = [];
-        document.querySelectorAll('[id^="locat-name-"]').forEach(function(el) { _tenAll.push({prefix:'locat', idx: el.id.replace('locat-name-','')}); });
-        document.querySelectorAll('[id^="ten-name-"]').forEach(function(el) { _tenAll.push({prefix:'ten', idx: el.id.replace('ten-name-','')}); });
-        if (_tenAll.length > 0) {
-          h += '<div style="font-size:12px;font-weight:600;color:#475569;margin-bottom:6px">Locatário(s)</div>';
-          for (var _ti = 0; _ti < _tenAll.length; _ti++) {
-            var _tp = _tenAll[_ti].prefix;
-            var _tid = _tenAll[_ti].idx;
-            h += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;padding:8px;background:#f8fafc;border-radius:6px">';
-            h += '<div style="grid-column:1/span 2">' + _inp('Nome', _tp + '-name-' + _tid) + '</div>';
-            if (document.getElementById(_tp + '-cpf-' + _tid)) h += '<div>' + _inp('CPF', _tp + '-cpf-' + _tid) + '</div>';
-            if (document.getElementById(_tp + '-rg-' + _tid)) h += '<div>' + _inp('RG', _tp + '-rg-' + _tid) + '</div>';
-            if (document.getElementById(_tp + '-phone-' + _tid)) h += '<div>' + _inp('Telefone', _tp + '-phone-' + _tid, 'tel') + '</div>';
-            if (document.getElementById(_tp + '-email-' + _tid)) h += '<div>' + _inp('E-mail', _tp + '-email-' + _tid, 'email') + '</div>';
-            h += '</div>';
-          }
-        }
+      _locArr7.forEach(function(_loc7, _li7) {
+        h += '<div style="background:#f8fafc;border:0.5px solid #e2e8f0;border-radius:8px;padding:10px 12px;margin-bottom:8px">';
+        if (_locArr7.length > 1) h += '<div style="font-size:11px;font-weight:600;color:#2d7dd2;margin-bottom:6px">Locador ' + (_li7+1) + '</div>';
+        h += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">';
+        h += '<div style="grid-column:1/span 2">' + _inp('Nome', 'loc-name-' + _loc7.idx) + '</div>';
+        if (_loc7.cpf) h += '<div>' + _inp('CPF', 'loc-cpf-' + _loc7.idx) + '</div>';
+        if (_loc7.rg) h += '<div>' + _inp('RG', 'loc-rg-' + _loc7.idx) + '</div>';
+        if (_loc7.telefone) h += '<div>' + _inp('Telefone', 'loc-phone-' + _loc7.idx, 'tel') + '</div>';
+        if (_loc7.email) h += '<div>' + _inp('E-mail', 'loc-email-' + _loc7.idx, 'email') + '</div>';
+        h += '</div></div>';
+      });
+      // Locatarios - collect from DOM
+      var _tenArr7 = [];
+      document.querySelectorAll('[id^="locat-name-"]').forEach(function(el) { var _x=el.id.replace('locat-name-',''); _tenArr7.push({prefix:'locat',idx:_x}); });
+      document.querySelectorAll('[id^="ten-name-"]').forEach(function(el) { var _x=el.id.replace('ten-name-',''); _tenArr7.push({prefix:'ten',idx:_x}); });
+      h += '<div style="font-size:11px;font-weight:600;color:#8898aa;letter-spacing:.05em;text-transform:uppercase;margin-bottom:8px;margin-top:12px">LOCAT\u00c1RIO' + (_tenArr7.length > 1 ? '(S)' : '') + '</div>';
+      if (_tenArr7.length === 0) {
+        h += '<div style="font-size:12px;color:#94a3b8;margin-bottom:10px">Nenhum locat\u00e1rio informado</div>';
+      }
+      _tenArr7.forEach(function(_ten7, _ti7) {
+        var _tp7 = _ten7.prefix, _tid7 = _ten7.idx;
+        var _tn = (document.getElementById(_tp7+'-name-'+_tid7)||{}).value||'';
+        var _tc = (document.getElementById(_tp7+'-cpf-'+_tid7)||{}).value||'';
+        var _tr = (document.getElementById(_tp7+'-rg-'+_tid7)||{}).value||'';
+        var _tt = (document.getElementById(_tp7+'-phone-'+_tid7)||{}).value||'';
+        var _te = (document.getElementById(_tp7+'-email-'+_tid7)||{}).value||'';
+        h += '<div style="background:#f8fafc;border:0.5px solid #e2e8f0;border-radius:8px;padding:10px 12px;margin-bottom:8px">';
+        if (_tenArr7.length > 1) h += '<div style="font-size:11px;font-weight:600;color:#2d7dd2;margin-bottom:6px">Locat\u00e1rio ' + (_ti7+1) + '</div>';
+        h += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">';
+        h += '<div style="grid-column:1/span 2">' + _inp('Nome', _tp7+'-name-'+_tid7) + '</div>';
+        if (_tc) h += '<div>' + _inp('CPF', _tp7+'-cpf-'+_tid7) + '</div>';
+        if (_tr) h += '<div>' + _inp('RG', _tp7+'-rg-'+_tid7) + '</div>';
+        if (_tt) h += '<div>' + _inp('Telefone', _tp7+'-phone-'+_tid7, 'tel') + '</div>';
+        if (_te) h += '<div>' + _inp('E-mail', _tp7+'-email-'+_tid7, 'email') + '</div>';
+        h += '</div></div>';
+      });
         h += '</div>';
 
         // Card 4 - Ambientes
@@ -4739,7 +4761,7 @@ if (typeof initAmbientes === 'function') initAmbientes();
             h+='</div>';
             if(_mf.length>0){h+='<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(90px,1fr));gap:6px;margin-bottom:10px">';for(var _mfi=0;_mfi<_mf.length;_mfi++){var _msrc=_mf[_mfi].preview||(_mf[_mfi].base64?('data:'+(_mf[_mfi].mime||'image/jpeg')+';base64,'+_mf[_mfi].base64):'');if(_msrc){h+='<div style="position:relative;aspect-ratio:1;overflow:hidden;border-radius:6px;border:1px solid #cbd5e1;background:#f1f5f9">';h+='<img src="'+_msrc+'" style="width:100%;height:100%;object-fit:cover;display:block"/>';h+='<div style="position:absolute;left:3px;top:3px;background:rgba(15,23,42,0.75);color:#fff;padding:1px 6px;border-radius:4px;font-size:10px;font-weight:600">'+(_mfi+1)+'</div>';h+='</div>';}}h+='</div>';}
             h+='<div style="margin-bottom:10px"><label style="display:block;font-size:11px;color:#64748b;font-weight:600;margin-bottom:3px">S\u00edntese / Resumo do ambiente</label>';
-            h+='<textarea data-kind="resumo" data-aidx="'+_ri+'" rows="5" style="width:100%;padding:7px 9px;border:1px solid #cbd5e1;border-radius:6px;font-size:12px;background:#fff;resize:vertical">'+_esc(_rd.resumo||'')+'</textarea></div>';
+            h+='<textarea data-kind="resumo" data-aidx="'+_ri+'" rows="5" style="width:100%;padding:7px 9px;border:1px solid #cbd5e1;border-radius:6px;font-size:12px;background:#fff;resize:none;field-sizing:content;overflow:hidden;min-height:60px;line-height:1.8">'+_esc(_rd.resumo||'')+'</textarea></div>';
             var _mTKeys=[];var _mSeen={};
             for(var _mk in _stdNomes){if(_mTst.hasOwnProperty(_mk)){_mTKeys.push({k:_mk,n:_stdNomes[_mk]});_mSeen[_mk]=1;}}
             for(var _mx=0;_mx<_mXtr.length;_mx++){if(!_mSeen[_mXtr[_mx].k]){_mTKeys.push({k:_mXtr[_mx].k,n:_mXtr[_mx].n||_mXtr[_mx].k});_mSeen[_mXtr[_mx].k]=1;}}
@@ -4766,7 +4788,7 @@ if (typeof initAmbientes === 'function') initAmbientes();
               h+='</div>';
             }
             h+='<div><label style="display:block;font-size:11px;color:#64748b;font-weight:600;margin-bottom:3px">Observa\u00e7\u00f5es gerais</label>';
-            h+='<textarea data-kind="obs" data-aidx="'+_ri+'" rows="2" style="width:100%;padding:7px 9px;border:1px solid #cbd5e1;border-radius:6px;font-size:12px;background:#fff;resize:vertical">'+_esc(_rd.obs||'')+'</textarea></div>';
+            h+='<textarea data-kind="obs" data-aidx="'+_ri+'" rows="2" style="width:100%;padding:7px 9px;border:1px solid #cbd5e1;border-radius:6px;font-size:12px;background:#fff;resize:none;field-sizing:content;overflow:hidden;min-height:60px;line-height:1.8">'+_esc(_rd.obs||'')+'</textarea></div>';
             h+='</div>';
           }
           (_rd.subAmbientes || []).forEach(function(_sn, _si) {
@@ -4796,7 +4818,7 @@ if (typeof initAmbientes === 'function') initAmbientes();
             }
             // Synopsis - same as regular rooms
             h += '<div style="margin-bottom:10px"><label style="display:block;font-size:11px;color:#64748b;font-weight:600;margin-bottom:3px">S\u00edntese / Resumo do ambiente</label>';
-            h += '<textarea data-kind="resumoSub" data-aidx="' + _ri + '" data-sub="' + _esc(_sn) + '" rows="5" style="width:100%;padding:7px 9px;border:1px solid #cbd5e1;border-radius:6px;font-size:12px;background:#fff;resize:vertical">' + _esc(_sd.resumo || '') + '</textarea></div>';
+            h += '<textarea data-kind="resumoSub" data-aidx="' + _ri + '" data-sub="' + _esc(_sn) + '" rows="5" style="width:100%;padding:7px 9px;border:1px solid #cbd5e1;border-radius:6px;font-size:12px;background:#fff;resize:none;field-sizing:content;overflow:hidden;min-height:60px;line-height:1.8">' + _esc(_sd.resumo || '') + '</textarea></div>';
             // Verifica\u00e7\u00f5es t\u00e9cnicas - same layout as regular rooms
             var _sTKeys = [];
             var _sSeen = {};
@@ -4835,7 +4857,7 @@ if (typeof initAmbientes === 'function') initAmbientes();
             }
             // Observa\u00e7\u00f5es gerais - same as regular rooms
             h += '<div><label style="display:block;font-size:11px;color:#64748b;font-weight:600;margin-bottom:3px">Observa\u00e7\u00f5es gerais</label>';
-            h += '<textarea data-kind="obsSub" data-aidx="' + _ri + '" data-sub="' + _esc(_sn) + '" rows="2" style="width:100%;padding:7px 9px;border:1px solid #cbd5e1;border-radius:6px;font-size:12px;background:#fff;resize:vertical">' + _esc(_sd.obs || '') + '</textarea></div>';
+            h += '<textarea data-kind="obsSub" data-aidx="' + _ri + '" data-sub="' + _esc(_sn) + '" rows="2" style="width:100%;padding:7px 9px;border:1px solid #cbd5e1;border-radius:6px;font-size:12px;background:#fff;resize:none;field-sizing:content;overflow:hidden;min-height:60px;line-height:1.8">' + _esc(_sd.obs || '') + '</textarea></div>';
             h += '</div>';
           });
           continue;
@@ -4864,7 +4886,7 @@ if (typeof initAmbientes === 'function') initAmbientes();
           h += '</div>';
         }
         h += '<div style="margin-bottom:10px"><label style="display:block;font-size:11px;color:#64748b;font-weight:600;margin-bottom:3px">Síntese / Resumo do ambiente</label>';
-        h += '<textarea data-kind="resumo" data-aidx="' + _ri + '" rows="5" style="width:100%;padding:7px 9px;border:1px solid #cbd5e1;border-radius:6px;font-size:12px;background:#fff;resize:vertical">' + _esc(_rd.resumo || '') + '</textarea></div>';
+        h += '<textarea data-kind="resumo" data-aidx="' + _ri + '" rows="5" style="width:100%;padding:7px 9px;border:1px solid #cbd5e1;border-radius:6px;font-size:12px;background:#fff;resize:none;field-sizing:content;overflow:hidden;min-height:60px;line-height:1.8">' + _esc(_rd.resumo || '') + '</textarea></div>';
         var _tKeys = [];
         var _seen = {};
         for (var _sk in _stdNomes) {
@@ -4901,7 +4923,7 @@ if (typeof initAmbientes === 'function') initAmbientes();
           h += '</div>';
         }
         h += '<div><label style="display:block;font-size:11px;color:#64748b;font-weight:600;margin-bottom:3px">Observações gerais</label>';
-        h += '<textarea data-kind="obs" data-aidx="' + _ri + '" rows="2" style="width:100%;padding:7px 9px;border:1px solid #cbd5e1;border-radius:6px;font-size:12px;background:#fff;resize:vertical">' + _esc(_rd.obs || '') + '</textarea></div>';
+        h += '<textarea data-kind="obs" data-aidx="' + _ri + '" rows="2" style="width:100%;padding:7px 9px;border:1px solid #cbd5e1;border-radius:6px;font-size:12px;background:#fff;resize:none;field-sizing:content;overflow:hidden;min-height:60px;line-height:1.8">' + _esc(_rd.obs || '') + '</textarea></div>';
         h += '</div>';
       }
       h += '</div>';
