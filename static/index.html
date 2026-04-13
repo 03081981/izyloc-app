@@ -6218,20 +6218,31 @@ function wiz6GoAmb(idx) {
 
 // ── EXCLUIR AMBIENTE ────────────────────────────────
 function wiz6ExcluirAmb(idx) {
-  var nome = (wizard.selectedRooms && wizard.selectedRooms[idx]) || 'este ambiente';
+  var nome = (wizard.selectedRooms && wizard.selectedRooms[idx]) ||
+             (_wiz6Ambientes && _wiz6Ambientes[idx]) ||
+             'este ambiente';
+
   if (!confirm('Excluir "' + nome + '"? Esta a\u00e7\u00e3o n\u00e3o pode ser desfeita.')) return;
-  wizard.selectedRooms.splice(idx, 1);
+
+  // Remover dos 3 arrays
+  if (wizard.selectedRooms) wizard.selectedRooms.splice(idx, 1);
+  if (_wiz6Ambientes) _wiz6Ambientes.splice(idx, 1);
   if (wizard.itensData) wizard.itensData.splice(idx, 1);
-  _wiz6Ambientes.splice(idx, 1);
-  if (wizard.selectedRooms.length === 0) {
+
+  // Se ficou sem ambientes, voltar para Etapa 5
+  if (!wizard.selectedRooms || wizard.selectedRooms.length === 0) {
     showStep(5);
     return;
   }
+
+  // Ajustar indice ativo
   if (_wiz6AmbIdx >= wizard.selectedRooms.length) {
     _wiz6AmbIdx = wizard.selectedRooms.length - 1;
   } else if (_wiz6AmbIdx > idx) {
     _wiz6AmbIdx--;
   }
+
+  // Re-renderizar tabs e card
   wiz6RenderTabs();
   wiz6RenderAmbCard(_wiz6AmbIdx);
 }
