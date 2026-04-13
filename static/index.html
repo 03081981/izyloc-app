@@ -6120,7 +6120,7 @@ function wiz6GoAmb(idx) {
 function wiz6AdicionarNovoAmb() {
   var sugestoes = ['Dormit\u00f3rio','Banheiro','Sala','Cozinha','\u00c1rea de servi\u00e7o','Garagem','Varanda','Escrit\u00f3rio','\u00c1rea externa','Dep\u00f3sito'];
   var pills = sugestoes.map(function(s) {
-    return '<div onclick="document.getElementById(\'inp-novoamb\').value=\'' + s.replace(/'/g,"\\\'")+  '\'\'" style="padding:6px 12px;border-radius:20px;background:#dbeafe;border:0.5px solid #93c5fd;font-size:11px;color:#1e40af;cursor:pointer;display:inline-block;margin:3px">' + s + '</div>';
+    return '<div onclick="document.getElementById(\x27inp-novoamb\x27).value=\x27' + s + '\x27;wiz6ConfirmarNovoAmb()" style="padding:6px 12px;border-radius:20px;background:#dbeafe;border:0.5px solid #93c5fd;font-size:11px;color:#1e40af;cursor:pointer;display:inline-block;margin:3px">' + s + '</div>';
   }).join('');
   var modal = document.createElement('div');
   modal.id = 'modal-novoamb';
