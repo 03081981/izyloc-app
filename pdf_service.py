@@ -25,12 +25,20 @@ import re
 def _title_case(s):
     if not s: return u''
     s = s.strip()
-    return u' '.join(w.capitalize() for w in s.split())
+    _min = set([u'de', u'da', u'do', u'dos', u'das', u'e', u'o', u'a', u'os', u'as', u'em', u'na', u'no', u'nas', u'nos', u'por', u'para', u'com', u'sem'])
+    out = []
+    for i, w in enumerate(s.split()):
+        if i > 0 and w.lower() in _min:
+            out.append(w.lower())
+        else:
+            out.append(w.capitalize())
+    return u' '.join(out)
 
 
 def _fmt_cpf(s):
     if not s: return u''
     d = re.sub(r'\D', '', str(s))
+    d = d[:11]
     if len(d) == 11:
         return u'{}.{}.{}-{}'.format(d[:3],d[3:6],d[6:9],d[9:])
     return str(s)
@@ -54,12 +62,14 @@ def _fmt_cep(s):
 
 def _fmt_tel(s):
     if not s: return u''
-    d = re.sub(r'\D', '', str(s))
+    s = str(s).strip()
+    if not s: return u''
+    d = re.sub(r'\D', '', s)
     if len(d) == 11:
         return u'({}) {}-{}'.format(d[:2],d[2:7],d[7:])
     if len(d) == 10:
         return u'({}) {}-{}'.format(d[:2],d[2:6],d[6:])
-    return str(s)
+    return u''
 from datetime import datetime
 
 # Debug collector for diagnostics
@@ -1478,8 +1488,11 @@ def generate_pdf(inspection_data: dict, rooms_data: list,
         else:
             cidade_uf = u'\u2014'
 
+        _end = _safe(insp.get('address') or insp.get('endereco'), u'')
+        _num = _safe(insp.get('number') or insp.get('numero'), u'')
+        _end_completo = (_end + (u', ' + _num if _num else u'')).strip()
         dados_imovel = {
-            'endereco'    : _title_case(address),
+            'endereco'    : _title_case(_end_completo),
             'complemento' : _title_case(_safe(insp.get('complemento'), u'\u2014')),
             'bairro'      : _title_case(_safe(insp.get('bairro'), u'\u2014')),
             'cidade_uf'   : _title_case(cidade_uf),
