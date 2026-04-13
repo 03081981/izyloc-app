@@ -3936,9 +3936,9 @@ async function generatePDF() {
             resumo: _sd.resumo || ''
           });
         });
-        _ambData.push({roomName: wizard.selectedRooms[_ai], isSuite: !!_d.isSuite, subAmbientes: _subAmbs, verificacoes:_verif, verificacoesObs:_verifObs, testesNomes:_tNomes, observacoes:_d.obs||'', inventario:(_d.inventario||{})});
+        _ambData.push({roomName: wizard.selectedRooms[_ai], isSuite: !!_d.isSuite, subAmbientes: _subAmbs, verificacoes:_verif, verificacoesObs:_verifObs, testesNomes:_tNomes, observacoes:_d.obs||'', inventario:(_d.inventario||{}),inventarioExtras:(_d.inventarioExtras||[])});
       } else {
-        _ambData.push({roomName:wizard.selectedRooms[_ai],verificacoes:_verif,verificacoesObs:_verifObs,testesNomes:_tNomes,observacoes:_d.obs||'', inventario:(_d.inventario||{})});
+        _ambData.push({roomName:wizard.selectedRooms[_ai],verificacoes:_verif,verificacoesObs:_verifObs,testesNomes:_tNomes,observacoes:_d.obs||'', inventario:(_d.inventario||{}),inventarioExtras:(_d.inventarioExtras||[])});
       };
     }
     // === Save ambientes_json to DB before PDF generation ===
@@ -4127,13 +4127,8 @@ window.addEventListener('resize', () => {
 
   // === ETAPA 4 FIXES (stepper, add persons, corretor visibility, next button) ===
   (function() {
-    // Temporada: suffix labels
-    if (wizard.tipo === 'temporada') {
-      var _sl = document.getElementById('wiz4-suf-loc');
-      var _st = document.getElementById('wiz4-suf-ten');
-      if (_sl) _sl.textContent = ' / Anfitri\u00e3o';
-      if (_st) _st.textContent = ' / H\u00f3spede';
-    }
+    // Temporada: suffix labels (standalone function for proper timing)
+    wiz4AtualizarLabelsTemporada();
     var locadorCount = 1;
     var locatárioCount = 1;
 
@@ -4179,6 +4174,7 @@ window.addEventListener('resize', () => {
         if (step === 2) { wizardNext(1).catch(function(e){ console.error('wizardNext(1) error:', e); }); }
         if (step === 3) { wizardNext(3).catch(function(e){ console.error('wizardNext(3) error:', e); }); }
         gotoWStep(next);
+        if (next === 2) wiz4AtualizarLabelsTemporada();
         if (next === 3) {
 if (typeof initAmbientes === 'function') initAmbientes();
         }
@@ -4199,7 +4195,10 @@ if (typeof initAmbientes === 'function') initAmbientes();
         7: 6
       };
       var prev = prevMap[step];
-      if (prev !== undefined) gotoWStep(prev);
+      if (prev !== undefined) {
+        gotoWStep(prev);
+        if (prev === 2) wiz4AtualizarLabelsTemporada();
+      }
     };
 
     // FIX 2: addLocador / addLocatário
@@ -6630,15 +6629,72 @@ function _wiz6RenderInventario(idx, nomeAmb) {
     });
     html += '</div></div>';
   });
+  // === EXTRAS (user-added items) ===
+  var _extras = (wizard.itensData[idx] && wizard.itensData[idx].inventarioExtras) || [];
+  _extras.forEach(function(_ex, _ei) {
+    var _exVal = (wizard.itensData[idx] && wizard.itensData[idx].inventario && wizard.itensData[idx].inventario['extra_' + _ei]) || '';
+    html += '<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid #f0f0f0">';
+    html += '<span style="font-size:13px;flex:1">' + _ex + '</span>';
+    html += '<div style="display:flex;gap:4px;align-items:center">';
+    [{v:'bom',label:'\u2713 Bom',bg:_exVal==='bom'?'#16a34a':'#dcfce7',cl:_exVal==='bom'?'#fff':'#166534'},
+     {v:'avaria',label:'\u26a0 Avaria',bg:_exVal==='avaria'?'#dc2626':'#fee2e2',cl:_exVal==='avaria'?'#fff':'#991b1b'},
+     {v:'ausente',label:'\u2717 Ausente',bg:_exVal==='ausente'?'#475569':'#f1f5f9',cl:_exVal==='ausente'?'#fff':'#475569'}].forEach(function(btn) {
+      html += '<button onclick="wiz6InvSet(' + idx + ',\x27extra_' + _ei + '\x27,\x27' + btn.v + '\x27)" style="padding:4px 8px;border:none;border-radius:4px;font-size:11px;cursor:pointer;background:' + btn.bg + ';color:' + btn.cl + '">' + btn.label + '</button> ';
+    });
+    html += '<button onclick="wiz6InvRemoverExtra(' + idx + ',' + _ei + ')" style="padding:2px 6px;border:none;background:#fee2e2;color:#dc2626;border-radius:4px;font-size:13px;cursor:pointer;margin-left:4px" title="Remover">\u00d7</button>';
+    html += '</div></div>';
+  });
+  // + Adicionar item button
+  html += '<div style="text-align:center;margin-top:10px">';
+  html += '<button onclick="wiz6InvAdicionarExtra(' + idx + ')" style="padding:6px 16px;border:1px dashed #94a3b8;background:#f8fafc;color:#475569;border-radius:6px;font-size:12px;cursor:pointer">+ Adicionar item ao invent\u00e1rio</button>';
+  html += '</div>';
   html += '</div>';
   return html;
 }
+function wiz4AtualizarLabelsTemporada() {
+  var _sl = document.getElementById('wiz4-suf-loc');
+  var _st = document.getElementById('wiz4-suf-ten');
+  if (wizard.tipo === 'temporada') {
+    if (_sl) _sl.textContent = ' / Anfitri\u00e3o';
+    if (_st) _st.textContent = ' / H\u00f3spede';
+  } else {
+    if (_sl) _sl.textContent = '';
+    if (_st) _st.textContent = '';
+  }
+}
+
 function wiz6InvSet(idx, key, val) {
   if (!wizard.itensData[idx]) wizard.itensData[idx] = {};
   if (!wizard.itensData[idx].inventario) wizard.itensData[idx].inventario = {};
   wizard.itensData[idx].inventario[key] = val;
   wiz6RenderAmbCard(idx);
 }
+
+function wiz6InvAdicionarExtra(idx) {
+  var nome = prompt('Nome do item:');
+  if (!nome || !nome.trim()) return;
+  if (!wizard.itensData[idx]) wizard.itensData[idx] = {};
+  if (!wizard.itensData[idx].inventarioExtras) wizard.itensData[idx].inventarioExtras = [];
+  wizard.itensData[idx].inventarioExtras.push(nome.trim());
+  wiz6RenderAmbCard(idx);
+}
+
+function wiz6InvRemoverExtra(idx, ei) {
+  if (!wizard.itensData[idx] || !wizard.itensData[idx].inventarioExtras) return;
+  wizard.itensData[idx].inventarioExtras.splice(ei, 1);
+  var inv = wizard.itensData[idx].inventario || {};
+  var newInv = {};
+  Object.keys(inv).forEach(function(k) {
+    if (k.indexOf('extra_') !== 0) newInv[k] = inv[k];
+  });
+  wizard.itensData[idx].inventarioExtras.forEach(function(_e, _i) {
+    var oldIdx = _i >= ei ? _i + 1 : _i;
+    if (inv['extra_' + oldIdx]) newInv['extra_' + _i] = inv['extra_' + oldIdx];
+  });
+  wizard.itensData[idx].inventario = newInv;
+  wiz6RenderAmbCard(idx);
+}
+
 
 // ── ADICIONAR FOTOS E ANALISAR COM IA ───────────────────
 function wiz6BuildSuiteHtml(idx) {
