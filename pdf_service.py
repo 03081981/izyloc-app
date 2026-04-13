@@ -638,47 +638,51 @@ def add_ambientes(story, s, ambientes):
 
         # Inventario (apenas temporada)
         _inventario = amb.get('inventario', {}) or {}
-        _inv_nomes = amb.get('inventarioNomes', []) or []
+        _inv_nomes  = amb.get('inventarioNomes', []) or []
         _inv_extras = amb.get('inventarioExtras', []) or []
-        if _inventario and (_inv_nomes or _inv_extras):
-            _todos = list(_inv_nomes) + list(_inv_extras)
-            _linhas = []
-            for _idx_inv, _item in enumerate(_todos):
-                if _idx_inv < len(_inv_nomes):
-                    _key = re.sub(r'[\s\/\(\)\.]+', '_', _item).lower()
-                else:
-                    _key = 'extra_' + str(_idx_inv - len(_inv_nomes))
-                _estado = _inventario.get(_key + '_estado', '')
-                _qty = _inventario.get(_key + '_qty', 0)
-                _obs = _inventario.get(_key + '_obs', '') or u''
-                if not _estado and (not _qty or int(_qty) == 0) and not _obs:
-                    continue
-                if _estado == 'bom':
-                    _label = u'\u2713 Bom'
-                elif _estado == 'avaria':
-                    _label = u'\u26a0 Avaria'
-                elif _estado == 'ausente':
-                    _label = u'\u2717 Ausente'
-                else:
-                    _label = u'\u2014'
-                _linhas.append([_item, str(_qty), _label, _obs])
-            if _linhas:
-                story.append(Spacer(1, 8))
-                story.append(Paragraph(u'Invent\u00e1rio do ambiente', s['secao']))
-                _dados = [[u'Item', u'Qtd', u'Estado', u'Observa\u00e7\u00e3o']] + _linhas
-                _t = Table(_dados, colWidths=[180, 30, 70, 180])
-                _t.setStyle(TableStyle([
-                    ('FONTNAME',     (0,0),  (-1,0),  'Helvetica-Bold'),
-                    ('FONTSIZE',     (0,0),  (-1,-1), 8),
-                    ('BACKGROUND',   (0,0),  (-1,0),  HexColor('#fff8e1')),
-                    ('TEXTCOLOR',    (0,0),  (-1,0),  HexColor('#92400e')),
-                    ('GRID',         (0,0),  (-1,-1), 0.3, HexColor('#fcd34d')),
-                    ('ROWBACKGROUNDS',(0,1), (-1,-1), [colors.white, HexColor('#fffdf0')]),
-                    ('VALIGN',       (0,0),  (-1,-1), 'MIDDLE'),
-                    ('TOPPADDING',   (0,0),  (-1,-1), 4),
-                    ('BOTTOMPADDING',(0,0),  (-1,-1), 4),
-                ]))
-                story.append(_t)
+        # Se não tem nomes mas tem inventário, extrair nomes das chaves
+        if _inventario and not _inv_nomes:
+            _inv_nomes_auto = set()
+            for _k in _inventario.keys():
+                for _suf in ['_qty','_estado','_obs']:
+                    if _k.endswith(_suf):
+                        _inv_nomes_auto.add(_k[:-len(_suf)])
+            _inv_nomes = list(_inv_nomes_auto)
+        _todos = list(_inv_nomes) + list(_inv_extras)
+        # Renderizar se tem qualquer dado
+        _linhas = []
+        for _item in _todos:
+            _key = re.sub(r'[\s\/\(\)\.]+', '_', str(_item)).lower()
+            _estado = _inventario.get(_key + '_estado', '')
+            _qty    = _inventario.get(_key + '_qty', 0)
+            _obs    = _inventario.get(_key + '_obs', '') or u''
+
+            if not _estado and (not _qty or int(str(_qty)) == 0) and not _obs:
+                continue
+
+            _label = (u'\u2713 Bom'    if _estado == 'bom'
+                      else u'\u26a0 Avaria'  if _estado == 'avaria'
+                      else u'\u2717 Ausente' if _estado == 'ausente'
+                      else u'\u2014')
+            _linhas.append([str(_item), str(_qty or 0), _label, _obs])
+        if _linhas:
+            story.append(Spacer(1, 8))
+            story.append(Paragraph(u'Inventário do ambiente', s['secao']))
+            _dados = [[u'Item', u'Qtd', u'Estado', u'Observação']] + _linhas
+            _t = Table(_dados, colWidths=[180, 30, 70, 180])
+            _t.setStyle(TableStyle([
+                ('FONTNAME',     (0,0),(-1,0),   'Helvetica-Bold'),
+                ('FONTSIZE',     (0,0),(-1,-1),  8),
+                ('BACKGROUND',   (0,0),(-1,0),   HexColor('#fff8e1')),
+                ('TEXTCOLOR',    (0,0),(-1,0),   HexColor('#92400e')),
+                ('GRID',         (0,0),(-1,-1),  0.3, HexColor('#fcd34d')),
+                ('ROWBACKGROUNDS',(0,1),(-1,-1), [colors.white, HexColor('#fffdf0')]),
+                ('VALIGN',       (0,0),(-1,-1),  'MIDDLE'),
+                ('TOPPADDING',   (0,0),(-1,-1),  4),
+                ('BOTTOMPADDING',(0,0),(-1,-1),  4),
+            ]))
+            story.append(_t)
+            story.append(Spacer(1, 6))
 
         story.append(Spacer(1, 5))
 
