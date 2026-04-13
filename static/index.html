@@ -6627,13 +6627,13 @@ function _wiz7RenderInventarioRev(idx, nomeAmb, dados) {
   var html = '';
   var rows = '';
   var _renderRow = function(item, key) {
-    var _qty = _inv[key + '_qty'] !== undefined ? _inv[key + '_qty'] : 1;
+    var _qty = _inv[key + '_qty'] !== undefined ? _inv[key + '_qty'] : 0;
     var _estado = _inv[key + '_estado'] || '';
     var _obs = _inv[key + '_obs'] || '';
-    if (!_estado) return;
+    if (!_estado && (!_qty || _qty == 0) && !_obs) return;
     var _cor = _estado === 'bom' ? '#166534' : (_estado === 'avaria' ? '#991b1b' : '#475569');
     var _bg  = _estado === 'bom' ? '#f0fdf4' : (_estado === 'avaria' ? '#fef2f2' : '#f8fafc');
-    var _label = _estado === 'bom' ? '\u2713 Bom' : (_estado === 'avaria' ? '\u26a0 Avaria' : '\u2717 Ausente');
+    var _label = _estado === 'bom' ? '\u2713 Bom' : (_estado === 'avaria' ? '\u26a0 Avaria' : (_estado === 'ausente' ? '\u2717 Ausente' : '\u2014'));
     rows += '<div style="display:flex;align-items:center;padding:4px 0;border-bottom:0.5px solid #fef3c7">';
     rows += '<span style="flex:1;font-size:11px;color:#1a2540">' + item + '</span>';
     rows += '<span style="font-size:10px;color:#8898aa;margin-right:8px">Qtd: ' + _qty + '</span>';
