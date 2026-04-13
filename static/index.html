@@ -2527,7 +2527,7 @@ window._openFotoModal = function(imgSrc) {
 <div class="wiz-section-sub">Preencha os dados do locador, locatário e corretor avaliador.</div>
 
 <!-- LOCADORES -->
-<div style="font-size:11px;font-weight:700;color:#8898aa;text-transform:uppercase;letter-spacing:0.5px;margin:16px 0 10px">Locador(es) — Proprietário</div>
+<div style="font-size:11px;font-weight:700;color:#8898aa;text-transform:uppercase;letter-spacing:0.5px;margin:16px 0 10px">Locador(es) — Proprietário<span id="wiz4-suf-loc"></span></div>
 <div id="locadores-container">
   <div class="person-block" id="loc-block-0" style="background:#fff;border-radius:12px;border:0.5px solid #e2e8f0;padding:16px;margin-bottom:10px">
     <div style="font-size:13px;font-weight:600;color:#1a2540;margin-bottom:12px;display:flex;align-items:center;gap:8px">
@@ -2561,7 +2561,7 @@ window._openFotoModal = function(imgSrc) {
 <div style="display:flex;align-items:center;gap:6px;padding:10px 16px;border-radius:8px;border:1.5px dashed #2d7dd2;background:#f0f7ff;color:#2d7dd2;font-size:13px;font-weight:500;cursor:pointer;margin-bottom:4px;width:fit-content" onclick="addLocador ? addLocador() : null">+ Adicionar outro locador</div>
 
 <!-- LOCATÁRIOS -->
-<div style="font-size:11px;font-weight:700;color:#8898aa;text-transform:uppercase;letter-spacing:0.5px;margin:16px 0 10px">Locatário(s) — Inquilino</div>
+<div style="font-size:11px;font-weight:700;color:#8898aa;text-transform:uppercase;letter-spacing:0.5px;margin:16px 0 10px">Locatário(s) — Inquilino<span id="wiz4-suf-ten"></span></div>
 <div id="locatários-container">
   <div class="person-block" id="locat-block-0" style="background:#fff;border-radius:12px;border:0.5px solid #e2e8f0;padding:16px;margin-bottom:10px">
     <div style="font-size:13px;font-weight:600;color:#1a2540;margin-bottom:12px;display:flex;align-items:center;gap:8px">
@@ -3936,9 +3936,9 @@ async function generatePDF() {
             resumo: _sd.resumo || ''
           });
         });
-        _ambData.push({roomName: wizard.selectedRooms[_ai], isSuite: !!_d.isSuite, subAmbientes: _subAmbs, verificacoes:_verif, verificacoesObs:_verifObs, testesNomes:_tNomes, observacoes:_d.obs||''});
+        _ambData.push({roomName: wizard.selectedRooms[_ai], isSuite: !!_d.isSuite, subAmbientes: _subAmbs, verificacoes:_verif, verificacoesObs:_verifObs, testesNomes:_tNomes, observacoes:_d.obs||'', inventario:(_d.inventario||{})});
       } else {
-        _ambData.push({roomName:wizard.selectedRooms[_ai],verificacoes:_verif,verificacoesObs:_verifObs,testesNomes:_tNomes,observacoes:_d.obs||''});
+        _ambData.push({roomName:wizard.selectedRooms[_ai],verificacoes:_verif,verificacoesObs:_verifObs,testesNomes:_tNomes,observacoes:_d.obs||'', inventario:(_d.inventario||{})});
       };
     }
     // === Save ambientes_json to DB before PDF generation ===
@@ -4127,6 +4127,13 @@ window.addEventListener('resize', () => {
 
   // === ETAPA 4 FIXES (stepper, add persons, corretor visibility, next button) ===
   (function() {
+    // Temporada: suffix labels
+    if (wizard.tipo === 'temporada') {
+      var _sl = document.getElementById('wiz4-suf-loc');
+      var _st = document.getElementById('wiz4-suf-ten');
+      if (_sl) _sl.textContent = ' / Anfitri\u00e3o';
+      if (_st) _st.textContent = ' / H\u00f3spede';
+    }
     var locadorCount = 1;
     var locatárioCount = 1;
 
@@ -6570,13 +6577,67 @@ function wiz6RenderAmbCard(idx) {
     '<button onclick="wiz6AddSubAmb(' + idx + ')" style="width:100%;background:#2d7dd2;border:none;border-radius:8px;padding:11px;font-size:13px;color:#fff;cursor:pointer;font-weight:600">+ Adicionar sub-ambiente</button>' +
   '</div>' +
 
-    '<div style="display:flex;gap:10px;align-items:center">' +
+    (wizard.tipo === 'temporada' ? _wiz6RenderInventario(idx, nome) : '') +
+
+        '<div style="display:flex;gap:10px;align-items:center">' +
       btnAnterior +
       '<div style="flex:1;text-align:center;font-size:11px;color:#8898aa">' + (idx+1) + ' de ' + _wiz6Ambientes.length + '</div>' +
       btnProx +
     '</div>' +
 
     '</div>';
+}
+
+
+
+// ── INVENTÁRIO TEMPORADA ───────────────
+function _wiz6RenderInventario(idx, nomeAmb) {
+  var _n = nomeAmb.toLowerCase();
+  var _itensPorAmb = {
+    sala:      ['TV', 'Sof\u00e1', 'Mesa de centro', 'Cadeiras', 'Tapete', 'Controle remoto TV', 'Controle remoto AC'],
+    cozinha:   ['Lou\u00e7as (pratos/tigelas)', 'Talheres', 'Copos e ta\u00e7as', 'Panelas', 'Frigideiras', 'Utensilios diversos', 'Cafeteira', 'Liquidificador', 'Micro-ondas'],
+    dormit:    ['Cama (estrutura)', 'Colch\u00e3o', 'Travesseiros', 'Fronhas', 'Len\u00e7\u00f3is', 'Cobertores/edredom', 'Toalhas de banho', 'Toalhas de rosto', 'Cabides'],
+    suite:     ['Cama (estrutura)', 'Colch\u00e3o', 'Travesseiros', 'Fronhas', 'Len\u00e7\u00f3is', 'Cobertores/edredom', 'Toalhas de banho (2)', 'Toalhas de rosto (2)', 'Roup\u00e3o', 'Cabides'],
+    banheiro:  ['Toalhas de banho', 'Toalhas de rosto', 'Tapete de banheiro', 'Papel higi\u00eanico (estoque)', 'Sabonete', 'Shampoo/condicionador', 'Secador de cabelo'],
+    servico:   ['Vassoura', 'Rodo', 'Pano de ch\u00e3o', 'Detergente', 'Sab\u00e3o em p\u00f3/l\u00edquido', 'Desinfetante'],
+    default:   ['Chaves do im\u00f3vel', 'Controles remotos', 'Manual de equipamentos', 'Guia da casa']
+  };
+  var _tipo = _n.indexOf('su\u00edte') >= 0 || _n.indexOf('suite') >= 0 ? 'suite' :
+              _n.indexOf('dorm') >= 0 || _n.indexOf('quarto') >= 0 ? 'dormit' :
+              _n.indexOf('banheiro') >= 0 ? 'banheiro' :
+              _n.indexOf('cozinha') >= 0 ? 'cozinha' :
+              _n.indexOf('sala') >= 0 ? 'sala' :
+              _n.indexOf('servi') >= 0 || _n.indexOf('lavand') >= 0 ? 'servico' :
+              'default';
+  var _itens = _itensPorAmb[_tipo];
+  if (!wizard.itensData[idx]) wizard.itensData[idx] = {};
+  if (!wizard.itensData[idx].inventario) wizard.itensData[idx].inventario = {};
+  var _inv = wizard.itensData[idx].inventario;
+  var html = '<div style="background:#fff8e1;border:0.5px solid #fcd34d;border-radius:10px;padding:12px 14px;margin:12px 16px 10px">';
+  html += '<div style="font-size:11px;font-weight:700;color:#92400e;margin-bottom:10px">\ud83d\udce6 Invent\u00e1rio do ambiente</div>';
+  _itens.forEach(function(item) {
+    var _key = item.replace(/\W+/g,'_').toLowerCase();
+    var _val = _inv[_key] || '';
+    html += '<div style="display:flex;align-items:center;padding:7px 0;border-bottom:0.5px solid #fef3c7">';
+    html += '<span style="flex:1;font-size:12px;color:#1a2540">' + item + '</span>';
+    html += '<div style="display:flex;gap:5px">';
+    [{v:'bom',label:'\u2713 Bom',bg:_val==='bom'?'#059669':'#d1fae5',cl:_val==='bom'?'#fff':'#065f46'},
+     {v:'avaria',label:'\u26a0 Avaria',bg:_val==='avaria'?'#dc2626':'#fee2e2',cl:_val==='avaria'?'#fff':'#991b1b'},
+     {v:'ausente',label:'\u2717 Ausente',bg:_val==='ausente'?'#475569':'#f1f5f9',cl:_val==='ausente'?'#fff':'#475569'}].forEach(function(btn) {
+      html += '<button onclick="wiz6InvSet(' + idx + ',\x27' + _key + '\x27,\x27' + btn.v + '\x27)" ';
+      html += 'style="font-size:10px;padding:3px 8px;border-radius:8px;border:none;cursor:pointer;';
+      html += 'background:' + btn.bg + ';color:' + btn.cl + '">' + btn.label + '</button>';
+    });
+    html += '</div></div>';
+  });
+  html += '</div>';
+  return html;
+}
+function wiz6InvSet(idx, key, val) {
+  if (!wizard.itensData[idx]) wizard.itensData[idx] = {};
+  if (!wizard.itensData[idx].inventario) wizard.itensData[idx].inventario = {};
+  wizard.itensData[idx].inventario[key] = val;
+  wiz6RenderAmbCard(idx);
 }
 
 // ── ADICIONAR FOTOS E ANALISAR COM IA ───────────────────
