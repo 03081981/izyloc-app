@@ -70,6 +70,22 @@ def _fmt_tel(s):
     if len(d) == 10:
         return u'({}) {}-{}'.format(d[:2],d[2:6],d[6:])
     return u''
+
+
+def _fmt_cidade_uf(cidade, estado):
+    c = (cidade or u'').strip()
+    e = (estado or u'').strip()
+    if u'/' in c:
+        parts = [p.strip() for p in c.split(u'/')]
+        if len(parts) == 2 and len(parts[1]) <= 3:
+            return u'{} / {}'.format(_title_case(parts[0]), parts[1].upper())
+    if c and e:
+        return u'{} / {}'.format(_title_case(c), e.upper())
+    if c: return _title_case(c)
+    if e: return e.upper()
+    return u'\u2014'
+
+
 from datetime import datetime
 
 # Debug collector for diagnostics
@@ -1488,14 +1504,17 @@ def generate_pdf(inspection_data: dict, rooms_data: list,
         else:
             cidade_uf = u'\u2014'
 
-        _end = _safe(insp.get('address') or insp.get('endereco'), u'')
+        _end = _safe(insp.get('property_address') or insp.get('address') or insp.get('endereco'), u'')
         _num = _safe(insp.get('number') or insp.get('numero'), u'')
-        _end_completo = (_end + (u', ' + _num if _num else u'')).strip()
+        if _num:
+            _end_completo = (_end + u', ' + _num).strip()
+        else:
+            _end_completo = _end.strip()
         dados_imovel = {
             'endereco'    : _title_case(_end_completo),
             'complemento' : _title_case(_safe(insp.get('complemento'), u'\u2014')),
             'bairro'      : _title_case(_safe(insp.get('bairro'), u'\u2014')),
-            'cidade_uf'   : _title_case(cidade_uf),
+            'cidade_uf'   : _fmt_cidade_uf(insp.get('cidade') or insp.get('city') or u'', insp.get('estado') or insp.get('state') or u''),
             'cep'         : _fmt_cep(_safe(insp.get('cep'), u'\u2014')),
             'tipo'        : _title_case(_safe(insp.get('property_type'), u'\u2014')),
             'area'        : _safe(insp.get('property_area'), u'\u2014'),
