@@ -6058,7 +6058,7 @@ function wiz6RenderTabs() {
     var isActive = (i === _wiz6AmbIdx);
     var isDone = _wiz6AmbDone[i];
     tab.style.cssText = 'padding:6px 14px;border-radius:20px;font-size:12px;font-weight:500;cursor:pointer;border:0.5px solid ' + (isActive?'#2d7dd2':'#e2e8f0') + ';background:' + (isActive?'#2d7dd2':'#fff') + ';color:' + (isActive?'#fff':'#8898aa') + ';display:flex;align-items:center;gap:5px;user-select:none';
-    tab.innerHTML = '<span style="font-size:10px;opacity:.5;cursor:grab">\u2847</span>' + (isDone ? '\u2713 ' : '') + nome;
+    tab.innerHTML = '<span style="font-size:10px;opacity:.5;cursor:grab">\u2847</span>' + (isDone ? '\u2713 ' : '') + nome + '<span onclick="event.stopPropagation();wiz6ExcluirAmb(' + i + ')" style="font-size:11px;color:' + (isActive?'rgba(255,255,255,.7)':'#94a3b8') + ';cursor:pointer;margin-left:2px;line-height:1;padding:0 2px" title="Excluir ambiente">\u00d7</span>';
     tabs.appendChild(tab);
   });
   // Bot\u00e3o "+ Amb"
@@ -6073,6 +6073,7 @@ function wiz6RenderTabs() {
 function wiz6DragStart(event, idx) {
   _wiz6DragIdx = idx;
   event.dataTransfer.effectAllowed = 'move';
+  event.dataTransfer.setData('text/plain', idx);
 }
 function wiz6DragOver(event) {
   event.preventDefault();
@@ -6080,29 +6081,39 @@ function wiz6DragOver(event) {
 }
 function wiz6Drop(event, targetIdx) {
   event.preventDefault();
-  if (_wiz6DragIdx === null || _wiz6DragIdx === targetIdx) return;
-  var rooms = _wiz6Ambientes;
-  var draggedRoom = rooms.splice(_wiz6DragIdx, 1)[0];
-  rooms.splice(targetIdx, 0, draggedRoom);
-  if (wizard.selectedRooms) {
-    var sr = wizard.selectedRooms;
-    var draggedSR = sr.splice(_wiz6DragIdx, 1)[0];
-    sr.splice(targetIdx, 0, draggedSR);
+  event.stopPropagation();
+  var fromIdx = _wiz6DragIdx;
+  if (fromIdx === null || fromIdx === undefined || fromIdx === targetIdx) {
+    _wiz6DragIdx = null;
+    return;
   }
-  if (wizard.itensData) {
-    var items = wizard.itensData;
-    var draggedItem = items.splice(_wiz6DragIdx, 1)[0];
-    items.splice(targetIdx, 0, draggedItem);
+  var rooms = wizard.selectedRooms || [];
+  var roomMoved = rooms[fromIdx];
+  var newRooms = [];
+  for (var i = 0; i < rooms.length; i++) {
+    if (i === fromIdx) continue;
+    if (i === targetIdx && fromIdx > targetIdx) newRooms.push(roomMoved);
+    newRooms.push(rooms[i]);
+    if (i === targetIdx && fromIdx < targetIdx) newRooms.push(roomMoved);
   }
-  var oldDone = {};
-  for (var k in _wiz6AmbDone) oldDone[k] = _wiz6AmbDone[k];
-  _wiz6AmbDone = {};
-  if (_wiz6AmbIdx === _wiz6DragIdx) {
+  wizard.selectedRooms = newRooms;
+  var items = wizard.itensData || [];
+  var itemMoved = items[fromIdx];
+  var newItems = [];
+  for (var j = 0; j < items.length; j++) {
+    if (j === fromIdx) continue;
+    if (j === targetIdx && fromIdx > targetIdx) newItems.push(itemMoved);
+    newItems.push(items[j]);
+    if (j === targetIdx && fromIdx < targetIdx) newItems.push(itemMoved);
+  }
+  wizard.itensData = newItems;
+  _wiz6Ambientes = newRooms.slice();
+  if (_wiz6AmbIdx === fromIdx) {
     _wiz6AmbIdx = targetIdx;
-  } else if (_wiz6DragIdx < _wiz6AmbIdx && targetIdx >= _wiz6AmbIdx) {
-    _wiz6AmbIdx--;
-  } else if (_wiz6DragIdx > _wiz6AmbIdx && targetIdx <= _wiz6AmbIdx) {
-    _wiz6AmbIdx++;
+  } else if (fromIdx < targetIdx) {
+    if (_wiz6AmbIdx > fromIdx && _wiz6AmbIdx <= targetIdx) _wiz6AmbIdx--;
+  } else {
+    if (_wiz6AmbIdx >= targetIdx && _wiz6AmbIdx < fromIdx) _wiz6AmbIdx++;
   }
   _wiz6DragIdx = null;
   wiz6RenderTabs();
@@ -6114,6 +6125,27 @@ function wiz6GoAmb(idx) {
   wiz6RenderTabs();
   var wrap = document.getElementById('wiz6-amb-container');
   if (wrap) wrap.innerHTML = wiz6RenderAmbCard(idx);
+}
+
+// ── EXCLUIR AMBIENTE ────────────────────────────────
+function wiz6ExcluirAmb(idx) {
+  var nome = (wizard.selectedRooms && wizard.selectedRooms[idx]) || 'este ambiente';
+  if (!confirm('Excluir "' + nome + '"? Esta a\u00e7\u00e3o n\u00e3o pode ser desfeita.')) return;
+  wizard.selectedRooms.splice(idx, 1);
+  if (wizard.itensData) wizard.itensData.splice(idx, 1);
+  _wiz6Ambientes.splice(idx, 1);
+  if (wizard.selectedRooms.length === 0) {
+    showStep(5);
+    return;
+  }
+  if (_wiz6AmbIdx >= wizard.selectedRooms.length) {
+    _wiz6AmbIdx = wizard.selectedRooms.length - 1;
+  } else if (_wiz6AmbIdx > idx) {
+    _wiz6AmbIdx--;
+  }
+  wiz6RenderTabs();
+  var wrap = document.getElementById('wiz6-amb-container');
+  if (wrap) wrap.innerHTML = wiz6RenderAmbCard(_wiz6AmbIdx);
 }
 
 // ── ADICIONAR NOVO AMBIENTE ─────────────────────────
