@@ -3975,7 +3975,7 @@ async function generatePDF() {
         _ambArr.push({nome:_bName,fotos:_bFotos,verificacoes:_bd.testes||{},observacoes:_bd.obs||""});
       }
     }
-    await fetch("/api/inspections/"+wizard.inspectionId,{method:"PUT",headers:{"Content-Type":"application/json","Authorization":"Bearer "+localStorage.getItem("izylo_token")},body:JSON.stringify({ambientes_json:JSON.stringify(_ambArr)})});
+    try{console.log('ambData inventario:',JSON.stringify(_ambArr.map(function(a){return {nome:a.nome,inv:a.inventario,nomes:a.inventarioNomes,extras:a.inventarioExtras};})));}catch(e){} await fetch("/api/inspections/"+wizard.inspectionId,{method:"PUT",headers:{"Content-Type":"application/json","Authorization":"Bearer "+localStorage.getItem("izylo_token")},body:JSON.stringify({ambientes_json:JSON.stringify(_ambArr)})});
     var _tok=localStorage.getItem('izylo_token');
     var resp=await fetch('/api/inspections/'+wizard.inspectionId+'/pdf',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+_tok},body:JSON.stringify({ambData:_ambData})});
     hideLoading();
@@ -4442,7 +4442,7 @@ if (typeof initAmbientes === 'function') initAmbientes();
       {nome:'🚪 Portas/Fechaduras', opts:['Funcionando','Com defeito','Não funciona','Não testado']}
     ];
 
-    wizard.itensData = {};
+    wizard.itensData = [];
     var current = 0;
 
     function renderTab(idx) {
@@ -6072,7 +6072,7 @@ function wiz6Init() {
   wizard.selectedRooms = _wiz6Ambientes.slice();
 
   // Detect suites and init sub-ambientes
-  if (!wizard.itensData) wizard.itensData = {};
+  if (!wizard.itensData) wizard.itensData = [];
   for (var _si = 0; _si < _wiz6Ambientes.length; _si++) {
     var _sn = (_wiz6Ambientes[_si] || '').toLowerCase();
     if ((_sn.indexOf('suite') >= 0 || _sn.indexOf('su\u00EDte') >= 0) && !(wizard.itensData[_si] && wizard.itensData[_si].isSuite)) {
@@ -6247,6 +6247,15 @@ function wiz6GoAmb(idx) {
 
 // ── EXCLUIR AMBIENTE ────────────────────────────────
 function wiz6ExcluirAmb(idx) {
+  // Guard: garantir que itensData e outros sao arrays
+  if (wizard.itensData && !Array.isArray(wizard.itensData)) {
+    var _arr = [];
+    var _keys = Object.keys(wizard.itensData);
+    for (var _ki = 0; _ki < _keys.length; _ki++) {
+      _arr[parseInt(_keys[_ki])] = wizard.itensData[_keys[_ki]];
+    }
+    wizard.itensData = _arr;
+  }
   var nome = (wizard.selectedRooms && wizard.selectedRooms[idx]) ||
              (_wiz6Ambientes && _wiz6Ambientes[idx]) ||
              'este ambiente';
@@ -6423,7 +6432,7 @@ function wiz6AceitarMoverExtras(ambIdx) {
 function wiz6RenderAmbCard(idx) {
   var card = document.getElementById('wiz6-amb-card');
   if (!card) return;
-  if (!wizard.itensData) wizard.itensData = {};
+  if (!wizard.itensData) wizard.itensData = [];
   if (wizard.itensData[idx] && wizard.itensData[idx].isSuite) {
     card.innerHTML = wiz6BuildSuiteHtml(idx);
     return;
@@ -6809,10 +6818,16 @@ function wiz6InvQty(idx, key, delta) {
   if (!wizard.itensData[idx]) wizard.itensData[idx] = {};
   if (!wizard.itensData[idx].inventario) wizard.itensData[idx].inventario = {};
   var _inv = wizard.itensData[idx].inventario;
-  var _cur = (_inv[key + '_qty'] !== undefined) ? _inv[key + '_qty'] : 1;
-  _inv[key + '_qty'] = Math.max(0, _cur + delta);
-  if (_inv[key + '_qty'] === 0) _inv[key + '_estado'] = 'ausente';
-  wiz6RenderAmbCard(idx);
+  var _cur = (_inv[key + '_qty'] !== undefined) ? parseInt(_inv[key + '_qty']) : 0;
+  var _novo = Math.max(0, _cur + delta);
+  _inv[key + '_qty'] = _novo;
+  if (_novo === 0) _inv[key + '_estado'] = 'ausente';
+  var _el = document.getElementById('inv-qty-' + idx + '-' + key);
+  if (_el) {
+    _el.textContent = _novo;
+  } else {
+    wiz6RenderAmbCard(idx);
+  }
 }
 
 function wiz6InvEstado(idx, key, val) {
@@ -7618,20 +7633,20 @@ function wiz6SalvarResumoEditado(ambIdx, valor) {
 }
 
 function wiz6Teste(ambIdx, key, val) {
-  if (!wizard.itensData) wizard.itensData = {};
+  if (!wizard.itensData) wizard.itensData = [];
   if (!wizard.itensData[ambIdx]) wizard.itensData[ambIdx] = {fotos:[], testes:{}, obs:'', resumo:''};
   wizard.itensData[ambIdx].testes[key] = val;
   wiz6RenderAmbCard(ambIdx);
 }
 
 function wiz6TesteObs(ambIdx, key, val) {
-  if (!wizard.itensData) wizard.itensData = {};
+  if (!wizard.itensData) wizard.itensData = [];
   if (!wizard.itensData[ambIdx]) wizard.itensData[ambIdx] = {fotos:[], testes:{}, obs:'', resumo:''};
   wizard.itensData[ambIdx].testes[key+'_obs'] = val;
 }
 
 function wiz6SalvarObs(ambIdx, val) {
-  if (!wizard.itensData) wizard.itensData = {};
+  if (!wizard.itensData) wizard.itensData = [];
   if (!wizard.itensData[ambIdx]) wizard.itensData[ambIdx] = {fotos:[], testes:{}, obs:'', resumo:''};
   wizard.itensData[ambIdx].obs = val;
 }
