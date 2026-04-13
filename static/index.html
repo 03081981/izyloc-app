@@ -3936,7 +3936,7 @@ async function generatePDF() {
             resumo: _sd.resumo || ''
           });
         });
-        _ambData.push({roomName: wizard.selectedRooms[_ai], isSuite: true, subAmbientes: _subAmbs});
+        _ambData.push({roomName: wizard.selectedRooms[_ai], isSuite: !!_d.isSuite, subAmbientes: _subAmbs, verificacoes:_verif, verificacoesObs:_verifObs, testesNomes:_tNomes, observacoes:_d.obs||''});
       } else {
         _ambData.push({roomName:wizard.selectedRooms[_ai],verificacoes:_verif,verificacoesObs:_verifObs,testesNomes:_tNomes,observacoes:_d.obs||''});
       };
@@ -3947,8 +3947,8 @@ async function generatePDF() {
       var _bd=(wizard.itensData&&wizard.itensData[_bi])||{};
       var _bName=wizard.selectedRooms[_bi];
       if((_bd.isSuite||(_bd.subAmbientes&&_bd.subAmbientes.length>0))&&_bd.subs){
-        // Suite: collect photos from all sub-ambientes
         var _sFotos=[];
+        if(!_bd.isSuite){var _mR=_bd.resumo||"";var _mE=_bd.estado_geral||"Bom";(_bd.fotos||[]).forEach(function(f,fi){_sFotos.push({item:_bName,estado:fi===0?_mE:"",desc:fi===0?_mR:"",src:f.base64?("data:"+(f.mime||"image/jpeg")+";base64,"+f.base64):(f.preview||"")});});if((_bd.fotos||[]).length===0&&_mR){_sFotos.push({item:_bName,estado:_mE,desc:_mR,src:""});}}
         (_bd.subAmbientes||[]).forEach(function(_sn){
           var _sd=_bd.subs[_sn]||{};
           var _subResumo=_sd.resumo||"";
@@ -3960,7 +3960,7 @@ async function generatePDF() {
             _sFotos.push({item:_sn,estado:_subEstado,desc:_subResumo,src:""});
           }
         });
-        _ambArr.push({nome:_bName,fotos:_sFotos,verificacoes:{},observacoes:_bd.obs||""});
+        _ambArr.push({nome:_bName,fotos:_sFotos,verificacoes:_bd.isSuite?{}:(_bd.testes||{}),observacoes:_bd.obs||""});
       } else {
         // Regular room: one item per photo, resumo on first
         var _bFotos=[];
@@ -4730,6 +4730,18 @@ if (typeof initAmbientes === 'function') initAmbientes();
         var _rd = (wizard.itensData && wizard.itensData[_ri]) || {};
         // Suite review: render sub-ambientes as individual room cards
         if ((_rd.isSuite || (_rd.subAmbientes && _rd.subAmbientes.length > 0)) && _rd.subs) {
+          if(!_rd.isSuite){
+            var _mf=_rd.fotos||[];var _mTst=_rd.testes||{};var _mXtr=_rd.testesExtras||[];
+            h+='<div style="border:1px solid #e2e8f0;border-radius:8px;padding:12px;margin-bottom:12px;background:#fafbfc">';
+            h+='<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">';
+            h+='<div style="font-size:13px;font-weight:700;color:#0f172a">'+_esc(_rN)+'</div>';
+            h+='<div style="font-size:11px;color:#64748b">'+_mf.length+' foto'+(_mf.length===1?'':'s')+'</div>';
+            h+='</div>';
+            if(_mf.length>0){h+='<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(90px,1fr));gap:6px;margin-bottom:10px">';for(var _mfi=0;_mfi<_mf.length;_mfi++){var _msrc=_mf[_mfi].preview||(_mf[_mfi].base64?('data:'+(_mf[_mfi].mime||'image/jpeg')+';base64,'+_mf[_mfi].base64):'');if(_msrc){h+='<div style="position:relative;aspect-ratio:1;overflow:hidden;border-radius:6px;border:1px solid #cbd5e1;background:#f1f5f9">';h+='<img src="'+_msrc+'" style="width:100%;height:100%;object-fit:cover;display:block"/>';h+='<div style="position:absolute;left:3px;top:3px;background:rgba(15,23,42,0.75);color:#fff;padding:1px 6px;border-radius:4px;font-size:10px;font-weight:600">'+(_mfi+1)+'</div>';h+='</div>';}}h+='</div>';}
+            h+='<div style="margin-bottom:10px"><label style="display:block;font-size:11px;color:#64748b;font-weight:600;margin-bottom:3px">S\u00edntese / Resumo do ambiente</label>';
+            h+='<textarea data-kind="resumo" data-aidx="'+_ri+'" rows="5" style="width:100%;padding:7px 9px;border:1px solid #cbd5e1;border-radius:6px;font-size:12px;background:#fff;resize:vertical">'+_esc(_rd.resumo||'')+'</textarea></div>';
+            h+='</div>';
+          }
           (_rd.subAmbientes || []).forEach(function(_sn, _si) {
             var _sd = _rd.subs[_sn] || {};
             var _sf = _sd.fotos || [];
@@ -4738,7 +4750,7 @@ if (typeof initAmbientes === 'function') initAmbientes();
             // Each sub-ambiente rendered as a full room card
             h += '<div style="border:1px solid #e2e8f0;border-radius:8px;padding:12px;margin-bottom:12px;background:#fafbfc">';
             h += '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">';
-            h += '<div style="font-size:13px;font-weight:700;color:#0f172a">' + _esc(_rN) + ' \u2014 ' + _esc(_sn) + '</div>';
+            h += '<div style="font-size:13px;font-weight:700;color:#0f172a">' + (_rd.isSuite ? (_esc(_rN) + ' \u2014 ' + _esc(_sn)) : (_esc(_sn) + ' (' + _esc(_rN) + ')')) + '</div>';
             h += '<div style="font-size:11px;color:#64748b">' + _sf.length + ' foto' + (_sf.length === 1 ? '' : 's') + '</div>';
             h += '</div>';
             // Photos grid - same as regular rooms with numbering
