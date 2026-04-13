@@ -1349,6 +1349,9 @@ def _build_ambientes_from_json(json_str):
             'itens': itens,
             'verificacoes': amb.get('verificacoes', {}),
             'observacoes_gerais': _safe(amb.get('observacoes', ''), ''),
+            'inventario': amb.get('inventario', {}) or {},
+            'inventarioNomes': amb.get('inventarioNomes', []) or [],
+            'inventarioExtras': amb.get('inventarioExtras', []) or [],
         })
     return ambientes
 
@@ -1381,6 +1384,9 @@ def _build_ambientes(rooms_data):
             'verificacoes': room.get('verificacoes', {}),
             'testes_nomes': room.get('testes_nomes', {}),
             'observacoes_gerais': _safe(room.get('observacoes', room.get('observations', '')), ''),
+            'inventario': room.get('inventario', {}) or {},
+            'inventarioNomes': room.get('inventarioNomes', []) or [],
+            'inventarioExtras': room.get('inventarioExtras', []) or [],
         }
         ambientes.append(amb)
     return ambientes
@@ -1512,6 +1518,12 @@ def generate_pdf(inspection_data: dict, rooms_data: list,
                     obs = _safe(r.get('observacoes', r.get('observations', '')), '')
                     if obs:
                         amb['observacoes_gerais'] = obs
+                    if r.get('inventario'):
+                        amb['inventario'] = r.get('inventario', {}) or {}
+                    if r.get('inventarioNomes'):
+                        amb['inventarioNomes'] = r.get('inventarioNomes', []) or []
+                    if r.get('inventarioExtras'):
+                        amb['inventarioExtras'] = r.get('inventarioExtras', []) or []
         else:
             ambientes = _build_ambientes(rooms_data)
 
