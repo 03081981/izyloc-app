@@ -6592,15 +6592,54 @@ function wiz6RenderAmbCard(idx) {
 // ── INVENTÁRIO TEMPORADA ───────────────
 function _wiz6RenderInventario(idx, nomeAmb) {
   var _n = nomeAmb.toLowerCase();
+
   var _itensPorAmb = {
-    sala:      ['TV', 'Sof\u00e1', 'Mesa de centro', 'Cadeiras', 'Tapete', 'Controle remoto TV', 'Controle remoto AC'],
-    cozinha:   ['Lou\u00e7as (pratos/tigelas)', 'Talheres', 'Copos e ta\u00e7as', 'Panelas', 'Frigideiras', 'Utensilios diversos', 'Cafeteira', 'Liquidificador', 'Micro-ondas'],
-    dormit:    ['Cama (estrutura)', 'Colch\u00e3o', 'Travesseiros', 'Fronhas', 'Len\u00e7\u00f3is', 'Cobertores/edredom', 'Toalhas de banho', 'Toalhas de rosto', 'Cabides'],
-    suite:     ['Cama (estrutura)', 'Colch\u00e3o', 'Travesseiros', 'Fronhas', 'Len\u00e7\u00f3is', 'Cobertores/edredom', 'Toalhas de banho (2)', 'Toalhas de rosto (2)', 'Roup\u00e3o', 'Cabides'],
-    banheiro:  ['Toalhas de banho', 'Toalhas de rosto', 'Tapete de banheiro', 'Papel higi\u00eanico (estoque)', 'Sabonete', 'Shampoo/condicionador', 'Secador de cabelo'],
-    servico:   ['Vassoura', 'Rodo', 'Pano de ch\u00e3o', 'Detergente', 'Sab\u00e3o em p\u00f3/l\u00edquido', 'Desinfetante'],
-    default:   ['Chaves do im\u00f3vel', 'Controles remotos', 'Manual de equipamentos', 'Guia da casa']
+    sala: [
+      'TV', 'Sof\u00e1', 'Poltrona', 'Mesa de centro', 'Mesa de jantar',
+      'Cadeiras', 'Tapete', 'Controle remoto TV', 'Controle remoto AC'
+    ],
+    cozinha: [
+      'Pratos fundos', 'Pratos rasos', 'Pratos de sobremesa',
+      'Copos', 'Ta\u00e7as', 'X\u00edcaras',
+      'Colheres', 'Garfos', 'Facas',
+      'Panelas', 'Frigideiras',
+      'Escorredor', 'Abridor de lata', 'Saca-rolhas',
+      'Utensilios de cozinha (espatulas/conchas)',
+      'Cafeteira', 'Liquidificador', 'Torradeira', 'Micro-ondas'
+    ],
+    dormit: [
+      'Cama (estrutura/cabeceira)', 'Colch\u00e3o',
+      'Travesseiros', 'Fronhas',
+      'Len\u00e7\u00f3is (jogo)', 'Cobertores', 'Edredom',
+      'Toalhas de banho', 'Toalhas de rosto',
+      'Cabides'
+    ],
+    suite: [
+      'Cama (estrutura/cabeceira)', 'Colch\u00e3o',
+      'Travesseiros', 'Fronhas',
+      'Len\u00e7\u00f3is (jogo)', 'Cobertores', 'Edredom',
+      'Toalhas de banho', 'Toalhas de rosto', 'Roup\u00e3o',
+      'Cabides', 'Secador de cabelo'
+    ],
+    banheiro: [
+      'Toalhas de banho', 'Toalhas de rosto',
+      'Tapete de banheiro',
+      'Papel higi\u00eanico (estoque)',
+      'Sabonete', 'Shampoo', 'Condicionador',
+      'Secador de cabelo'
+    ],
+    servico: [
+      'Vassoura', 'Rodo', 'Esfregao',
+      'Pano de ch\u00e3o', 'Balde',
+      'Detergente', 'Esponja',
+      'Sab\u00e3o em p\u00f3', 'Amaciante', 'Desinfetante'
+    ],
+    default: [
+      'Chaves do im\u00f3vel', 'Controles remotos',
+      'Manual de equipamentos', 'Guia da casa'
+    ]
   };
+
   var _tipo = _n.indexOf('su\u00edte') >= 0 || _n.indexOf('suite') >= 0 ? 'suite' :
               _n.indexOf('dorm') >= 0 || _n.indexOf('quarto') >= 0 ? 'dormit' :
               _n.indexOf('banheiro') >= 0 ? 'banheiro' :
@@ -6608,46 +6647,70 @@ function _wiz6RenderInventario(idx, nomeAmb) {
               _n.indexOf('sala') >= 0 ? 'sala' :
               _n.indexOf('servi') >= 0 || _n.indexOf('lavand') >= 0 ? 'servico' :
               'default';
+
   var _itens = _itensPorAmb[_tipo];
+
   if (!wizard.itensData[idx]) wizard.itensData[idx] = {};
   if (!wizard.itensData[idx].inventario) wizard.itensData[idx].inventario = {};
+  if (!wizard.itensData[idx].inventarioExtras) wizard.itensData[idx].inventarioExtras = [];
   var _inv = wizard.itensData[idx].inventario;
-  var html = '<div style="background:#fff8e1;border:0.5px solid #fcd34d;border-radius:10px;padding:12px 14px;margin:12px 16px 10px">';
-  html += '<div style="font-size:11px;font-weight:700;color:#92400e;margin-bottom:10px">\ud83d\udce6 Invent\u00e1rio do ambiente</div>';
+  var _extras = wizard.itensData[idx].inventarioExtras;
+
+  var html = '<div style="background:#fff8e1;border:0.5px solid #fcd34d;border-radius:10px;padding:12px 14px;margin-top:12px;margin-bottom:10px">';
+  html += '<div style="font-size:11px;font-weight:700;color:#92400e;margin-bottom:10px">\uD83D\uDCE6 Invent\u00e1rio do ambiente</div>';
+
+  function _renderItem(itemNome, key) {
+    var _qty = (_inv[key + '_qty'] !== undefined) ? _inv[key + '_qty'] : 1;
+    var _val = _inv[key + '_estado'] || '';
+    var _obs = _inv[key + '_obs'] || '';
+    var _showObs = (_val === 'avaria' || _val === 'ausente');
+
+    var _r = '<div style="padding:8px 0;border-bottom:0.5px solid #fef3c7">';
+    _r += '<div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">';
+    _r += '<span style="flex:1;font-size:12px;color:#1a2540;font-weight:500;min-width:100px">' + itemNome + '</span>';
+
+    _r += '<div style="display:flex;align-items:center;gap:6px">';
+    _r += '<button onclick="wiz6InvQty(' + idx + ',\x27' + key + '\x27,-1)" style="width:26px;height:26px;border-radius:50%;border:0.5px solid #fcd34d;background:#fff;color:#92400e;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-weight:600">-</button>';
+    _r += '<span id="inv-qty-' + idx + '-' + key + '" style="font-size:13px;font-weight:600;color:#1a2540;min-width:20px;text-align:center">' + _qty + '</span>';
+    _r += '<button onclick="wiz6InvQty(' + idx + ',\x27' + key + '\x27,1)" style="width:26px;height:26px;border-radius:50%;border:0.5px solid #fcd34d;background:#fff;color:#92400e;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-weight:600">+</button>';
+    _r += '</div>';
+
+    _r += '<div style="display:flex;gap:4px">';
+    [{v:'bom',l:'\u2713 Bom',bg:_val==='bom'?'#059669':'#d1fae5',c:_val==='bom'?'#fff':'#065f46'},
+     {v:'avaria',l:'\u26a0 Avaria',bg:_val==='avaria'?'#dc2626':'#fee2e2',c:_val==='avaria'?'#fff':'#991b1b'},
+     {v:'ausente',l:'\u2717 Ausente',bg:_val==='ausente'?'#475569':'#f1f5f9',c:_val==='ausente'?'#fff':'#475569'}
+    ].forEach(function(btn) {
+      _r += '<button onclick="wiz6InvEstado(' + idx + ',\x27' + key + '\x27,\x27' + btn.v + '\x27)" ';
+      _r += 'style="font-size:10px;padding:3px 8px;border-radius:8px;border:none;cursor:pointer;background:' + btn.bg + ';color:' + btn.c + '">' + btn.l + '</button>';
+    });
+    _r += '</div>';
+    _r += '</div>';
+
+    _r += '<div style="display:' + (_showObs ? 'block' : 'none') + ';margin-top:5px" id="inv-obs-wrap-' + idx + '-' + key + '">';
+    _r += '<input type="text" placeholder="Obs: (opcional)..." value="' + _obs.replace(/"/g, '&quot;') + '" ';
+    _r += 'onblur="wiz6InvObs(' + idx + ',\x27' + key + '\x27,this.value)" ';
+    _r += 'style="width:100%;padding:5px 8px;border:0.5px solid #fde68a;border-radius:6px;font-size:11px;color:#92400e;background:#fffdf0">';
+    _r += '</div>';
+
+    _r += '</div>';
+    return _r;
+  }
+
   _itens.forEach(function(item) {
-    var _key = item.replace(/\W+/g,'_').toLowerCase();
-    var _val = _inv[_key] || '';
-    html += '<div style="display:flex;align-items:center;padding:7px 0;border-bottom:0.5px solid #fef3c7">';
-    html += '<span style="flex:1;font-size:12px;color:#1a2540">' + item + '</span>';
-    html += '<div style="display:flex;gap:5px">';
-    [{v:'bom',label:'\u2713 Bom',bg:_val==='bom'?'#059669':'#d1fae5',cl:_val==='bom'?'#fff':'#065f46'},
-     {v:'avaria',label:'\u26a0 Avaria',bg:_val==='avaria'?'#dc2626':'#fee2e2',cl:_val==='avaria'?'#fff':'#991b1b'},
-     {v:'ausente',label:'\u2717 Ausente',bg:_val==='ausente'?'#475569':'#f1f5f9',cl:_val==='ausente'?'#fff':'#475569'}].forEach(function(btn) {
-      html += '<button onclick="wiz6InvSet(' + idx + ',\x27' + _key + '\x27,\x27' + btn.v + '\x27)" ';
-      html += 'style="font-size:10px;padding:3px 8px;border-radius:8px;border:none;cursor:pointer;';
-      html += 'background:' + btn.bg + ';color:' + btn.cl + '">' + btn.label + '</button>';
-    });
-    html += '</div></div>';
+    var _key = item.replace(/[\s\/\(\)\.]+/g,'_').toLowerCase();
+    html += _renderItem(item, _key);
   });
-  // === EXTRAS (user-added items) ===
-  var _extras = (wizard.itensData[idx] && wizard.itensData[idx].inventarioExtras) || [];
-  _extras.forEach(function(_ex, _ei) {
-    var _exVal = (wizard.itensData[idx] && wizard.itensData[idx].inventario && wizard.itensData[idx].inventario['extra_' + _ei]) || '';
-    html += '<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid #f0f0f0">';
-    html += '<span style="font-size:13px;flex:1">' + _ex + '</span>';
-    html += '<div style="display:flex;gap:4px;align-items:center">';
-    [{v:'bom',label:'\u2713 Bom',bg:_exVal==='bom'?'#16a34a':'#dcfce7',cl:_exVal==='bom'?'#fff':'#166534'},
-     {v:'avaria',label:'\u26a0 Avaria',bg:_exVal==='avaria'?'#dc2626':'#fee2e2',cl:_exVal==='avaria'?'#fff':'#991b1b'},
-     {v:'ausente',label:'\u2717 Ausente',bg:_exVal==='ausente'?'#475569':'#f1f5f9',cl:_exVal==='ausente'?'#fff':'#475569'}].forEach(function(btn) {
-      html += '<button onclick="wiz6InvSet(' + idx + ',\x27extra_' + _ei + '\x27,\x27' + btn.v + '\x27)" style="padding:4px 8px;border:none;border-radius:4px;font-size:11px;cursor:pointer;background:' + btn.bg + ';color:' + btn.cl + '">' + btn.label + '</button> ';
-    });
-    html += '<button onclick="wiz6InvRemoverExtra(' + idx + ',' + _ei + ')" style="padding:2px 6px;border:none;background:#fee2e2;color:#dc2626;border-radius:4px;font-size:13px;cursor:pointer;margin-left:4px" title="Remover">\u00d7</button>';
-    html += '</div></div>';
+
+  _extras.forEach(function(item, ei) {
+    var _key = 'extra_' + ei;
+    html += '<div style="position:relative">';
+    html += _renderItem(item, _key);
+    html += '<button onclick="wiz6InvRemoverExtra(' + idx + ',' + ei + ')" style="position:absolute;top:8px;right:2px;background:none;border:none;color:#ef4444;font-size:16px;cursor:pointer;z-index:1">\u00d7</button>';
+    html += '</div>';
   });
-  // + Adicionar item button
-  html += '<div style="text-align:center;margin-top:10px">';
-  html += '<button onclick="wiz6InvAdicionarExtra(' + idx + ')" style="padding:6px 16px;border:1px dashed #94a3b8;background:#f8fafc;color:#475569;border-radius:6px;font-size:12px;cursor:pointer">+ Adicionar item ao invent\u00e1rio</button>';
-  html += '</div>';
+
+  html += '<button onclick="wiz6InvAdicionarExtra(' + idx + ')" style="width:100%;background:none;border:0.5px dashed #f59e0b;border-radius:8px;padding:8px;font-size:12px;color:#92400e;cursor:pointer;font-weight:500;margin-top:8px">+ Adicionar item ao invent\u00e1rio</button>';
+
   html += '</div>';
   return html;
 }
@@ -6663,11 +6726,28 @@ function wiz4AtualizarLabelsTemporada() {
   }
 }
 
-function wiz6InvSet(idx, key, val) {
+function wiz6InvQty(idx, key, delta) {
   if (!wizard.itensData[idx]) wizard.itensData[idx] = {};
   if (!wizard.itensData[idx].inventario) wizard.itensData[idx].inventario = {};
-  wizard.itensData[idx].inventario[key] = val;
+  var _inv = wizard.itensData[idx].inventario;
+  var _cur = (_inv[key + '_qty'] !== undefined) ? _inv[key + '_qty'] : 1;
+  _inv[key + '_qty'] = Math.max(0, _cur + delta);
+  if (_inv[key + '_qty'] === 0) _inv[key + '_estado'] = 'ausente';
   wiz6RenderAmbCard(idx);
+}
+
+function wiz6InvEstado(idx, key, val) {
+  if (!wizard.itensData[idx]) wizard.itensData[idx] = {};
+  if (!wizard.itensData[idx].inventario) wizard.itensData[idx].inventario = {};
+  wizard.itensData[idx].inventario[key + '_estado'] = val;
+  if (val === 'ausente') wizard.itensData[idx].inventario[key + '_qty'] = 0;
+  wiz6RenderAmbCard(idx);
+}
+
+function wiz6InvObs(idx, key, val) {
+  if (!wizard.itensData[idx]) wizard.itensData[idx] = {};
+  if (!wizard.itensData[idx].inventario) wizard.itensData[idx].inventario = {};
+  wizard.itensData[idx].inventario[key + '_obs'] = val;
 }
 
 function wiz6InvAdicionarExtra(idx) {
@@ -6685,16 +6765,21 @@ function wiz6InvRemoverExtra(idx, ei) {
   var inv = wizard.itensData[idx].inventario || {};
   var newInv = {};
   Object.keys(inv).forEach(function(k) {
-    if (k.indexOf('extra_') !== 0) newInv[k] = inv[k];
+    if (k.indexOf('extra_') !== 0) {
+      newInv[k] = inv[k];
+    }
   });
   wizard.itensData[idx].inventarioExtras.forEach(function(_e, _i) {
     var oldIdx = _i >= ei ? _i + 1 : _i;
-    if (inv['extra_' + oldIdx]) newInv['extra_' + _i] = inv['extra_' + oldIdx];
+    ['_qty', '_estado', '_obs'].forEach(function(suf) {
+      if (inv['extra_' + oldIdx + suf] !== undefined) {
+        newInv['extra_' + _i + suf] = inv['extra_' + oldIdx + suf];
+      }
+    });
   });
   wizard.itensData[idx].inventario = newInv;
   wiz6RenderAmbCard(idx);
 }
-
 
 // ── ADICIONAR FOTOS E ANALISAR COM IA ───────────────────
 function wiz6BuildSuiteHtml(idx) {
