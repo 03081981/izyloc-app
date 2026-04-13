@@ -6085,6 +6085,23 @@ function wiz6Init() {
     }
   }
 
+  // Normalize all ambientes structures (ensure no undefined fields)
+  for (var _ni = 0; _ni < _wiz6Ambientes.length; _ni++) {
+    if (!wizard.itensData[_ni]) wizard.itensData[_ni] = {};
+    var _nd = wizard.itensData[_ni];
+    if (!_nd.fotos) _nd.fotos = [];
+    if (!_nd.testes) _nd.testes = {};
+    if (!_nd.testesObs) _nd.testesObs = {};
+    if (!_nd.testesExtras) _nd.testesExtras = [];
+    if (!_nd.inventario) _nd.inventario = {};
+    if (!_nd.inventarioExtras) _nd.inventarioExtras = [];
+    if (!_nd.subAmbientes) _nd.subAmbientes = [];
+    if (!_nd.subs) _nd.subs = {};
+    if (typeof _nd.obs !== 'string') _nd.obs = '';
+    if (typeof _nd.resumo !== 'string') _nd.resumo = '';
+    if (typeof _nd.jaAnalisou !== 'boolean') _nd.jaAnalisou = false;
+  }
+
   wiz6RenderTabs();
   wiz6RenderAmbCard(_wiz6AmbIdx);
   wiz6AtualizarProgress();
@@ -6569,6 +6586,7 @@ function wiz6RenderAmbCard(idx) {
 
           // === Sub-ambientes added to normal room ===
     _wiz6RenderSubsBlock(idx, dados) +
+    _wiz6RenderSubsSugeridos(idx, dados, nome) +
 
     // Add sub-ambiente button
     '<div style="padding:14px 16px;border-top:0.5px solid #e2e8f0">' +
@@ -7136,6 +7154,40 @@ function wiz6AddSubAmb(idx) {
   document.body.appendChild(modal);
 }
 
+function _wiz6RenderSubsSugeridos(idx, dados, nome) {
+  if (wizard.tipo !== 'temporada') return '';
+  var _n = (nome || '').toLowerCase();
+  var sugeridos = [];
+  if (_n.indexOf('cozinha') >= 0) sugeridos = ['Eletrodom\u00e9sticos', 'Despensa'];
+  else if (_n.indexOf('su\u00edte') >= 0 || _n.indexOf('suite') >= 0) sugeridos = ['Enxoval', 'Closet', 'Banheiro su\u00edte'];
+  else if (_n.indexOf('dormit') >= 0 || _n.indexOf('quarto') >= 0) sugeridos = ['Enxoval', 'Closet'];
+  else if (_n.indexOf('sala') >= 0) sugeridos = ['Varanda'];
+  else if (_n.indexOf('banheiro') >= 0) sugeridos = ['Amenities'];
+  else return '';
+  var existentes = (dados && dados.subAmbientes) || [];
+  var pendentes = sugeridos.filter(function(s) { return existentes.indexOf(s) === -1; });
+  if (!pendentes.length) return '';
+  var html = '<div style="padding:10px 16px;border-top:0.5px solid #e2e8f0;background:#f8fafc">';
+  html += '<div style="font-size:11px;color:#64748b;margin-bottom:6px;text-transform:uppercase;letter-spacing:0.5px">Sugest\u00f5es de sub-ambientes</div>';
+  html += '<div style="display:flex;flex-wrap:wrap;gap:6px">';
+  pendentes.forEach(function(s) {
+    html += '<button onclick="wiz6AdicionarSubAmbSugerido(' + idx + ',\x27' + s.replace(/'/g, "\\'") + '\x27)" style="padding:5px 10px;border:1px dashed #94a3b8;background:#fff;color:#475569;border-radius:14px;font-size:12px;cursor:pointer">+ ' + s + '</button>';
+  });
+  html += '</div></div>';
+  return html;
+}
+
+function wiz6AdicionarSubAmbSugerido(idx, nome) {
+  var d = wizard.itensData[idx];
+  if (!d) d = wizard.itensData[idx] = {};
+  if (!d.subAmbientes) d.subAmbientes = [];
+  if (!d.subs) d.subs = {};
+  if (d.subAmbientes.indexOf(nome) !== -1) return;
+  d.subAmbientes.push(nome);
+  d.subs[nome] = {fotos:[], testes:{}, jaAnalisou:false, resumo:'', obs:'', testesExtras:[]};
+  wiz6RenderAmbCard(idx);
+}
+
 function wiz6ConfirmarSubAmb(idx) {
   var nome = document.getElementById('inp-subamb').value.trim();
   if (!nome) return;
@@ -7277,7 +7329,19 @@ function wiz6RenderAtual() {
 function wiz6AddFotos(input, ambIdx) {
   var files = input.files;
   if (!files || !files.length) return;
-  if (!wizard.itensData[ambIdx]) wizard.itensData[ambIdx] = {fotos:[], testes:{}, obs:'', resumo:'', jaAnalisou:false};
+  if (!wizard.itensData[ambIdx]) wizard.itensData[ambIdx] = {};
+  var _d = wizard.itensData[ambIdx];
+  if (!_d.fotos) _d.fotos = [];
+  if (!_d.testes) _d.testes = {};
+  if (!_d.testesObs) _d.testesObs = {};
+  if (!_d.testesExtras) _d.testesExtras = [];
+  if (!_d.inventario) _d.inventario = {};
+  if (!_d.inventarioExtras) _d.inventarioExtras = [];
+  if (!_d.subAmbientes) _d.subAmbientes = [];
+  if (!_d.subs) _d.subs = {};
+  if (typeof _d.obs !== 'string') _d.obs = '';
+  if (typeof _d.resumo !== 'string') _d.resumo = '';
+  if (typeof _d.jaAnalisou !== 'boolean') _d.jaAnalisou = false;
 
   var jaAnalisou = wizard.itensData[ambIdx].jaAnalisou || false;
 
