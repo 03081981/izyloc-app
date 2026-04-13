@@ -1468,16 +1468,9 @@ def generate_pdf(inspection_data: dict, rooms_data: list,
             ambientes = _build_ambientes(rooms_data)
 
         # === Suite sub-ambientes expansion ===
-        import logging as _log_exp
-        _log_exp.warning('=== EXPANSION DEBUG: ambientes=%d rooms_data=%d ===', len(ambientes), len(rooms_data))
-        for _ri, _ra in enumerate(rooms_data):
-            _log_exp.warning('  rooms_data[%d] roomName=%s subAmb=%s', _ri, _ra.get('roomName','?'), bool(_ra.get('subAmbientes')))
-        for _ai, _aa in enumerate(ambientes):
-            _log_exp.warning('  ambientes[%d] nome=%s itens=%d', _ai, _aa.get('nome','?'), len(_aa.get('itens',[])))
         _expanded = []
         for _i, _amb in enumerate(ambientes):
             _rd = rooms_data[_i] if _i < len(rooms_data) else {}
-            _log_exp.warning('  LOOP _i=%d amb_nome=%s rd_room=%s rd_hasSubs=%s', _i, _amb.get('nome','?'), _rd.get('roomName','?'), bool(_rd.get('subAmbientes')))
             if _rd.get('subAmbientes'):
                 _suite_name = _amb['nome']
                 # Build photo lookup from original ambientes_json itens by sub-ambiente name
@@ -1505,7 +1498,6 @@ def generate_pdf(inspection_data: dict, rooms_data: list,
                     _resumo = _sub.get('resumo', '')
                     # Get photos for this sub-ambiente from the original ambientes_json data
                     _sub_fotos = _foto_lookup.get(_sub_nome, [])
-                    _log_exp.warning('    SUB: nome=%s fotos=%d resumo=%d lookup_keys=%s', _sub_nome, len(_sub_fotos), len(_resumo), list(_foto_lookup.keys()))
                     _sub_display = f'{_sub_nome} ({_suite_name})' if not _rd.get('isSuite') else f'{_suite_name} \u2014 {_sub_nome}'
                     # Build itens from photos
                     _sub_itens = []
@@ -1535,9 +1527,6 @@ def generate_pdf(inspection_data: dict, rooms_data: list,
             else:
                 _expanded.append(_amb)
         ambientes = _expanded
-        _log_exp.warning('=== EXPANDED: %d ambientes ===', len(_expanded))
-        for _ei, _ea in enumerate(_expanded):
-            _log_exp.warning('  expanded[%d] nome=%s itens=%d verif=%s obs=%s', _ei, _ea.get('nome','?'), len(_ea.get('itens',[])), bool(_ea.get('verificacoes')), bool(_ea.get('observacoes_gerais')))
 
         local_data = _format_date_extenso(dt)
         if cidade_raw:
