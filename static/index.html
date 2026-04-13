@@ -6863,37 +6863,59 @@ function wiz6SalvarObsSub(idx, subNome, val) {
 function wiz6AddSubAmb(idx) {
   var nomeAmb = (wizard.selectedRooms && wizard.selectedRooms[idx]) || '';
   var n = nomeAmb.toLowerCase();
-  var _sugestoes = {
+  var _sugPorAmb = {
     suite:     ['Closet', 'Varanda da su\u00edte', 'Escrit\u00f3rio', 'Lavabo'],
     dormit:    ['Closet', 'Varanda', 'Banheiro privativo'],
     banheiro:  ['Lavabo', 'Banheiro de servi\u00e7o', 'Banheiro externo'],
     lavabo:    ['Banheiro de servi\u00e7o'],
     sala:      ['Sala de jantar', 'Varanda', 'Escrit\u00f3rio', 'Hall de entrada'],
     cozinha:   ['Despensa', '\u00c1rea de servi\u00e7o', 'Copa'],
-    servico:   ['Despensa', 'Dep\u00f3sito', 'Lavanderia'],
-    garagem:   ['Dep\u00f3sito', 'Lavagem', '\u00c1rea de servi\u00e7o'],
+    servico:   ['Despensa', 'Copa'],
+    garagem:   ['Dep\u00f3sito', 'Lavanderia'],
     externa:   ['Piscina', 'Churrasqueira', 'Jardim', 'Quadra'],
-    escritorio:['Sala de reuni\u00e3o', 'Copa', 'Recep\u00e7\u00e3o'],
-    galp:      ['Doca', 'Dep\u00f3sito', 'Escrit\u00f3rio', 'Vesti\u00e1rio', 'Copa'],
-    loja:      ['Estoque', 'Provador', 'Copa', 'Banheiro'],
-    sala_com:  ['Recep\u00e7\u00e3o', 'Sala de reuni\u00e3o', 'Copa', 'Banheiro'],
     default:   ['Dep\u00f3sito', 'Copa', 'Banheiro', 'Varanda']
   };
-  var tipo = n.indexOf('su\u00edte') >= 0 || n.indexOf('suite') >= 0 ? 'suite' :
+  var _tipoAmb = n.indexOf('su\u00edte') >= 0 || n.indexOf('suite') >= 0 ? 'suite' :
              n.indexOf('dorm') >= 0 || n.indexOf('quarto') >= 0 ? 'dormit' :
              n.indexOf('banheiro') >= 0 ? 'banheiro' :
              n.indexOf('lavabo') >= 0 ? 'lavabo' :
              n.indexOf('sala') >= 0 && n.indexOf('reuni') < 0 ? 'sala' :
              n.indexOf('cozinha') >= 0 ? 'cozinha' :
-             n.indexOf('servi') >= 0 || n.indexOf('lavand') >= 0 ? 'servico' :
-             n.indexOf('garag') >= 0 ? 'garagem' :
-             n.indexOf('extern') >= 0 || n.indexOf('piscin') >= 0 ? 'externa' :
-             n.indexOf('escrit') >= 0 ? 'escritorio' :
-             n.indexOf('galp') >= 0 || n.indexOf('barra') >= 0 ? 'galp' :
-             n.indexOf('loja') >= 0 || n.indexOf('sal\u00e3o') >= 0 ? 'loja' :
-             n.indexOf('comerci') >= 0 || n.indexOf('predio') >= 0 ? 'sala_com' :
+             n.indexOf('servi') >= 0 ? 'servico' :
+             n.indexOf('garagem') >= 0 || n.indexOf('vaga') >= 0 ? 'garagem' :
+             n.indexOf('externa') >= 0 || n.indexOf('lazer') >= 0 ? 'externa' :
              'default';
-  var sugestoes = _sugestoes[tipo] || _sugestoes['default'];
+  // Sugest\u00f5es por tipo de im\u00f3vel
+  var _tipoImovel = (wizard.tipoImovel || wizard.propertyType || '').toLowerCase();
+  var _sugPorTipo = {
+    apartamento: ['Closet', 'Varanda', 'Banheiro privativo', 'Lavabo'],
+    studio:      ['Varanda', 'Closet'],
+    sala:        ['Recep\u00e7\u00e3o', 'Sala de reuni\u00e3o', 'Copa', 'Banheiro', 'Dep\u00f3sito'],
+    loja:        ['Estoque', 'Provador', 'Copa', 'Banheiro', 'Vitrine'],
+    galp:        ['Doca', 'Dep\u00f3sito', 'Escrit\u00f3rio', 'Vesti\u00e1rio', 'Copa', 'P\u00e1tio'],
+    chacara:     ['Casa de caseiro', '\u00c1rea de lazer', 'Curral', 'Po\u00e7o'],
+    terreno:     ['\u00c1rea frontal', '\u00c1rea dos fundos'],
+    residencial: ['Closet', 'Varanda', 'Banheiro privativo', 'Despensa'],
+    default:     ['Dep\u00f3sito', 'Copa', 'Banheiro', 'Varanda']
+  };
+  var _tpIm = _tipoImovel.indexOf('apart') >= 0 || _tipoImovel.indexOf('cobert') >= 0 ? 'apartamento' :
+              _tipoImovel.indexOf('studio') >= 0 || _tipoImovel.indexOf('kitnet') >= 0 ? 'studio' :
+              _tipoImovel.indexOf('sala') >= 0 || _tipoImovel.indexOf('comerci') >= 0 || _tipoImovel.indexOf('pr\u00e9dio') >= 0 ? 'sala' :
+              _tipoImovel.indexOf('loja') >= 0 || _tipoImovel.indexOf('sal\u00e3o') >= 0 ? 'loja' :
+              _tipoImovel.indexOf('galp') >= 0 || _tipoImovel.indexOf('barra') >= 0 ? 'galp' :
+              _tipoImovel.indexOf('ch\u00e1cara') >= 0 || _tipoImovel.indexOf('s\u00edtio') >= 0 || _tipoImovel.indexOf('rural') >= 0 ? 'chacara' :
+              _tipoImovel.indexOf('terreno') >= 0 ? 'terreno' :
+              _tipoImovel.indexOf('casa') >= 0 ? 'residencial' :
+              'default';
+  // Merge: ambiente-specific first, then property-type extras
+  var _ambSug = _sugPorAmb[_tipoAmb] || [];
+  var _tpSug = _sugPorTipo[_tpIm] || _sugPorTipo['default'];
+  var _seen = {};
+  var sugestoes = [];
+  _ambSug.concat(_tpSug).forEach(function(s) {
+    var k = s.toLowerCase();
+    if (!_seen[k]) { _seen[k] = true; sugestoes.push(s); }
+  });
   var pills = sugestoes.map(function(s) {
     return '<div onclick="document.getElementById(\'inp-subamb\').value=\'' + s + '\'" style="padding:6px 12px;border-radius:20px;background:#dbeafe;border:0.5px solid #93c5fd;font-size:11px;color:#1e40af;cursor:pointer;display:inline-block;margin:3px">' + s + '</div>';
   }).join('');
