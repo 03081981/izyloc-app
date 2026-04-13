@@ -4740,6 +4740,33 @@ if (typeof initAmbientes === 'function') initAmbientes();
             if(_mf.length>0){h+='<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(90px,1fr));gap:6px;margin-bottom:10px">';for(var _mfi=0;_mfi<_mf.length;_mfi++){var _msrc=_mf[_mfi].preview||(_mf[_mfi].base64?('data:'+(_mf[_mfi].mime||'image/jpeg')+';base64,'+_mf[_mfi].base64):'');if(_msrc){h+='<div style="position:relative;aspect-ratio:1;overflow:hidden;border-radius:6px;border:1px solid #cbd5e1;background:#f1f5f9">';h+='<img src="'+_msrc+'" style="width:100%;height:100%;object-fit:cover;display:block"/>';h+='<div style="position:absolute;left:3px;top:3px;background:rgba(15,23,42,0.75);color:#fff;padding:1px 6px;border-radius:4px;font-size:10px;font-weight:600">'+(_mfi+1)+'</div>';h+='</div>';}}h+='</div>';}
             h+='<div style="margin-bottom:10px"><label style="display:block;font-size:11px;color:#64748b;font-weight:600;margin-bottom:3px">S\u00edntese / Resumo do ambiente</label>';
             h+='<textarea data-kind="resumo" data-aidx="'+_ri+'" rows="5" style="width:100%;padding:7px 9px;border:1px solid #cbd5e1;border-radius:6px;font-size:12px;background:#fff;resize:vertical">'+_esc(_rd.resumo||'')+'</textarea></div>';
+            var _mTKeys=[];var _mSeen={};
+            for(var _mk in _stdNomes){if(_mTst.hasOwnProperty(_mk)){_mTKeys.push({k:_mk,n:_stdNomes[_mk]});_mSeen[_mk]=1;}}
+            for(var _mx=0;_mx<_mXtr.length;_mx++){if(!_mSeen[_mXtr[_mx].k]){_mTKeys.push({k:_mXtr[_mx].k,n:_mXtr[_mx].n||_mXtr[_mx].k});_mSeen[_mXtr[_mx].k]=1;}}
+            for(var _mtk in _mTst){if(_mtk.length>4&&_mtk.slice(-4)==='_obs')continue;if(!_mSeen[_mtk]){_mTKeys.push({k:_mtk,n:_mtk});_mSeen[_mtk]=1;}}
+            if(_mTKeys.length>0){
+              h+='<div style="font-size:11px;color:#64748b;font-weight:600;margin-bottom:5px">Verifica\u00e7\u00f5es t\u00e9cnicas</div>';
+              h+='<div style="display:flex;flex-direction:column;gap:6px;margin-bottom:10px">';
+              for(var _mki=0;_mki<_mTKeys.length;_mki++){
+                var _mk2=_mTKeys[_mki].k;var _mkn=_mTKeys[_mki].n;
+                var _mStat=_mTst[_mk2]||'';if(_mStat==='nao')_mStat='nok';
+                var _mObsV=_mTst[_mk2+'_obs']||'';
+                h+='<div style="display:grid;grid-template-columns:1.2fr 90px 2fr;gap:6px;align-items:center;padding:4px 0">';
+                h+='<div style="font-size:12px;color:#334155">'+_esc(_mkn)+'</div>';
+                h+='<select data-kind="testeStatus" data-aidx="'+_ri+'" data-tk="'+_esc(_mk2)+'" style="padding:5px 7px;border:1px solid #cbd5e1;border-radius:5px;font-size:11px;background:#fff">';
+                h+='<option value=""'+(_mStat===''?' selected':'')+'>\u2014</option>';
+                h+='<option value="ok"'+(_mStat==='ok'?' selected':'')+'>OK</option>';
+                h+='<option value="nok"'+(_mStat==='nok'?' selected':'')+'>NOK</option>';
+                h+='<option value="nt"'+(_mStat==='nt'?' selected':'')+'>NT</option>';
+                h+='<option value="na"'+(_mStat==='na'?' selected':'')+'>N/A</option>';
+                h+='</select>';
+                h+='<input type="text" data-kind="testeObs" data-aidx="'+_ri+'" data-tk="'+_esc(_mk2)+'" value="'+_esc(_mObsV)+'" placeholder="observa\u00e7\u00e3o" style="padding:5px 7px;border:1px solid #cbd5e1;border-radius:5px;font-size:11px;background:#fff"/>';
+                h+='</div>';
+              }
+              h+='</div>';
+            }
+            h+='<div><label style="display:block;font-size:11px;color:#64748b;font-weight:600;margin-bottom:3px">Observa\u00e7\u00f5es gerais</label>';
+            h+='<textarea data-kind="obs" data-aidx="'+_ri+'" rows="2" style="width:100%;padding:7px 9px;border:1px solid #cbd5e1;border-radius:6px;font-size:12px;background:#fff;resize:vertical">'+_esc(_rd.obs||'')+'</textarea></div>';
             h+='</div>';
           }
           (_rd.subAmbientes || []).forEach(function(_sn, _si) {
