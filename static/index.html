@@ -6672,9 +6672,15 @@ function _getNomesInventario(nomeAmb) {
     suite:    ['Cama (estrutura/cabeceira)','Colch\u00e3o','Travesseiros','Fronhas','Len\u00e7\u00f3is (jogo)','Cobertores','Edredom','Toalhas de banho','Toalhas de rosto','Roup\u00e3o','Cabides','Secador de cabelo'],
     banheiro: ['Toalhas de banho','Toalhas de rosto','Tapete de banheiro','Papel higi\u00eanico (estoque)','Sabonete','Shampoo','Condicionador','Secador de cabelo'],
     servico:  ['Vassoura','Rodo','Esfregao','Pano de ch\u00e3o','Balde','Detergente','Esponja','Sab\u00e3o em p\u00f3','Amaciante','Desinfetante'],
+    closet:   ['Cabides','Gavetas/prateleiras','Sapateira','Espelho'],
+    varanda:  ['Mesa','Cadeiras','Espregui\u00e7adeira','Vasos/plantas'],
+    despensa: ['Prateleiras','Cesto','Organizadores'],
     'default':['Chaves do im\u00f3vel','Controles remotos','Manual de equipamentos','Guia da casa']
   };
-  var _tipo = _n.indexOf('su\u00edte')>=0||_n.indexOf('suite')>=0?'suite':
+  var _tipo = _n.indexOf('closet')>=0?'closet':
+              _n.indexOf('varanda')>=0||_n.indexOf('sacada')>=0?'varanda':
+              _n.indexOf('despensa')>=0?'despensa':
+              _n.indexOf('su\u00edte')>=0||_n.indexOf('suite')>=0?'suite':
               _n.indexOf('dorm')>=0||_n.indexOf('quarto')>=0?'dormit':
               _n.indexOf('banheiro')>=0?'banheiro':
               _n.indexOf('cozinha')>=0?'cozinha':
