@@ -1023,10 +1023,26 @@ def add_assinaturas(story, s, partes, local_data):
         u'conserva\u00e7\u00e3o nele contidos, cientes de que este documento \u00e9 <b>parte '
         u'integrante do contrato de loca\u00e7\u00e3o</b> em vigor.', s['normal']))
     story.append(Paragraph(f'Local e data: {local_data}', s['data']))
+    _sig_style = ParagraphStyle(
+        name='_sig_style', parent=s['normal'],
+        fontName='Helvetica', fontSize=9,
+        textColor=HexColor('#1a2540'),
+        alignment=TA_CENTER, leading=12,
+        spaceBefore=0, spaceAfter=0,
+    )
+    _sig_bold = ParagraphStyle(
+        name='_sig_bold', parent=_sig_style,
+        fontName='Helvetica-Bold',
+    )
     for nome, papel, cpf in partes:
-        story.append(HRFlowable(width='65%', thickness=0.8, color=PRETO,
-                                spaceBefore=24, spaceAfter=4))
-        story.append(Paragraph(f'{nome.upper()} \u2014 {papel} \u00b7 CPF: {cpf}', s['assinatura']))
+        story.append(Spacer(1, 18))
+        story.append(HRFlowable(width='55%', thickness=0.8, color=PRETO,
+                                hAlign='CENTER', spaceBefore=0, spaceAfter=4))
+        story.append(Paragraph(nome.upper(), _sig_bold))
+        if cpf:
+            story.append(Paragraph(f'{papel} \u00b7 CPF: {cpf}', _sig_style))
+        else:
+            story.append(Paragraph(papel, _sig_style))
 
 def add_rodape(story, s):
     story.append(Spacer(1, 16))
