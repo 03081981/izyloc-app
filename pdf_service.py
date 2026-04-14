@@ -1691,6 +1691,9 @@ def generate_pdf(inspection_data: dict, rooms_data: list,
                         'verificacoes_obs': _sub.get('verificacoesObs', {}),
                         'testes_nomes': _sub.get('testesNomes', {}),
                         'observacoes_gerais': _safe(_sub.get('observacoes', ''), ''),
+                        'inventario': _sub.get('inventario', {}) or {},
+                        'inventarioNomes': _sub.get('inventarioNomes', []) or [],
+                        'inventarioExtras': _sub.get('inventarioExtras', []) or [],
                     }
                     _expanded.append(_sub_amb)
             else:
