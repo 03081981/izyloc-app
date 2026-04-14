@@ -452,6 +452,7 @@ def add_card_imob_corretor(story, s, dados_imobiliaria, dados_corretor):
     corr_creci = dados_corretor.get('creci', u'\u2014') or u'\u2014'
     corr_tel   = dados_corretor.get('telefone', u'') or u''
     corr_email = dados_corretor.get('email', u'\u2014') or u'\u2014'
+    corr_cpf   = dados_corretor.get('cpf',   u'\u2014') or u'\u2014'
 
     def _build_block(title, campos):
         inner_rows = [[Paragraph(title, s['parte_titulo'])]]
@@ -483,6 +484,7 @@ def add_card_imob_corretor(story, s, dados_imobiliaria, dados_corretor):
         right_block = _build_block(u'Corretor', [
             ('NOME',     corr_nome,             'parte_valor'),
             ('CRECI',    maiusculo(corr_creci), 'parte_valor'),
+            ('CPF',      corr_cpf,              'parte_valor'),
             ('TELEFONE', corr_tel or u'\u2014', 'parte_valor'),
             ('E-MAIL',   corr_email,            'parte_email'),
         ])
@@ -503,6 +505,8 @@ def add_card_imob_corretor(story, s, dados_imobiliaria, dados_corretor):
         linhas.append([Paragraph(corr_nome, s['parte_valor'])])
         linhas.append([Paragraph('CRECI', s['parte_label'])])
         linhas.append([Paragraph(maiusculo(corr_creci), s['parte_valor'])])
+        linhas.append([Paragraph('CPF', s['parte_label'])])
+        linhas.append([Paragraph(corr_cpf, s['parte_valor'])])
         linhas.append([Paragraph('E-MAIL', s['parte_label'])])
         linhas.append([Paragraph(corr_email, s['parte_email'])])
         t = Table(linhas, colWidths=[TW], spaceAfter=6)
@@ -1102,7 +1106,7 @@ def gerar_laudo_entrada_proprietario(dados_imovel, dados_locador,
     for _ten in locatarios:
         partes_sig.append((_ten['nome'], u'Locat\u00e1rio', _ten['cpf']))
     if dados_corretor.get('nome'):
-        partes_sig.append((dados_corretor['nome'], u'Corretor \u00b7 CRECI ' + dados_corretor.get('creci', ''), ''))
+        partes_sig.append((dados_corretor['nome'], u'Corretor \u00b7 CRECI ' + dados_corretor.get('creci', '') + ((u' \u00b7 CPF: ' + dados_corretor.get('cpf', '')) if dados_corretor.get('cpf') else u''), ''))
     add_assinaturas(story, s, partes_sig, local_data)
 
     add_rodape(story, s)
@@ -1161,7 +1165,7 @@ def gerar_laudo_modelo1(dados_imovel, dados_locador, dados_locatario,
     for _ten in locatarios:
         partes_sig.append((_ten['nome'], u'Locat\u00e1rio', _ten['cpf']))
     if dados_corretor.get('nome'):
-        partes_sig.append((dados_corretor['nome'], u'Corretor \u00b7 CRECI ' + dados_corretor.get('creci', ''), ''))
+        partes_sig.append((dados_corretor['nome'], u'Corretor \u00b7 CRECI ' + dados_corretor.get('creci', '') + ((u' \u00b7 CPF: ' + dados_corretor.get('cpf', '')) if dados_corretor.get('cpf') else u''), ''))
     add_assinaturas(story, s, partes_sig, local_data)
 
     add_rodape(story, s)
@@ -1209,7 +1213,7 @@ def gerar_laudo_modelo3(dados_imovel, dados_locador, dados_locatario,
     for _ten in locatarios:
         partes_sig.append((_ten['nome'], u'Locat\u00e1rio', _ten['cpf']))
     if dados_corretor.get('nome'):
-        partes_sig.append((dados_corretor['nome'], u'Vistoriador/Corretor \u00b7 CRECI ' + dados_corretor.get('creci', ''), ''))
+        partes_sig.append((dados_corretor['nome'], u'Vistoriador/Corretor \u00b7 CRECI ' + dados_corretor.get('creci', '') + ((u' \u00b7 CPF: ' + dados_corretor.get('cpf', '')) if dados_corretor.get('cpf') else u''), ''))
     add_assinaturas(story, s, partes_sig, local_data)
 
     add_rodape(story, s)
@@ -1266,7 +1270,7 @@ def gerar_laudo_modelo4(dados_imovel, dados_locador, dados_locatario,
     for _ten in locatarios:
         partes_sig.append((_ten['nome'], u'Locat\u00e1rio', _ten['cpf']))
     if dados_corretor.get('nome'):
-        partes_sig.append((dados_corretor['nome'], u'Corretor \u00b7 CRECI ' + dados_corretor.get('creci', ''), ''))
+        partes_sig.append((dados_corretor['nome'], u'Corretor \u00b7 CRECI ' + dados_corretor.get('creci', '') + ((u' \u00b7 CPF: ' + dados_corretor.get('cpf', '')) if dados_corretor.get('cpf') else u''), ''))
     add_assinaturas(story, s, partes_sig, local_data)
 
     add_rodape(story, s)
@@ -1314,7 +1318,7 @@ def gerar_laudo_modelo5(dados_imovel, dados_locador, dados_locatario,
     for _ten in locatarios:
         partes_sig.append((_ten['nome'], u'H\u00f3spede / Ocupante', _ten['cpf']))
     if dados_corretor.get('nome'):
-        partes_sig.append((dados_corretor['nome'], u'Vistoriador/Corretor \u00b7 CRECI ' + dados_corretor.get('creci', ''), ''))
+        partes_sig.append((dados_corretor['nome'], u'Vistoriador/Corretor \u00b7 CRECI ' + dados_corretor.get('creci', '') + ((u' \u00b7 CPF: ' + dados_corretor.get('cpf', '')) if dados_corretor.get('cpf') else u''), ''))
     add_assinaturas(story, s, partes_sig, local_data)
 
     add_rodape(story, s)
@@ -1371,7 +1375,7 @@ def gerar_laudo_modelo6(dados_imovel, dados_locador, dados_locatario,
     for _ten in locatarios:
         partes_sig.append((_ten['nome'], u'H\u00f3spede / Ocupante', _ten['cpf']))
     if dados_corretor.get('nome'):
-        partes_sig.append((dados_corretor['nome'], u'Corretor \u00b7 CRECI ' + dados_corretor.get('creci', ''), ''))
+        partes_sig.append((dados_corretor['nome'], u'Corretor \u00b7 CRECI ' + dados_corretor.get('creci', '') + ((u' \u00b7 CPF: ' + dados_corretor.get('cpf', '')) if dados_corretor.get('cpf') else u''), ''))
     add_assinaturas(story, s, partes_sig, local_data)
 
     add_rodape(story, s)
@@ -1595,6 +1599,7 @@ def generate_pdf(inspection_data: dict, rooms_data: list,
             'creci'    : _safe(insp.get('corretor_creci'), ''),
             'telefone' : _fmt_tel(_safe(insp.get('corretor_phone'), '')),
             'email'    : (_safe(insp.get('corretor_email'), '') or '').lower().strip(),
+            'cpf'      : _fmt_cpf(_safe(insp.get('corretor_cpf'), '')),
         }
 
         dados_imobiliaria = {
