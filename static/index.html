@@ -6598,7 +6598,8 @@ function wiz6RenderAmbCard(idx) {
 
           // === Sub-ambientes added to normal room ===
     _wiz6RenderSubsBlock(idx, dados) +
-    _wiz6RenderSubsSugeridos(idx, dados, nome) +
+
+    (wizard.tipo === 'temporada' ? _wiz6RenderInventario(idx, nome) : '') +
 
     // Add sub-ambiente button
     '<div style="padding:14px 16px;border-top:0.5px solid #e2e8f0">' +
@@ -6606,7 +6607,6 @@ function wiz6RenderAmbCard(idx) {
     '<button onclick="wiz6AddSubAmb(' + idx + ')" style="width:100%;background:#2d7dd2;border:none;border-radius:8px;padding:11px;font-size:13px;color:#fff;cursor:pointer;font-weight:600">+ Adicionar sub-ambiente</button>' +
   '</div>' +
 
-    (wizard.tipo === 'temporada' ? _wiz6RenderInventario(idx, nome) : '') +
 
         '<div style="display:flex;gap:10px;align-items:center">' +
       btnAnterior +
