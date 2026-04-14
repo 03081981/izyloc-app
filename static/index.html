@@ -3222,7 +3222,7 @@ function showNewInspection() {
   ['wi-address','wi-area','wi-imob-name','wi-imob-cnpj','wi-imob-phone','wi-imob-address',
    'wi-loc-name','wi-loc-cpf','wi-loc-rg','wi-loc-phone','wi-loc-email',
    'wi-locat-name','wi-locat-cpf','wi-locat-rg','wi-locat-phone','wi-locat-email',
-   'wi-corr-name','wi-corr-creci','wi-corr-phone','wi-corr-email','wi-obs'
+   'wi-corr-name','wi-corr-creci','wi-corr-phone','wi-corr-email','wi-corr-cpf','wi-obs'
   ].forEach(id => { const el = document.getElementById(id); if(el) el.value=''; });
 
   // Reset room checkboxes
@@ -3389,7 +3389,7 @@ async function wizardNext(step) {
       locatario_name: v('wi-locat-name'), locatario_cpf: v('wi-locat-cpf'),
       locatario_rg: v('wi-locat-rg'), locatario_phone: v('wi-locat-phone'), locatario_email: v('wi-locat-email'),
       corretor_name: v('wi-corr-name'), corretor_creci: v('wi-corr-creci'),
-      corretor_phone: v('wi-corr-phone'), corretor_email: v('wi-corr-email'),
+      corretor_phone: v('wi-corr-phone'), corretor_email: v('wi-corr-email'), corretor_cpf: v('wi-corr-cpf'),
     });
     hideLoading();
     if (!r.ok) return toast(r.error || 'Erro ao salvar', 'error');
@@ -3404,7 +3404,7 @@ async function wizardNext(step) {
       locatario_name: v('wi-locat-name'), locatario_cpf: v('wi-locat-cpf'),
       locatario_rg: v('wi-locat-rg'), locatario_phone: v('wi-locat-phone'), locatario_email: v('wi-locat-email'),
       corretor_name: v('wi-corr-name'), corretor_creci: v('wi-corr-creci'),
-      corretor_phone: v('wi-corr-phone'), corretor_email: v('wi-corr-email'),
+      corretor_phone: v('wi-corr-phone'), corretor_email: v('wi-corr-email'), corretor_cpf: v('wi-corr-cpf'),
     });
     hideLoading();
     if (!r.ok) return toast(r.error || 'Erro ao salvar', 'error');
@@ -3847,7 +3847,7 @@ async function gerarLaudo() {
     corretor_name: (document.getElementById('wi-corr-name') || {}).value || '',
     corretor_creci: (document.getElementById('wi-corr-creci') || {}).value || '',
     corretor_phone: (document.getElementById('wi-corr-phone') || {}).value || '',
-    corretor_email: (document.getElementById('wi-corr-email') || {}).value || '',
+    corretor_email: (document.getElementById('wi-corr-email') || {}).value || '', corretor_cpf: (document.getElementById('wi-corr-cpf') || {}).value || '',
     responsavel: ((typeof wizard !== 'undefined' && wizard.realizador === 'imobiliária') ? 'imobiliaria' : 'proprietario')
   };
     var ambArr = [];
@@ -4278,7 +4278,7 @@ if (typeof initAmbientes === 'function') initAmbientes();
           locadores_json: JSON.stringify(locadores),
           locatarios_json: JSON.stringify(locatários),
           corretor_name: v('wi-corr-name'), corretor_creci: v('wi-corr-creci'),
-          corretor_phone: v('wi-corr-phone'), corretor_email: v('wi-corr-email')
+          corretor_phone: v('wi-corr-phone'), corretor_email: v('wi-corr-email'), corretor_cpf: v('wi-corr-cpf')
         };
         var r = await api('PUT', '/api/inspections/' + wizard.inspectionId, data);
         hideLoading();
