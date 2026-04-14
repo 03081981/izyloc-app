@@ -7528,6 +7528,7 @@ function _wiz6RenderSubsBlock(ambIdx, dados) {
       h += '</div>';
     });
     h += '</div>';
+    h += '<button onclick=\"wiz6AdicionarTesteSub(' + ambIdx + ',\'' + subNome.replace(/'/g,"\\\'") + '\')\" style=\"width:100%;padding:7px;border:1.5px dashed #bfdbfe;border-radius:8px;font-size:11px;color:#2d7dd2;background:transparent;cursor:pointer;margin-top:8px;margin-bottom:10px\">+ Adicionar outro teste</button>';
     // OBSERVA\u00c7\u00c3O GERAL
     h += '<div style="font-size:10px;font-weight:700;color:#8898aa;letter-spacing:.05em;margin-bottom:6px">OBSERVA\u00c7\u00c3O GERAL</div>';
     h += '<textarea placeholder="Observa\u00e7\u00e3o sobre ' + subNome + ' (opcional)..." onblur="wiz6SalvarObsSub(' + ambIdx + ',\'' + subNome.replace(/'/g,"\\\'") + '\',this.value)" style="width:100%;border:0.5px solid #e2e8f0;border-radius:8px;padding:8px 10px;font-size:11px;color:#8898aa;background:#f8fafc;resize:none">' + (sd.obs||'') + '</textarea>';
