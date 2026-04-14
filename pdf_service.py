@@ -1494,6 +1494,7 @@ def _build_ambientes(rooms_data):
 
 def _generate_numero_laudo(inspection_data):
     tipo = (inspection_data.get('type') or 'entrada').lower()
+    tipo = tipo.replace(u'\u00ed','i').replace(u'\u00e1','a').replace(u'\u00f3','o').replace(u'\u00e9','e')
     prefixo = 'VE' if tipo == 'entrada' else 'VS'
     dt = _parse_date(inspection_data.get('inspection_date'))
     ano = dt.year
@@ -1702,6 +1703,7 @@ def generate_pdf(inspection_data: dict, rooms_data: list,
 
         # ---- Selecao do modelo baseado em tipo x responsavel ----
         tipo = _safe(insp.get('type', 'entrada')).lower().strip()
+        tipo = tipo.replace(u'\u00ed','i').replace(u'\u00e1','a').replace(u'\u00f3','o').replace(u'\u00e9','e')
         responsavel = _safe(insp.get('responsavel', 'proprietario')).lower().strip()
 
         args = (dados_imovel, dados_locador, dados_locatario,
