@@ -670,8 +670,12 @@ class InspectionsHandler(BaseHandler):
         if not user:
             return
         data = self.json_body()
-        if not data.get('type') or data['type'] not in ('entrada', 'saida', 'temporada'):
-            return self.err('Tipo de vistoria invÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¡lido (entrada, saida ou temporada)')
+        _t = ((data.get('type') or '').strip().lower()
+              .replace(u'\u00ed', 'i').replace(u'\u00e1', 'a')
+              .replace(u'\u00f3', 'o').replace(u'\u00e9', 'e'))
+        if _t not in ('entrada', 'saida', 'temporada'):
+            return self.err(u'Tipo de vistoria inv\u00e1lido (entrada, saida ou temporada)')
+        data['type'] = _t
 
         conn = get_conn()
         try:
