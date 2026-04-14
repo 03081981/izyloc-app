@@ -448,10 +448,10 @@ def add_card_imob_corretor(story, s, dados_imobiliaria, dados_corretor):
 
     has_imob = bool(dados_imobiliaria and dados_imobiliaria.get('nome'))
 
-    corr_nome  = dados_corretor.get('nome',  u'â') or u'â'
-    corr_creci = dados_corretor.get('creci', u'â') or u'â'
+    corr_nome  = dados_corretor.get('nome',  u'\u2014') or u'\u2014'
+    corr_creci = dados_corretor.get('creci', u'\u2014') or u'\u2014'
     corr_tel   = dados_corretor.get('telefone', u'') or u''
-    corr_email = dados_corretor.get('email', u'â') or u'â'
+    corr_email = dados_corretor.get('email', u'\u2014') or u'\u2014'
 
     def _build_block(title, campos):
         inner_rows = [[Paragraph(title, s['parte_titulo'])]]
@@ -469,10 +469,10 @@ def add_card_imob_corretor(story, s, dados_imobiliaria, dados_corretor):
         return inner_t
 
     if has_imob:
-        imob_nome  = dados_imobiliaria.get('nome', u'â') or u'â'
-        imob_cnpj  = dados_imobiliaria.get('cnpj', u'â') or u'â'
-        imob_tel   = dados_imobiliaria.get('telefone', u'â') or u'â'
-        imob_email = dados_imobiliaria.get('email', u'â') or u'â'
+        imob_nome  = dados_imobiliaria.get('nome', u'\u2014') or u'\u2014'
+        imob_cnpj  = dados_imobiliaria.get('cnpj', u'\u2014') or u'\u2014'
+        imob_tel   = dados_imobiliaria.get('telefone', u'\u2014') or u'\u2014'
+        imob_email = dados_imobiliaria.get('email', u'\u2014') or u'\u2014'
 
         left_block = _build_block(u'Imobili\u00e1ria', [
             ('NOME',     imob_nome,             'parte_valor'),
@@ -483,7 +483,7 @@ def add_card_imob_corretor(story, s, dados_imobiliaria, dados_corretor):
         right_block = _build_block(u'Corretor', [
             ('NOME',     corr_nome,             'parte_valor'),
             ('CRECI',    maiusculo(corr_creci), 'parte_valor'),
-            ('TELEFONE', corr_tel or u'â', 'parte_valor'),
+            ('TELEFONE', corr_tel or u'\u2014', 'parte_valor'),
             ('E-MAIL',   corr_email,            'parte_email'),
         ])
 
