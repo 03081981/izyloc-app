@@ -719,11 +719,14 @@ def add_ambientes(story, s, ambientes):
                     if _k.endswith(_suf):
                         _inv_nomes_auto.add(_k[:-len(_suf)])
             _inv_nomes = list(_inv_nomes_auto)
-        _todos = list(_inv_nomes) + list(_inv_extras)
-        # Renderizar se tem qualquer dado
+        # Renderizar se tem qualquer dado (nomes padrao + extras com chave indexada)
         _linhas = []
-        for _item in _todos:
-            _key = re.sub(r'[\s\/\(\)\.]+', '_', str(_item)).lower()
+        _inv_items = []
+        for _n in _inv_nomes:
+            _inv_items.append((_n, re.sub(r'[\s\/\(\)\.]+', '_', str(_n)).lower()))
+        for _ei, _n in enumerate(_inv_extras):
+            _inv_items.append((_n, 'extra_' + str(_ei)))
+        for _item, _key in _inv_items:
             _estado = _inventario.get(_key + '_estado', '')
             _qty    = _inventario.get(_key + '_qty', 0)
             _obs    = _inventario.get(_key + '_obs', '') or u''
