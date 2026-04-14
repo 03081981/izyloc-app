@@ -719,19 +719,19 @@ def add_ambientes(story, s, ambientes):
                     if _k.endswith(_suf):
                         _inv_nomes_auto.add(_k[:-len(_suf)])
             _inv_nomes = list(_inv_nomes_auto)
-        # Renderizar se tem qualquer dado (nomes padrao + extras com chave indexada)
+        # Renderizar extras sempre; nomes padrao apenas se tiverem dados
         _linhas = []
         _inv_items = []
         for _n in _inv_nomes:
-            _inv_items.append((_n, re.sub(r'[\s\/\(\)\.]+', '_', str(_n)).lower()))
+            _inv_items.append((_n, re.sub(r'[\s\/\(\)\.]+', '_', str(_n)).lower(), False))
         for _ei, _n in enumerate(_inv_extras):
-            _inv_items.append((_n, 'extra_' + str(_ei)))
-        for _item, _key in _inv_items:
+            _inv_items.append((_n, 'extra_' + str(_ei), True))
+        for _item, _key, _is_extra in _inv_items:
             _estado = _inventario.get(_key + '_estado', '')
             _qty    = _inventario.get(_key + '_qty', 0)
             _obs    = _inventario.get(_key + '_obs', '') or u''
 
-            if not _estado and (not _qty or int(str(_qty)) == 0) and not _obs:
+            if not _is_extra and not _estado and (not _qty or int(str(_qty)) == 0) and not _obs:
                 continue
 
             _label = (u'\u2713 Bom'    if _estado == 'bom'
