@@ -1399,8 +1399,12 @@ def _format_date_display(date_str):
 def _safe(val, fallback=u'\u2014'):
     if val is None:
         return fallback
-    v = str(val).strip()
-    return v if v else fallback
+    import re as _re
+    s = str(val).strip()
+    s = _re.sub(u'[\x00-\x08\x0b\x0c\x0e-\x1f\x7f-\x9f\u200b\u200c\u200d\ufeff]', u'', s)
+    s = s.replace(u'\u00e2\u0080\u008b', u'')
+    s = s.strip()
+    return s if s else fallback
 
 def _foto_bytes(data_url):
     """Converte data URL base64 para bytes."""
