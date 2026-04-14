@@ -1035,7 +1035,7 @@ def add_assinaturas(story, s, partes, local_data):
         fontName='Helvetica-Bold',
     )
     for nome, papel, cpf in partes:
-        story.append(Spacer(1, 18))
+        story.append(Spacer(1, 40))
         story.append(HRFlowable(width='55%', thickness=0.8, color=PRETO,
                                 hAlign='CENTER', spaceBefore=0, spaceAfter=4))
         story.append(Paragraph(nome.upper(), _sig_bold))
