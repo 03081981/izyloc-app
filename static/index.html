@@ -6683,7 +6683,7 @@ function wiz6RenderAmbCard(idx) {
     '</div>' +
 
           // === Sub-ambientes added to normal room ===
-    (wizard.tipo === 'temporada' ? _wiz6RenderInventario(idx, nome) : '') +
+    _wiz6RenderInventario(idx, nome) +
 
     _wiz6RenderSubsBlock(idx, dados) +
 
@@ -7485,9 +7485,7 @@ function wiz6BuildSuiteHtml(idx) {
     h += '<textarea placeholder="Observa&ccedil;&atilde;o sobre ' + subNome + ' (opcional)..." onblur="wiz6SalvarObsSub(' + idx + ',\'' + subNome.replace(/'/g,"\\\'") + '\',this.value)" style="width:100%;padding:9px 12px;border:0.5px solid #e2e8f0;border-radius:8px;font-size:12px;color:#1a2540;resize:none;font-family:inherit;line-height:1.5;box-sizing:border-box" rows="2">' + (sd.obs || '').replace(/</g,'&lt;').replace(/>/g,'&gt;') + '</textarea>';
 
     // Inventário do sub-ambiente (apenas temporada)
-    if (wizard.tipo === 'temporada' || wizard.mobiliado) {
-      h += _wiz6RenderInventarioSub(idx, subNome);
-    }
+    h += _wiz6RenderInventarioSub(idx, subNome);
 
     h += '</div></div>'; // close body and sub-block
   });
@@ -7850,7 +7848,7 @@ function _wiz6RenderSubsBlock(ambIdx, dados) {
     // OBSERVA\u00c7\u00c3O GERAL
     h += '<div style="font-size:10px;font-weight:700;color:#8898aa;letter-spacing:.05em;margin-bottom:6px">OBSERVA\u00c7\u00c3O GERAL</div>';
     h += '<textarea placeholder="Observa\u00e7\u00e3o sobre ' + subNome + ' (opcional)..." onblur="wiz6SalvarObsSub(' + ambIdx + ',\'' + subNome.replace(/'/g,"\\\'") + '\',this.value)" style="width:100%;border:0.5px solid #e2e8f0;border-radius:8px;padding:8px 10px;font-size:11px;color:#8898aa;background:#f8fafc;resize:none">' + (sd.obs||'') + '</textarea>';
-    if (wizard.tipo === 'temporada') { h += _wiz6RenderInventarioSub(ambIdx, subNome); }
+    h += _wiz6RenderInventarioSub(ambIdx, subNome);
     h += '</div>'; // close body
     h += '</div>'; // close sub block
   });
