@@ -747,14 +747,19 @@ def add_ambientes(story, s, ambientes):
             _qty    = _inventario.get(_key + '_qty', 0)
             _obs    = _inventario.get(_key + '_obs', '') or u''
 
-            if not _is_extra and not _estado and (not _qty or int(str(_qty)) == 0) and not _obs:
+            try:
+                _qty_int = int(str(_qty)) if _qty is not None else 0
+            except (ValueError, TypeError):
+                _qty_int = 0
+
+            if not _is_extra and not _estado and _qty_int == 0 and not _obs:
                 continue
 
             _label = (u'\u2713 Bom'    if _estado == 'bom'
                       else u'\u26a0 Avaria'  if _estado == 'avaria'
                       else u'\u2717 Ausente' if _estado == 'ausente'
                       else u'\u2014')
-            _linhas.append([str(_item), str(_qty or 0), _label, _obs])
+            _linhas.append([str(_item), str(_qty_int), _label, _obs])
         if _linhas:
             story.append(Spacer(1, 8))
             story.append(Paragraph(u'Inventário do ambiente', s['secao']))
