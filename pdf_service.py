@@ -1765,4 +1765,4 @@ def generate_pdf(inspection_data: dict, rooms_data: list,
         print('[PDF ERROR]', str(e), flush=True)
         print('[PDF TRACEBACK]', tb, flush=True)
         logger.error(f'Erro ao gerar PDF: {e}', exc_info=True)
-        return False
+        raise
