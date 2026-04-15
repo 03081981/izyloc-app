@@ -3346,7 +3346,7 @@ function _renderDashList() {
     html = '<div style="padding:24px;text-align:center;color:#94a3b8;font-size:13px;">Nenhum laudo encontrado.</div>';
   }
   if (filtered.length > MAX) {
-    html += '<div style="text-align:center;padding:14px 0 4px"><span id="db-ver-todos-btn" onclick="mostrarTodosLaudos()" style="font-size:13px;color:#2d7dd2;cursor:pointer;font-weight:500;display:inline-flex;align-items:center;gap:4px">Ver todos os laudos →</span></div>';
+    html += '<div style="text-align:center;padding:14px 0 4px"><span id="db-ver-todos-btn" onclick="showMeusLaudosPage()" style="font-size:13px;color:#2d7dd2;cursor:pointer;font-weight:500;display:inline-flex;align-items:center;gap:4px">Ver todos os laudos →</span></div>';
   }
   container.innerHTML = html;
 }
@@ -3405,19 +3405,23 @@ function showMeusLaudosPage(el) {
   renderMeusLaudos();
 }
 
-function renderMeusLaudos() {
-  fetch("/api/inspections", { credentials: "same-origin", headers: (window.getAuthHeaders ? window.getAuthHeaders() : {}) })
-    .then(function(r){ return r.json(); })
-    .then(function(data){
-      var list = (data && data.inspections) || data || [];
-      if (!Array.isArray(list)) list = [];
-      window._mlState.data = list;
-      _mlRenderCounters(list);
-      _mlRenderTipoFilter();
-      _mlRenderStatusFilter();
-      _mlRenderList();
-    })
-    .catch(function(e){ console.error("Erro carregando laudos", e); });
+async function renderMeusLaudos() {
+  try {
+    var list = [];
+    if (Array.isArray(window._allInspections) && window._allInspections.length) {
+      list = window._allInspections;
+    } else if (typeof api === "function") {
+      var r = await api("GET", "/api/inspections");
+      if (r && r.ok) list = r.inspections || [];
+    }
+    if (!Array.isArray(list)) list = [];
+    window._allInspections = list;
+    window._mlState.data = list;
+    _mlRenderCounters(list);
+    _mlRenderTipoFilter();
+    _mlRenderStatusFilter();
+    _mlRenderList();
+  } catch (e) { console.error("Erro carregando laudos", e); }
 }
 
 function _mlStatusKey(insp) {
