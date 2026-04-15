@@ -1342,72 +1342,84 @@ class GeneratePDFHandler(BaseHandler):
 
 
     def post(self, insp_id):
-        user = self.require_auth()
-        if not user:
-            return
-        body = self.json_body() or {}
-        amb_data = body.get('ambData', [])
-        amb_by_name = {a.get('roomName', ''): a for a in amb_data}
-        conn = get_conn()
         try:
-            insp = conn.execute(
-                'SELECT * FROM inspections WHERE id=? AND user_id=?',
-                (insp_id, user['user_id'])).fetchone()
-            if not insp:
-                return self.err('Vistoria nao encontrada', 404)
-            inspection_data = self.row_to_dict(insp)
-            rooms = conn.execute(
-                'SELECT * FROM rooms WHERE inspection_id=? ORDER BY order_num', (insp_id,)).fetchall()
-            rooms_list = []
-            for _idx, room in enumerate(rooms):
-                room_dict = self.row_to_dict(room)
-                items = conn.execute(
-                    'SELECT * FROM room_items WHERE room_id=? ORDER BY created_at',
-                    (room['id'],)).fetchall()
-                room_dict['items'] = self.rows_to_list(items)
-                # Match primarily by index (frontend sends rooms in DB order),
-                # fall back to name match for resiliency.
-                amb = None
-                if _idx < len(amb_data):
-                    amb = amb_data[_idx] or None
-                if not amb:
-                    amb = amb_by_name.get(room_dict.get('name', ''), {}) or None
-                if amb:
-                    room_dict['verificacoes'] = amb.get('verificacoes', {})
-                    room_dict['verificacoes_obs'] = amb.get('verificacoesObs', {})
-                    room_dict['testes_nomes'] = amb.get('testesNomes', {})
-                    room_dict['observacoes'] = amb.get('observacoes', '')
-                    # Pass suite/sub-ambiente data through to pdf_service
-                    if amb.get('isSuite'):
-                        room_dict['isSuite'] = True
-                    if amb.get('subAmbientes'):
-                        room_dict['subAmbientes'] = amb.get('subAmbientes', [])
-                    # Inventario (temporada)
-                    room_dict['inventario'] = amb.get('inventario') or {}
-                    room_dict['inventarioExtras'] = amb.get('inventarioExtras') or []
-                    room_dict['inventarioNomes'] = amb.get('inventarioNomes') or []
-                    print('[DEBUG inv]', room_dict.get('inventarioNomes', [])[:2], 'inv keys:', list(room_dict.get('inventario', {}).keys())[:5])
-                rooms_list.append(room_dict)
-            sigs = conn.execute(
-                'SELECT * FROM signatures WHERE inspection_id=?', (insp_id,)).fetchall()
-            signatures_list = self.rows_to_list(sigs)
-            tipo = inspection_data.get('type', 'entrada')
-            pdf_filename = f"IZYLO_Laudo_{tipo}_{insp_id[:8].upper()}.pdf"
-            pdf_path = os.path.join(PDF_DIR, pdf_filename)
-            success = generate_pdf(inspection_data, rooms_list, signatures_list, pdf_path)
-            if not success:
-                return self.err('Erro ao gerar PDF', 500)
-            conn.execute("UPDATE inspections SET status='concluido', updated_at=? WHERE id=?",
-                    (datetime.now().strftime('%Y-%m-%d %H:%M:%S'), insp_id))
-            conn.commit()
-            self.set_header('Content-Type', 'application/pdf')
-            self.set_header('Content-Disposition',
-                f'attachment; filename="{pdf_filename}"')
-            with open(pdf_path, 'rb') as f:
-                self.write(f.read())
-            self.finish()
-        finally:
-            conn.close()
+            user = self.require_auth()
+            if not user:
+                return
+            body = self.json_body() or {}
+            amb_data = body.get('ambData', [])
+            amb_by_name = {a.get('roomName', ''): a for a in amb_data}
+            conn = get_conn()
+            try:
+                insp = conn.execute(
+                    'SELECT * FROM inspections WHERE id=? AND user_id=?',
+                    (insp_id, user['user_id'])).fetchone()
+                if not insp:
+                    return self.err('Vistoria nao encontrada', 404)
+                inspection_data = self.row_to_dict(insp)
+                rooms = conn.execute(
+                    'SELECT * FROM rooms WHERE inspection_id=? ORDER BY order_num', (insp_id,)).fetchall()
+                rooms_list = []
+                for _idx, room in enumerate(rooms):
+                    room_dict = self.row_to_dict(room)
+                    items = conn.execute(
+                        'SELECT * FROM room_items WHERE room_id=? ORDER BY created_at',
+                        (room['id'],)).fetchall()
+                    room_dict['items'] = self.rows_to_list(items)
+                    # Match primarily by index (frontend sends rooms in DB order),
+                    # fall back to name match for resiliency.
+                    amb = None
+                    if _idx < len(amb_data):
+                        amb = amb_data[_idx] or None
+                    if not amb:
+                        amb = amb_by_name.get(room_dict.get('name', ''), {}) or None
+                    if amb:
+                        room_dict['verificacoes'] = amb.get('verificacoes', {})
+                        room_dict['verificacoes_obs'] = amb.get('verificacoesObs', {})
+                        room_dict['testes_nomes'] = amb.get('testesNomes', {})
+                        room_dict['observacoes'] = amb.get('observacoes', '')
+                        # Pass suite/sub-ambiente data through to pdf_service
+                        if amb.get('isSuite'):
+                            room_dict['isSuite'] = True
+                        if amb.get('subAmbientes'):
+                            room_dict['subAmbientes'] = amb.get('subAmbientes', [])
+                        # Inventario (temporada)
+                        room_dict['inventario'] = amb.get('inventario') or {}
+                        room_dict['inventarioExtras'] = amb.get('inventarioExtras') or []
+                        room_dict['inventarioNomes'] = amb.get('inventarioNomes') or []
+                        print('[DEBUG inv]', room_dict.get('inventarioNomes', [])[:2], 'inv keys:', list(room_dict.get('inventario', {}).keys())[:5])
+                    rooms_list.append(room_dict)
+                sigs = conn.execute(
+                    'SELECT * FROM signatures WHERE inspection_id=?', (insp_id,)).fetchall()
+                signatures_list = self.rows_to_list(sigs)
+                tipo = inspection_data.get('type', 'entrada')
+                pdf_filename = f"IZYLO_Laudo_{tipo}_{insp_id[:8].upper()}.pdf"
+                pdf_path = os.path.join(PDF_DIR, pdf_filename)
+                success = generate_pdf(inspection_data, rooms_list, signatures_list, pdf_path)
+                if not success:
+                    return self.err('Erro ao gerar PDF', 500)
+                conn.execute("UPDATE inspections SET status='concluido', updated_at=? WHERE id=?",
+                        (datetime.now().strftime('%Y-%m-%d %H:%M:%S'), insp_id))
+                conn.commit()
+                self.set_header('Content-Type', 'application/pdf')
+                self.set_header('Content-Disposition',
+                    f'attachment; filename="{pdf_filename}"')
+                with open(pdf_path, 'rb') as f:
+                    self.write(f.read())
+                self.finish()
+            finally:
+                conn.close()
+        except Exception as e:
+            import traceback
+            tb = traceback.format_exc()
+            print('[PDF HANDLER ERROR]', str(e), flush=True)
+            print('[PDF HANDLER TRACEBACK]', tb, flush=True)
+            try:
+                self.set_status(500)
+                self.write({'error': str(e), 'type': type(e).__name__})
+            except Exception:
+                pass
+            return
 
 # ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ SERVE FOTOS ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ
 
