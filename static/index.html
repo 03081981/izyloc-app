@@ -4857,7 +4857,7 @@ if (typeof initAmbientes === 'function') initAmbientes();
             }
             h+='<div><label style="display:block;font-size:11px;color:#64748b;font-weight:600;margin-bottom:3px">Observa\u00e7\u00f5es gerais</label>';
             h+='<textarea data-kind="obs" data-aidx="'+_ri+'" rows="2" style="width:100%;padding:7px 9px;border:1px solid #cbd5e1;border-radius:6px;font-size:12px;background:#fff;resize:none;field-sizing:content;overflow:hidden;min-height:60px;line-height:1.8">'+_esc(_rd.obs||'')+'</textarea></div>';
-            if (wizard.tipo === 'temporada') { h+=_wiz7RenderInventarioRev(_ri, _rN, _rd); }
+            if (wizard.tipo === 'temporada' || wizard.mobiliado === true || wizard.mobiliado === 'true') { h+=_wiz7RenderInventarioRev(_ri, _rN, _rd); }
             h+='</div>';
           }
           (_rd.subAmbientes || []).forEach(function(_sn, _si) {
@@ -4927,7 +4927,7 @@ if (typeof initAmbientes === 'function') initAmbientes();
             // Observa\u00e7\u00f5es gerais - same as regular rooms
             h += '<div><label style="display:block;font-size:11px;color:#64748b;font-weight:600;margin-bottom:3px">Observa\u00e7\u00f5es gerais</label>';
             h += '<textarea data-kind="obsSub" data-aidx="' + _ri + '" data-sub="' + _esc(_sn) + '" rows="2" style="width:100%;padding:7px 9px;border:1px solid #cbd5e1;border-radius:6px;font-size:12px;background:#fff;resize:none;field-sizing:content;overflow:hidden;min-height:60px;line-height:1.8">' + _esc(_sd.obs || '') + '</textarea></div>';
-            if (wizard.tipo === 'temporada') { h += _wiz7RenderInventarioRev(_ri, _sn, _rd.subs[_sn] || {}); }
+            if (wizard.tipo === 'temporada' || wizard.mobiliado === true || wizard.mobiliado === 'true') { h += _wiz7RenderInventarioRev(_ri, _sn, _rd.subs[_sn] || {}); }
             h += '</div>';
           });
           continue;
@@ -4995,7 +4995,7 @@ if (typeof initAmbientes === 'function') initAmbientes();
         h += '<div><label style="display:block;font-size:11px;color:#64748b;font-weight:600;margin-bottom:3px">Observações gerais</label>';
         h += '<textarea data-kind="obs" data-aidx="' + _ri + '" rows="2" style="width:100%;padding:7px 9px;border:1px solid #cbd5e1;border-radius:6px;font-size:12px;background:#fff;resize:none;field-sizing:content;overflow:hidden;min-height:60px;line-height:1.8">' + _esc(_rd.obs || '') + '</textarea></div>';
         h += '</div>';
-        if (wizard.tipo === 'temporada') {
+        if (wizard.tipo === 'temporada' || wizard.mobiliado === true || wizard.mobiliado === 'true') {
           h += _wiz7RenderInventarioRev(_ri, _rN, _rd);
         }
       }
