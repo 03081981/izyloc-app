@@ -1416,7 +1416,7 @@ class GeneratePDFHandler(BaseHandler):
             print('[PDF HANDLER TRACEBACK]', tb, flush=True)
             try:
                 self.set_status(500)
-                self.write({'error': str(e), 'type': type(e).__name__})
+                self.write({'error': str(e), 'type': type(e).__name__, 'traceback': tb})
             except Exception:
                 pass
             return
