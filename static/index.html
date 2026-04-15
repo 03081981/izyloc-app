@@ -3282,7 +3282,7 @@ function _dashActionBtns(insp, statusKey) {
   if (status === 'aguardando_assinatura' || status === 'assinado_digital') {
     html += '<button style="'+btnAut+'" onclick="event.stopPropagation();dashAbrirAutentique(\''+id+'\')">🔗 Autentique</button>';
   }
-  html += '<button style="'+btnTrash+'" onclick="event.stopPropagation();dashExcluir(\''+id+'\')">🗑️</button>';
+  html += '<button style="'+btnTrash+'" onclick="event.stopPropagation();dashExcluir(\''+id+'\')">Excluir</button>';
   html += '</div>';
   return html;
 }
@@ -3523,16 +3523,23 @@ function _mlRenderList() {
 function _mlRenderCard(insp, statusKey) {
   var code = (typeof _dashLaudoCode === "function") ? _dashLaudoCode(insp) : (insp.codigo || insp.id || "-");
   var info = (typeof _dashStatusInfo === "function") ? _dashStatusInfo(statusKey) : { label: statusKey, bg: "#f3f4f6", color: "#374151" };
-  var end = insp.endereco || insp.address || "(sem endereco)";
-  var cli = insp.cliente || insp.client || "";
-  var tipo = (insp.tipo || insp.type || "").toString();
-  if (tipo) tipo = tipo.charAt(0).toUpperCase() + tipo.slice(1);
+  var end = insp.property_address || insp.endereco || insp.address || "Endereço não informado";
+  var cli = insp.tenant_name || insp.cliente || insp.client || "";
+  var tipoRaw = (insp.type || insp.tipo || "").toString().toLowerCase();
+  var tipo = tipoRaw === "entrada" ? "Entrada" : (tipoRaw === "saida" ? "Saída" : (tipoRaw === "temporada" ? "Temporada" : (tipoRaw ? tipoRaw.charAt(0).toUpperCase()+tipoRaw.slice(1) : "")));
+  var date = insp.inspection_date || (typeof formatDate === "function" ? formatDate(insp.created_at) : (insp.created_at || ""));
   var actions = _mlActionBtns(insp, statusKey);
+  var subparts = [];
+  if (cli) subparts.push(cli);
+  if (tipo) subparts.push(tipo);
+  if (date) subparts.push(date);
+  subparts.push(code);
+  var sub = subparts.join(" · ");
   return "<div style=\"display:flex;align-items:stretch;gap:12px;background:#fff;border:1px solid #e5e7eb;border-radius:10px;padding:14px;margin-bottom:10px;\">" +
     "<div style=\"font-size:26px;width:40px;display:flex;align-items:center;justify-content:center;\">\uD83D\uDCCB</div>" +
     "<div class=\"insp-info\" style=\"flex:1;min-width:0;\">" +
       "<div style=\"font-size:14px;font-weight:600;color:#111827;margin-bottom:2px;\">"+end+"</div>" +
-      "<div style=\"font-size:12px;color:#6b7280;\">"+(cli?cli+" \u00b7 ":"")+(tipo?tipo+" \u00b7 ":"")+code+"</div>" +
+      "<div style=\"font-size:12px;color:#6b7280;\">"+sub+"</div>" +
     "</div>" +
     "<div class=\"insp-right\" style=\"display:flex;flex-direction:column;gap:8px;align-items:flex-end;justify-content:space-between;\">" +
       "<span style=\"background:"+info.bg+";color:"+info.color+";padding:3px 8px;border-radius:5px;font-size:10px;font-weight:700;letter-spacing:0.3px;white-space:nowrap;\">"+info.label+"</span>" +
@@ -3543,20 +3550,26 @@ function _mlRenderCard(insp, statusKey) {
 
 function _mlActionBtns(insp, statusKey) {
   var id = insp.id;
-  var btn = "font-size:11px;padding:4px 10px;border-radius:5px;cursor:pointer;white-space:nowrap;";
-  var out = "";
+  var btnStyle = "font-size:11px;padding:4px 10px;border-radius:5px;cursor:pointer;white-space:nowrap;";
+  var btnEdit  = btnStyle + "border:1px solid #2d7dd2;background:#fff;color:#2d7dd2;";
+  var btnPdf   = btnStyle + "border:1px solid #e2e8f0;background:#fff;color:#8898aa;";
+  var btnAut   = btnStyle + "border:1px solid #1e3a5f;background:#fff;color:#1e3a5f;";
+  var btnTrash = btnStyle + "border:1px solid #fee2e2;background:#fff;color:#ef4444;";
+  var btnSign  = btnStyle + "border:none;background:#f59e0b;color:#fff;font-weight:600;";
+  var btnFis   = btnStyle + "border:none;background:#5b21b6;color:#fff;font-weight:600;";
   var st = (statusKey || "").toLowerCase();
   var canEdit = (st === "em_andamento" || st === "concluido");
-  if (canEdit) out += "<button onclick=\"dashEditar('"+id+"')\" style=\""+btn+"border:1px solid #2563eb;background:#fff;color:#2563eb;\">&#9998; Editar</button>";
-  out += "<button onclick=\"dashGerarPdf('"+id+"')\" style=\""+btn+"border:1px solid #d1d5db;background:#fff;color:#374151;\">\uD83D\uDCC4 PDF</button>";
+  var out = "";
+  if (canEdit) out += "<button style=\""+btnEdit+"\" onclick=\"event.stopPropagation();dashEditar('"+id+"')\">Editar</button>";
+  out += "<button style=\""+btnPdf+"\" onclick=\"event.stopPropagation();dashGerarPdf('"+id+"')\">PDF</button>";
   if (st === "concluido") {
-    out += "<button onclick=\"_mlEnviarAssinar('"+id+"')\" style=\""+btn+"border:none;background:#f59e0b;color:#fff;font-weight:600;\">\u270D Enviar p/ assinar</button>";
-    out += "<button onclick=\"_mlOpenFisico('"+id+"')\" style=\""+btn+"border:none;background:#5b21b6;color:#fff;font-weight:600;\">\uD83D\uDD8A Marcar fisico</button>";
+    out += "<button style=\""+btnSign+"\" onclick=\"event.stopPropagation();_mlEnviarAssinar('"+id+"')\">Enviar p/ assinar</button>";
+    out += "<button style=\""+btnFis+"\" onclick=\"event.stopPropagation();_mlOpenFisico('"+id+"')\">Marcar físico</button>";
   }
   if (st === "aguardando") {
-    out += "<button onclick=\"dashAbrirAutentique('"+id+"')\" style=\""+btn+"border:none;background:#1e40af;color:#fff;font-weight:600;\">Autentique</button>";
+    out += "<button style=\""+btnAut+"\" onclick=\"event.stopPropagation();dashAbrirAutentique('"+id+"')\">Autentique</button>";
   }
-  out += "<button onclick=\"_mlOpenExcluir('"+id+"','"+st+"')\" style=\""+btn+"border:1px solid #dc2626;background:#fff;color:#dc2626;\">\uD83D\uDDD1 Excluir</button>";
+  out += "<button style=\""+btnTrash+"\" onclick=\"event.stopPropagation();_mlOpenExcluir('"+id+"','"+st+"')\">Excluir</button>";
   return out;
 }
 
