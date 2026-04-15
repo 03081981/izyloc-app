@@ -6665,27 +6665,133 @@ function _wiz7RenderInventarioRev(idx, nomeAmb, dados) {
 
 function _getNomesInventario(nomeAmb) {
   var _n = (nomeAmb || '').toLowerCase();
-  var _itensPorAmb = {
-    sala:     ['TV','Sof\u00e1','Poltrona','Mesa de centro','Mesa de jantar','Cadeiras','Tapete','Controle remoto TV','Controle remoto AC'],
-    cozinha:  ['Pratos fundos','Pratos rasos','Pratos de sobremesa','Copos','Ta\u00e7as','X\u00edcaras','Colheres','Garfos','Facas','Panelas','Frigideiras','Escorredor','Abridor de lata','Saca-rolhas','Utensilios de cozinha (espatulas/conchas)','Cafeteira','Liquidificador','Torradeira','Micro-ondas'],
-    dormit:   ['Cama (estrutura/cabeceira)','Colch\u00e3o','Travesseiros','Fronhas','Len\u00e7\u00f3is (jogo)','Cobertores','Edredom','Toalhas de banho','Toalhas de rosto','Cabides'],
-    suite:    ['Cama (estrutura/cabeceira)','Colch\u00e3o','Travesseiros','Fronhas','Len\u00e7\u00f3is (jogo)','Cobertores','Edredom','Toalhas de banho','Toalhas de rosto','Roup\u00e3o','Cabides','Secador de cabelo'],
-    banheiro: ['Toalhas de banho','Toalhas de rosto','Tapete de banheiro','Papel higi\u00eanico (estoque)','Sabonete','Shampoo','Condicionador','Secador de cabelo'],
-    servico:  ['Vassoura','Rodo','Esfregao','Pano de ch\u00e3o','Balde','Detergente','Esponja','Sab\u00e3o em p\u00f3','Amaciante','Desinfetante'],
-    closet:   ['Cabides','Gavetas/prateleiras','Sapateira','Espelho'],
-    varanda:  ['Mesa','Cadeiras','Espregui\u00e7adeira','Vasos/plantas'],
-    despensa: ['Prateleiras','Cesto','Organizadores'],
-    'default':['Chaves do im\u00f3vel','Controles remotos','Manual de equipamentos','Guia da casa']
+    var _itensPorAmb = {
+    sala: [
+      'TV',
+      'Sof\u00e1',
+      'Poltrona',
+      'Mesa de centro',
+      'Mesa de jantar',
+      'Cadeiras',
+      'Tapete',
+      'Controle remoto TV',
+      'Controle remoto AC'
+    ],
+    cozinha: [
+      'Pratos fundos',
+      'Pratos rasos',
+      'Pratos de sobremesa',
+      'Copos',
+      'Ta\u00e7as',
+      'X\u00edcaras',
+      'Colheres',
+      'Garfos',
+      'Facas',
+      'Panelas',
+      'Frigideiras',
+      'Escorredor',
+      'Abridor de lata',
+      'Saca-rolhas',
+      'Utensilios de cozinha',
+      'Cafeteira',
+      'Liquidificador',
+      'Torradeira',
+      'Micro-ondas'
+    ],
+    dormit: [
+      'Cama (estrutura/cabeceira)',
+      'Colch\u00e3o',
+      'Travesseiros',
+      'Fronhas',
+      'Len\u00e7\u00f3is (jogo)',
+      'Cobertores',
+      'Edredom',
+      'Toalhas de banho',
+      'Toalhas de rosto',
+      'Cabides'
+    ],
+    suite: [
+      'Cama (estrutura/cabeceira)',
+      'Colch\u00e3o',
+      'Travesseiros',
+      'Fronhas',
+      'Len\u00e7\u00f3is (jogo)',
+      'Cobertores',
+      'Edredom',
+      'Toalhas de banho',
+      'Toalhas de rosto',
+      'Cabides',
+      'Secador de cabelo'
+    ],
+    banheiro: [
+      'Toalhas de banho',
+      'Toalhas de rosto',
+      'Tapete de banheiro',
+      'Secador de cabelo'
+    ],
+    closet: [
+      'Cabides',
+      'Gavetas/prateleiras',
+      'Sapateira',
+      'Espelho'
+    ],
+    varanda: [
+      'Mesa',
+      'Cadeiras',
+      'Espreguicadeira',
+      'Guarda-sol',
+      'Rede'
+    ],
+    lazer: [
+      'Boias',
+      'Brinquedos aqu\u00e1ticos',
+      'Rodo de piscina',
+      'Peneira/pu\u00e7\u00e1',
+      'Grelha de churrasqueira',
+      'Espetos',
+      'Pegador',
+      'Faca de churrasco',
+      'T\u00e1bua de corte',
+      'Mesa',
+      'Cadeiras',
+      'Espreguicadeiras',
+      'Guarda-sol',
+      'Rede'
+    ],
+    servico: [
+      'Vassoura',
+      'Rodo',
+      'Esfregao',
+      'Pano de ch\u00e3o',
+      'Balde',
+      'Detergente',
+      'Esponja'
+    ],
+    escritorio: [
+      'Mesa',
+      'Cadeira executiva',
+      'Computador',
+      'Impressora',
+      'Lumin\u00e1ria'
+    ],
+    default: [
+      'Chaves do im\u00f3vel',
+      'Controles remotos',
+      'Manual de equipamentos',
+      'Guia da casa'
+    ]
   };
-  var _tipo = _n.indexOf('closet')>=0?'closet':
-              _n.indexOf('varanda')>=0||_n.indexOf('sacada')>=0?'varanda':
-              _n.indexOf('despensa')>=0?'despensa':
-              _n.indexOf('su\u00edte')>=0||_n.indexOf('suite')>=0?'suite':
-              _n.indexOf('dorm')>=0||_n.indexOf('quarto')>=0?'dormit':
-              _n.indexOf('banheiro')>=0?'banheiro':
-              _n.indexOf('cozinha')>=0?'cozinha':
-              _n.indexOf('sala')>=0?'sala':
-              _n.indexOf('servi')>=0||_n.indexOf('lavand')>=0?'servico':'default';
+  var _tipo = _n.indexOf('su\u00edte')>=0||_n.indexOf('suite')>=0 ? 'suite' :
+              _n.indexOf('dorm')>=0||_n.indexOf('quarto')>=0 ? 'dormit' :
+              _n.indexOf('banheiro')>=0 ? 'banheiro' :
+              _n.indexOf('cozinha')>=0 ? 'cozinha' :
+              _n.indexOf('sala')>=0 ? 'sala' :
+              _n.indexOf('closet')>=0 ? 'closet' :
+              _n.indexOf('varanda')>=0 ? 'varanda' :
+              _n.indexOf('lazer')>=0||_n.indexOf('piscina')>=0||_n.indexOf('churras')>=0 ? 'lazer' :
+              _n.indexOf('escrit')>=0 ? 'escritorio' :
+              _n.indexOf('servi')>=0||_n.indexOf('lavand')>=0 ? 'servico' :
+              'default';
   return _itensPorAmb[_tipo] || _itensPorAmb['default'];
 }
 
