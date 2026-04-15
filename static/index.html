@@ -2514,6 +2514,36 @@ window._openFotoModal = function(imgSrc) {
         </div>
       </div>
 
+      <!-- TOGGLE MOBILIADO -->
+      <div style="margin-top:4px;margin-bottom:14px">
+        <div id="toggle-mobiliado-row" style="display:flex;align-items:center;justify-content:space-between;padding:12px 14px;background:#f8fafc;border:0.5px solid #e2e8f0;border-radius:10px;transition:all .3s">
+          <div style="display:flex;align-items:center;gap:12px">
+            <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect width="36" height="36" rx="8" fill="#f1f5f9"/>
+              <rect x="7" y="16" width="22" height="9" rx="2" fill="#dbeafe" stroke="#2d7dd2" stroke-width="1.2"/>
+              <rect x="7" y="13" width="5" height="5" rx="1.5" fill="#93c5fd" stroke="#2d7dd2" stroke-width="1"/>
+              <rect x="24" y="13" width="5" height="5" rx="1.5" fill="#93c5fd" stroke="#2d7dd2" stroke-width="1"/>
+              <rect x="10" y="25" width="3" height="3" rx="1" fill="#2d7dd2"/>
+              <rect x="23" y="25" width="3" height="3" rx="1" fill="#2d7dd2"/>
+              <rect x="9" y="18" width="18" height="4" rx="1" fill="#bfdbfe"/>
+            </svg>
+            <div>
+              <div style="font-size:13px;font-weight:600;color:#1a2540">Imóvel mobiliado?</div>
+              <div style="font-size:11px;color:#8898aa;margin-top:2px">Ativa inventário de móveis e equipamentos</div>
+              <span id="badge-mobiliado" style="display:none;background:#dbeafe;color:#1e40af;border:0.5px solid #93c5fd;border-radius:6px;font-size:10px;padding:2px 8px;margin-top:6px">📦 Inventário ativado em todos os ambientes</span>
+            </div>
+          </div>
+          <label style="position:relative;width:44px;height:24px;cursor:pointer;flex-shrink:0">
+            <input type="checkbox" id="wi-mobiliado" onchange="toggleMobiliado(this.checked)" style="opacity:0;width:0;height:0">
+            <span id="slider-mobiliado" style="position:absolute;top:0;left:0;right:0;bottom:0;background:#e2e8f0;border-radius:24px;transition:.3s"></span>
+            <span id="knob-mobiliado" style="position:absolute;height:18px;width:18px;left:3px;bottom:3px;background:white;border-radius:50%;transition:.3s;box-shadow:0 1px 3px rgba(0,0,0,.2)"></span>
+          </label>
+        </div>
+        <div id="info-mobiliado" style="display:none;background:#eff6ff;border:0.5px solid #93c5fd;border-radius:8px;padding:10px 12px;margin-top:10px;font-size:11px;color:#1e40af;line-height:1.5">
+          Na Etapa 6, cada ambiente terá uma seção de inventário para registrar móveis, equipamentos e utensílios com quantidade e estado.
+        </div>
+      </div>
+
       <!-- NAVEGACAO -->
       <div style="display:flex;justify-content:space-between;align-items:center;padding:16px 20px;background:#fff;border-radius:10px;border:0.5px solid #e2e8f0;box-shadow:0 2px 8px rgba(0,0,0,0.04);margin-bottom:20px">
         <button onclick="showWstepQuem()" style="padding:10px 20px;border-radius:8px;border:0.5px solid #e2e8f0;background:#fff;font-size:13px;color:#4a5568;cursor:pointer">← Voltar</button>
@@ -2944,7 +2974,7 @@ function switchTab(tab, el) {
 const API = '';
 let currentUser = null, currentToken = null, currentInspection = null;
 let pageHistory = [], signaturePads = {};
-let wizard = { step: 1, inspectionId: null, selectedRooms: [], realizador: 'imobiliária', tipo: '' };
+let wizard = { step: 1, inspectionId: null, selectedRooms: [], realizador: 'imobiliária', tipo: '', mobiliado: false };
     var _savedInspId = localStorage.getItem('izylo_current_inspection');
     if (_savedInspId) wizard.inspectionId = _savedInspId;
 
@@ -3217,7 +3247,7 @@ function formatDate(str) {
 
 // ─── NEW INSPECTION WIZARD ────────────────────────────────────────────────────
 function showNewInspection() {
-  wizard = { step: 1, inspectionId: null, selectedRooms: [], realizador: 'imobiliária', tipo: '' };
+  wizard = { step: 1, inspectionId: null, selectedRooms: [], realizador: 'imobiliária', tipo: '', mobiliado: false };
   // Reset forms
   ['wi-address','wi-area','wi-imob-name','wi-imob-cnpj','wi-imob-phone','wi-imob-address',
    'wi-loc-name','wi-loc-cpf','wi-loc-rg','wi-loc-phone','wi-loc-email',
@@ -3349,7 +3379,35 @@ function gotoWStep(step) {
   window.scrollTo(0,0);
 
   if(step===1) updateContextTag();
+  if(step===1 && wizard.mobiliado) {
+    setTimeout(function(){
+      var cb = document.getElementById('wi-mobiliado');
+      if (cb) { cb.checked = true; toggleMobiliado(true); }
+    }, 100);
+  }
   if(step===3) renderAmbientesPorTipo();}
+
+function toggleMobiliado(checked) {
+  wizard.mobiliado = checked;
+  var slider = document.getElementById('slider-mobiliado');
+  var knob = document.getElementById('knob-mobiliado');
+  var row = document.getElementById('toggle-mobiliado-row');
+  var badge = document.getElementById('badge-mobiliado');
+  var info = document.getElementById('info-mobiliado');
+  if (checked) {
+    if (slider) slider.style.background = '#2d7dd2';
+    if (knob) knob.style.transform = 'translateX(20px)';
+    if (row) { row.style.background = '#f0f7ff'; row.style.borderColor = '#93c5fd'; }
+    if (badge) badge.style.display = 'inline-block';
+    if (info) info.style.display = 'block';
+  } else {
+    if (slider) slider.style.background = '#e2e8f0';
+    if (knob) knob.style.transform = 'translateX(0)';
+    if (row) { row.style.background = '#f8fafc'; row.style.borderColor = '#e2e8f0'; }
+    if (badge) badge.style.display = 'none';
+    if (info) info.style.display = 'none';
+  }
+}
 
 async function wizardNext(step) {
   if (step === 1) {
@@ -3369,6 +3427,7 @@ async function wizardNext(step) {
       property_type: document.getElementById('wi-prop-type').value,
       property_area: document.getElementById('wi-area').value,
       inspection_date: fmtDate,
+      mobiliado: wizard.mobiliado ? true : false,
       imobiliaria_name: ((document.getElementById('wi-imob-name') || {}).value || '').trim(),
       imobiliaria_cnpj: ((document.getElementById('wi-imob-cnpj') || {}).value || '').trim(),
       imobiliaria_phone: ((document.getElementById('wi-imob-phone') || {}).value || '').trim(),
@@ -3824,6 +3883,7 @@ async function gerarLaudo() {
     property_type: document.getElementById('wi-prop-type').value,
     property_area: (document.getElementById('wi-area') || {}).value || '',
     inspection_date: document.getElementById('wi-date').value,
+    mobiliado: wizard.mobiliado ? true : false,
     bairro: (document.getElementById('wi-bairro') || {}).value || '',
     complemento: (document.getElementById('wi-complemento') || {}).value || '',
     cep: (document.getElementById('wi-cep') || {}).value || '',
