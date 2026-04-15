@@ -6690,126 +6690,111 @@ function _getNomesInventario(nomeAmb) {
 }
 
 function _wiz6RenderInventario(idx, nomeAmb) {
-  var _n = nomeAmb.toLowerCase();
-
+  if (wizard.tipo !== 'temporada' && !wizard.mobiliado) return '';
+  var _n = (nomeAmb || '').toLowerCase();
   var _itensPorAmb = {
-    sala: [
-      'TV', 'Sof\u00e1', 'Poltrona', 'Mesa de centro', 'Mesa de jantar',
-      'Cadeiras', 'Tapete', 'Controle remoto TV', 'Controle remoto AC'
-    ],
-    cozinha: [
-      'Pratos fundos', 'Pratos rasos', 'Pratos de sobremesa',
-      'Copos', 'Ta\u00e7as', 'X\u00edcaras',
-      'Colheres', 'Garfos', 'Facas',
-      'Panelas', 'Frigideiras',
-      'Escorredor', 'Abridor de lata', 'Saca-rolhas',
-      'Utensilios de cozinha (espatulas/conchas)',
-      'Cafeteira', 'Liquidificador', 'Torradeira', 'Micro-ondas'
-    ],
-    dormit: [
-      'Cama (estrutura/cabeceira)', 'Colch\u00e3o',
-      'Travesseiros', 'Fronhas',
-      'Len\u00e7\u00f3is (jogo)', 'Cobertores', 'Edredom',
-      'Toalhas de banho', 'Toalhas de rosto',
-      'Cabides'
-    ],
-    suite: [
-      'Cama (estrutura/cabeceira)', 'Colch\u00e3o',
-      'Travesseiros', 'Fronhas',
-      'Len\u00e7\u00f3is (jogo)', 'Cobertores', 'Edredom',
-      'Toalhas de banho', 'Toalhas de rosto', 'Roup\u00e3o',
-      'Cabides', 'Secador de cabelo'
-    ],
-    banheiro: [
-      'Toalhas de banho', 'Toalhas de rosto',
-      'Tapete de banheiro',
-      'Papel higi\u00eanico (estoque)',
-      'Sabonete', 'Shampoo', 'Condicionador',
-      'Secador de cabelo'
-    ],
-    servico: [
-      'Vassoura', 'Rodo', 'Esfregao',
-      'Pano de ch\u00e3o', 'Balde',
-      'Detergente', 'Esponja',
-      'Sab\u00e3o em p\u00f3', 'Amaciante', 'Desinfetante'
-    ],
-    default: [
-      'Chaves do im\u00f3vel', 'Controles remotos',
-      'Manual de equipamentos', 'Guia da casa'
-    ]
+    sala:      ['TV','Sof\u00e1','Poltrona','Mesa de centro','Mesa de jantar','Cadeiras','Tapete','Controle remoto TV','Controle remoto AC'],
+    cozinha:   ['Pratos fundos','Pratos rasos','Pratos de sobremesa','Copos','Ta\u00e7as','X\u00edcaras','Colheres','Garfos','Facas','Panelas','Frigideiras','Escorredor','Abridor de lata','Saca-rolhas','Utensilios de cozinha','Cafeteira','Liquidificador','Torradeira','Micro-ondas'],
+    dormit:    ['Cama (estrutura/cabeceira)','Colch\u00e3o','Travesseiros','Fronhas','Len\u00e7\u00f3is (jogo)','Cobertores','Edredom','Toalhas de banho','Toalhas de rosto','Cabides'],
+    suite:     ['Cama (estrutura/cabeceira)','Colch\u00e3o','Travesseiros','Fronhas','Len\u00e7\u00f3is (jogo)','Cobertores','Edredom','Toalhas de banho','Toalhas de rosto','Roup\u00e3o','Cabides','Secador de cabelo'],
+    banheiro:  ['Toalhas de banho','Toalhas de rosto','Tapete de banheiro','Papel higi\u00eanico (estoque)','Sabonete','Shampoo','Condicionador','Secador de cabelo'],
+    closet:    ['Cabides','Gavetas/prateleiras','Sapateira','Espelho'],
+    varanda:   ['Mesa','Cadeiras','Espreguicadeira','Churrasqueira'],
+    escritorio:['Mesa','Cadeira executiva','Computador','Impressora','Lumin\u00e1ria'],
+    servico:   ['Vassoura','Rodo','Esfregao','Pano de ch\u00e3o','Balde','Detergente','Esponja','Sab\u00e3o em p\u00f3','Amaciante','Desinfetante'],
+    'default': ['Chaves do im\u00f3vel','Controles remotos','Manual de equipamentos','Guia da casa']
   };
-
-  var _tipo = _n.indexOf('su\u00edte') >= 0 || _n.indexOf('suite') >= 0 ? 'suite' :
-              _n.indexOf('dorm') >= 0 || _n.indexOf('quarto') >= 0 ? 'dormit' :
-              _n.indexOf('banheiro') >= 0 ? 'banheiro' :
-              _n.indexOf('cozinha') >= 0 ? 'cozinha' :
-              _n.indexOf('sala') >= 0 ? 'sala' :
-              _n.indexOf('servi') >= 0 || _n.indexOf('lavand') >= 0 ? 'servico' :
+  var _tipo = _n.indexOf('su\u00edte')>=0||_n.indexOf('suite')>=0 ? 'suite' :
+              _n.indexOf('dorm')>=0||_n.indexOf('quarto')>=0 ? 'dormit' :
+              _n.indexOf('banheiro')>=0 ? 'banheiro' :
+              _n.indexOf('cozinha')>=0 ? 'cozinha' :
+              _n.indexOf('sala')>=0 ? 'sala' :
+              _n.indexOf('closet')>=0 ? 'closet' :
+              _n.indexOf('varanda')>=0 ? 'varanda' :
+              _n.indexOf('escrit')>=0 ? 'escritorio' :
+              _n.indexOf('servi')>=0||_n.indexOf('lavand')>=0 ? 'servico' :
               'default';
-
-  var _itens = _itensPorAmb[_tipo];
-
   if (!wizard.itensData[idx]) wizard.itensData[idx] = {};
   if (!wizard.itensData[idx].inventario) wizard.itensData[idx].inventario = {};
   if (!wizard.itensData[idx].inventarioExtras) wizard.itensData[idx].inventarioExtras = [];
-  var _inv = wizard.itensData[idx].inventario;
-  var _extras = wizard.itensData[idx].inventarioExtras;
+  return _buildInvTable(idx, null, nomeAmb,
+    _itensPorAmb[_tipo],
+    wizard.itensData[idx].inventarioExtras,
+    wizard.itensData[idx].inventario,
+    'wiz6InvEstado', 'wiz6InvQty', 'wiz6InvObs',
+    'wiz6InvAdicionarExtra', 'wiz6InvRemoverExtra', 'wiz6InvClear');
+}
 
-  var html = '<div style="background:#fff8e1;border:0.5px solid #fcd34d;border-radius:10px;padding:12px 14px;margin-top:12px;margin-bottom:10px">';
-  html += '<div style="font-size:11px;font-weight:700;color:#92400e;margin-bottom:10px">\uD83D\uDCE6 Invent\u00e1rio do ambiente</div>';
-
-  function _renderItem(itemNome, key) {
-    var _qty = (_inv[key + '_qty'] !== undefined) ? _inv[key + '_qty'] : 0;
-    var _val = _inv[key + '_estado'] || '';
-    var _obs = _inv[key + '_obs'] || '';
-    var _showObs = true;
-
-    var _r = '<div style="padding:8px 0;border-bottom:0.5px solid #fef3c7">';
-    _r += '<div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">';
-    _r += '<span style="flex:1;font-size:12px;color:#1a2540;font-weight:500;min-width:100px">' + itemNome + '</span>';
-
-    _r += '<div style="display:flex;align-items:center;gap:6px">';
-    _r += '<button onclick="wiz6InvQty(' + idx + ',\x27' + key + '\x27,-1)" style="width:26px;height:26px;border-radius:50%;border:0.5px solid #fcd34d;background:#fff;color:#92400e;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-weight:600">-</button>';
-    _r += '<span id="inv-qty-' + idx + '-' + key + '" style="font-size:13px;font-weight:600;color:#1a2540;min-width:20px;text-align:center">' + _qty + '</span>';
-    _r += '<button onclick="wiz6InvQty(' + idx + ',\x27' + key + '\x27,1)" style="width:26px;height:26px;border-radius:50%;border:0.5px solid #fcd34d;background:#fff;color:#92400e;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-weight:600">+</button>';
-    _r += '</div>';
-
-    _r += '<div style="display:flex;gap:4px">';
-    [{v:'bom',l:'\u2713 Bom',bg:_val==='bom'?'#059669':'#d1fae5',c:_val==='bom'?'#fff':'#065f46'},
-     {v:'avaria',l:'\u26a0 Avaria',bg:_val==='avaria'?'#dc2626':'#fee2e2',c:_val==='avaria'?'#fff':'#991b1b'},
-     {v:'ausente',l:'\u2717 Ausente',bg:_val==='ausente'?'#475569':'#f1f5f9',c:_val==='ausente'?'#fff':'#475569'}
-    ].forEach(function(btn) {
-      _r += '<button onclick="wiz6InvEstado(' + idx + ',\x27' + key + '\x27,\x27' + btn.v + '\x27)" ';
-      _r += 'style="font-size:10px;padding:3px 8px;border-radius:8px;border:none;cursor:pointer;background:' + btn.bg + ';color:' + btn.c + '">' + btn.l + '</button>';
-    });
-    _r += '</div>';
-    _r += '</div>';
-
-    _r += '<div style="display:block;margin-top:5px" id="inv-obs-wrap-' + idx + '-' + key + '">';
-    _r += '<input type="text" placeholder="Obs: (opcional)..." value="' + _obs.replace(/"/g, '&quot;') + '" ';
-    _r += 'onblur="wiz6InvObs(' + idx + ',\x27' + key + '\x27,this.value)" ';
-    _r += 'style="width:100%;padding:5px 8px;border:0.5px solid #fde68a;border-radius:6px;font-size:11px;color:#92400e;background:#fffdf0">';
-    _r += '</div>';
-
-    _r += '</div>';
+function _buildInvTable(idx, subNome, titulo, itens, extras, inv, fnEstado, fnQty, fnObs, fnAdd, fnDel, fnClear) {
+  var _subKey = subNome ? ',\'' + subNome + '\'' : '';
+  var _idPfx = subNome ? 'inv-sub-' + idx + '-' + subNome.replace(/\W/g,'_') : 'inv-' + idx;
+  var html = '<div style="background:#f0f7ff;border:0.5px solid #93c5fd;border-radius:10px;padding:14px;margin-top:12px">';
+  html += '<div style="font-size:11px;font-weight:700;color:#1e3a5f;margin-bottom:12px;display:flex;align-items:center;gap:6px">';
+  html += '<svg width="14" height="14" viewBox="0 0 24 24" fill="none"><rect x="2" y="3" width="20" height="18" rx="2" stroke="#1e3a5f" stroke-width="2"/><path d="M8 3v18M16 3v18M2 9h20M2 15h20" stroke="#1e3a5f" stroke-width="1.5"/></svg>';
+  html += 'Invent\u00e1rio do ambiente';
+  if (titulo) html += '<span style="font-size:10px;font-weight:400;color:#8898aa;margin-left:4px">' + titulo + '</span>';
+  html += '</div>';
+  html += '<table style="width:100%;border-collapse:collapse">';
+  html += '<thead><tr>';
+  html += '<th style="font-size:10px;font-weight:600;color:#8898aa;text-align:left;padding:5px 6px;border-bottom:1px solid #dbeafe;background:#e8f2ff">Item</th>';
+  html += '<th style="font-size:10px;font-weight:600;color:#8898aa;text-align:center;padding:5px 6px;border-bottom:1px solid #dbeafe;background:#e8f2ff;width:90px">Qtd</th>';
+  html += '<th style="font-size:10px;font-weight:600;color:#8898aa;text-align:center;padding:5px 6px;border-bottom:1px solid #dbeafe;background:#e8f2ff;width:130px">Estado</th>';
+  html += '<th style="background:#e8f2ff;border-bottom:1px solid #dbeafe;width:24px"></th>';
+  html += '</tr></thead><tbody>';
+  function _renderLinha(item, key, isExtra, extraIdx) {
+    var _qty = inv[key+'_qty'] !== undefined ? parseInt(inv[key+'_qty']) : 0;
+    var _est = inv[key+'_estado'] || '';
+    var _obs = inv[key+'_obs'] || '';
+    var _fnE = fnEstado + '(' + idx + _subKey + ',\'' + key + '\',\'';
+    var _fnQ = fnQty + '(' + idx + _subKey + ',\'' + key + '\',';
+    var _fnO = fnObs + '(' + idx + _subKey + ',\'' + key + '\',this.value)';
+    var _r = '<tr>';
+    _r += '<td style="padding:6px;border-bottom:0.5px solid #e8f2ff;font-size:12px;color:#1a2540">' + item + '</td>';
+    _r += '<td style="padding:6px;border-bottom:0.5px solid #e8f2ff">';
+    _r += '<div style="display:flex;align-items:center;justify-content:center;gap:5px">';
+    _r += '<button onclick="' + _fnQ + '-1)" style="width:20px;height:20px;border-radius:50%;border:0.5px solid #93c5fd;background:#fff;color:#1e3a5f;font-size:12px;cursor:pointer;font-weight:600;line-height:1">\u2212</button>';
+    _r += '<span id="' + _idPfx + '-' + key + '" style="font-size:12px;font-weight:600;color:#1a2540;min-width:16px;text-align:center">' + _qty + '</span>';
+    _r += '<button onclick="' + _fnQ + '1)" style="width:20px;height:20px;border-radius:50%;border:0.5px solid #93c5fd;background:#fff;color:#1e3a5f;font-size:12px;cursor:pointer;font-weight:600;line-height:1">+</button>';
+    _r += '</div></td>';
+    var _eBom = _est==='bom'     ? 'background:#059669;color:#fff' : 'background:#d1fae5;color:#065f46';
+    var _eAv  = _est==='avaria'  ? 'background:#dc2626;color:#fff' : 'background:#fee2e2;color:#991b1b';
+    var _eAus = _est==='ausente' ? 'background:#475569;color:#fff' : 'background:#f1f5f9;color:#475569';
+    _r += '<td style="padding:6px;border-bottom:0.5px solid #e8f2ff">';
+    _r += '<div style="display:flex;gap:3px;justify-content:center">';
+    _r += '<button onclick="' + _fnE + 'bom\')" style="font-size:10px;padding:2px 6px;border-radius:5px;border:none;cursor:pointer;font-weight:500;' + _eBom + '">' + (_est==='bom' ? '\u2713 Bom' : '\u2713') + '</button>';
+    _r += '<button onclick="' + _fnE + 'avaria\')" style="font-size:10px;padding:2px 6px;border-radius:5px;border:none;cursor:pointer;font-weight:500;' + _eAv + '">' + (_est==='avaria' ? '\u26a0 Avaria' : '\u26a0') + '</button>';
+    _r += '<button onclick="' + _fnE + 'ausente\')" style="font-size:10px;padding:2px 6px;border-radius:5px;border:none;cursor:pointer;font-weight:500;' + _eAus + '">' + (_est==='ausente' ? '\u2717 Ausente' : '\u2717') + '</button>';
+    _r += '</div></td>';
+    _r += '<td style="padding:6px;border-bottom:0.5px solid #e8f2ff;text-align:center">';
+    if (isExtra) {
+      _r += '<button onclick="' + fnDel + '(' + idx + _subKey + ',' + extraIdx + ')" ';
+      _r += 'style="background:none;border:none;color:#cbd5e1;cursor:pointer;font-size:14px;padding:0 2px" ';
+      _r += 'onmouseover="this.style.color=\'#ef4444\'" onmouseout="this.style.color=\'#cbd5e1\'">\u00d7</button>';
+    } else {
+      _r += '<button onclick="' + fnClear + '(' + idx + _subKey + ',\'' + key + '\')" ';
+      _r += 'style="background:none;border:none;color:#cbd5e1;cursor:pointer;font-size:14px;padding:0 2px" ';
+      _r += 'onmouseover="this.style.color=\'#ef4444\'" onmouseout="this.style.color=\'#cbd5e1\'">\u00d7</button>';
+    }
+    _r += '</td></tr>';
+    _r += '<tr><td colspan="4" style="padding:2px 6px 7px;border-bottom:0.5px solid #e8f2ff">';
+    _r += '<input type="text" placeholder="Obs: (opcional)..." value="' + _obs + '" ';
+    _r += 'onblur="' + _fnO + '" ';
+    _r += 'style="width:100%;padding:4px 8px;border:0.5px solid #dbeafe;border-radius:5px;font-size:11px;color:#8898aa;background:#fff">';
+    _r += '</td></tr>';
     return _r;
   }
-
-  _itens.forEach(function(item) {
+  itens.forEach(function(item) {
     var _key = item.replace(/[\s\/\(\)\.]+/g,'_').toLowerCase();
-    html += _renderItem(item, _key);
+    html += _renderLinha(item, _key, false, null);
   });
-
-  _extras.forEach(function(item, ei) {
-    var _key = 'extra_' + ei;
-    html += '<div style="position:relative">';
-    html += _renderItem(item, _key);
-    html += '<button onclick="wiz6InvRemoverExtra(' + idx + ',' + ei + ')" style="position:absolute;top:8px;right:2px;background:none;border:none;color:#ef4444;font-size:16px;cursor:pointer;z-index:1">\u00d7</button>';
-    html += '</div>';
+  extras.forEach(function(item, ei) {
+    html += _renderLinha(item, 'extra_' + ei, true, ei);
   });
-
-  html += '<button onclick="wiz6InvAdicionarExtra(' + idx + ')" style="width:100%;background:none;border:0.5px dashed #f59e0b;border-radius:8px;padding:8px;font-size:12px;color:#92400e;cursor:pointer;font-weight:500;margin-top:8px">+ Adicionar item ao invent\u00e1rio</button>';
-
+  html += '</tbody></table>';
+  html += '<button onclick="' + fnAdd + '(' + idx + _subKey + ')" ';
+  html += 'style="width:100%;background:none;border:1px dashed #93c5fd;border-radius:8px;';
+  html += 'padding:8px;font-size:12px;color:#2d7dd2;cursor:pointer;font-weight:500;margin-top:10px">';
+  html += '+ Adicionar item ao invent\u00e1rio</button>';
   html += '</div>';
   return html;
 }
@@ -6829,184 +6814,131 @@ function wiz6InvQty(idx, key, delta) {
   if (!wizard.itensData[idx]) wizard.itensData[idx] = {};
   if (!wizard.itensData[idx].inventario) wizard.itensData[idx].inventario = {};
   var _inv = wizard.itensData[idx].inventario;
-  var _cur = (_inv[key + '_qty'] !== undefined) ? parseInt(_inv[key + '_qty']) : 0;
+  var _cur = _inv[key+'_qty'] !== undefined ? parseInt(_inv[key+'_qty']) : 0;
   var _novo = Math.max(0, _cur + delta);
-  _inv[key + '_qty'] = _novo;
-  if (_novo === 0) _inv[key + '_estado'] = 'ausente';
-  var _el = document.getElementById('inv-qty-' + idx + '-' + key);
-  if (_el) {
-    _el.textContent = _novo;
-  } else {
-    wiz6RenderAmbCard(idx);
-  }
+  _inv[key+'_qty'] = _novo;
+  if (_novo===0) _inv[key+'_estado'] = 'ausente';
+  var _el = document.getElementById('inv-' + idx + '-' + key);
+  if (_el) _el.textContent = _novo;
+  else wiz6RenderAmbCard(idx);
 }
 
 function wiz6InvEstado(idx, key, val) {
   if (!wizard.itensData[idx]) wizard.itensData[idx] = {};
   if (!wizard.itensData[idx].inventario) wizard.itensData[idx].inventario = {};
-  wizard.itensData[idx].inventario[key + '_estado'] = val;
-  if (val === 'ausente') wizard.itensData[idx].inventario[key + '_qty'] = 0;
+  wizard.itensData[idx].inventario[key+'_estado'] = val;
+  if (val==='ausente') wizard.itensData[idx].inventario[key+'_qty'] = 0;
+  wiz6RenderAmbCard(idx);
+}
+
+function wiz6InvClear(idx, key) {
+  if (!wizard.itensData[idx] || !wizard.itensData[idx].inventario) return;
+  delete wizard.itensData[idx].inventario[key+'_qty'];
+  delete wizard.itensData[idx].inventario[key+'_estado'];
+  delete wizard.itensData[idx].inventario[key+'_obs'];
   wiz6RenderAmbCard(idx);
 }
 
 function wiz6InvObs(idx, key, val) {
   if (!wizard.itensData[idx]) wizard.itensData[idx] = {};
   if (!wizard.itensData[idx].inventario) wizard.itensData[idx].inventario = {};
-  wizard.itensData[idx].inventario[key + '_obs'] = val;
+  wizard.itensData[idx].inventario[key+'_obs'] = val;
 }
 
 function wiz6InvAdicionarExtra(idx) {
   var nome = prompt('Nome do item:');
-  if (!nome || !nome.trim()) return;
-  if (!wizard.itensData[idx]) wizard.itensData[idx] = {};
+  if (!nome||!nome.trim()) return;
   if (!wizard.itensData[idx].inventarioExtras) wizard.itensData[idx].inventarioExtras = [];
   wizard.itensData[idx].inventarioExtras.push(nome.trim());
   wiz6RenderAmbCard(idx);
 }
 
 function wiz6InvRemoverExtra(idx, ei) {
-  if (!wizard.itensData[idx] || !wizard.itensData[idx].inventarioExtras) return;
-  wizard.itensData[idx].inventarioExtras.splice(ei, 1);
-  var inv = wizard.itensData[idx].inventario || {};
-  var newInv = {};
-  Object.keys(inv).forEach(function(k) {
-    if (k.indexOf('extra_') !== 0) {
-      newInv[k] = inv[k];
-    }
-  });
-  wizard.itensData[idx].inventarioExtras.forEach(function(_e, _i) {
-    var oldIdx = _i >= ei ? _i + 1 : _i;
-    ['_qty', '_estado', '_obs'].forEach(function(suf) {
-      if (inv['extra_' + oldIdx + suf] !== undefined) {
-        newInv['extra_' + _i + suf] = inv['extra_' + oldIdx + suf];
-      }
-    });
-  });
-  wizard.itensData[idx].inventario = newInv;
+  if (!wizard.itensData[idx].inventarioExtras) return;
+  wizard.itensData[idx].inventarioExtras.splice(ei,1);
   wiz6RenderAmbCard(idx);
 }
 
-function wiz6InvSetSub(ambIdx, subNome, key, val) {
-  if (!wizard.itensData[ambIdx]) wizard.itensData[ambIdx] = {};
-  if (!wizard.itensData[ambIdx].subs) wizard.itensData[ambIdx].subs = {};
-  if (!wizard.itensData[ambIdx].subs[subNome]) wizard.itensData[ambIdx].subs[subNome] = {};
-  if (!wizard.itensData[ambIdx].subs[subNome].inventario) wizard.itensData[ambIdx].subs[subNome].inventario = {};
-  wizard.itensData[ambIdx].subs[subNome].inventario[key + '_estado'] = val;
-  if (val === 'ausente') wizard.itensData[ambIdx].subs[subNome].inventario[key + '_qty'] = 0;
-  wiz6RenderAmbCard(ambIdx);
+function wiz6InvEstadoSub(idx, subNome, key, val) {
+  var sd = wizard.itensData[idx].subs[subNome];
+  if (!sd.inventario) sd.inventario = {};
+  sd.inventario[key+'_estado'] = val;
+  if (val==='ausente') sd.inventario[key+'_qty'] = 0;
+  wiz6RenderAmbCard(idx);
 }
 
-function wiz6InvQtySub(ambIdx, subNome, key, delta) {
-  if (!wizard.itensData[ambIdx]) wizard.itensData[ambIdx] = {};
-  if (!wizard.itensData[ambIdx].subs) wizard.itensData[ambIdx].subs = {};
-  if (!wizard.itensData[ambIdx].subs[subNome]) wizard.itensData[ambIdx].subs[subNome] = {};
-  if (!wizard.itensData[ambIdx].subs[subNome].inventario) wizard.itensData[ambIdx].subs[subNome].inventario = {};
-  var _inv = wizard.itensData[ambIdx].subs[subNome].inventario;
-  var _cur = (_inv[key + '_qty'] !== undefined) ? parseInt(_inv[key + '_qty']) : 0;
+function wiz6InvClearSub(idx, subNome, key) {
+  var sd = wizard.itensData[idx].subs[subNome];
+  if (!sd||!sd.inventario) return;
+  delete sd.inventario[key+'_qty'];
+  delete sd.inventario[key+'_estado'];
+  delete sd.inventario[key+'_obs'];
+  wiz6RenderAmbCard(idx);
+}
+
+function wiz6InvQtySub(idx, subNome, key, delta) {
+  var sd = wizard.itensData[idx].subs[subNome];
+  if (!sd.inventario) sd.inventario = {};
+  var _cur = sd.inventario[key+'_qty'] !== undefined ? parseInt(sd.inventario[key+'_qty']) : 0;
   var _novo = Math.max(0, _cur + delta);
-  _inv[key + '_qty'] = _novo;
-  if (_novo === 0) _inv[key + '_estado'] = 'ausente';
-  wiz6RenderAmbCard(ambIdx);
+  sd.inventario[key+'_qty'] = _novo;
+  if (_novo===0) sd.inventario[key+'_estado'] = 'ausente';
+  var _el = document.getElementById('inv-sub-'+idx+'-'+subNome.replace(/\W/g,'_')+'-'+key);
+  if (_el) _el.textContent = _novo;
+  else wiz6RenderAmbCard(idx);
 }
 
-function wiz6InvObsSub(ambIdx, subNome, key, val) {
-  if (!wizard.itensData[ambIdx]) wizard.itensData[ambIdx] = {};
-  if (!wizard.itensData[ambIdx].subs) wizard.itensData[ambIdx].subs = {};
-  if (!wizard.itensData[ambIdx].subs[subNome]) wizard.itensData[ambIdx].subs[subNome] = {};
-  if (!wizard.itensData[ambIdx].subs[subNome].inventario) wizard.itensData[ambIdx].subs[subNome].inventario = {};
-  wizard.itensData[ambIdx].subs[subNome].inventario[key + '_obs'] = val;
+function wiz6InvObsSub(idx, subNome, key, val) {
+  var sd = wizard.itensData[idx].subs[subNome];
+  if (!sd.inventario) sd.inventario = {};
+  sd.inventario[key+'_obs'] = val;
 }
 
-function wiz6InvAdicionarExtraSub(ambIdx, subNome) {
+function wiz6InvAdicionarExtraSub(idx, subNome) {
   var nome = prompt('Nome do item:');
-  if (!nome || !nome.trim()) return;
-  if (!wizard.itensData[ambIdx]) wizard.itensData[ambIdx] = {};
-  if (!wizard.itensData[ambIdx].subs) wizard.itensData[ambIdx].subs = {};
-  if (!wizard.itensData[ambIdx].subs[subNome]) wizard.itensData[ambIdx].subs[subNome] = {};
-  if (!wizard.itensData[ambIdx].subs[subNome].inventarioExtras) wizard.itensData[ambIdx].subs[subNome].inventarioExtras = [];
-  wizard.itensData[ambIdx].subs[subNome].inventarioExtras.push(nome.trim());
-  wiz6RenderAmbCard(ambIdx);
+  if (!nome||!nome.trim()) return;
+  var sd = wizard.itensData[idx].subs[subNome];
+  if (!sd.inventarioExtras) sd.inventarioExtras = [];
+  sd.inventarioExtras.push(nome.trim());
+  wiz6RenderAmbCard(idx);
 }
 
-function wiz6InvRemoverExtraSub(ambIdx, subNome, ei) {
-  var sd = wizard.itensData[ambIdx] && wizard.itensData[ambIdx].subs && wizard.itensData[ambIdx].subs[subNome];
-  if (!sd || !sd.inventarioExtras) return;
-  sd.inventarioExtras.splice(ei, 1);
-  var inv = sd.inventario || {};
-  var newInv = {};
-  Object.keys(inv).forEach(function(k) {
-    if (k.indexOf('extra_') !== 0) newInv[k] = inv[k];
-  });
-  sd.inventarioExtras.forEach(function(_e, _i) {
-    var oldIdx = _i >= ei ? _i + 1 : _i;
-    ['_qty', '_estado', '_obs'].forEach(function(suf) {
-      if (inv['extra_' + oldIdx + suf] !== undefined) {
-        newInv['extra_' + _i + suf] = inv['extra_' + oldIdx + suf];
-      }
-    });
-  });
-  sd.inventario = newInv;
-  wiz6RenderAmbCard(ambIdx);
+function wiz6InvRemoverExtraSub(idx, subNome, ei) {
+  var sd = wizard.itensData[idx].subs[subNome];
+  if (!sd.inventarioExtras) return;
+  sd.inventarioExtras.splice(ei,1);
+  wiz6RenderAmbCard(idx);
 }
-function _wiz6RenderInventarioSub(ambIdx, subNome) {
-  var _itens = (typeof _getNomesInventario === 'function') ? _getNomesInventario(subNome) : [];
-  if (!wizard.itensData[ambIdx]) wizard.itensData[ambIdx] = {};
-  if (!wizard.itensData[ambIdx].subs) wizard.itensData[ambIdx].subs = {};
-  if (!wizard.itensData[ambIdx].subs[subNome]) wizard.itensData[ambIdx].subs[subNome] = {};
-  if (!wizard.itensData[ambIdx].subs[subNome].inventario) wizard.itensData[ambIdx].subs[subNome].inventario = {};
-  if (!wizard.itensData[ambIdx].subs[subNome].inventarioExtras) wizard.itensData[ambIdx].subs[subNome].inventarioExtras = [];
-  var _inv = wizard.itensData[ambIdx].subs[subNome].inventario;
-  var _extras = wizard.itensData[ambIdx].subs[subNome].inventarioExtras;
-  var _sn = subNome.replace(/'/g, "\\'");
 
-  var html = '<div style="background:#fff8e1;border:0.5px solid #fcd34d;border-radius:10px;padding:12px 14px;margin-top:10px;margin-bottom:6px">';
-  html += '<div style="font-size:11px;font-weight:700;color:#92400e;margin-bottom:10px">\uD83D\uDCE6 Invent\u00e1rio de ' + subNome + '</div>';
-
-  function _renderItem(itemNome, key) {
-    var _qty = (_inv[key + '_qty'] !== undefined) ? _inv[key + '_qty'] : 0;
-    var _val = _inv[key + '_estado'] || '';
-    var _obs = _inv[key + '_obs'] || '';
-    var _r = '<div style="padding:8px 0;border-bottom:0.5px solid #fef3c7">';
-    _r += '<div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">';
-    _r += '<span style="flex:1;font-size:12px;color:#1a2540;font-weight:500;min-width:100px">' + itemNome + '</span>';
-    _r += '<div style="display:flex;align-items:center;gap:6px">';
-    _r += '<button onclick="wiz6InvQtySub(' + ambIdx + ',\x27' + _sn + '\x27,\x27' + key + '\x27,-1)" style="width:26px;height:26px;border-radius:50%;border:0.5px solid #fcd34d;background:#fff;color:#92400e;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-weight:600">-</button>';
-    _r += '<span style="font-size:13px;font-weight:600;color:#1a2540;min-width:20px;text-align:center">' + _qty + '</span>';
-    _r += '<button onclick="wiz6InvQtySub(' + ambIdx + ',\x27' + _sn + '\x27,\x27' + key + '\x27,1)" style="width:26px;height:26px;border-radius:50%;border:0.5px solid #fcd34d;background:#fff;color:#92400e;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-weight:600">+</button>';
-    _r += '</div>';
-    _r += '<div style="display:flex;gap:4px">';
-    [{v:'bom',l:'\u2713 Bom',bg:_val==="bom"?'#059669':'#d1fae5',c:_val==="bom"?'#fff':'#065f46'},
-     {v:'avaria',l:'\u26a0 Avaria',bg:_val==="avaria"?'#dc2626':'#fee2e2',c:_val==="avaria"?'#fff':'#991b1b'},
-     {v:'ausente',l:'\u2717 Ausente',bg:_val==="ausente"?'#475569':'#f1f5f9',c:_val==="ausente"?'#fff':'#475569'}
-    ].forEach(function(btn) {
-      _r += '<button onclick="wiz6InvSetSub(' + ambIdx + ',\x27' + _sn + '\x27,\x27' + key + '\x27,\x27' + btn.v + '\x27)" ';
-      _r += 'style="font-size:10px;padding:3px 8px;border-radius:8px;border:none;cursor:pointer;background:' + btn.bg + ';color:' + btn.c + '">' + btn.l + '</button>';
-    });
-    _r += '</div>';
-    _r += '</div>';
-    _r += '<div style="display:block;margin-top:5px">';
-    _r += '<input type="text" placeholder="Obs: (opcional)..." value="' + _obs.replace(/"/g,'&quot;') + '" ';
-    _r += 'onblur="wiz6InvObsSub(' + ambIdx + ',\x27' + _sn + '\x27,\x27' + key + '\x27,this.value)" ';
-    _r += 'style="width:100%;padding:5px 8px;border:0.5px solid #fde68a;border-radius:6px;font-size:11px;color:#92400e;background:#fffdf0">';
-    _r += '</div>';
-    _r += '</div>';
-    return _r;
-  }
-
-  _itens.forEach(function(item) {
-    var _key = item.replace(/[\s\/\(\)\.]+/g,'_').toLowerCase();
-    html += _renderItem(item, _key);
-  });
-  _extras.forEach(function(item, ei) {
-    var _key = 'extra_' + ei;
-    html += '<div style="position:relative">';
-    html += _renderItem(item, _key);
-    html += '<button onclick="wiz6InvRemoverExtraSub(' + ambIdx + ',\x27' + _sn + '\x27,' + ei + ')" style="position:absolute;top:8px;right:2px;background:none;border:none;color:#ef4444;font-size:16px;cursor:pointer;z-index:1">\u00d7</button>';
-    html += '</div>';
-  });
-  html += '<button onclick="wiz6InvAdicionarExtraSub(' + ambIdx + ',\x27' + _sn + '\x27)" style="width:100%;background:none;border:0.5px dashed #f59e0b;border-radius:8px;padding:8px;font-size:12px;color:#92400e;cursor:pointer;font-weight:500;margin-top:8px">+ Adicionar item ao invent\u00e1rio</button>';
-  html += '</div>';
-  return html;
+function _wiz6RenderInventarioSub(idx, subNome) {
+  if (wizard.tipo !== 'temporada' && !wizard.mobiliado) return '';
+  var sd = wizard.itensData[idx].subs[subNome];
+  if (!sd) return '';
+  if (!sd.inventario) sd.inventario = {};
+  if (!sd.inventarioExtras) sd.inventarioExtras = [];
+  var _n = subNome.toLowerCase();
+  var _itensPorAmb = {
+    closet:    ['Cabides','Gavetas/prateleiras','Sapateira','Espelho'],
+    banheiro:  ['Toalhas de banho','Toalhas de rosto','Tapete de banheiro','Papel higi\u00eanico (estoque)','Sabonete','Shampoo','Condicionador','Secador de cabelo'],
+    varanda:   ['Mesa','Cadeiras','Espreguicadeira'],
+    escritorio:['Mesa','Cadeira executiva','Computador','Impressora'],
+    cozinha:   ['Pratos fundos','Pratos rasos','Copos','Ta\u00e7as','Talheres','Panelas'],
+    dormit:    ['Cama (estrutura/cabeceira)','Colch\u00e3o','Travesseiros','Fronhas','Len\u00e7\u00f3is (jogo)','Cobertores','Cabides'],
+    'default': ['Chaves do im\u00f3vel','Controles remotos','Manual de equipamentos']
+  };
+  var _tipo = _n.indexOf('closet')>=0 ? 'closet' :
+              _n.indexOf('banheiro')>=0 ? 'banheiro' :
+              _n.indexOf('varanda')>=0 ? 'varanda' :
+              _n.indexOf('escrit')>=0 ? 'escritorio' :
+              _n.indexOf('cozinha')>=0 ? 'cozinha' :
+              _n.indexOf('dorm')>=0||_n.indexOf('quarto')>=0 ? 'dormit' :
+              'default';
+  return _buildInvTable(idx, subNome, subNome,
+    _itensPorAmb[_tipo],
+    sd.inventarioExtras,
+    sd.inventario,
+    'wiz6InvEstadoSub', 'wiz6InvQtySub', 'wiz6InvObsSub',
+    'wiz6InvAdicionarExtraSub', 'wiz6InvRemoverExtraSub', 'wiz6InvClearSub');
 }
 
 // ── ADICIONAR FOTOS E ANALISAR COM IA ───────────────────
