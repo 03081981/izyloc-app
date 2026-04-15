@@ -1919,7 +1919,7 @@ window._openFotoModal = function(imgSrc) {
   <!-- NAV PRINCIPAL -->
   <nav class="sidebar-nav">
     <div class="nav-item active" id="nav-dash" onclick="switchTab('vistorias',this)">Painel</div>
-    <div class="nav-item" id="nav-laudos" onclick="switchTab('vistorias',this)">Meus laudos</div>
+    <div class="nav-item" id="nav-laudos" onclick="showMeusLaudosPage(this)">Meus laudos</div>
 
     <div class="nav-divider"></div>
     <div class="nav-section-label">Fotos e créditos</div>
@@ -2219,7 +2219,7 @@ window._openFotoModal = function(imgSrc) {
       <nav class="sidebar-nav">
         <div class="nav-item" onclick="showPage('page-dashboard')">Painel</div>
         <div class="nav-item active">+ Nova vistoria</div>
-        <div class="nav-item" onclick="showPage('page-dashboard')">Meus laudos</div>
+        <div class="nav-item" onclick="showMeusLaudosPage()">Meus laudos</div>
         <div class="nav-divider"></div>
         <div class="nav-section-label">Fotos e créditos</div>
         <div class="nav-item nav-item-cred"><span id="wiz-nav-saldo" style="color:#4fc3f7;font-weight:600">📸 Fotos restantes</span></div>
@@ -2864,6 +2864,28 @@ window._openFotoModal = function(imgSrc) {
   <div id="detail-content"></div>
 </div>
 
+<div id="page-meus-laudos" class="page">
+  <div class="topbar" style="display:flex;align-items:center;justify-content:space-between;padding:14px 20px;background:#fff;border-bottom:1px solid #e5e7eb;">
+    <div>
+      <button onclick="showPage('page-dashboard')" style="background:none;border:1px solid #d1d5db;padding:6px 12px;border-radius:6px;cursor:pointer;font-size:13px;">&larr; Voltar</button>
+      <h1 style="display:inline-block;margin:0 0 0 16px;font-size:22px;color:#1f2937;font-weight:600;">Meus laudos</h1>
+    </div>
+    <button onclick="showNewInspection()" style="background:#2563eb;color:#fff;border:none;padding:8px 16px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;">+ Novo laudo</button>
+  </div>
+
+  <div style="padding:20px;max-width:1200px;margin:0 auto;">
+    <div id="ml-counters" style="display:grid;grid-template-columns:repeat(6,1fr);gap:12px;margin-bottom:20px;"></div>
+
+    <div style="background:#fff;border:1px solid #e5e7eb;border-radius:10px;padding:14px;margin-bottom:14px;">
+      <input id="ml-search" type="text" placeholder="Buscar por endereco, codigo, cliente..." oninput="_mlFilter()" style="width:100%;padding:10px 12px;border:1px solid #d1d5db;border-radius:8px;font-size:14px;box-sizing:border-box;margin-bottom:10px;">
+      <div id="ml-filter-tipo" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px;"></div>
+      <div id="ml-filter-status" style="display:flex;gap:8px;flex-wrap:wrap;"></div>
+    </div>
+
+    <div id="ml-list"></div>
+  </div>
+</div>
+
 <script>
 // ── switchTab: sidebar navigation helper ──
 function switchTab(tab, el) {
@@ -3360,12 +3382,240 @@ function dashAbrirAutentique(id) {
   alert('Fluxo Autentique em breve.');
 }
 function dashExcluir(id) {
-  if (!confirm('Esta ação é irreversível. O laudo será permanentemente removido. Continuar?')) return;
-  fetch('/laudo/'+id, { method:'DELETE', credentials:'same-origin' })
+  var insp = (window._allInspections || []).find(function(x){ return x && x.id === id; }) || {};
+  var st = (typeof _mlStatusKey === 'function') ? _mlStatusKey(insp) : ((insp.status || '').toLowerCase());
+  if (typeof _mlOpenExcluir === 'function') { _mlOpenExcluir(id, st); return; }
+  if (!confirm('Excluir definitivamente?')) return;
+  var hdr = Object.assign({}, window.getAuthHeaders ? window.getAuthHeaders() : {});
+  fetch('/laudo/'+id, { method:'DELETE', credentials:'same-origin', headers: hdr })
     .then(function(r){ return r.json().catch(function(){ return {}; }); })
     .then(function(){ if (typeof loadDashboard === 'function') loadDashboard(); })
     .catch(function(e){ alert('Erro ao excluir: '+e); });
 }
+
+// === MEUS LAUDOS PAGE ===
+window._mlState = window._mlState || { tipo: "todos", status: "todos", search: "", data: [], marcarFisicoId: null, excluirId: null, excluirStatus: null };
+
+function showMeusLaudosPage(el) {
+  try { if (window.history && window.history.pushState) window.history.pushState({}, "", "/meus-laudos"); } catch(e){}
+  showPage("page-meus-laudos");
+  document.querySelectorAll(".nav-item").forEach(function(n){ n.classList.remove("active"); });
+  if (el && el.classList) el.classList.add("active");
+  var nd = document.getElementById("nav-laudos"); if (nd) nd.classList.add("active");
+  renderMeusLaudos();
+}
+
+function renderMeusLaudos() {
+  fetch("/api/inspections", { credentials: "same-origin", headers: (window.getAuthHeaders ? window.getAuthHeaders() : {}) })
+    .then(function(r){ return r.json(); })
+    .then(function(data){
+      var list = (data && data.inspections) || data || [];
+      if (!Array.isArray(list)) list = [];
+      window._mlState.data = list;
+      _mlRenderCounters(list);
+      _mlRenderTipoFilter();
+      _mlRenderStatusFilter();
+      _mlRenderList();
+    })
+    .catch(function(e){ console.error("Erro carregando laudos", e); });
+}
+
+function _mlStatusKey(insp) {
+  var st = ((insp && insp.status) || "rascunho").toLowerCase();
+  if (st === "aguardando_assinatura" || st === "aguardando-assinatura") return "aguardando";
+  if (st === "assinado" || st === "assinado_digital") return "digital";
+  if (st === "assinado_fisico" || st === "fisico") return "fisico";
+  if (st === "concluido") return "concluido";
+  if (st === "em_andamento" || st === "rascunho") return "em_andamento";
+  return st;
+}
+
+function _mlRenderCounters(list) {
+  var cnt = { total: list.length, em_andamento: 0, concluido: 0, aguardando: 0, digital: 0, fisico: 0 };
+  list.forEach(function(i){ var k = _mlStatusKey(i); if (cnt[k] !== undefined) cnt[k]++; });
+  var cards = [
+    { k: "total", label: "Total", val: cnt.total, color: "#111827" },
+    { k: "em_andamento", label: "EM ANDAMENTO", val: cnt.em_andamento, color: "#c05a00" },
+    { k: "concluido", label: "CONCLUIDO", val: cnt.concluido, color: "#1565c0" },
+    { k: "aguardando", label: "AGUARD. ASSINATURA", val: cnt.aguardando, color: "#854d0e" },
+    { k: "digital", label: "ASSINADO DIGITAL", val: cnt.digital, color: "#166534" },
+    { k: "fisico", label: "ASSINADO FISICO", val: cnt.fisico, color: "#5b21b6" }
+  ];
+  var html = cards.map(function(c){
+    return "<div style=\"background:#fff;border:1px solid #e5e7eb;border-radius:10px;padding:14px;text-align:center;\">" +
+      "<div style=\"font-size:28px;font-weight:700;color:"+c.color+";\">"+c.val+"</div>" +
+      "<div style=\"font-size:10px;color:#6b7280;margin-top:4px;font-weight:600;letter-spacing:0.4px;\">"+c.label+"</div>" +
+    "</div>";
+  }).join("");
+  var el = document.getElementById("ml-counters"); if (el) el.innerHTML = html;
+}
+
+function _mlRenderTipoFilter() {
+  var tipos = [
+    { k: "todos", label: "Todos" },
+    { k: "entrada", label: "Entrada" },
+    { k: "saida", label: "Saida" },
+    { k: "periodica", label: "Periodica" },
+    { k: "conferencia", label: "Conferencia" }
+  ];
+  var cur = window._mlState.tipo;
+  var html = tipos.map(function(t){
+    var act = (t.k === cur);
+    return "<button onclick=\"_mlSetTipo('"+t.k+"')\" style=\"padding:6px 12px;border-radius:6px;border:1px solid "+(act?"#2563eb":"#d1d5db")+";background:"+(act?"#2563eb":"#fff")+";color:"+(act?"#fff":"#374151")+";font-size:12px;cursor:pointer;font-weight:500;\">"+t.label+"</button>";
+  }).join("");
+  var el = document.getElementById("ml-filter-tipo"); if (el) el.innerHTML = html;
+}
+
+function _mlRenderStatusFilter() {
+  var sts = [
+    { k: "todos", label: "Todos os status", color: "#6b7280" },
+    { k: "em_andamento", label: "Em andamento", color: "#c05a00" },
+    { k: "concluido", label: "Concluido", color: "#1565c0" },
+    { k: "aguardando", label: "Aguard. assinatura", color: "#854d0e" },
+    { k: "digital", label: "Assinado digital", color: "#166534" },
+    { k: "fisico", label: "Assinado fisico", color: "#5b21b6" }
+  ];
+  var cur = window._mlState.status;
+  var html = sts.map(function(s){
+    var act = (s.k === cur);
+    return "<button onclick=\"_mlSetStatus('"+s.k+"')\" style=\"padding:6px 12px;border-radius:6px;border:1px solid "+(act?s.color:"#d1d5db")+";background:"+(act?s.color:"#fff")+";color:"+(act?"#fff":"#374151")+";font-size:12px;cursor:pointer;font-weight:500;\">"+s.label+"</button>";
+  }).join("");
+  var el = document.getElementById("ml-filter-status"); if (el) el.innerHTML = html;
+}
+
+function _mlSetTipo(t) { window._mlState.tipo = t; _mlRenderTipoFilter(); _mlRenderList(); }
+function _mlSetStatus(s) { window._mlState.status = s; _mlRenderStatusFilter(); _mlRenderList(); }
+function _mlFilter() { var el = document.getElementById("ml-search"); window._mlState.search = (el && el.value || "").toLowerCase(); _mlRenderList(); }
+
+function _mlRenderList() {
+  var list = (window._mlState.data || []).slice();
+  var tipo = window._mlState.tipo, status = window._mlState.status, search = window._mlState.search || "";
+  if (tipo !== "todos") list = list.filter(function(i){ return ((i.tipo || i.type || "").toLowerCase() === tipo); });
+  if (status !== "todos") list = list.filter(function(i){ return _mlStatusKey(i) === status; });
+  if (search) list = list.filter(function(i){
+    var txt = ((i.endereco||"")+" "+(i.address||"")+" "+(i.cliente||"")+" "+(i.client||"")+" "+(i.codigo||"")+" "+(i.id||"")).toLowerCase();
+    return txt.indexOf(search) >= 0;
+  });
+  var groups = { em_andamento:[], concluido:[], aguardando:[], digital:[], fisico:[] };
+  list.forEach(function(i){ var k=_mlStatusKey(i); if (!groups[k]) groups[k]=[]; groups[k].push(i); });
+  var groupOrder = [
+    { k:"em_andamento", label:"EM ANDAMENTO" },
+    { k:"concluido", label:"CONCLUIDO" },
+    { k:"aguardando", label:"AGUARDANDO ASSINATURA" },
+    { k:"digital", label:"ASSINADO DIGITAL" },
+    { k:"fisico", label:"ASSINADO FISICO" }
+  ];
+  var html = "";
+  groupOrder.forEach(function(g){
+    var arr = groups[g.k] || [];
+    if (!arr.length) return;
+    html += "<div style=\"font-size:11px;color:#6b7280;font-weight:700;letter-spacing:0.5px;margin:16px 0 8px;\">"+g.label+" ("+arr.length+")</div>";
+    html += arr.map(function(i){ return _mlRenderCard(i, g.k); }).join("");
+  });
+  if (!html) html = "<div style=\"text-align:center;padding:40px;color:#9ca3af;font-size:14px;\">Nenhum laudo encontrado.</div>";
+  var el = document.getElementById("ml-list"); if (el) el.innerHTML = html;
+}
+
+function _mlRenderCard(insp, statusKey) {
+  var code = (typeof _dashLaudoCode === "function") ? _dashLaudoCode(insp) : (insp.codigo || insp.id || "-");
+  var info = (typeof _dashStatusInfo === "function") ? _dashStatusInfo(statusKey) : { label: statusKey, bg: "#f3f4f6", color: "#374151" };
+  var end = insp.endereco || insp.address || "(sem endereco)";
+  var cli = insp.cliente || insp.client || "";
+  var tipo = (insp.tipo || insp.type || "").toString();
+  if (tipo) tipo = tipo.charAt(0).toUpperCase() + tipo.slice(1);
+  var actions = _mlActionBtns(insp, statusKey);
+  return "<div style=\"display:flex;align-items:stretch;gap:12px;background:#fff;border:1px solid #e5e7eb;border-radius:10px;padding:14px;margin-bottom:10px;\">" +
+    "<div style=\"font-size:26px;width:40px;display:flex;align-items:center;justify-content:center;\">\uD83D\uDCCB</div>" +
+    "<div class=\"insp-info\" style=\"flex:1;min-width:0;\">" +
+      "<div style=\"font-size:14px;font-weight:600;color:#111827;margin-bottom:2px;\">"+end+"</div>" +
+      "<div style=\"font-size:12px;color:#6b7280;\">"+(cli?cli+" \u00b7 ":"")+(tipo?tipo+" \u00b7 ":"")+code+"</div>" +
+    "</div>" +
+    "<div class=\"insp-right\" style=\"display:flex;flex-direction:column;gap:8px;align-items:flex-end;justify-content:space-between;\">" +
+      "<span style=\"background:"+info.bg+";color:"+info.color+";padding:3px 8px;border-radius:5px;font-size:10px;font-weight:700;letter-spacing:0.3px;white-space:nowrap;\">"+info.label+"</span>" +
+      "<div style=\"display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end;\">"+actions+"</div>" +
+    "</div>" +
+  "</div>";
+}
+
+function _mlActionBtns(insp, statusKey) {
+  var id = insp.id;
+  var btn = "font-size:11px;padding:4px 10px;border-radius:5px;cursor:pointer;white-space:nowrap;";
+  var out = "";
+  var st = (statusKey || "").toLowerCase();
+  var canEdit = (st === "em_andamento" || st === "concluido");
+  if (canEdit) out += "<button onclick=\"dashEditar('"+id+"')\" style=\""+btn+"border:1px solid #2563eb;background:#fff;color:#2563eb;\">&#9998; Editar</button>";
+  out += "<button onclick=\"dashGerarPdf('"+id+"')\" style=\""+btn+"border:1px solid #d1d5db;background:#fff;color:#374151;\">\uD83D\uDCC4 PDF</button>";
+  if (st === "concluido") {
+    out += "<button onclick=\"_mlEnviarAssinar('"+id+"')\" style=\""+btn+"border:none;background:#f59e0b;color:#fff;font-weight:600;\">\u270D Enviar p/ assinar</button>";
+    out += "<button onclick=\"_mlOpenFisico('"+id+"')\" style=\""+btn+"border:none;background:#5b21b6;color:#fff;font-weight:600;\">\uD83D\uDD8A Marcar fisico</button>";
+  }
+  if (st === "aguardando") {
+    out += "<button onclick=\"dashAbrirAutentique('"+id+"')\" style=\""+btn+"border:none;background:#1e40af;color:#fff;font-weight:600;\">Autentique</button>";
+  }
+  out += "<button onclick=\"_mlOpenExcluir('"+id+"','"+st+"')\" style=\""+btn+"border:1px solid #dc2626;background:#fff;color:#dc2626;\">\uD83D\uDDD1 Excluir</button>";
+  return out;
+}
+
+function _mlEnviarAssinar(id) {
+  if (typeof dashAbrirAutentique === "function") { dashAbrirAutentique(id); return; }
+  alert("Abrindo envio para assinatura...");
+}
+
+function _mlOpenFisico(id) {
+  window._mlState.marcarFisicoId = id;
+  var el = document.getElementById("mfisico-data");
+  if (el) { var d = new Date(); el.value = d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"); }
+  var m = document.getElementById("modal-marcar-fisico"); if (m) m.style.display = "flex";
+}
+function _mlCloseFisico() { var m = document.getElementById("modal-marcar-fisico"); if (m) m.style.display = "none"; window._mlState.marcarFisicoId = null; }
+function _mlConfirmFisico() {
+  var id = window._mlState.marcarFisicoId; if (!id) return;
+  var el = document.getElementById("mfisico-data"); var data = el ? el.value : "";
+  if (!data) { alert("Informe a data da assinatura."); return; }
+  var hdr = Object.assign({ "Content-Type":"application/json" }, window.getAuthHeaders ? window.getAuthHeaders() : {});
+  fetch("/laudo/"+id+"/status", { method:"POST", credentials:"same-origin", headers: hdr, body: JSON.stringify({ status:"assinado_fisico", data_assinatura: data }) })
+    .then(function(r){ return r.json().catch(function(){ return {}; }); })
+    .then(function(){ _mlCloseFisico(); renderMeusLaudos(); if (typeof loadDashboard === "function") loadDashboard(); })
+    .catch(function(e){ alert("Erro: "+e); });
+}
+
+function _mlOpenExcluir(id, st) {
+  window._mlState.excluirId = id;
+  window._mlState.excluirStatus = st || "";
+  var warn = document.getElementById("mexcluir-warning");
+  if (warn) warn.style.display = (st === "digital" || st === "fisico") ? "block" : "none";
+  var inp = document.getElementById("mexcluir-confirm"); if (inp) inp.value = "";
+  var btn = document.getElementById("mexcluir-btn"); if (btn) { btn.disabled = true; btn.style.cursor = "not-allowed"; btn.style.opacity = "0.5"; }
+  var m = document.getElementById("modal-excluir-laudo"); if (m) m.style.display = "flex";
+}
+function _mlCloseExcluir() { var m = document.getElementById("modal-excluir-laudo"); if (m) m.style.display = "none"; window._mlState.excluirId = null; }
+function _mlExcluirCheck() {
+  var inp = document.getElementById("mexcluir-confirm");
+  var btn = document.getElementById("mexcluir-btn");
+  if (!inp || !btn) return;
+  var ok = (inp.value || "").toUpperCase().trim() === "EXCLUIR";
+  btn.disabled = !ok;
+  btn.style.cursor = ok ? "pointer" : "not-allowed";
+  btn.style.opacity = ok ? "1" : "0.5";
+}
+function _mlConfirmExcluir() {
+  var id = window._mlState.excluirId; if (!id) return;
+  var hdr = Object.assign({}, window.getAuthHeaders ? window.getAuthHeaders() : {});
+  fetch("/laudo/"+id, { method:"DELETE", credentials:"same-origin", headers: hdr })
+    .then(function(r){ return r.json().catch(function(){ return {}; }); })
+    .then(function(){ _mlCloseExcluir(); renderMeusLaudos(); if (typeof loadDashboard === "function") loadDashboard(); })
+    .catch(function(e){ alert("Erro: "+e); });
+}
+
+// URL-based entry: /meus-laudos
+(function(){
+  if (typeof window === "undefined") return;
+  function _mlCheckUrl(){ if (location.pathname === "/meus-laudos") { try { showMeusLaudosPage(); } catch(e){} } }
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", _mlCheckUrl); else setTimeout(_mlCheckUrl, 100);
+  window.addEventListener("popstate", function(){ if (location.pathname === "/meus-laudos") { try { showMeusLaudosPage(); } catch(e){} } });
+})();
+
+
 
 function formatDate(str) {
   try { return new Date(str).toLocaleDateString('pt-BR'); } catch { return str; }
@@ -8799,5 +9049,33 @@ function wiz6Concluir() {
   }, true);
 })();
 </script>
+<div id="modal-marcar-fisico" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);z-index:9999;align-items:center;justify-content:center;">
+  <div style="background:#fff;border-radius:12px;padding:24px;max-width:420px;width:90%;box-shadow:0 20px 40px rgba(0,0,0,0.25);">
+    <h3 style="margin:0 0 8px;font-size:18px;color:#111827;">Marcar como assinado fisicamente</h3>
+    <p style="margin:0 0 16px;color:#4b5563;font-size:13px;line-height:1.5;">Informe a data em que o laudo foi assinado presencialmente pelas partes.</p>
+    <label style="display:block;font-size:12px;color:#374151;margin-bottom:6px;font-weight:500;">Data da assinatura</label>
+    <input id="mfisico-data" type="date" style="width:100%;padding:10px 12px;border:1px solid #d1d5db;border-radius:8px;font-size:14px;box-sizing:border-box;margin-bottom:18px;">
+    <div style="display:flex;gap:8px;justify-content:flex-end;">
+      <button onclick="_mlCloseFisico()" style="padding:8px 14px;border:1px solid #d1d5db;background:#fff;border-radius:8px;cursor:pointer;font-size:13px;">Cancelar</button>
+      <button onclick="_mlConfirmFisico()" style="padding:8px 14px;background:#5b21b6;color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600;">Confirmar</button>
+    </div>
+  </div>
+</div>
+
+<div id="modal-excluir-laudo" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);z-index:9999;align-items:center;justify-content:center;">
+  <div style="background:#fff;border-radius:12px;padding:24px;max-width:460px;width:90%;box-shadow:0 20px 40px rgba(0,0,0,0.25);">
+    <h3 style="margin:0 0 8px;font-size:18px;color:#b91c1c;">Excluir laudo definitivamente</h3>
+    <div id="mexcluir-warning" style="display:none;background:#fef2f2;border:1px solid #fecaca;color:#991b1b;padding:10px 12px;border-radius:8px;font-size:12px;margin-bottom:12px;line-height:1.5;">
+      <strong>ATENCAO:</strong> Este laudo ja foi assinado. A exclusao remove o registro de forma irreversivel.
+    </div>
+    <p style="margin:0 0 14px;color:#4b5563;font-size:13px;line-height:1.5;">Digite <strong>EXCLUIR</strong> para confirmar a remocao permanente.</p>
+    <input id="mexcluir-confirm" type="text" placeholder="EXCLUIR" oninput="_mlExcluirCheck()" style="width:100%;padding:10px 12px;border:1px solid #d1d5db;border-radius:8px;font-size:14px;box-sizing:border-box;margin-bottom:18px;text-transform:uppercase;">
+    <div style="display:flex;gap:8px;justify-content:flex-end;">
+      <button onclick="_mlCloseExcluir()" style="padding:8px 14px;border:1px solid #d1d5db;background:#fff;border-radius:8px;cursor:pointer;font-size:13px;">Cancelar</button>
+      <button id="mexcluir-btn" onclick="_mlConfirmExcluir()" disabled style="padding:8px 14px;background:#dc2626;color:#fff;border:none;border-radius:8px;cursor:not-allowed;font-size:13px;font-weight:600;opacity:0.5;">Excluir definitivamente</button>
+    </div>
+  </div>
+</div>
+
 </body>
 </html>
