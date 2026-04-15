@@ -2071,7 +2071,13 @@ window._openFotoModal = function(imgSrc) {
         <div class="db-col-main">
           <div class="db-section-header">
             <span>Laudos recentes</span>
-            <span class="db-section-link" onclick="alert('Funcionalidade em breve!')" style="display:flex;align-items:center;gap:5px">🔍 Procurar laudo</span>
+          </div>
+          <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;align-items:center;">
+            <input id="dash-search" placeholder="Buscar por código, endereço ou parte..." oninput="dashFilter()" style="flex:1;min-width:200px;height:36px;border:1px solid #e2e8f0;border-radius:8px;padding:0 12px;font-size:12px;background:#fff;outline:none;color:#1a2540;"/>
+            <button onclick="dashSetFiltro('todos',this)" data-filter="todos" class="dash-filter-btn active" style="height:36px;padding:0 14px;border:1px solid #2d7dd2;border-radius:8px;background:#2d7dd2;color:#fff;font-size:12px;font-weight:600;cursor:pointer;">Todos</button>
+            <button onclick="dashSetFiltro('entrada',this)" data-filter="entrada" class="dash-filter-btn" style="height:36px;padding:0 14px;border:1px solid #e2e8f0;border-radius:8px;background:#fff;color:#1a2540;font-size:12px;font-weight:500;cursor:pointer;">Entrada</button>
+            <button onclick="dashSetFiltro('saida',this)" data-filter="saida" class="dash-filter-btn" style="height:36px;padding:0 14px;border:1px solid #e2e8f0;border-radius:8px;background:#fff;color:#1a2540;font-size:12px;font-weight:500;cursor:pointer;">Saída</button>
+            <button onclick="dashSetFiltro('temporada',this)" data-filter="temporada" class="dash-filter-btn" style="height:36px;padding:0 14px;border:1px solid #e2e8f0;border-radius:8px;background:#fff;color:#1a2540;font-size:12px;font-weight:500;cursor:pointer;">Temporada</button>
           </div>
           <div id="inspections-list"></div>
         </div>
@@ -3209,36 +3215,147 @@ async function loadDashboard() {
   }
 
   window._allInspections = list;
-  container.innerHTML = list.slice(0,6).map(i => {
-    const tipo = i.type === 'entrada' ? 'Entrada' : 'Saída';
-    const icon = i.type === 'entrada'
-      ? `<svg width="32" height="26" viewBox="0 0 56 44" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="10" y="4" width="26" height="36" rx="2" fill="#dbeafe" stroke="#2d7dd2" stroke-width="1.5"/><path d="M36 4 Q46 14 46 22 Q46 30 36 40" fill="#bfdbfe" stroke="#2d7dd2" stroke-width="1.5"/><circle cx="33" cy="22" r="2.5" fill="#2d7dd2"/><circle cx="46" cy="10" r="4" fill="none" stroke="#2d7dd2" stroke-width="1.5"/><line x1="46" y1="14" x2="46" y2="24" stroke="#2d7dd2" stroke-width="1.5" stroke-linecap="round"/><line x1="46" y1="20" x2="49" y2="20" stroke="#2d7dd2" stroke-width="1.5" stroke-linecap="round"/><line x1="46" y1="23" x2="49" y2="23" stroke="#2d7dd2" stroke-width="1.5" stroke-linecap="round"/></svg>`
-      : i.type === 'saída'
-      ? `<svg width="32" height="26" viewBox="0 0 56 44" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="14" y="4" width="26" height="36" rx="2" fill="#dbeafe" stroke="#2d7dd2" stroke-width="1.5"/><circle cx="36" cy="22" r="2.5" fill="#2d7dd2"/><line x1="42" y1="22" x2="52" y2="22" stroke="#2d7dd2" stroke-width="2" stroke-linecap="round"/><polyline points="48,18 52,22 48,26" fill="none" stroke="#2d7dd2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><rect x="2" y="28" width="10" height="10" rx="1" fill="#93c5fd" stroke="#2d7dd2" stroke-width="1"/></svg>`
-      : `<svg width="32" height="26" viewBox="0 0 56 44" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="6" y="8" width="36" height="30" rx="3" fill="#dbeafe" stroke="#2d7dd2" stroke-width="1.5"/><rect x="6" y="8" width="36" height="10" rx="3" fill="#2d7dd2"/><line x1="16" y1="4" x2="16" y2="14" stroke="#2d7dd2" stroke-width="2" stroke-linecap="round"/><line x1="32" y1="4" x2="32" y2="14" stroke="#2d7dd2" stroke-width="2" stroke-linecap="round"/><circle cx="16" cy="26" r="2" fill="#2d7dd2"/><circle cx="24" cy="26" r="2" fill="#2d7dd2"/><circle cx="32" cy="26" r="2" fill="#93c5fd"/><circle cx="46" cy="10" r="5" fill="#fbbf24"/></svg>`;
-    const statusLabel = i.status === 'concluído' ? 'Concluída'
-      : i.status === 'rascunho' ? 'Em andamento'
-      : i.status === 'assinado' ? 'Assinado'
-      : i.status === 'processando' ? 'Processando'
-      : i.status;
-    const badgeClass = i.status === 'concluído' ? 'badge-concluído'
-      : i.status === 'rascunho' ? 'badge-rascunho'
-      : 'badge-andamento';
-    const date = i.inspection_date || formatDate(i.created_at);
-    return `<div class="insp-card" onclick="openInspection('${i.id}')">
-      <div class="insp-thumb" style="background:#eef4ff;border-radius:8px;width:48px;height:48px;display:flex;align-items:center;justify-content:center;flex-shrink:0">${icon}</div>
-      <div class="insp-info">
-        <div class="insp-address">${i.property_address || 'Endereço não informado'}</div>
-        <div class="insp-meta">
-          <span>${tipo}</span>
-          <span>${date}</span>
-        </div>
-      </div>
-      <div class="insp-right">
-        <span class="insp-badge ${badgeClass}">${statusLabel}</span>
-      </div>
-    </div>`;
-  }).join('') + (list.length > 6 ? '<div style="text-align:center;padding:14px 0 4px"><span id="db-ver-todos-btn" onclick="mostrarTodosLaudos()" style="font-size:13px;color:#2d7dd2;cursor:pointer;font-weight:500;display:inline-flex;align-items:center;gap:4px">Ver todos os laudos \u2192</span></div>' : '');
+  if (typeof window._dashFiltroTipo === 'undefined') window._dashFiltroTipo = 'todos';
+  if (typeof window._dashSearchTerm === 'undefined') window._dashSearchTerm = '';
+  _renderDashList();
+}
+
+// ─── Dashboard list rendering (search + filter + grouping) ─────────────────
+function _dashStatusInfo(st) {
+  // Normalize various legacy statuses
+  var s = (st||'').toLowerCase();
+  if (s === 'assinado_digital' || s === 'assinado digital') return { key:'assinado_digital', label:'ASSINADO DIGITAL', bg:'#dcfce7', color:'#166534', group:'ASSINADOS' };
+  if (s === 'assinado_fisico' || s === 'assinado fisico' || s === 'assinado físico') return { key:'assinado_fisico', label:'ASSINADO FÍSICO', bg:'#f5f3ff', color:'#5b21b6', group:'ASSINADOS' };
+  if (s === 'assinado') return { key:'assinado_digital', label:'ASSINADO DIGITAL', bg:'#dcfce7', color:'#166534', group:'ASSINADOS' };
+  if (s === 'aguardando_assinatura' || s === 'aguardando assinatura' || s === 'aguard. assinatura') return { key:'aguardando_assinatura', label:'AGUARD. ASSINATURA', bg:'#fef9c3', color:'#854d0e', group:'AGUARD. ASSINATURA' };
+  if (s === 'concluido' || s === 'concluído' || s === 'concluído') return { key:'concluido', label:'CONCLUÍDO', bg:'#e8f2fd', color:'#1565c0', group:'CONCLUÍDO' };
+  return { key:'em_andamento', label:'EM ANDAMENTO', bg:'#fff3e0', color:'#c05a00', group:'EM ANDAMENTO' };
+}
+function _dashLaudoCode(i) {
+  if (i.codigo) return i.codigo;
+  if (i.code) return i.code;
+  // Fallback: build from type + year + id
+  var prefix = i.type === 'entrada' ? 'VE' : (i.type === 'saida' ? 'VS' : (i.type === 'temporada' ? 'VT' : 'VX'));
+  var y = new Date(i.created_at || Date.now()).getFullYear();
+  var id = String(i.id||'').slice(-4).toUpperCase();
+  return prefix + '-' + y + '-' + id;
+}
+function _dashActionBtns(i, statusKey) {
+  var id = i.id;
+  var canEdit = (statusKey === 'em_andamento' || statusKey === 'concluido');
+  var showAutentique = (statusKey === 'aguardando_assinatura' || statusKey === 'assinado_digital');
+  var btnBase = 'height:30px;padding:0 10px;border-radius:6px;font-size:11px;font-weight:500;cursor:pointer;display:inline-flex;align-items:center;gap:4px;';
+  var edit;
+  if (canEdit) {
+    edit = '<button onclick="event.stopPropagation();openInspection(\''+id+'\')" style="'+btnBase+'border:1px solid #e2e8f0;background:#fff;color:#1a2540;" title="Editar">✏️ Editar</button>';
+  } else {
+    edit = '<button disabled onclick="event.stopPropagation()" style="'+btnBase+'border:1px solid #e2e8f0;background:#f8fafc;color:#94a3b8;cursor:not-allowed;" title="Bloqueado">🔒 Editar</button>';
+  }
+  var pdf = '<button onclick="event.stopPropagation();dashGerarPdf(\''+id+'\')" style="'+btnBase+'border:1px solid #e2e8f0;background:#fff;color:#1a2540;" title="PDF">📄 PDF</button>';
+  var aut = showAutentique ? '<button onclick="event.stopPropagation();dashAbrirAutentique(\''+id+'\')" style="'+btnBase+'border:1px solid #c7d2fe;background:#eef2ff;color:#3730a3;" title="Autentique">🔗 Autentique</button>' : '';
+  var del = '<button onclick="event.stopPropagation();dashExcluir(\''+id+'\')" style="'+btnBase+'border:1px solid #fecaca;background:#fff;color:#b91c1c;" title="Excluir">🗑️</button>';
+  return '<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px;">'+edit+pdf+aut+del+'</div>';
+}
+function _dashRenderCard(i) {
+  var tipo = i.type === 'entrada' ? 'Entrada' : (i.type === 'saida' ? 'Saída' : (i.type === 'temporada' ? 'Temporada' : (i.type||'')));
+  var icon = '<svg width="48" height="44" viewBox="0 0 48 44" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="6" y="8" width="36" height="30" rx="3" fill="#dbeafe" stroke="#2d7dd2" stroke-width="1.5"/><rect x="6" y="8" width="36" height="10" rx="3" fill="#2d7dd2"/><circle cx="24" cy="26" r="2" fill="#2d7dd2"/></svg>';
+  var st = _dashStatusInfo(i.status);
+  var code = _dashLaudoCode(i);
+  var date = i.inspection_date || formatDate(i.created_at);
+  var codeBadge = '<span style="display:inline-block;font-family:monospace;font-size:10px;font-weight:600;background:#eff6ff;color:#1d4ed8;border:0.5px solid #bfdbfe;border-radius:4px;padding:2px 6px;margin-top:3px;letter-spacing:0.3px;">'+code+'</span>';
+  var statusBadge = '<span style="display:inline-block;font-size:10px;font-weight:700;background:'+st.bg+';color:'+st.color+';border-radius:4px;padding:3px 8px;letter-spacing:0.3px;text-transform:uppercase;">'+st.label+'</span>';
+  var actions = _dashActionBtns(i, st.key);
+  return '<div class="insp-card" style="cursor:pointer;" onclick="openInspection(\''+i.id+'\')">'
+    + '<div class="insp-thumb" style="background:#eef4ff;border-radius:8px;width:48px;height:44px;display:flex;align-items:center;justify-content:center;flex-shrink:0">'+icon+'</div>'
+    + '<div class="insp-info" style="flex:1;min-width:0;">'
+    + '<div class="insp-address" style="font-weight:600;color:#1a2540;">'+(i.property_address || 'Endereço não informado')+'</div>'
+    + codeBadge
+    + '<div class="insp-meta" style="margin-top:5px;font-size:11px;color:#64748b;display:flex;gap:10px;flex-wrap:wrap;"><span>'+tipo+'</span><span>'+date+'</span></div>'
+    + actions
+    + '</div>'
+    + '<div class="insp-right" style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;">'+statusBadge+'</div>'
+    + '</div>';
+}
+function _dashGroupLabel(txt) {
+  return '<div style="font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.8px;margin:14px 0 6px;padding:4px 10px;background:#f1f5f9;border-radius:6px;display:inline-block;">'+txt+'</div>';
+}
+function _renderDashList() {
+  var container = document.getElementById('inspections-list');
+  if (!container) return;
+  var all = (window._allInspections || []).slice();
+  var term = (window._dashSearchTerm||'').trim().toLowerCase();
+  var tipoF = window._dashFiltroTipo || 'todos';
+  var filtered = all.filter(function(i){
+    if (tipoF !== 'todos' && (i.type||'').toLowerCase() !== tipoF) return false;
+    if (!term) return true;
+    var code = _dashLaudoCode(i).toLowerCase();
+    var addr = (i.property_address||'').toLowerCase();
+    return code.indexOf(term) >= 0 || addr.indexOf(term) >= 0;
+  });
+  // Group by status group
+  var order = ['EM ANDAMENTO','CONCLUÍDO','AGUARD. ASSINATURA','ASSINADOS'];
+  var groups = { 'EM ANDAMENTO':[], 'CONCLUÍDO':[], 'AGUARD. ASSINATURA':[], 'ASSINADOS':[] };
+  filtered.forEach(function(i){
+    var g = _dashStatusInfo(i.status).group;
+    if (!groups[g]) groups[g]=[];
+    groups[g].push(i);
+  });
+  // Limit to 6 total preserving group order
+  var shown = 0, MAX = 6, html = '';
+  for (var k=0;k<order.length;k++) {
+    var gname = order[k];
+    var arr = groups[gname] || [];
+    if (!arr.length || shown >= MAX) continue;
+    var take = arr.slice(0, MAX - shown);
+    html += _dashGroupLabel(gname);
+    html += take.map(_dashRenderCard).join('');
+    shown += take.length;
+  }
+  if (!filtered.length) {
+    html = '<div style="padding:24px;text-align:center;color:#94a3b8;font-size:13px;">Nenhum laudo encontrado.</div>';
+  }
+  if (filtered.length > MAX) {
+    html += '<div style="text-align:center;padding:14px 0 4px"><span id="db-ver-todos-btn" onclick="mostrarTodosLaudos()" style="font-size:13px;color:#2d7dd2;cursor:pointer;font-weight:500;display:inline-flex;align-items:center;gap:4px">Ver todos os laudos →</span></div>';
+  }
+  container.innerHTML = html;
+}
+function dashFilter() {
+  var el = document.getElementById('dash-search');
+  window._dashSearchTerm = el ? el.value : '';
+  _renderDashList();
+}
+function dashSetFiltro(tipo, btn) {
+  window._dashFiltroTipo = tipo;
+  var btns = document.querySelectorAll('.dash-filter-btn');
+  btns.forEach(function(b){
+    b.classList.remove('active');
+    b.style.background = '#fff';
+    b.style.color = '#1a2540';
+    b.style.border = '1px solid #e2e8f0';
+    b.style.fontWeight = '500';
+  });
+  if (btn) {
+    btn.classList.add('active');
+    btn.style.background = '#2d7dd2';
+    btn.style.color = '#fff';
+    btn.style.border = '1px solid #2d7dd2';
+    btn.style.fontWeight = '600';
+  }
+  _renderDashList();
+}
+function dashGerarPdf(id) {
+  try { if (typeof openInspection === 'function') { openInspection(id); setTimeout(function(){ if (typeof gerarLaudoPDF === 'function') gerarLaudoPDF(); }, 400); return; } } catch(e){}
+  alert('Abra o laudo e gere o PDF.');
+}
+function dashAbrirAutentique(id) {
+  alert('Fluxo Autentique em breve.');
+}
+function dashExcluir(id) {
+  if (!confirm('Esta ação é irreversível. O laudo será permanentemente removido. Continuar?')) return;
+  fetch('/laudo/'+id, { method:'DELETE', credentials:'same-origin' })
+    .then(function(r){ return r.json().catch(function(){ return {}; }); })
+    .then(function(){ if (typeof loadDashboard === 'function') loadDashboard(); })
+    .catch(function(e){ alert('Erro ao excluir: '+e); });
 }
 
 function formatDate(str) {
