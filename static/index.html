@@ -3240,22 +3240,31 @@ function _dashLaudoCode(i) {
   var id = String(i.id||'').slice(-4).toUpperCase();
   return prefix + '-' + y + '-' + id;
 }
-function _dashActionBtns(i, statusKey) {
-  var id = i.id;
+function _dashActionBtns(insp, statusKey) {
+  var btnStyle = 'font-size:11px;padding:4px 10px;border-radius:5px;cursor:pointer;white-space:nowrap;';
+  var btnEdit  = btnStyle + 'border:1px solid #2d7dd2;background:#fff;color:#2d7dd2;';
+  var btnPdf   = btnStyle + 'border:1px solid #e2e8f0;background:#fff;color:#8898aa;';
+  var btnLock  = btnStyle + 'border:1px solid #e2e8f0;background:#f8fafc;color:#ccc;cursor:not-allowed;';
+  var btnAut   = btnStyle + 'border:1px solid #1e3a5f;background:#fff;color:#1e3a5f;';
+  var btnTrash = btnStyle + 'border:1px solid #fee2e2;background:#fff;color:#ef4444;';
   var canEdit = (statusKey === 'em_andamento' || statusKey === 'concluido');
-  var showAutentique = (statusKey === 'aguardando_assinatura' || statusKey === 'assinado_digital');
-  var btnBase = 'height:28px;padding:0 8px;border-radius:6px;font-size:11px;font-weight:500;cursor:pointer;display:inline-flex;align-items:center;gap:3px;white-space:nowrap;';
-  var edit;
+  var status = (statusKey || (insp && insp.status) || 'rascunho').toLowerCase();
+  var id = insp.id;
+  var html = '<div style="display:flex;align-items:center;gap:6px;flex-shrink:0;">';
   if (canEdit) {
-    edit = '<button onclick="event.stopPropagation();openInspection(\''+id+'\')" style="'+btnBase+'border:1px solid #e2e8f0;background:#fff;color:#1a2540;" title="Editar">✏️</button>';
+    html += '<button style="'+btnEdit+'" onclick="event.stopPropagation();dashEditar(\''+id+'\')">✏️ Editar</button>';
   } else {
-    edit = '<button disabled onclick="event.stopPropagation()" style="'+btnBase+'border:1px solid #e2e8f0;background:#f8fafc;color:#94a3b8;cursor:not-allowed;" title="Bloqueado">🔒</button>';
+    html += '<button style="'+btnLock+'" disabled onclick="event.stopPropagation()">🔒 Editar</button>';
   }
-  var pdf = '<button onclick="event.stopPropagation();dashGerarPdf(\''+id+'\')" style="'+btnBase+'border:1px solid #e2e8f0;background:#fff;color:#1a2540;" title="PDF">📄</button>';
-  var aut = showAutentique ? '<button onclick="event.stopPropagation();dashAbrirAutentique(\''+id+'\')" style="'+btnBase+'border:1px solid #c7d2fe;background:#eef2ff;color:#3730a3;" title="Autentique">🔗</button>' : '';
-  var del = '<button onclick="event.stopPropagation();dashExcluir(\''+id+'\')" style="'+btnBase+'border:1px solid #fecaca;background:#fff;color:#b91c1c;" title="Excluir">🗑️</button>';
-  return '<div style="display:flex;gap:4px;flex-wrap:nowrap;align-items:center;">'+edit+pdf+aut+del+'</div>';
+  html += '<button style="'+btnPdf+'" onclick="event.stopPropagation();dashGerarPdf(\''+id+'\')">📄 PDF</button>';
+  if (status === 'aguardando_assinatura' || status === 'assinado_digital') {
+    html += '<button style="'+btnAut+'" onclick="event.stopPropagation();dashAbrirAutentique(\''+id+'\')">🔗 Autentique</button>';
+  }
+  html += '<button style="'+btnTrash+'" onclick="event.stopPropagation();dashExcluir(\''+id+'\')">🗑️</button>';
+  html += '</div>';
+  return html;
 }
+function dashEditar(id) { if (typeof openInspection === "function") openInspection(id); }
 function _dashRenderCard(i) {
   var tipo = i.type === 'entrada' ? 'Entrada' : (i.type === 'saida' ? 'Saída' : (i.type === 'temporada' ? 'Temporada' : (i.type||'')));
   var icon = '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="4" y="3" width="16" height="18" rx="2" fill="#dbeafe" stroke="#2d7dd2" stroke-width="1.5"/><line x1="8" y1="8" x2="16" y2="8" stroke="#2d7dd2" stroke-width="1.3" stroke-linecap="round"/><line x1="8" y1="12" x2="16" y2="12" stroke="#2d7dd2" stroke-width="1.3" stroke-linecap="round"/><line x1="8" y1="16" x2="13" y2="16" stroke="#2d7dd2" stroke-width="1.3" stroke-linecap="round"/></svg>';
