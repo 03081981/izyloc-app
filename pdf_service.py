@@ -23,53 +23,69 @@ import re
 
 
 def _title_case(s):
-    if not s: return u''
-    s = s.strip()
-    _min = set([u'de', u'da', u'do', u'dos', u'das', u'e', u'o', u'a', u'os', u'as', u'em', u'na', u'no', u'nas', u'nos', u'por', u'para', u'com', u'sem'])
-    out = []
-    for i, w in enumerate(s.split()):
-        if i > 0 and w.lower() in _min:
-            out.append(w.lower())
-        else:
-            out.append(w.capitalize())
-    return u' '.join(out)
+    try:
+        if not s: return u''
+        s = str(s).strip()
+        if not s: return u''
+        _min = set([u'de', u'da', u'do', u'dos', u'das', u'e', u'o', u'a', u'os', u'as', u'em', u'na', u'no', u'nas', u'nos', u'por', u'para', u'com', u'sem'])
+        out = []
+        for i, w in enumerate(s.split()):
+            if i > 0 and w.lower() in _min:
+                out.append(w.lower())
+            else:
+                out.append(w.capitalize())
+        return u' '.join(out)
+    except Exception:
+        return u''
 
 
 def _fmt_cpf(s):
-    if not s: return u''
-    d = re.sub(r'\D', '', str(s))
-    d = d[:11]
-    if len(d) == 11:
-        return u'{}.{}.{}-{}'.format(d[:3],d[3:6],d[6:9],d[9:])
-    return str(s)
+    try:
+        if not s: return u''
+        d = re.sub(r'\D', '', str(s))
+        d = d[:11]
+        if len(d) == 11:
+            return u'{}.{}.{}-{}'.format(d[:3],d[3:6],d[6:9],d[9:])
+        return str(s)
+    except Exception:
+        return u''
 
 
 def _fmt_cnpj(s):
-    if not s: return u''
-    d = re.sub(r'\D', '', str(s))
-    if len(d) == 14:
-        return u'{}.{}.{}/{}-{}'.format(d[:2],d[2:5],d[5:8],d[8:12],d[12:])
-    return str(s)
+    try:
+        if not s: return u''
+        d = re.sub(r'\D', '', str(s))
+        if len(d) == 14:
+            return u'{}.{}.{}/{}-{}'.format(d[:2],d[2:5],d[5:8],d[8:12],d[12:])
+        return str(s)
+    except Exception:
+        return u''
 
 
 def _fmt_cep(s):
-    if not s: return u''
-    d = re.sub(r'\D', '', str(s))
-    if len(d) == 8:
-        return u'{}-{}'.format(d[:5],d[5:])
-    return str(s)
+    try:
+        if not s: return u''
+        d = re.sub(r'\D', '', str(s))
+        if len(d) == 8:
+            return u'{}-{}'.format(d[:5],d[5:])
+        return str(s)
+    except Exception:
+        return u''
 
 
 def _fmt_tel(s):
-    if not s: return u''
-    s = str(s).strip()
-    if not s: return u''
-    d = re.sub(r'\D', '', s)
-    if len(d) == 11:
-        return u'({}) {}-{}'.format(d[:2],d[2:7],d[7:])
-    if len(d) == 10:
-        return u'({}) {}-{}'.format(d[:2],d[2:6],d[6:])
-    return u''
+    try:
+        if not s: return u''
+        s = str(s).strip()
+        if not s: return u''
+        d = re.sub(r'\D', '', s)
+        if len(d) == 11:
+            return u'({}) {}-{}'.format(d[:2],d[2:7],d[7:])
+        if len(d) == 10:
+            return u'({}) {}-{}'.format(d[:2],d[2:6],d[6:])
+        return u''
+    except Exception:
+        return u''
 
 
 def _fmt_cidade_uf(cidade, estado):
@@ -1404,14 +1420,17 @@ def _format_date_display(date_str):
     return dt.strftime('%d/%m/%Y')
 
 def _safe(val, fallback=u'\u2014'):
-    if val is None:
+    try:
+        if val is None:
+            return fallback
+        import re as _re
+        s = str(val).strip()
+        s = _re.sub(u'[\x00-\x08\x0b\x0c\x0e-\x1f\x7f-\x9f\u200b\u200c\u200d\ufeff]', u'', s)
+        s = s.replace(u'\u00e2\u0080\u008b', u'')
+        s = s.strip()
+        return s if s else fallback
+    except Exception:
         return fallback
-    import re as _re
-    s = str(val).strip()
-    s = _re.sub(u'[\x00-\x08\x0b\x0c\x0e-\x1f\x7f-\x9f\u200b\u200c\u200d\ufeff]', u'', s)
-    s = s.replace(u'\u00e2\u0080\u008b', u'')
-    s = s.strip()
-    return s if s else fallback
 
 def _foto_bytes(data_url):
     """Converte data URL base64 para bytes."""
@@ -1736,5 +1755,9 @@ def generate_pdf(inspection_data: dict, rooms_data: list,
         return True
 
     except Exception as e:
+        import traceback
+        tb = traceback.format_exc()
+        print('[PDF ERROR]', str(e), flush=True)
+        print('[PDF TRACEBACK]', tb, flush=True)
         logger.error(f'Erro ao gerar PDF: {e}', exc_info=True)
         return False
