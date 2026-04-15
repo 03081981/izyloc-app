@@ -603,7 +603,6 @@ def add_ambientes(story, s, ambientes):
         # Extract estado from AI description text (reliable source)
         estado_ambiente = 'Bom'
         if desc_ambiente:
-            import re
             _dl = desc_ambiente.lower()
             # Look for exact matches: "com avaria", "regular", or "bom" right after "estado geral"
             if re.search(r'estado\s*geral[^a-z]*(com\s+avaria)', _dl):
