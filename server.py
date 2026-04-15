@@ -1628,6 +1628,102 @@ class StatusVideoHandler(BaseHandler):
 
 
 
+
+class MeusLaudosHandler(BaseHandler):
+    """GET /meus-laudos -> serves SPA index.html (client routes to Meus Laudos page)."""
+    def get(self):
+        static_dir = os.path.join(os.path.dirname(__file__), 'static')
+        idx = os.path.join(static_dir, 'index.html')
+        try:
+            with open(idx, 'rb') as f:
+                self.set_header('Content-Type', 'text/html; charset=utf-8')
+                self.write(f.read())
+        except Exception as e:
+            self.set_status(500)
+            self.write('Erro carregando pagina: ' + str(e))
+
+
+def _ensure_status_column():
+    """Ensure inspections.status column exists (migration-safe)."""
+    try:
+        conn = get_conn()
+        try:
+            conn.execute("ALTER TABLE inspections ADD COLUMN status TEXT DEFAULT 'em_andamento'")
+            conn.commit()
+        except Exception:
+            pass
+        try:
+            conn.execute("ALTER TABLE inspections ADD COLUMN data_assinatura TEXT")
+            conn.commit()
+        except Exception:
+            pass
+        conn.close()
+    except Exception:
+        pass
+
+
+class LaudoStatusHandler(BaseHandler):
+    """POST /laudo/<id>/status -> atualiza status do laudo."""
+    def post(self, insp_id):
+        user = self.require_auth()
+        if not user:
+            return
+        try:
+            body = json.loads(self.request.body or b'{}')
+        except Exception:
+            body = {}
+        new_status = (body.get('status') or '').strip()
+        data_assinatura = body.get('data_assinatura')
+        allowed = {'em_andamento', 'concluido', 'aguardando_assinatura', 'assinado', 'assinado_digital', 'assinado_fisico'}
+        if new_status not in allowed:
+            self.set_status(400)
+            self.write(json.dumps({'error': 'Status invalido'}))
+            return
+        conn = get_conn()
+        try:
+            row = conn.execute('SELECT id FROM inspections WHERE id=? AND user_id=?', (insp_id, user['user_id'])).fetchone()
+            if not row:
+                self.set_status(404)
+                self.write(json.dumps({'error': 'Laudo nao encontrado'}))
+                return
+            if data_assinatura:
+                conn.execute('UPDATE inspections SET status=?, data_assinatura=? WHERE id=?', (new_status, data_assinatura, insp_id))
+            else:
+                conn.execute('UPDATE inspections SET status=? WHERE id=?', (new_status, insp_id))
+            conn.commit()
+            self.write(json.dumps({'ok': True, 'status': new_status}))
+        finally:
+            conn.close()
+
+
+class LaudoDeleteHandler(BaseHandler):
+    """DELETE /laudo/<id> -> exclui o laudo permanentemente."""
+    def delete(self, insp_id):
+        user = self.require_auth()
+        if not user:
+            return
+        conn = get_conn()
+        try:
+            row = conn.execute('SELECT id FROM inspections WHERE id=? AND user_id=?', (insp_id, user['user_id'])).fetchone()
+            if not row:
+                self.set_status(404)
+                self.write(json.dumps({'error': 'Laudo nao encontrado'}))
+                return
+            try:
+                conn.execute('DELETE FROM room_items WHERE room_id IN (SELECT id FROM rooms WHERE inspection_id=?)', (insp_id,))
+            except Exception:
+                pass
+            try:
+                conn.execute('DELETE FROM rooms WHERE inspection_id=?', (insp_id,))
+            except Exception:
+                pass
+            conn.execute('DELETE FROM inspections WHERE id=?', (insp_id,))
+            conn.commit()
+            self.write(json.dumps({'ok': True}))
+        finally:
+            conn.close()
+
+
 def make_app():
     static_dir = os.path.join(os.path.dirname(__file__), 'static')
     upload_dir = UPLOAD_DIR
@@ -1675,6 +1771,10 @@ def make_app():
         # Static files
         (r'/uploads/(.*)', tornado.web.StaticFileHandler, {'path': upload_dir}),
         (r'/static/(.*)', tornado.web.StaticFileHandler, {'path': static_dir}),
+        # Laudos (custom routes)
+        (r'/laudo/([^/]+)/status', LaudoStatusHandler),
+        (r'/laudo/([^/]+)', LaudoDeleteHandler),
+        (r'/meus-laudos', MeusLaudosHandler),
         # Frontend (SPA)
         (r'/(.*)', MainHandler),
     ], debug=True)
@@ -1682,6 +1782,7 @@ def make_app():
 
 if __name__ == '__main__':
     init_db()
+    _ensure_status_column()
     port = int(os.environ.get('PORT', 8888))
     app = make_app()
     app.listen(port)
