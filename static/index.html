@@ -3274,7 +3274,7 @@ function _dashActionBtns(insp, statusKey) {
   var id = insp.id;
   var html = '<div style="display:flex;align-items:center;gap:6px;flex-shrink:0;">';
   if (canEdit) {
-    html += '<button style="'+btnEdit+'" onclick="event.stopPropagation();dashEditar(\''+id+'\')">✏️ Editar</button>';
+    html += '<button style="'+btnEdit+'" onclick="event.stopPropagation();editarLaudo(\''+id+'\',\'dashboard\')">✏️ Editar</button>';
   } else {
     html += '<button style="'+btnLock+'" disabled onclick="event.stopPropagation()">🔒 Editar</button>';
   }
@@ -3286,7 +3286,103 @@ function _dashActionBtns(insp, statusKey) {
   html += '</div>';
   return html;
 }
-function dashEditar(id) { if (typeof openInspection === "function") openInspection(id); }
+function dashEditar(id) { if (typeof editarLaudo === "function") editarLaudo(id, "dashboard"); else if (typeof openInspection === "function") openInspection(id); }
+
+// === EDIT MODE (Revisao step) ===
+async function editarLaudo(id, origin) {
+  try {
+    showLoading && showLoading("Carregando laudo...");
+    const r = await api("GET", "/api/inspections/" + id);
+    hideLoading && hideLoading();
+    if (!r || !r.ok) { alert("Erro ao carregar laudo para edição."); return; }
+    // Reset wizard baseline, then fill from response
+    window.wizard = window.wizard || {};
+    wizard.inspectionId     = id;
+    wizard.isEditing        = true;
+    wizard.editOrigin       = origin || "dashboard";
+    wizard.tipo             = (r.type || r.tipo || "entrada");
+    wizard.mobiliado        = !!(r.mobiliado || r.is_furnished);
+    wizard.property_address = r.property_address || r.endereco || "";
+    wizard.area             = r.area || "";
+    wizard.observation      = r.observation || r.obs || "";
+    wizard.codigo           = r.codigo || r.code || "";
+    wizard.rooms            = r.rooms || [];
+    wizard.parties          = r.parties || [];
+    wizard.selectedRooms    = (r.rooms || []).map(function(x){ return x.name || x.room_name || x.nome || ""; }).filter(Boolean);
+
+    // Best-effort DOM populate (non-fatal if missing)
+    try {
+      var fields = [
+        ["wi-address", r.property_address || ""],
+        ["wi-area", r.area || ""],
+        ["wi-date", (r.inspection_date_raw || r.inspection_date || new Date().toISOString().split("T")[0])],
+        ["wi-type", wizard.tipo || ""],
+        ["wi-obs", r.observation || ""],
+        ["wi-imob-name", r.imobiliaria_name || ""],
+        ["wi-imob-cnpj", r.imobiliaria_cnpj || ""],
+        ["wi-imob-phone", r.imobiliaria_phone || ""],
+        ["wi-imob-address", r.imobiliaria_address || ""],
+        ["wi-loc-name", r.locador_name || ""],
+        ["wi-loc-cpf", r.locador_cpf || ""],
+        ["wi-loc-rg", r.locador_rg || ""],
+        ["wi-loc-phone", r.locador_phone || ""],
+        ["wi-loc-email", r.locador_email || ""],
+        ["wi-locat-name", r.locatario_name || ""],
+        ["wi-locat-cpf", r.locatario_cpf || ""],
+        ["wi-locat-rg", r.locatario_rg || ""],
+        ["wi-locat-phone", r.locatario_phone || ""],
+        ["wi-locat-email", r.locatario_email || ""],
+        ["wi-corr-name", r.corretor_name || ""],
+        ["wi-corr-creci", r.corretor_creci || ""],
+        ["wi-corr-phone", r.corretor_phone || ""],
+        ["wi-corr-email", r.corretor_email || ""],
+        ["wi-corr-cpf", r.corretor_cpf || ""]
+      ];
+      fields.forEach(function(f){ var el = document.getElementById(f[0]); if (el) el.value = f[1]; });
+      var cb = document.getElementById("wi-mobiliado");
+      if (cb) { cb.checked = !!wizard.mobiliado; if (typeof toggleMobiliado === "function") toggleMobiliado(cb.checked); }
+    } catch (e) { console.warn("[editarLaudo] DOM populate warn:", e); }
+
+    // Open wizard page and go directly to Revisao (step 6 = wstep-rev)
+    showPage("page-wizard", "Editando laudo " + (wizard.codigo || ""));
+    if (typeof syncWizSidebar === "function") syncWizSidebar();
+    gotoWStep(6);
+    if (typeof window.initRevisao === "function") { try { window.initRevisao(); } catch(e){} }
+  } catch (e) {
+    hideLoading && hideLoading();
+    alert("Erro ao carregar laudo para edição.");
+    console.error("[editarLaudo]", e);
+  }
+}
+
+function _laudoVoltarOrigem() {
+  var origin = (window.wizard && wizard.editOrigin) || "dashboard";
+  try { wizard.isEditing = false; wizard.inspectionId = null; wizard.editOrigin = null; } catch(e){}
+  if (origin === "meus-laudos" && typeof showMeusLaudosPage === "function") {
+    showMeusLaudosPage();
+  } else {
+    showPage("page-dashboard");
+    if (typeof loadDashboard === "function") loadDashboard();
+  }
+}
+
+function _applyEditUiToWstepRev(step) {
+  var wrev = document.getElementById("wstep-rev"); if (!wrev) return;
+  var title = wrev.querySelector(".wstep-title");
+  var sub = wrev.querySelector(".wstep-sub");
+  var nextBtn = wrev.querySelector(".btn-wiz-next");
+  var isEd = !!(window.wizard && wizard.isEditing);
+  if (title) title.textContent = isEd ? ("✏ Revisão — Editando laudo " + (wizard.codigo || "")) : "Revisão do laudo";
+  if (sub) sub.textContent = isEd ? "Ajuste os dados e regere o PDF — o código do laudo será mantido." : "Confira os dados antes de prosseguir para a assinatura.";
+  if (nextBtn) {
+    if (isEd) {
+      if (!nextBtn.dataset.origHtml) nextBtn.dataset.origHtml = nextBtn.innerHTML;
+      nextBtn.innerHTML = "🔄 Regerar PDF";
+    } else if (nextBtn.dataset.origHtml) {
+      nextBtn.innerHTML = nextBtn.dataset.origHtml;
+    }
+  }
+}
 function _dashRenderCard(i) {
   var tipo = i.type === 'entrada' ? 'Entrada' : (i.type === 'saida' ? 'Saída' : (i.type === 'temporada' ? 'Temporada' : (i.type||'')));
   var icon = '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="4" y="3" width="16" height="18" rx="2" fill="#dbeafe" stroke="#2d7dd2" stroke-width="1.5"/><line x1="8" y1="8" x2="16" y2="8" stroke="#2d7dd2" stroke-width="1.3" stroke-linecap="round"/><line x1="8" y1="12" x2="16" y2="12" stroke="#2d7dd2" stroke-width="1.3" stroke-linecap="round"/><line x1="8" y1="16" x2="13" y2="16" stroke="#2d7dd2" stroke-width="1.3" stroke-linecap="round"/></svg>';
@@ -3560,7 +3656,7 @@ function _mlActionBtns(insp, statusKey) {
   var st = (statusKey || "").toLowerCase();
   var canEdit = (st === "em_andamento" || st === "concluido");
   var out = "";
-  if (canEdit) out += "<button style=\""+btnEdit+"\" onclick=\"event.stopPropagation();dashEditar('"+id+"')\">Editar</button>";
+  if (canEdit) out += "<button style=\""+btnEdit+"\" onclick=\"event.stopPropagation();editarLaudo('"+id+"','meus-laudos')\">Editar</button>";
   out += "<button style=\""+btnPdf+"\" onclick=\"event.stopPropagation();dashGerarPdf('"+id+"')\">PDF</button>";
   if (st === "concluido") {
     out += "<button style=\""+btnSign+"\" onclick=\"event.stopPropagation();_mlEnviarAssinar('"+id+"')\">Enviar p/ assinar</button>";
@@ -3752,6 +3848,7 @@ function selectTipoCard(card) {
 
 function gotoWStep(step) {
   wizard.step = step;
+  try { _applyEditUiToWstepRev(step); } catch(e){}
   // Stepper visual
   for (let i=0; i<=8; i++) {
     const c = document.getElementById(`sc-${i}`);
@@ -5085,7 +5182,7 @@ if (typeof initAmbientes === 'function') initAmbientes();
         a.download = 'laudo-' + wizard.inspectionId + '.pdf';
         a.click();
         URL.revokeObjectURL(url);
-        localStorage.removeItem('izylo_current_inspection');
+        localStorage.removeItem('izylo_current_inspection'); if (window.wizard && wizard.isEditing) { setTimeout(function(){ try { _laudoVoltarOrigem(); } catch(e){} }, 400); }
       } catch(e) {
         alert('Erro ao gerar PDF: ' + e.message);
       }
