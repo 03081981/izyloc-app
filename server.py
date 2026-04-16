@@ -1368,21 +1368,30 @@ class GeneratePDFHandler(BaseHandler):
                 return self.err('Erro ao gerar PDF', 500)
 
             # Marca como concluÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ­do
-            # --- Save complete laudo data (GET) ---
-            import logging as _logging
-            _json_mod = __import__('json')
-            _tipo_c = (inspection_data.get('type') or 'entrada').lower()
-            _prefixo_c = 'VE' if _tipo_c == 'entrada' else ('VS' if _tipo_c == 'saida' else 'VE')
+            # --- Save complete laudo data (GET, safe) ---
             try:
-                _dt_c = inspection_data.get('inspection_date') or inspection_data.get('created_at') or ''
-                _ano_c = int(_dt_c[:4]) if len(_dt_c) >= 4 else datetime.now().year
-            except Exception:
-                _ano_c = datetime.now().year
-            _codigo = f'{_prefixo_c}-{_ano_c}-{str(insp_id)[:4].upper()}'
-            _logging.warning(f'[PDF-SAVE-GET] codigo={_codigo}')
-            conn.execute("UPDATE inspections SET status='concluido', codigo=?, updated_at=? WHERE id=?",
-                (_codigo, datetime.now().strftime('%Y-%m-%d %H:%M:%S'), insp_id))
-            conn.commit()
+                # --- Save complete laudo data (GET) ---
+                import logging as _logging
+                _json_mod = __import__('json')
+                _tipo_c = (inspection_data.get('type') or 'entrada').lower()
+                _prefixo_c = 'VE' if _tipo_c == 'entrada' else ('VS' if _tipo_c == 'saida' else 'VE')
+                try:
+                    _dt_c = inspection_data.get('inspection_date') or inspection_data.get('created_at') or ''
+                    _ano_c = int(_dt_c[:4]) if len(_dt_c) >= 4 else datetime.now().year
+                except Exception:
+                    _ano_c = datetime.now().year
+                _codigo = f'{_prefixo_c}-{_ano_c}-{str(insp_id)[:4].upper()}'
+                _logging.warning(f'[PDF-SAVE-GET] codigo={_codigo}')
+                conn.execute("UPDATE inspections SET status='concluido', codigo=?, updated_at=? WHERE id=?",
+                    (_codigo, datetime.now().strftime('%Y-%m-%d %H:%M:%S'), insp_id))
+                conn.commit()
+            except Exception as _save_err:
+                import logging as _logging
+                _logging.warning(f'[PDF-SAVE-GET] erro ignorado: {_save_err}')
+                try:
+                    conn.rollback()
+                except Exception:
+                    pass
 
             self.set_header('Content-Type', 'application/pdf')
             self.set_header('Content-Disposition', f'attachment; filename="{pdf_filename}"')
@@ -1450,36 +1459,45 @@ class GeneratePDFHandler(BaseHandler):
                 success = generate_pdf(inspection_data, rooms_list, signatures_list, pdf_path)
                 if not success:
                     return self.err('Erro ao gerar PDF', 500)
-                # --- Save complete laudo data ---
-                import logging as _logging
-                _json_mod = __import__('json')
-                _tipo_c = (inspection_data.get('type') or 'entrada').lower()
-                _prefixo_c = 'VE' if _tipo_c == 'entrada' else ('VS' if _tipo_c == 'saida' else 'VE')
+                # --- Save complete laudo data (safe) ---
                 try:
-                    _dt_c = inspection_data.get('inspection_date') or inspection_data.get('created_at') or ''
-                    _ano_c = int(_dt_c[:4]) if len(_dt_c) >= 4 else datetime.now().year
-                except Exception:
-                    _ano_c = datetime.now().year
-                _codigo = f'{_prefixo_c}-{_ano_c}-{str(insp_id)[:4].upper()}'
-                _logging.warning(f'[PDF-SAVE] codigo={_codigo} rooms={len(rooms_list)} amb_data={len(amb_data) if amb_data else 0}')
-                conn.execute("UPDATE inspections SET status='concluido', codigo=?, updated_at=? WHERE id=?",
-                    (_codigo, datetime.now().strftime('%Y-%m-%d %H:%M:%S'), insp_id))
-                for _ri, _room in enumerate(rooms_list):
-                    _room_id = _room.get('id')
-                    if not _room_id:
-                        continue
-                    _obs = _room.get('observacoes') or _room.get('observations') or ''
-                    _gc = _room.get('general_condition') or ''
-                    _ct = _room.get('consolidated_text') or ''
-                    _vrf = _room.get('verificacoes') or {}
-                    _vrf_j = _json_mod.dumps(_vrf) if isinstance(_vrf, dict) else str(_vrf)
+                    # --- Save complete laudo data ---
+                    import logging as _logging
+                    _json_mod = __import__('json')
+                    _tipo_c = (inspection_data.get('type') or 'entrada').lower()
+                    _prefixo_c = 'VE' if _tipo_c == 'entrada' else ('VS' if _tipo_c == 'saida' else 'VE')
                     try:
-                        conn.execute("UPDATE rooms SET observations=?, general_condition=?, consolidated_text=?, verificacoes_json=? WHERE id=? AND inspection_id=?",
-                            (_obs, _gc, _ct, _vrf_j, _room_id, insp_id))
-                    except Exception as _re:
-                        _logging.warning(f'[PDF-SAVE] room err: {_re}')
-                conn.commit()
-                _logging.warning(f'[PDF-SAVE] OK {insp_id}')
+                        _dt_c = inspection_data.get('inspection_date') or inspection_data.get('created_at') or ''
+                        _ano_c = int(_dt_c[:4]) if len(_dt_c) >= 4 else datetime.now().year
+                    except Exception:
+                        _ano_c = datetime.now().year
+                    _codigo = f'{_prefixo_c}-{_ano_c}-{str(insp_id)[:4].upper()}'
+                    _logging.warning(f'[PDF-SAVE] codigo={_codigo} rooms={len(rooms_list)} amb_data={len(amb_data) if amb_data else 0}')
+                    conn.execute("UPDATE inspections SET status='concluido', codigo=?, updated_at=? WHERE id=?",
+                        (_codigo, datetime.now().strftime('%Y-%m-%d %H:%M:%S'), insp_id))
+                    for _ri, _room in enumerate(rooms_list):
+                        _room_id = _room.get('id')
+                        if not _room_id:
+                            continue
+                        _obs = _room.get('observacoes') or _room.get('observations') or ''
+                        _gc = _room.get('general_condition') or ''
+                        _ct = _room.get('consolidated_text') or ''
+                        _vrf = _room.get('verificacoes') or {}
+                        _vrf_j = _json_mod.dumps(_vrf) if isinstance(_vrf, dict) else str(_vrf)
+                        try:
+                            conn.execute("UPDATE rooms SET observations=?, general_condition=?, consolidated_text=?, verificacoes_json=? WHERE id=? AND inspection_id=?",
+                                (_obs, _gc, _ct, _vrf_j, _room_id, insp_id))
+                        except Exception as _re:
+                            _logging.warning(f'[PDF-SAVE] room err: {_re}')
+                    conn.commit()
+                    _logging.warning(f'[PDF-SAVE] OK {insp_id}')
+                except Exception as _save_err:
+                    import logging as _logging
+                    _logging.warning(f'[PDF-SAVE] erro ignorado: {_save_err}')
+                    try:
+                        conn.rollback()
+                    except Exception:
+                        pass
                 self.set_header('Content-Type', 'application/pdf')
                 self.set_header('Content-Disposition',
                     f'attachment; filename="{pdf_filename}"')
