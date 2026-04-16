@@ -3259,7 +3259,7 @@ function _dashLaudoCode(i) {
   // Fallback: build from type + year + id
   var prefix = i.type === 'entrada' ? 'VE' : (i.type === 'saida' ? 'VS' : (i.type === 'temporada' ? 'VT' : 'VX'));
   var y = new Date(i.created_at || Date.now()).getFullYear();
-  var id = String(i.id||'').slice(-4).toUpperCase();
+  var id = String(i.id||'').slice(0, 4).toUpperCase();
   return prefix + '-' + y + '-' + id;
 }
 function _dashActionBtns(insp, statusKey) {
