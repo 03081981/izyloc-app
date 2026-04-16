@@ -3913,7 +3913,8 @@ function _mlOpenExcluirBulk(){
 function _mlConfirmExcluirBulk(){
   var ids = (window._mlState && window._mlState.bulkIds) || [];
   if (!ids.length) { _mlCloseExcluir(); return; }
-  var hdr = Object.assign({"Content-Type":"application/json"}, window.getAuthHeaders ? window.getAuthHeaders() : {});
+  var _tok = (typeof localStorage !== "undefined") ? (localStorage.getItem("izylo_token") || "") : "";
+  var hdr = { "Content-Type": "application/json", "Authorization": "Bearer " + _tok };
   fetch("/laudo/bulk-delete", { method:"POST", credentials:"same-origin", headers: hdr, body: JSON.stringify({ids: ids}) })
     .then(function(r){ if (!r.ok) throw new Error("HTTP "+r.status); return r.json().catch(function(){ return {}; }); })
     .then(function(j){ window._mlSelected = {}; window._mlState.bulkIds = null; _mlCloseExcluir(); renderMeusLaudos(); if (typeof loadDashboard === "function") loadDashboard(); })
@@ -3933,7 +3934,8 @@ function _mlExcluirCheck() {
 function _mlConfirmExcluir() {
   if (window._mlState && window._mlState.bulkIds && window._mlState.bulkIds.length) { _mlConfirmExcluirBulk(); return; }
   var id = window._mlState.excluirId; if (!id) return;
-  var hdr = Object.assign({}, window.getAuthHeaders ? window.getAuthHeaders() : {});
+  var _tok = (typeof localStorage !== "undefined") ? (localStorage.getItem("izylo_token") || "") : "";
+  var hdr = { "Authorization": "Bearer " + _tok };
   fetch("/laudo/"+id, { method:"DELETE", credentials:"same-origin", headers: hdr })
     .then(function(r){ if (!r.ok) throw new Error("HTTP "+r.status); return r.json().catch(function(){ return {}; }); })
     .then(function(){ _mlCloseExcluir(); renderMeusLaudos(); if (typeof loadDashboard === "function") loadDashboard(); })
