@@ -1431,19 +1431,14 @@ class GeneratePDFHandler(BaseHandler):
                 rooms = conn.execute(
                     'SELECT * FROM rooms WHERE inspection_id=? ORDER BY order_num', (insp_id,)).fetchall()
                 rooms_list = []
-                for _idx, room in enumerate(rooms):
+                for room in rooms:
                     room_dict = self.row_to_dict(room)
                     items = conn.execute(
-                        'SELECT * FROM room_items WHERE room_id=? ORDER BY created_at',
+                        'SELECT * FROM room_items WHERE room_id = ? ORDER BY created_at',
                         (room['id'],)).fetchall()
                     room_dict['items'] = self.rows_to_list(items)
-                    # Match primarily by index (frontend sends rooms in DB order),
-                    # fall back to name match for resiliency.
-                    amb = None
-                    if _idx < len(amb_data):
-                        amb = amb_data[_idx] or None
-                    if not amb:
-                        amb = amb_by_name.get(room_dict.get('name', ''), {}) or None
+                    # Match by name only (positional match caused cross-contamination).
+                    amb = amb_by_name.get(room_dict.get('name', ''), {}) or None
                     if amb:
                         room_dict['verificacoes'] = amb.get('verificacoes', {})
                         room_dict['verificacoes_obs'] = amb.get('verificacoesObs', {})
