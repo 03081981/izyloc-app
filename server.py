@@ -1756,37 +1756,33 @@ class MeusLaudosHandler(BaseHandler):
 
 
 def _ensure_status_column():
-    """Ensure inspections.status column exists (migration-safe)."""
+    """Ensure columns exist (PostgreSQL IF NOT EXISTS + rollback on error)."""
+    import logging as _log
     try:
         conn = get_conn()
-        try:
-            conn.execute("ALTER TABLE inspections ADD COLUMN status TEXT DEFAULT 'em_andamento'")
-            conn.commit()
-        except Exception:
-            pass
-        try:
-            conn.execute("ALTER TABLE inspections ADD COLUMN data_assinatura TEXT")
-            conn.commit()
-        except Exception:
-            pass
-        try:
-            conn.execute("ALTER TABLE inspections ADD COLUMN codigo TEXT")
-            conn.commit()
-        except Exception:
-            pass
-        try:
-            conn.execute("ALTER TABLE rooms ADD COLUMN consolidated_text TEXT")
-            conn.commit()
-        except Exception:
-            pass
-        try:
-            conn.execute("ALTER TABLE rooms ADD COLUMN verificacoes_json TEXT")
-            conn.commit()
-        except Exception:
-            pass
+        _migrations = [
+            "ALTER TABLE inspections ADD COLUMN IF NOT EXISTS status VARCHAR(30) DEFAULT 'em_andamento'",
+            "ALTER TABLE inspections ADD COLUMN IF NOT EXISTS data_assinatura TEXT",
+            "ALTER TABLE inspections ADD COLUMN IF NOT EXISTS codigo VARCHAR(50)",
+            "ALTER TABLE rooms ADD COLUMN IF NOT EXISTS consolidated_text TEXT",
+            "ALTER TABLE rooms ADD COLUMN IF NOT EXISTS observations TEXT",
+            "ALTER TABLE rooms ADD COLUMN IF NOT EXISTS general_condition TEXT",
+            "ALTER TABLE rooms ADD COLUMN IF NOT EXISTS verificacoes_json TEXT",
+        ]
+        for _sql in _migrations:
+            try:
+                conn.execute(_sql)
+                conn.commit()
+                _log.warning(f'[MIGRATE] OK: {_sql[:60]}')
+            except Exception as _me:
+                _log.warning(f'[MIGRATE] SKIP: {_sql[:60]} -> {_me}')
+                try:
+                    conn._conn.rollback()
+                except Exception:
+                    pass
         conn.close()
-    except Exception:
-        pass
+    except Exception as _e:
+        _log.warning(f'[MIGRATE] FATAL: {_e}')
 
 
 class LaudoStatusHandler(BaseHandler):
