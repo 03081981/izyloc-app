@@ -734,32 +734,8 @@ class InspectionHandler(BaseHandler):
             result = self.row_to_dict(insp)
 
             # Inclui ambientes + itens
-            # [DEBUG] diag info
-            _diag = {'insp_id': str(insp_id), 'insp_id_type': type(insp_id).__name__}
-            try:
-                _cols = conn.execute("PRAGMA table_info(rooms)").fetchall()
-                _diag['rooms_cols'] = [c[1] for c in _cols] if _cols else []
-            except Exception as _e:
-                _diag['rooms_cols_err'] = str(_e)
             rooms = conn.execute(
                 'SELECT * FROM rooms WHERE inspection_id=? ORDER BY order_num', (insp_id,)).fetchall()
-            _diag['rooms_count_by_inspection_id'] = len(rooms)
-            # fallback probes to help debug missing rooms
-            try:
-                _total = conn.execute('SELECT COUNT(*) as c FROM rooms').fetchone()
-                _diag['rooms_total_db'] = _total['c'] if _total else 0
-            except Exception as _e:
-                _diag['rooms_total_err'] = str(_e)
-            try:
-                _samp = conn.execute('SELECT id, inspection_id, name FROM rooms LIMIT 5').fetchall()
-                _diag['rooms_sample'] = [{'id': _r['id'], 'inspection_id': _r['inspection_id'], 'name': _r['name']} for _r in _samp]
-            except Exception as _e:
-                _diag['rooms_sample_err'] = str(_e)
-            try:
-                import logging as _lg
-                _lg.warning('[InspectionHandler.get] insp_id=%s diag=%s', insp_id, _diag)
-            except Exception:
-                pass
             rooms_list = []
             for room in rooms:
                 room_dict = self.row_to_dict(room)
@@ -820,10 +796,6 @@ class InspectionHandler(BaseHandler):
             sigs = conn.execute(
                 'SELECT * FROM signatures WHERE inspection_id=?', (insp_id,)).fetchall()
             result['signatures'] = self.rows_to_list(sigs)
-            try:
-                result['_diag'] = _diag
-            except Exception:
-                pass
             self.ok(result)
         finally:
             conn.close()
