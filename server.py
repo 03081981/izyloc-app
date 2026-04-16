@@ -1892,6 +1892,53 @@ class LaudoDeleteHandler(BaseHandler):
             conn.close()
 
 
+class LaudoBulkDeleteHandler(BaseHandler):
+    """POST /laudo/bulk-delete -> exclui multiplos laudos. Body: {"ids":[...]} ou {"all":true}."""
+    def post(self):
+        user = self.require_auth()
+        if not user:
+            return
+        try:
+            body = json.loads(self.request.body or b"{}")
+        except Exception:
+            body = {}
+        ids = body.get("ids") or []
+        delete_all = bool(body.get("all"))
+        if not isinstance(ids, list):
+            ids = []
+        conn = get_conn()
+        deleted = 0
+        try:
+            if delete_all:
+                rows = conn.execute("SELECT id FROM inspections WHERE user_id=?", (user["user_id"],)).fetchall()
+                target_ids = [r[0] if not hasattr(r,"keys") else r["id"] for r in rows]
+            else:
+                target_ids = []
+                for iid in ids:
+                    if not iid: continue
+                    row = conn.execute("SELECT id FROM inspections WHERE id=? AND user_id=?", (iid, user["user_id"])).fetchone()
+                    if row: target_ids.append(iid)
+            for iid in target_ids:
+                try:
+                    conn.execute("DELETE FROM room_items WHERE room_id IN (SELECT id FROM rooms WHERE inspection_id=?)", (iid,))
+                except Exception:
+                    pass
+                try:
+                    conn.execute("DELETE FROM rooms WHERE inspection_id=?", (iid,))
+                except Exception:
+                    pass
+                conn.execute("DELETE FROM inspections WHERE id=?", (iid,))
+                deleted += 1
+            conn.commit()
+            self.write(json.dumps({"ok": True, "deleted": deleted}))
+        except Exception as e:
+            self.set_status(500)
+            self.write(json.dumps({"ok": False, "error": str(e)}))
+        finally:
+            conn.close()
+
+
+
 def make_app():
     static_dir = os.path.join(os.path.dirname(__file__), 'static')
     upload_dir = UPLOAD_DIR
@@ -1941,6 +1988,7 @@ def make_app():
         (r'/static/(.*)', tornado.web.StaticFileHandler, {'path': static_dir}),
         # Laudos (custom routes)
         (r'/laudo/([^/]+)/status', LaudoStatusHandler),
+        (r'/laudo/bulk-delete', LaudoBulkDeleteHandler),
         (r'/laudo/([^/]+)', LaudoDeleteHandler),
         (r'/meus-laudos', MeusLaudosHandler),
         # Frontend (SPA)
