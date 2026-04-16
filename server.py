@@ -25,9 +25,21 @@ import threading
 
 # Store de jobs de video em memoria
 _video_jobs = {}
-from pdf_service import generate_pdf, _generate_numero_laudo
+from pdf_service import generate_pdf
 
 BR_TZ = timezone(timedelta(hours=-3))
+
+def _generate_numero_laudo(inspection_data):
+    tipo = (inspection_data.get('type') or 'entrada').lower()
+    prefixo = 'VE' if tipo == 'entrada' else ('VS' if tipo == 'saida' else 'VE')
+    try:
+        dt_str = inspection_data.get('inspection_date') or inspection_data.get('created_at') or ''
+        ano = int(dt_str[:4]) if len(dt_str) >= 4 else datetime.now(BR_TZ).year
+    except Exception:
+        ano = datetime.now(BR_TZ).year
+    insp_id = str(inspection_data.get('id') or '0000')
+    seq = insp_id[:4].upper()
+    return f'{prefixo}-{ano}-{seq}'
 
 def _jser(obj):
     """JSON serializer for datetime and other non-serializable types."""
