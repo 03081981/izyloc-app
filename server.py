@@ -1369,10 +1369,10 @@ class GeneratePDFHandler(BaseHandler):
 
             # Marca como concluÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ­do
             # --- Save complete laudo data (GET, safe) ---
+            import logging as _logging
+            import traceback as _tb_mod
+            _logging.warning(f'[PDF-SAVE-GET] insp_id={insp_id!r}')
             try:
-                # --- Save complete laudo data (GET) ---
-                import logging as _logging
-                _json_mod = __import__('json')
                 _tipo_c = (inspection_data.get('type') or 'entrada').lower()
                 _prefixo_c = 'VE' if _tipo_c == 'entrada' else ('VS' if _tipo_c == 'saida' else 'VE')
                 try:
@@ -1381,18 +1381,17 @@ class GeneratePDFHandler(BaseHandler):
                 except Exception:
                     _ano_c = datetime.now().year
                 _codigo = f'{_prefixo_c}-{_ano_c}-{str(insp_id)[:4].upper()}'
-                _logging.warning(f'[PDF-SAVE-GET] codigo={_codigo}')
                 conn.execute("UPDATE inspections SET status='concluido', codigo=?, updated_at=? WHERE id=?",
                     (_codigo, datetime.now().strftime('%Y-%m-%d %H:%M:%S'), insp_id))
                 conn.commit()
+                _logging.warning(f'[PDF-SAVE-GET] COMMIT OK codigo={_codigo}')
             except Exception as _save_err:
-                import logging as _logging
-                _logging.warning(f'[PDF-SAVE-GET] erro ignorado: {_save_err}')
+                _logging.warning(f'[PDF-SAVE-GET] ERRO: {_save_err}')
+                _logging.warning(f'[PDF-SAVE-GET] TRACEBACK: {_tb_mod.format_exc()}')
                 try:
                     conn.rollback()
                 except Exception:
                     pass
-
             self.set_header('Content-Type', 'application/pdf')
             self.set_header('Content-Disposition', f'attachment; filename="{pdf_filename}"')
             with open(pdf_path, 'rb') as f:
@@ -1460,10 +1459,26 @@ class GeneratePDFHandler(BaseHandler):
                 if not success:
                     return self.err('Erro ao gerar PDF', 500)
                 # --- Save complete laudo data (safe) ---
+                import logging as _logging
+                import traceback as _tb_mod
+                _json_mod = __import__('json')
+                # Log payload structure
+                _logging.warning(f'[PDF-SAVE] insp_id={insp_id!r} type={type(insp_id).__name__}')
+                _logging.warning(f'[PDF-SAVE] rooms_list count={len(rooms_list)}')
+                _logging.warning(f'[PDF-SAVE] amb_data count={len(amb_data) if amb_data else 0}')
+                if amb_data and len(amb_data) > 0:
+                    _a0 = amb_data[0]
+                    _logging.warning(f'[PDF-SAVE] amb[0] keys={list(_a0.keys()) if isinstance(_a0, dict) else type(_a0)}')
+                    _logging.warning(f'[PDF-SAVE] amb[0] observacoes={str(_a0.get("observacoes",""))[:100] if isinstance(_a0, dict) else "N/A"}')
+                if rooms_list and len(rooms_list) > 0:
+                    _r0 = rooms_list[0]
+                    _logging.warning(f'[PDF-SAVE] room[0] keys={list(_r0.keys())[:15]}')
+                    _logging.warning(f'[PDF-SAVE] room[0] id={_r0.get("id","?")[:12]}')
+                    _logging.warning(f'[PDF-SAVE] room[0] consolidated_text={str(_r0.get("consolidated_text",""))[:100]}')
+                    _logging.warning(f'[PDF-SAVE] room[0] observacoes={str(_r0.get("observacoes",""))[:100]}')
+                    _logging.warning(f'[PDF-SAVE] room[0] general_condition={str(_r0.get("general_condition",""))[:100]}')
+                    _logging.warning(f'[PDF-SAVE] room[0] verificacoes type={type(_r0.get("verificacoes")).__name__}')
                 try:
-                    # --- Save complete laudo data ---
-                    import logging as _logging
-                    _json_mod = __import__('json')
                     _tipo_c = (inspection_data.get('type') or 'entrada').lower()
                     _prefixo_c = 'VE' if _tipo_c == 'entrada' else ('VS' if _tipo_c == 'saida' else 'VE')
                     try:
@@ -1472,9 +1487,10 @@ class GeneratePDFHandler(BaseHandler):
                     except Exception:
                         _ano_c = datetime.now().year
                     _codigo = f'{_prefixo_c}-{_ano_c}-{str(insp_id)[:4].upper()}'
-                    _logging.warning(f'[PDF-SAVE] codigo={_codigo} rooms={len(rooms_list)} amb_data={len(amb_data) if amb_data else 0}')
+                    _logging.warning(f'[PDF-SAVE] codigo={_codigo}')
                     conn.execute("UPDATE inspections SET status='concluido', codigo=?, updated_at=? WHERE id=?",
                         (_codigo, datetime.now().strftime('%Y-%m-%d %H:%M:%S'), insp_id))
+                    _logging.warning('[PDF-SAVE] inspection UPDATE ok')
                     for _ri, _room in enumerate(rooms_list):
                         _room_id = _room.get('id')
                         if not _room_id:
@@ -1484,16 +1500,15 @@ class GeneratePDFHandler(BaseHandler):
                         _ct = _room.get('consolidated_text') or ''
                         _vrf = _room.get('verificacoes') or {}
                         _vrf_j = _json_mod.dumps(_vrf) if isinstance(_vrf, dict) else str(_vrf)
-                        try:
-                            conn.execute("UPDATE rooms SET observations=?, general_condition=?, consolidated_text=?, verificacoes_json=? WHERE id=? AND inspection_id=?",
-                                (_obs, _gc, _ct, _vrf_j, _room_id, insp_id))
-                        except Exception as _re:
-                            _logging.warning(f'[PDF-SAVE] room err: {_re}')
+                        conn.execute("UPDATE rooms SET observations=?, general_condition=?, consolidated_text=?, verificacoes_json=? WHERE id=? AND inspection_id=?",
+                            (_obs, _gc, _ct, _vrf_j, _room_id, insp_id))
+                        if _ri == 0:
+                            _logging.warning(f'[PDF-SAVE] room[0] UPDATE ok obs_len={len(_obs)} gc_len={len(_gc)} ct_len={len(_ct)} vrf_len={len(_vrf_j)}')
                     conn.commit()
-                    _logging.warning(f'[PDF-SAVE] OK {insp_id}')
+                    _logging.warning(f'[PDF-SAVE] COMMIT OK for {insp_id}')
                 except Exception as _save_err:
-                    import logging as _logging
-                    _logging.warning(f'[PDF-SAVE] erro ignorado: {_save_err}')
+                    _logging.warning(f'[PDF-SAVE] ERRO: {_save_err}')
+                    _logging.warning(f'[PDF-SAVE] TRACEBACK: {_tb_mod.format_exc()}')
                     try:
                         conn.rollback()
                     except Exception:
