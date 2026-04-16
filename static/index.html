@@ -4666,7 +4666,7 @@ async function generatePDF() {
     }
     try{console.log('ambData inventario:',JSON.stringify(_ambArr.map(function(a){return {nome:a.nome,inv:a.inventario,nomes:a.inventarioNomes,extras:a.inventarioExtras};})));}catch(e){} await fetch("/api/inspections/"+wizard.inspectionId,{method:"PUT",headers:{"Content-Type":"application/json","Authorization":"Bearer "+localStorage.getItem("izylo_token")},body:JSON.stringify({ambientes_json:JSON.stringify(_ambArr)})});
     var _tok=localStorage.getItem('izylo_token');
-    var resp=await fetch('/api/inspections/'+wizard.inspectionId+'/pdf',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+_tok},body:JSON.stringify({ambData:_ambData})});
+    var resp=await fetch('/api/inspections/'+wizard.inspectionId+'/pdf',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+_tok},body:JSON.stringify({ambData:_ambData,wizard_snapshot:{selectedRooms:(wizard.selectedRooms||[]),itensData:(wizard.itensData||{}),fotoStore:(window._fotoStore||{}),rooms:(wizard.rooms||[]),parties:(wizard.parties||[]),inspection:(wizard.inspection||{})}})});
     hideLoading();
     if(resp.ok){
       var blob=await resp.blob();
@@ -5309,7 +5309,7 @@ if (typeof initAmbientes === 'function') initAmbientes();
             for(var _sk in _stdNomes){if(!_tNomes[_sk])_tNomes[_sk]=_stdNomes[_sk];}
             _ambData.push({roomName:wizard.selectedRooms[_ai],verificacoes:_verif,testesNomes:_tNomes,observacoes:_d.obs||'',consolidated_text:(function(){var _rn=wizard.selectedRooms&&wizard.selectedRooms[_ai]?wizard.selectedRooms[_ai]:(window._wiz6Ambientes&&window._wiz6Ambientes[_ai]?window._wiz6Ambientes[_ai]:String(_ai));var _fs=window._fotoStore&&window._fotoStore[_rn];var _fdesc=_fs&&_fs[0]&&_fs[0].desc||'';return _fdesc||_d.resumo||_d.consolidatedText||_d.consolidated_text||_d.resumoIA||_d.aiDescription||'';})()||'',photos:(window._fotoStore&&(window._wiz6Ambientes&&window._fotoStore[window._wiz6Ambientes[_ai]]?window._fotoStore[window._wiz6Ambientes[_ai]]:window._fotoStore[wizard.selectedRooms&&wizard.selectedRooms[_ai]])||[]).map(function(f){return{id:f.id||f.photoId||'',url:f.url||f.photoUrl||f.src||'',ai_description:f.desc||f.aiDescription||f.ai_description||'',condition:f.condition||f.estado||'',observation:f.obs||f.observation||''}})});
           }
-          var r=await fetch('/api/inspections/'+wizard.inspectionId+'/pdf',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({ambData:_ambData})});
+          var r=await fetch('/api/inspections/'+wizard.inspectionId+'/pdf',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({ambData:_ambData,wizard_snapshot:{selectedRooms:(wizard.selectedRooms||[]),itensData:(wizard.itensData||{}),fotoStore:(window._fotoStore||{}),rooms:(wizard.rooms||[]),parties:(wizard.parties||[]),inspection:(wizard.inspection||{})}})});
         if (!r.ok) throw new Error('Erro ' + r.status);
         var blob = await r.blob();
         var url = URL.createObjectURL(blob);
