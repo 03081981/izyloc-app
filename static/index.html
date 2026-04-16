@@ -3386,10 +3386,10 @@ async function editarLaudo(id, origin) {
     try { if (typeof window.initRevisao === "function") window.initRevisao(); } catch(e){ try { console.warn("[editarLaudo] initRevisao", e); } catch(e2){} }
     // Restaurar rooms/parties imediatamente após qualquer reset feito por initRevisao/gotoWStep
     try { wizard.rooms = _rooms; wizard.parties = _parties; } catch(e){}
-    try { renderRevisaoFromWizard(_rooms, _parties); } catch(e){ try { console.warn("[editarLaudo] renderRevisaoFromWizard", e); } catch(e2){} }
+    try { renderRevisaoFromWizard(_rooms, _parties, r); } catch(e){ try { console.warn("[editarLaudo] renderRevisaoFromWizard", e); } catch(e2){} }
     try { _applyEditUiToWstepRev(6); } catch(e){}
-    setTimeout(function(){ try { wizard.rooms = _rooms; wizard.parties = _parties; console.log("[editarLaudo pre-render 200ms] rooms.length=", (wizard.rooms||[]).length); renderRevisaoFromWizard(_rooms, _parties); _applyEditUiToWstepRev(6); } catch(e){} }, 200);
-    setTimeout(function(){ try { wizard.rooms = _rooms; wizard.parties = _parties; renderRevisaoFromWizard(_rooms, _parties); _applyEditUiToWstepRev(6); } catch(e){} }, 500);
+    setTimeout(function(){ try { wizard.rooms = _rooms; wizard.parties = _parties; console.log("[editarLaudo pre-render 200ms] rooms.length=", (wizard.rooms||[]).length); renderRevisaoFromWizard(_rooms, _parties, r); _applyEditUiToWstepRev(6); } catch(e){} }, 200);
+    setTimeout(function(){ try { wizard.rooms = _rooms; wizard.parties = _parties; renderRevisaoFromWizard(_rooms, _parties, r); _applyEditUiToWstepRev(6); } catch(e){} }, 500);
   } catch (e) {
     hideLoading && hideLoading();
     alert("Erro ao carregar laudo para edição.");
@@ -3426,13 +3426,18 @@ function _applyEditUiToWstepRev(step) {
   }
 }
 
-function renderRevisaoFromWizard(pRooms, pParties) {
+function renderRevisaoFromWizard(pRooms, pParties, pData) {
   var container = document.getElementById("rev-content");
   if (!container) return;
   var _w0 = window.wizard || {};
   var _rooms_ov = (pRooms && pRooms.length) ? pRooms : (_w0.rooms || []);
   var _parties_ov = (pParties && pParties.length) ? pParties : (_w0.parties || []);
-  var w = Object.assign({}, _w0, { rooms: _rooms_ov, parties: _parties_ov });
+  var _pd = pData || {};
+  var w = Object.assign({}, _w0, _pd, { rooms: _rooms_ov, parties: _parties_ov });
+  if (!w.type && w.property_type) w.type = w.property_type;
+  if (!w.area && w.property_area) w.area = w.property_area;
+  if (!w.codigo && (w.code || w.codigo_laudo)) w.codigo = w.code || w.codigo_laudo;
+  if (!w.address && w.property_address) w.address = w.property_address;
   try { console.log("[renderRev] wizard.rooms.length=", (w.rooms||[]).length, "parties=", (w.parties||[]).length); } catch(e){}
   var esc = function(v){ v = (v==null?"":String(v)); return v.replace(/[&<>"\x27]/g, function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","\x27":"&#39;"}[c];}); };
   var html = "";
