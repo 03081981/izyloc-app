@@ -797,6 +797,10 @@ class InspectionHandler(BaseHandler):
             sigs = conn.execute(
                 'SELECT * FROM signatures WHERE inspection_id=?', (insp_id,)).fetchall()
             result['signatures'] = self.rows_to_list(sigs)
+            try:
+                result['wizard_snapshot'] = insp['wizard_snapshot'] if 'wizard_snapshot' in insp.keys() else None
+            except Exception:
+                result['wizard_snapshot'] = None
             self.ok(result)
         finally:
             conn.close()
@@ -1410,6 +1414,12 @@ class GeneratePDFHandler(BaseHandler):
             body = self.json_body() or {}
             amb_data = body.get('ambData', [])
             amb_by_name = {a.get('roomName', ''): a for a in amb_data}
+            _wiz_snap = body.get('wizard_snapshot') or body.get('wizardSnapshot')
+            if _wiz_snap is not None and not isinstance(_wiz_snap, str):
+                try:
+                    _wiz_snap = __import__('json').dumps(_wiz_snap, ensure_ascii=False)
+                except Exception:
+                    _wiz_snap = None
             conn = get_conn()
             try:
                 insp = conn.execute(
@@ -1542,6 +1552,11 @@ class GeneratePDFHandler(BaseHandler):
                                     conn.execute("UPDATE item_photos SET ai_description=? WHERE id=?", (_p_aid, _pid))
                                 except Exception:
                                     pass
+                    if _wiz_snap is not None:
+                        try:
+                            conn.execute("UPDATE inspections SET wizard_snapshot=? WHERE id=?", (_wiz_snap, insp_id))
+                        except Exception:
+                            pass
                     conn.commit()
                     _logging.warning(f'[PDF-SAVE] COMMIT OK for {insp_id}')
                 except Exception as _save_err:
@@ -1805,6 +1820,7 @@ def _ensure_status_column():
             "ALTER TABLE rooms ADD COLUMN IF NOT EXISTS observations TEXT",
             "ALTER TABLE rooms ADD COLUMN IF NOT EXISTS general_condition TEXT",
             "ALTER TABLE rooms ADD COLUMN IF NOT EXISTS verificacoes_json TEXT",
+            "ALTER TABLE inspections ADD COLUMN IF NOT EXISTS wizard_snapshot TEXT",
         ]
         for _s in _mig:
             try:
