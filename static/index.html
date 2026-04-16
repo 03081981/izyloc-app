@@ -3742,7 +3742,7 @@ function _mlRenderList() {
     { k:"digital", label:"ASSINADO DIGITAL" },
     { k:"fisico", label:"ASSINADO FISICO" }
   ];
-  var html = "";
+  var html = _mlActionBarHtml(list);
   groupOrder.forEach(function(g){
     var arr = groups[g.k] || [];
     if (!arr.length) return;
@@ -3770,6 +3770,7 @@ function _mlRenderCard(insp, statusKey) {
   var sub = subparts.join(" · ");
   return "<div style=\"display:flex;align-items:stretch;gap:12px;background:#fff;border:1px solid #e5e7eb;border-radius:10px;padding:14px;margin-bottom:10px;\">" +
     "<div style=\"font-size:26px;width:40px;display:flex;align-items:center;justify-content:center;\">\uD83D\uDCCB</div>" +
+    "<label style=\"display:flex;align-items:center;padding:0 4px;cursor:pointer;\" onclick=\"event.stopPropagation();\"><input type=\"checkbox\" class=\"ml-sel\" data-id=\""+(insp.id||"")+"\" onclick=\"event.stopPropagation();_mlToggleSel('"+(insp.id||"")+"',this.checked);\" style=\"width:18px;height:18px;cursor:pointer;\"></label>" +
     "<div class=\"insp-info\" style=\"flex:1;min-width:0;\">" +
       "<div style=\"font-size:14px;font-weight:600;color:#111827;margin-bottom:2px;\">"+end+"</div>" +
       "<div style=\"font-size:12px;color:#6b7280;\">"+sub+"</div>" +
@@ -3831,13 +3832,94 @@ function _mlConfirmFisico() {
 
 function _mlOpenExcluir(id, st) {
   window._mlState.excluirId = id;
+  window._mlState.bulkIds = null;
   window._mlState.excluirStatus = st || "";
+  var t = document.getElementById("mexcluir-title");
+  if (t) t.textContent = "Excluir laudo definitivamente";
   var warn = document.getElementById("mexcluir-warning");
   if (warn) warn.style.display = (st === "digital" || st === "fisico") ? "block" : "none";
   var inp = document.getElementById("mexcluir-confirm"); if (inp) inp.value = "";
   var btn = document.getElementById("mexcluir-btn"); if (btn) { btn.disabled = true; btn.style.cursor = "not-allowed"; btn.style.opacity = "0.5"; }
   var m = document.getElementById("modal-excluir-laudo"); if (m) m.style.display = "flex";
 }
+
+function _mlActionBarHtml(list){
+  if (!list || !list.length) return "";
+  return "<div id=\"ml-action-bar\" style=\"display:flex;align-items:center;gap:12px;justify-content:space-between;background:#fff;border:1px solid #e5e7eb;border-radius:8px;padding:10px 14px;margin-bottom:10px;\">"+
+    "<label style=\"display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer;user-select:none;\">"+
+      "<input type=\"checkbox\" id=\"ml-sel-all\" onclick=\"_mlToggleSelAll(this.checked);\" style=\"width:16px;height:16px;cursor:pointer;\">"+
+      "<span style=\"color:#374151;\">Selecionar todos (filtrados)</span>"+
+    "</label>"+
+    "<div style=\"display:flex;align-items:center;gap:12px;\">"+
+      "<span id=\"ml-sel-count\" style=\"font-size:13px;color:#6b7280;font-weight:500;\">0 selecionados</span>"+
+      "<button id=\"ml-bulk-btn\" onclick=\"_mlOpenExcluirBulk()\" disabled style=\"padding:7px 14px;background:#dc2626;color:#fff;border:none;border-radius:7px;cursor:not-allowed;font-size:13px;font-weight:600;opacity:0.5;\">Excluir selecionados</button>"+
+    "</div>"+
+  "</div>";
+}
+
+function _mlVisibleIds(){
+  var list = (window._mlState.data || []).slice();
+  var tipo = window._mlState.tipo, status = window._mlState.status, search = window._mlState.search || "";
+  if (tipo !== "todos") list = list.filter(function(i){ return ((i.tipo || i.type || "").toLowerCase() === tipo); });
+  if (status !== "todos") list = list.filter(function(i){ return _mlStatusKey(i) === status; });
+  if (search) list = list.filter(function(i){
+    var txt = ((i.endereco||"")+" "+(i.address||"")+" "+(i.cliente||"")+" "+(i.client||"")+" "+(i.codigo||"")+" "+(i.id||"")).toLowerCase();
+    return txt.indexOf(search) >= 0;
+  });
+  return list.map(function(i){ return i.id; }).filter(Boolean);
+}
+
+function _mlToggleSel(id, checked){
+  if (!window._mlSelected) window._mlSelected = {};
+  if (checked) window._mlSelected[id] = true; else delete window._mlSelected[id];
+  _mlUpdateActionBar();
+}
+
+function _mlToggleSelAll(checked){
+  if (!window._mlSelected) window._mlSelected = {};
+  var ids = _mlVisibleIds();
+  if (checked) ids.forEach(function(id){ window._mlSelected[id] = true; });
+  else ids.forEach(function(id){ delete window._mlSelected[id]; });
+  var all = document.querySelectorAll(".ml-sel");
+  for (var k=0; k<all.length; k++){ var cb=all[k]; var did=cb.getAttribute("data-id"); cb.checked = !!window._mlSelected[did]; }
+  _mlUpdateActionBar();
+}
+
+function _mlUpdateActionBar(){
+  var cnt = 0;
+  if (window._mlSelected){ Object.keys(window._mlSelected).forEach(function(k){ if (window._mlSelected[k]) cnt++; }); }
+  var lbl = document.getElementById("ml-sel-count");
+  var btn = document.getElementById("ml-bulk-btn");
+  var sa = document.getElementById("ml-sel-all");
+  if (lbl) lbl.textContent = cnt + " selecionado" + (cnt===1?"":"s");
+  if (btn){ btn.disabled = cnt===0; btn.style.cursor = cnt===0 ? "not-allowed" : "pointer"; btn.style.opacity = cnt===0 ? "0.5" : "1"; }
+  if (sa){ var vis = _mlVisibleIds(); sa.checked = vis.length>0 && vis.every(function(id){ return !!window._mlSelected[id]; }); }
+}
+
+function _mlOpenExcluirBulk(){
+  if (!window._mlSelected) window._mlSelected = {};
+  var ids = Object.keys(window._mlSelected).filter(function(k){ return window._mlSelected[k]; });
+  if (!ids.length) return;
+  window._mlState.bulkIds = ids;
+  var t = document.getElementById("mexcluir-title");
+  if (t) t.textContent = "Excluir " + ids.length + " laudo" + (ids.length===1?"":"s") + " definitivamente";
+  var warn = document.getElementById("mexcluir-warning");
+  if (warn) warn.style.display = "none";
+  var inp = document.getElementById("mexcluir-confirm"); if (inp) inp.value = "";
+  var btn = document.getElementById("mexcluir-btn"); if (btn) { btn.disabled = true; btn.style.cursor = "not-allowed"; btn.style.opacity = "0.5"; }
+  var m = document.getElementById("modal-excluir-laudo"); if (m) m.style.display = "flex";
+}
+
+function _mlConfirmExcluirBulk(){
+  var ids = (window._mlState && window._mlState.bulkIds) || [];
+  if (!ids.length) { _mlCloseExcluir(); return; }
+  var hdr = Object.assign({"Content-Type":"application/json"}, window.getAuthHeaders ? window.getAuthHeaders() : {});
+  fetch("/laudo/bulk-delete", { method:"POST", credentials:"same-origin", headers: hdr, body: JSON.stringify({ids: ids}) })
+    .then(function(r){ if (!r.ok) throw new Error("HTTP "+r.status); return r.json().catch(function(){ return {}; }); })
+    .then(function(j){ window._mlSelected = {}; window._mlState.bulkIds = null; _mlCloseExcluir(); renderMeusLaudos(); if (typeof loadDashboard === "function") loadDashboard(); })
+    .catch(function(e){ alert("Erro ao excluir em lote: " + (e.message || e)); });
+}
+
 function _mlCloseExcluir() { var m = document.getElementById("modal-excluir-laudo"); if (m) m.style.display = "none"; window._mlState.excluirId = null; }
 function _mlExcluirCheck() {
   var inp = document.getElementById("mexcluir-confirm");
@@ -3849,12 +3931,13 @@ function _mlExcluirCheck() {
   btn.style.opacity = ok ? "1" : "0.5";
 }
 function _mlConfirmExcluir() {
+  if (window._mlState && window._mlState.bulkIds && window._mlState.bulkIds.length) { _mlConfirmExcluirBulk(); return; }
   var id = window._mlState.excluirId; if (!id) return;
   var hdr = Object.assign({}, window.getAuthHeaders ? window.getAuthHeaders() : {});
   fetch("/laudo/"+id, { method:"DELETE", credentials:"same-origin", headers: hdr })
-    .then(function(r){ return r.json().catch(function(){ return {}; }); })
+    .then(function(r){ if (!r.ok) throw new Error("HTTP "+r.status); return r.json().catch(function(){ return {}; }); })
     .then(function(){ _mlCloseExcluir(); renderMeusLaudos(); if (typeof loadDashboard === "function") loadDashboard(); })
-    .catch(function(e){ alert("Erro: "+e); });
+    .catch(function(e){ alert("Erro ao excluir: "+(e.message||e)); });
 }
 
 // URL-based entry: /meus-laudos
@@ -9315,7 +9398,7 @@ function wiz6Concluir() {
 
 <div id="modal-excluir-laudo" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);z-index:9999;align-items:center;justify-content:center;">
   <div style="background:#fff;border-radius:12px;padding:24px;max-width:460px;width:90%;box-shadow:0 20px 40px rgba(0,0,0,0.25);">
-    <h3 style="margin:0 0 8px;font-size:18px;color:#b91c1c;">Excluir laudo definitivamente</h3>
+    <h3 id="mexcluir-title" style="margin:0 0 8px;font-size:18px;color:#b91c1c;">Excluir laudo definitivamente</h3>
     <div id="mexcluir-warning" style="display:none;background:#fef2f2;border:1px solid #fecaca;color:#991b1b;padding:10px 12px;border-radius:8px;font-size:12px;margin-bottom:12px;line-height:1.5;">
       <strong>ATENCAO:</strong> Este laudo ja foi assinado. A exclusao remove o registro de forma irreversivel.
     </div>
