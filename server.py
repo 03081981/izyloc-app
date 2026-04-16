@@ -745,9 +745,9 @@ class InspectionHandler(BaseHandler):
                 # Inclui lista de fotos de cada item
                 for it in items_list:
                     photos = conn.execute(
-                        'SELECT id, filename FROM item_photos WHERE item_id=? ORDER BY created_at',
+                        'SELECT id, filename, ai_description FROM item_photos WHERE item_id=? ORDER BY created_at',
                         (it['id'],)).fetchall()
-                    it['photos'] = [{'id': p['id'], 'url': f'/uploads/{p["filename"]}'} for p in photos]
+                    it['photos'] = [{'id': p['id'], 'url': f'/uploads/{p["filename"]}', 'ai_description': ((p['ai_description'] if 'ai_description' in p.keys() else '') or '')} for p in photos]
                 room_dict['items'] = items_list
                 # Aggregate photos at room level (flattened from items)
                 _room_photos = []
@@ -759,6 +759,7 @@ class InspectionHandler(BaseHandler):
                             'photo_url': _p.get('url'),
                             'item_id': _it.get('id'),
                             'item_name': _it.get('item_name') or _it.get('name') or '',
+                            'ai_description': _p.get('ai_description') or '',
                         })
                 room_dict['photos'] = _room_photos
                 rooms_list.append(room_dict)
@@ -1447,6 +1448,8 @@ class GeneratePDFHandler(BaseHandler):
                         room_dict['inventario'] = amb.get('inventario') or {}
                         room_dict['inventarioExtras'] = amb.get('inventarioExtras') or []
                         room_dict['inventarioNomes'] = amb.get('inventarioNomes') or []
+                        room_dict['consolidated_text'] = amb.get('consolidated_text') or amb.get('consolidatedText') or room_dict.get('consolidated_text') or ''
+                        room_dict['amb_photos'] = amb.get('photos') or []
                         print('[DEBUG inv]', room_dict.get('inventarioNomes', [])[:2], 'inv keys:', list(room_dict.get('inventario', {}).keys())[:5])
                     rooms_list.append(room_dict)
                 sigs = conn.execute(
@@ -1529,6 +1532,16 @@ class GeneratePDFHandler(BaseHandler):
                             (_obs, _gc, _ct, _vrf_j, _room_id, insp_id))
                         if _ri == 0:
                             _logging.warning(f'[PDF-SAVE] room[0] UPDATE ok obs_len={len(_obs)} gc_len={len(_gc)} ct_len={len(_ct)} vrf_len={len(_vrf_j)}')
+                        # Save ai_description for each photo
+                        _amb_photos = _room.get('amb_photos') or []
+                        for _ph in _amb_photos:
+                            _pid = _ph.get('id')
+                            _p_aid = _ph.get('ai_description') or ''
+                            if _pid and _p_aid:
+                                try:
+                                    conn.execute("UPDATE item_photos SET ai_description=? WHERE id=?", (_p_aid, _pid))
+                                except Exception:
+                                    pass
                     conn.commit()
                     _logging.warning(f'[PDF-SAVE] COMMIT OK for {insp_id}')
                 except Exception as _save_err:
