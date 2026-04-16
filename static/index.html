@@ -3379,10 +3379,11 @@ async function editarLaudo(id, origin) {
     populateFields();
     if (typeof syncWizSidebar === "function") syncWizSidebar();
     gotoWStep(6);
-    if (typeof window.initRevisao === "function") { try { window.initRevisao(); } catch(e){ try { console.warn("[editarLaudo] initRevisao", e); } catch(e2){} } }
+    try { if (typeof window.initRevisao === "function") window.initRevisao(); } catch(e){ try { console.warn("[editarLaudo] initRevisao", e); } catch(e2){} }
+    try { renderRevisaoFromWizard(); } catch(e){ try { console.warn("[editarLaudo] renderRevisaoFromWizard", e); } catch(e2){} }
     try { _applyEditUiToWstepRev(6); } catch(e){}
-    setTimeout(function(){ try { _applyEditUiToWstepRev(6); } catch(e){} }, 50);
-    setTimeout(function(){ try { _applyEditUiToWstepRev(6); } catch(e){} }, 300);
+    setTimeout(function(){ try { renderRevisaoFromWizard(); _applyEditUiToWstepRev(6); } catch(e){} }, 150);
+    setTimeout(function(){ try { renderRevisaoFromWizard(); _applyEditUiToWstepRev(6); } catch(e){} }, 400);
   } catch (e) {
     hideLoading && hideLoading();
     alert("Erro ao carregar laudo para edição.");
@@ -3418,6 +3419,59 @@ function _applyEditUiToWstepRev(step) {
     }
   }
 }
+
+function renderRevisaoFromWizard() {
+  var container = document.getElementById("rev-content");
+  if (!container) return;
+  var w = window.wizard || {};
+  var esc = function(v){ v = (v==null?"":String(v)); return v.replace(/[&<>"\x27]/g, function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","\x27":"&#39;"}[c];}); };
+  var html = "";
+  html += '<div style="margin-bottom:16px;padding:14px;background:#f8fafc;border-radius:10px;border:1px solid #e2e8f0;">';
+  html += '<div style="font-weight:700;color:#1a2540;margin-bottom:8px;font-size:14px;">📍 Dados do imóvel</div>';
+  html += '<div style="font-size:13px;color:#1a2540;">'+esc(w.property_address||w.address||"")+(w.numero?(", "+esc(w.numero)):"")+'</div>';
+  if (w.bairro || w.cidade || w.uf || w.estado) {
+    html += '<div style="font-size:12px;color:#8898aa;">'+esc(w.bairro||"")+(w.bairro?" — ":"")+esc(w.cidade||"")+(w.cidade?"/":"")+esc(w.uf||w.estado||"")+'</div>';
+  }
+  if (w.area || w.property_area) html += '<div style="font-size:12px;color:#8898aa;">Área: '+esc(w.area||w.property_area)+' m²</div>';
+  if (w.tipo || w.type) html += '<div style="font-size:12px;color:#8898aa;">Tipo: '+esc(w.tipo||w.type)+'</div>';
+  html += '</div>';
+  if (w.parties && w.parties.length) {
+    html += '<div style="margin-bottom:16px;padding:14px;background:#f8fafc;border-radius:10px;border:1px solid #e2e8f0;">';
+    html += '<div style="font-weight:700;color:#1a2540;margin-bottom:8px;font-size:14px;">👥 Partes envolvidas</div>';
+    w.parties.forEach(function(p){
+      var role = p.role === "locador" ? "Locador" : (p.role === "locatario" ? "Locatário" : (p.role||"Parte"));
+      html += '<div style="font-size:13px;color:#1a2540;margin-bottom:4px;">';
+      html += '<b>'+esc(role)+':</b> '+esc(p.name||p.nome||"");
+      if (p.cpf) html += ' — CPF: '+esc(p.cpf);
+      var _ph = p.phone||p.telefone;
+      if (_ph) html += ' — Tel: '+esc(_ph);
+      html += '</div>';
+    });
+    html += '</div>';
+  }
+  if (w.rooms && w.rooms.length) {
+    html += '<div style="font-weight:700;color:#1a2540;margin:10px 0 8px;font-size:14px;">🏠 Ambientes ('+w.rooms.length+')</div>';
+    w.rooms.forEach(function(rm){
+      html += '<div style="margin-bottom:10px;padding:12px;background:#fff;border-radius:10px;border:1px solid #e2e8f0;">';
+      html += '<div style="font-weight:600;color:#1a2540;font-size:13px;margin-bottom:6px;">'+esc(rm.name||rm.nome||"")+'</div>';
+      var desc = rm.ai_description || rm.consolidated_text || rm.descricao || "";
+      if (desc) html += '<div style="font-size:12px;color:#444;line-height:1.5;margin-bottom:4px;">'+esc(desc)+'</div>';
+      var obs = rm.observation || rm.observations || rm.observacao || "";
+      if (obs) html += '<div style="font-size:12px;color:#8898aa;"><b>Obs:</b> '+esc(obs)+'</div>';
+      var photoCount = 0;
+      if (rm.photos && rm.photos.length) photoCount = rm.photos.length;
+      else if (rm.items && rm.items.length) { rm.items.forEach(function(it){ if (it.photos && it.photos.length) photoCount += it.photos.length; }); }
+      if (photoCount) html += '<div style="font-size:11px;color:#2d7dd2;margin-top:4px;">📷 '+photoCount+' foto(s)</div>';
+      var itemCount = (rm.items && rm.items.length) || 0;
+      if (itemCount) html += '<div style="font-size:11px;color:#8898aa;margin-top:2px;">🧩 '+itemCount+' item(ns)</div>';
+      html += '</div>';
+    });
+  } else {
+    html += '<div style="padding:12px;background:#fff7ed;border:1px solid #fed7aa;border-radius:10px;color:#92400e;font-size:13px;">Nenhum ambiente cadastrado neste laudo.</div>';
+  }
+  container.innerHTML = html;
+}
+
 function _dashRenderCard(i) {
   var tipo = i.type === 'entrada' ? 'Entrada' : (i.type === 'saida' ? 'Saída' : (i.type === 'temporada' ? 'Temporada' : (i.type||'')));
   var icon = '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="4" y="3" width="16" height="18" rx="2" fill="#dbeafe" stroke="#2d7dd2" stroke-width="1.5"/><line x1="8" y1="8" x2="16" y2="8" stroke="#2d7dd2" stroke-width="1.3" stroke-linecap="round"/><line x1="8" y1="12" x2="16" y2="12" stroke="#2d7dd2" stroke-width="1.3" stroke-linecap="round"/><line x1="8" y1="16" x2="13" y2="16" stroke="#2d7dd2" stroke-width="1.3" stroke-linecap="round"/></svg>';

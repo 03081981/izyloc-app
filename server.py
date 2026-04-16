@@ -749,8 +749,48 @@ class InspectionHandler(BaseHandler):
                         (it['id'],)).fetchall()
                     it['photos'] = [{'id': p['id'], 'url': f'/uploads/{p["filename"]}'} for p in photos]
                 room_dict['items'] = items_list
+                # Aggregate photos at room level (flattened from items)
+                _room_photos = []
+                for _it in items_list:
+                    for _p in (_it.get('photos') or []):
+                        _room_photos.append({
+                            'id': _p.get('id'),
+                            'url': _p.get('url'),
+                            'photo_url': _p.get('url'),
+                            'item_id': _it.get('id'),
+                            'item_name': _it.get('item_name') or _it.get('name') or '',
+                        })
+                room_dict['photos'] = _room_photos
                 rooms_list.append(room_dict)
             result['rooms'] = rooms_list
+
+            # Parties (locadores/locatarios parsed for frontend convenience)
+            _parties = []
+            try:
+                import json as _pjson
+                _lj = result.get('locadores_json')
+                if _lj:
+                    try:
+                        _ll = _pjson.loads(_lj) if isinstance(_lj, str) else _lj
+                        for _p in (_ll or []):
+                            _p2 = dict(_p) if isinstance(_p, dict) else {}
+                            _p2['role'] = 'locador'
+                            _parties.append(_p2)
+                    except Exception:
+                        pass
+                _tj = result.get('locatarios_json')
+                if _tj:
+                    try:
+                        _tl = _pjson.loads(_tj) if isinstance(_tj, str) else _tj
+                        for _p in (_tl or []):
+                            _p2 = dict(_p) if isinstance(_p, dict) else {}
+                            _p2['role'] = 'locatario'
+                            _parties.append(_p2)
+                    except Exception:
+                        pass
+            except Exception:
+                pass
+            result['parties'] = _parties
 
             # Assinaturas
             sigs = conn.execute(
