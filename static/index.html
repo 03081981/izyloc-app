@@ -3297,6 +3297,10 @@ async function editarLaudo(id, origin) {
     if (!r || !r.ok) { alert("Erro ao carregar laudo para edição."); return; }
     try { console.log("[editarLaudo] DADOS RECEBIDOS:", r); } catch(e){}
     try { console.log("[editarLaudo] rooms:", JSON.stringify((r.rooms||[]).map(function(x){return {id:x.id,name:x.name,items_count:(x.items||[]).length};}))); } catch(e){}
+    // Snapshot local para resistir a resets por initRevisao / gotoWStep
+    var _rooms = r.rooms || [];
+    var _parties = r.parties || [];
+    try { window._editSnapshot = { rooms: _rooms, parties: _parties, id: id }; } catch(e){}
     var codigo = r.codigo || r.code || r.codigo_laudo || "";
     if (!codigo && r.id) {
       var shortId = String(r.id).substring(0, 4).toUpperCase();
@@ -3380,10 +3384,12 @@ async function editarLaudo(id, origin) {
     if (typeof syncWizSidebar === "function") syncWizSidebar();
     gotoWStep(6);
     try { if (typeof window.initRevisao === "function") window.initRevisao(); } catch(e){ try { console.warn("[editarLaudo] initRevisao", e); } catch(e2){} }
+    // Restaurar rooms/parties imediatamente após qualquer reset feito por initRevisao/gotoWStep
+    try { wizard.rooms = _rooms; wizard.parties = _parties; } catch(e){}
     try { renderRevisaoFromWizard(); } catch(e){ try { console.warn("[editarLaudo] renderRevisaoFromWizard", e); } catch(e2){} }
     try { _applyEditUiToWstepRev(6); } catch(e){}
-    setTimeout(function(){ try { renderRevisaoFromWizard(); _applyEditUiToWstepRev(6); } catch(e){} }, 150);
-    setTimeout(function(){ try { renderRevisaoFromWizard(); _applyEditUiToWstepRev(6); } catch(e){} }, 400);
+    setTimeout(function(){ try { wizard.rooms = _rooms; wizard.parties = _parties; console.log("[editarLaudo pre-render 200ms] rooms.length=", (wizard.rooms||[]).length); renderRevisaoFromWizard(); _applyEditUiToWstepRev(6); } catch(e){} }, 200);
+    setTimeout(function(){ try { wizard.rooms = _rooms; wizard.parties = _parties; renderRevisaoFromWizard(); _applyEditUiToWstepRev(6); } catch(e){} }, 500);
   } catch (e) {
     hideLoading && hideLoading();
     alert("Erro ao carregar laudo para edição.");
