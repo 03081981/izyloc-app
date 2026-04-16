@@ -4756,14 +4756,22 @@ async function generatePDF() {
     hideLoading();
     if(resp.ok){
       var blob=await resp.blob();
+      try{console.log('[generatePDF] blob',{size:blob.size,type:blob.type});}catch(_e0){}
+      if(!blob||blob.size===0){ toast('Erro: PDF vazio retornado pelo servidor','error'); return; }
+      if(blob.type&&blob.type.indexOf('pdf')===-1){ try{ blob=new Blob([blob],{type:'application/pdf'}); }catch(_e1){} }
+      var fname='iZYLAUDO_Laudo_'+wizard.inspectionId.substring(0,8).toUpperCase()+'.pdf';
       var url=URL.createObjectURL(blob);
       var a=document.createElement('a');
-      a.href=url; a.download='iZYlOC_Laudo_'+wizard.inspectionId.substring(0,8).toUpperCase()+'.pdf';
+      a.href=url; a.download=fname; a.rel='noopener'; a.style.display='none';
       document.body.appendChild(a); a.click();
-      document.body.removeChild(a); URL.revokeObjectURL(url);
-      toast('✅ Laudo gerado com sucesso!','success');
-      setTimeout(function(){showPage('page-dashboard',null,false);loadDashboard();},2000);
-    } else { toast('Erro ao gerar PDF','error'); }
+      setTimeout(function(){ try{document.body.removeChild(a);}catch(_e2){} try{URL.revokeObjectURL(url);}catch(_e3){} }, 4000);
+      toast('✅ Laudo gerado com sucesso! Download iniciado.','success');
+      setTimeout(function(){showPage('page-dashboard',null,false);loadDashboard();},2500);
+    } else {
+      var _errTxt=''; try{ _errTxt=await resp.text(); }catch(_e4){}
+      try{console.error('[generatePDF] /pdf falhou',resp.status,_errTxt);}catch(_e5){}
+      toast('Erro ao gerar PDF: HTTP '+resp.status,'error');
+    }
   } catch(e){ hideLoading(); toast('Erro ao gerar PDF','error'); }
 }
 
@@ -4860,15 +4868,20 @@ async function dlPDF(id) {
     hideLoading();
     if (resp.ok) {
       var blob = await resp.blob();
+      try{console.log('[dlPDF] blob',{size:blob.size,type:blob.type});}catch(_e0){}
+      if(!blob||blob.size===0){ toast('Erro: PDF vazio retornado pelo servidor','error'); return; }
+      if(blob.type&&blob.type.indexOf('pdf')===-1){ try{ blob=new Blob([blob],{type:'application/pdf'}); }catch(_e1){} }
+      var fname = 'iZYLAUDO_Laudo_' + id.substring(0,8).toUpperCase() + '.pdf';
       var url = URL.createObjectURL(blob);
       var a = document.createElement('a');
       a.href = url;
-      a.download = 'iZYLAUDO_Laudo_' + id.substring(0,8).toUpperCase() + '.pdf';
+      a.download = fname;
+      a.rel = 'noopener';
+      a.style.display = 'none';
       document.body.appendChild(a);
       a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-      toast('PDF gerado com sucesso!', 'success');
+      setTimeout(function(){ try{document.body.removeChild(a);}catch(_e2){} try{URL.revokeObjectURL(url);}catch(_e3){} }, 4000);
+      toast('PDF gerado com sucesso! Download iniciado.', 'success');
     } else {
       var err = {};
       try { err = await resp.json(); } catch(_e) { err = { error: 'Falha ao gerar PDF (status ' + resp.status + ')' }; }
@@ -5398,12 +5411,18 @@ if (typeof initAmbientes === 'function') initAmbientes();
           var r=await fetch('/api/inspections/'+wizard.inspectionId+'/pdf',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({ambData:_ambData,wizard_snapshot:{selectedRooms:(wizard.selectedRooms||[]),itensData:(wizard.itensData||{}),fotoStore:(window._fotoStore||{}),rooms:(wizard.rooms||[]),parties:(wizard.parties||[]),inspection:(wizard.inspection||{})}})});
         if (!r.ok) throw new Error('Erro ' + r.status);
         var blob = await r.blob();
+        try{console.log('[gerarPDF] blob',{size:blob.size,type:blob.type});}catch(_e0){}
+        if(!blob||blob.size===0){ throw new Error('PDF vazio retornado pelo servidor'); }
+        if(blob.type&&blob.type.indexOf('pdf')===-1){ try{ blob=new Blob([blob],{type:'application/pdf'}); }catch(_e1){} }
         var url = URL.createObjectURL(blob);
         var a = document.createElement('a');
         a.href = url;
         a.download = 'laudo-' + wizard.inspectionId + '.pdf';
+        a.rel = 'noopener';
+        a.style.display = 'none';
+        document.body.appendChild(a);
         a.click();
-        URL.revokeObjectURL(url);
+        setTimeout(function(){ try{document.body.removeChild(a);}catch(_e2){} try{URL.revokeObjectURL(url);}catch(_e3){} }, 4000);
         localStorage.removeItem('izylo_current_inspection'); if (window.wizard && wizard.isEditing) { setTimeout(function(){ try { _laudoVoltarOrigem(); } catch(e){} }, 400); }
       } catch(e) {
         alert('Erro ao gerar PDF: ' + e.message);
