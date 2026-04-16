@@ -1756,11 +1756,10 @@ class MeusLaudosHandler(BaseHandler):
 
 
 def _ensure_status_column():
-    """Ensure columns exist (PostgreSQL IF NOT EXISTS + rollback on error)."""
-    import logging as _log
+    """Ensure columns exist (PostgreSQL IF NOT EXISTS)."""
     try:
         conn = get_conn()
-        _migrations = [
+        _mig = [
             "ALTER TABLE inspections ADD COLUMN IF NOT EXISTS status VARCHAR(30) DEFAULT 'em_andamento'",
             "ALTER TABLE inspections ADD COLUMN IF NOT EXISTS data_assinatura TEXT",
             "ALTER TABLE inspections ADD COLUMN IF NOT EXISTS codigo VARCHAR(50)",
@@ -1769,21 +1768,18 @@ def _ensure_status_column():
             "ALTER TABLE rooms ADD COLUMN IF NOT EXISTS general_condition TEXT",
             "ALTER TABLE rooms ADD COLUMN IF NOT EXISTS verificacoes_json TEXT",
         ]
-        for _sql in _migrations:
+        for _s in _mig:
             try:
-                conn.execute(_sql)
+                conn.execute(_s)
                 conn.commit()
-                _log.warning(f'[MIGRATE] OK: {_sql[:60]}')
-            except Exception as _me:
-                _log.warning(f'[MIGRATE] SKIP: {_sql[:60]} -> {_me}')
+            except Exception:
                 try:
-                    conn._conn.rollback()
+                    conn.rollback()
                 except Exception:
                     pass
         conn.close()
-    except Exception as _e:
-        _log.warning(f'[MIGRATE] FATAL: {_e}')
-
+    except Exception:
+        pass
 
 class LaudoStatusHandler(BaseHandler):
     """POST /laudo/<id>/status -> atualiza status do laudo."""
