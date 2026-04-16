@@ -3424,16 +3424,19 @@ function renderRevisaoFromWizard() {
   var container = document.getElementById("rev-content");
   if (!container) return;
   var w = window.wizard || {};
+  try { console.log("[renderRev] wizard.rooms.length=", (w.rooms||[]).length, "parties=", (w.parties||[]).length); } catch(e){}
   var esc = function(v){ v = (v==null?"":String(v)); return v.replace(/[&<>"\x27]/g, function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","\x27":"&#39;"}[c];}); };
   var html = "";
   html += '<div style="margin-bottom:16px;padding:14px;background:#f8fafc;border-radius:10px;border:1px solid #e2e8f0;">';
   html += '<div style="font-weight:700;color:#1a2540;margin-bottom:8px;font-size:14px;">📍 Dados do imóvel</div>';
-  html += '<div style="font-size:13px;color:#1a2540;">'+esc(w.property_address||w.address||"")+(w.numero?(", "+esc(w.numero)):"")+'</div>';
+  var addrLine = esc(w.property_address||w.address||"Endereço não informado")+(w.numero?(", "+esc(w.numero)):"");
+  html += '<div style="font-size:13px;color:#1a2540;">'+addrLine+'</div>';
   if (w.bairro || w.cidade || w.uf || w.estado) {
     html += '<div style="font-size:12px;color:#8898aa;">'+esc(w.bairro||"")+(w.bairro?" — ":"")+esc(w.cidade||"")+(w.cidade?"/":"")+esc(w.uf||w.estado||"")+'</div>';
   }
   if (w.area || w.property_area) html += '<div style="font-size:12px;color:#8898aa;">Área: '+esc(w.area||w.property_area)+' m²</div>';
   if (w.tipo || w.type) html += '<div style="font-size:12px;color:#8898aa;">Tipo: '+esc(w.tipo||w.type)+'</div>';
+  if (w.codigo) html += '<div style="font-size:12px;color:#8898aa;">Código: '+esc(w.codigo)+'</div>';
   html += '</div>';
   if (w.parties && w.parties.length) {
     html += '<div style="margin-bottom:16px;padding:14px;background:#f8fafc;border-radius:10px;border:1px solid #e2e8f0;">';
@@ -3441,7 +3444,7 @@ function renderRevisaoFromWizard() {
     w.parties.forEach(function(p){
       var role = p.role === "locador" ? "Locador" : (p.role === "locatario" ? "Locatário" : (p.role||"Parte"));
       html += '<div style="font-size:13px;color:#1a2540;margin-bottom:4px;">';
-      html += '<b>'+esc(role)+':</b> '+esc(p.name||p.nome||"");
+      html += '<b>'+esc(role)+':</b> '+esc(p.name||p.nome||"(sem nome)");
       if (p.cpf) html += ' — CPF: '+esc(p.cpf);
       var _ph = p.phone||p.telefone;
       if (_ph) html += ' — Tel: '+esc(_ph);
@@ -3449,25 +3452,29 @@ function renderRevisaoFromWizard() {
     });
     html += '</div>';
   }
-  if (w.rooms && w.rooms.length) {
-    html += '<div style="font-weight:700;color:#1a2540;margin:10px 0 8px;font-size:14px;">🏠 Ambientes ('+w.rooms.length+')</div>';
-    w.rooms.forEach(function(rm){
+  var rooms = (w.rooms && w.rooms.length) ? w.rooms : null;
+  if (rooms) {
+    html += '<div style="font-weight:700;color:#1a2540;margin:10px 0 8px;font-size:14px;">🏠 Ambientes ('+rooms.length+')</div>';
+    rooms.forEach(function(rm){
       html += '<div style="margin-bottom:10px;padding:12px;background:#fff;border-radius:10px;border:1px solid #e2e8f0;">';
-      html += '<div style="font-weight:600;color:#1a2540;font-size:13px;margin-bottom:6px;">'+esc(rm.name||rm.nome||"")+'</div>';
+      html += '<div style="font-weight:600;color:#1a2540;font-size:13px;margin-bottom:6px;">'+esc(rm.name||rm.nome||"Ambiente")+'</div>';
       var desc = rm.ai_description || rm.consolidated_text || rm.descricao || "";
-      if (desc) html += '<div style="font-size:12px;color:#444;line-height:1.5;margin-bottom:4px;">'+esc(desc)+'</div>';
-      var obs = rm.observation || rm.observations || rm.observacao || "";
-      if (obs) html += '<div style="font-size:12px;color:#8898aa;"><b>Obs:</b> '+esc(obs)+'</div>';
-      var photoCount = 0;
-      if (rm.photos && rm.photos.length) photoCount = rm.photos.length;
-      else if (rm.items && rm.items.length) { rm.items.forEach(function(it){ if (it.photos && it.photos.length) photoCount += it.photos.length; }); }
-      if (photoCount) html += '<div style="font-size:11px;color:#2d7dd2;margin-top:4px;">📷 '+photoCount+' foto(s)</div>';
-      var itemCount = (rm.items && rm.items.length) || 0;
-      if (itemCount) html += '<div style="font-size:11px;color:#8898aa;margin-top:2px;">🧩 '+itemCount+' item(ns)</div>';
+      if (desc) {
+        html += '<div style="font-size:12px;color:#444;line-height:1.5;margin-bottom:4px;">'+esc(desc)+'</div>';
+      } else {
+        html += '<div style="font-size:12px;color:#aaa;font-style:italic;margin-bottom:4px;">Sem descrição registrada</div>';
+      }
+      var obs = rm.observation || rm.observations || rm.general_condition || rm.observacao || "";
+      if (obs) html += '<div style="font-size:12px;color:#8898aa;margin-top:4px;"><b>Obs:</b> '+esc(obs)+'</div>';
+      var nItems = (typeof rm.items_count==="number") ? rm.items_count : ((rm.items && rm.items.length) || 0);
+      var nPhotos = (typeof rm.photos_count==="number") ? rm.photos_count : ((rm.photos && rm.photos.length) || 0);
+      if (!nPhotos && rm.items && rm.items.length) { rm.items.forEach(function(it){ if (it && it.photos && it.photos.length) nPhotos += it.photos.length; }); }
+      if (nItems > 0) html += '<div style="font-size:11px;color:#2d7dd2;margin-top:4px;">📦 '+nItems+' item(ns)</div>';
+      if (nPhotos > 0) html += '<div style="font-size:11px;color:#2d7dd2;">📷 '+nPhotos+' foto(s)</div>';
       html += '</div>';
     });
   } else {
-    html += '<div style="padding:12px;background:#fff7ed;border:1px solid #fed7aa;border-radius:10px;color:#92400e;font-size:13px;">Nenhum ambiente cadastrado neste laudo.</div>';
+    html += '<div style="color:#aaa;font-style:italic;padding:12px;background:#fff7ed;border:1px solid #fed7aa;border-radius:10px;font-size:13px;">Nenhum ambiente cadastrado neste laudo.</div>';
   }
   container.innerHTML = html;
 }
