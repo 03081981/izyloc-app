@@ -3295,59 +3295,94 @@ async function editarLaudo(id, origin) {
     const r = await api("GET", "/api/inspections/" + id);
     hideLoading && hideLoading();
     if (!r || !r.ok) { alert("Erro ao carregar laudo para edição."); return; }
-    // Reset wizard baseline, then fill from response
+    try { console.log("[editarLaudo] DADOS RECEBIDOS:", r); } catch(e){}
+    try { console.log("[editarLaudo] rooms:", JSON.stringify((r.rooms||[]).map(function(x){return {id:x.id,name:x.name,items_count:(x.items||[]).length};}))); } catch(e){}
+    var codigo = r.codigo || r.code || r.codigo_laudo || "";
+    if (!codigo && r.id) {
+      var shortId = String(r.id).substring(0, 4).toUpperCase();
+      var yy = String(r.inspection_date||r.created_at||"2026").substring(0,4);
+      var tipoPrefix = (String(r.type||"entrada").toLowerCase().charAt(0) === "s") ? "VS" : "VE";
+      codigo = tipoPrefix + "-" + yy + "-" + shortId;
+    }
     window.wizard = window.wizard || {};
     wizard.inspectionId     = id;
     wizard.isEditing        = true;
     wizard.editOrigin       = origin || "dashboard";
-    wizard.tipo             = (r.type || r.tipo || "entrada");
+    wizard.tipo             = (r.type || "entrada");
     wizard.mobiliado        = !!(r.mobiliado || r.is_furnished);
-    wizard.property_address = r.property_address || r.endereco || "";
-    wizard.area             = r.area || "";
-    wizard.observation      = r.observation || r.obs || "";
-    wizard.codigo           = r.codigo || r.code || "";
+    wizard.codigo           = codigo;
     wizard.rooms            = r.rooms || [];
     wizard.parties          = r.parties || [];
-    wizard.selectedRooms    = (r.rooms || []).map(function(x){ return x.name || x.room_name || x.nome || ""; }).filter(Boolean);
-
-    // Best-effort DOM populate (non-fatal if missing)
-    try {
-      var fields = [
-        ["wi-address", r.property_address || ""],
-        ["wi-area", r.area || ""],
-        ["wi-date", (r.inspection_date_raw || r.inspection_date || new Date().toISOString().split("T")[0])],
-        ["wi-type", wizard.tipo || ""],
-        ["wi-obs", r.observation || ""],
-        ["wi-imob-name", r.imobiliaria_name || ""],
-        ["wi-imob-cnpj", r.imobiliaria_cnpj || ""],
-        ["wi-imob-phone", r.imobiliaria_phone || ""],
-        ["wi-imob-address", r.imobiliaria_address || ""],
-        ["wi-loc-name", r.locador_name || ""],
-        ["wi-loc-cpf", r.locador_cpf || ""],
-        ["wi-loc-rg", r.locador_rg || ""],
-        ["wi-loc-phone", r.locador_phone || ""],
-        ["wi-loc-email", r.locador_email || ""],
-        ["wi-locat-name", r.locatario_name || ""],
-        ["wi-locat-cpf", r.locatario_cpf || ""],
-        ["wi-locat-rg", r.locatario_rg || ""],
-        ["wi-locat-phone", r.locatario_phone || ""],
-        ["wi-locat-email", r.locatario_email || ""],
-        ["wi-corr-name", r.corretor_name || ""],
-        ["wi-corr-creci", r.corretor_creci || ""],
-        ["wi-corr-phone", r.corretor_phone || ""],
-        ["wi-corr-email", r.corretor_email || ""],
-        ["wi-corr-cpf", r.corretor_cpf || ""]
-      ];
-      fields.forEach(function(f){ var el = document.getElementById(f[0]); if (el) el.value = f[1]; });
-      var cb = document.getElementById("wi-mobiliado");
-      if (cb) { cb.checked = !!wizard.mobiliado; if (typeof toggleMobiliado === "function") toggleMobiliado(cb.checked); }
-    } catch (e) { console.warn("[editarLaudo] DOM populate warn:", e); }
-
-    // Open wizard page and go directly to Revisao (step 6 = wstep-rev)
+    wizard.selectedRooms    = (r.rooms || []).map(function(x){ return x.name || ""; }).filter(Boolean);
+    window._wiz6Ambientes   = wizard.selectedRooms.slice();
+    function _sv(eid, v){ var el = document.getElementById(eid); if (el) el.value = (v==null?"":v); }
+    function populateFields(){
+      _sv("wi-address", r.property_address || "");
+      _sv("wi-area", r.property_area || r.area || "");
+      _sv("wi-date", r.inspection_date || "");
+      _sv("wi-type", r.type || "entrada");
+      _sv("wi-obs", r.observations || r.observation || "");
+      _sv("wi-cep", r.cep || "");
+      _sv("wi-bairro", r.bairro || "");
+      _sv("wi-cidade", r.cidade || "");
+      _sv("wi-estado", r.estado || "");
+      _sv("wi-complemento", r.complemento || "");
+      _sv("wi-prop-type", r.property_type || "");
+      _sv("wi-imob-name", r.imobiliaria_name || "");
+      _sv("wi-imob-cnpj", r.imobiliaria_cnpj || "");
+      _sv("wi-imob-phone", r.imobiliaria_phone || "");
+      _sv("wi-imob-email", r.imobiliaria_email || "");
+      _sv("wi-imob-address", r.imobiliaria_address || "");
+      _sv("wi-corr-name", r.corretor_name || "");
+      _sv("wi-corr-creci", r.corretor_creci || "");
+      _sv("wi-corr-cpf", r.corretor_cpf || "");
+      _sv("wi-corr-phone", r.corretor_phone || "");
+      _sv("wi-corr-email", r.corretor_email || "");
+      try {
+        var locs = [];
+        try { locs = r.locadores_json ? JSON.parse(r.locadores_json) : []; } catch(e) { locs = []; }
+        if (!locs.length && r.locador_name) {
+          locs = [{name: r.locador_name, cpf: r.locador_cpf, phone: r.locador_phone, email: r.locador_email}];
+        }
+        var locCont = document.getElementById("locadores-container");
+        if (locCont && typeof mkBlock === "function") {
+          locCont.innerHTML = "";
+          locs.forEach(function(p, i){
+            var b = mkBlock("loc", i, "Locador", i > 0);
+            locCont.appendChild(b);
+            _sv("loc-name-"+i, p.name);
+            _sv("loc-cpf-"+i, p.cpf);
+            _sv("loc-phone-"+i, p.phone);
+            _sv("loc-email-"+i, p.email);
+          });
+        }
+        var tens = [];
+        try { tens = r.locatarios_json ? JSON.parse(r.locatarios_json) : []; } catch(e) { tens = []; }
+        if (!tens.length && r.locatario_name) {
+          tens = [{name: r.locatario_name, cpf: r.locatario_cpf, rg: r.locatario_rg, phone: r.locatario_phone, email: r.locatario_email}];
+        }
+        var tenCont = document.getElementById("locatários-container");
+        if (tenCont && typeof mkBlock === "function") {
+          tenCont.innerHTML = "";
+          tens.forEach(function(p, i){
+            var b = mkBlock("locat", i, "Locatário", i > 0);
+            tenCont.appendChild(b);
+            _sv("locat-name-"+i, p.name);
+            _sv("locat-cpf-"+i, p.cpf);
+            _sv("locat-phone-"+i, p.phone);
+            _sv("locat-email-"+i, p.email);
+          });
+        }
+      } catch(e){ try { console.warn("[editarLaudo] partes fill error", e); } catch(e2){} }
+    }
     showPage("page-wizard", "Editando laudo " + (wizard.codigo || ""));
+    populateFields();
     if (typeof syncWizSidebar === "function") syncWizSidebar();
     gotoWStep(6);
-    if (typeof window.initRevisao === "function") { try { window.initRevisao(); } catch(e){} }
+    if (typeof window.initRevisao === "function") { try { window.initRevisao(); } catch(e){ try { console.warn("[editarLaudo] initRevisao", e); } catch(e2){} } }
+    try { _applyEditUiToWstepRev(6); } catch(e){}
+    setTimeout(function(){ try { _applyEditUiToWstepRev(6); } catch(e){} }, 50);
+    setTimeout(function(){ try { _applyEditUiToWstepRev(6); } catch(e){} }, 300);
   } catch (e) {
     hideLoading && hideLoading();
     alert("Erro ao carregar laudo para edição.");
