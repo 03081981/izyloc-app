@@ -3300,6 +3300,31 @@ async function editarLaudo(id, origin) {
     // Snapshot local para resistir a resets por initRevisao / gotoWStep
     var _rooms = r.rooms || [];
     var _parties = r.parties || [];
+    // Limpar estado anterior ANTES de popular (Etapa 7)
+    try {
+      window._fotoStore = {};
+      window._wiz6Ambientes = [];
+      wizard.selectedRooms = [];
+      wizard.itensData = {};
+      wizard.selectedRooms = _rooms.map(function(rm){ return rm.name||''; });
+      window._wiz6Ambientes = _rooms.map(function(rm){ return rm.name||''; });
+      _rooms.forEach(function(rm){
+        var n = rm.name||'';
+        wizard.itensData[n] = {
+          resumo: rm.consolidated_text||rm.ai_description||'',
+          consolidatedText: rm.consolidated_text||rm.ai_description||'',
+          obs: rm.observation||rm.observations||''
+        };
+      });
+      _rooms.forEach(function(rm){
+        var n = rm.name||'';
+        if(rm.photos && rm.photos.length){
+          window._fotoStore[n] = rm.photos.map(function(p){
+            return { id: p.id||'', src: p.url||p.photo_url||'', url: p.url||p.photo_url||'', desc: p.ai_description||'', item: p.item_name||'', estado: p.condition||'Bom' };
+          });
+        }
+      });
+    } catch(eClean){}
     try { window._editSnapshot = { rooms: _rooms, parties: _parties, id: id }; } catch(e){}
     var codigo = r.codigo || r.code || r.codigo_laudo || "";
     if (!codigo && r.id) {
@@ -3389,8 +3414,8 @@ async function editarLaudo(id, origin) {
           try { window._fotoStore = window._fotoStore || {}; var _phs = (rm.photos||[]).map(function(p){ return {id: p.id||p.photo_id||'', url: p.url||p.photo_url||'', desc: p.ai_description||p.description||'', item: p.item_name||p.item||''}; }); window._fotoStore[n] = _phs; } catch(eFS){}}); } catch(e){}
     try { renderRevisaoFromWizard(_rooms, _parties, r); } catch(e){ try { console.warn("[editarLaudo] renderRevisaoFromWizard", e); } catch(e2){} }
     try { _applyEditUiToWstepRev(6); } catch(e){}
-    setTimeout(function(){ try { wizard.rooms = _rooms; wizard.parties = _parties; console.log("[editarLaudo pre-render 200ms] rooms.length=", (wizard.rooms||[]).length); renderRevisaoFromWizard(_rooms, _parties, r); _applyEditUiToWstepRev(6); } catch(e){} }, 200);
-    setTimeout(function(){ try { wizard.rooms = _rooms; wizard.parties = _parties; renderRevisaoFromWizard(_rooms, _parties, r); _applyEditUiToWstepRev(6); } catch(e){} }, 500);
+    setTimeout(function(){ try { wizard.rooms = _rooms; wizard.parties = _parties; console.log("[editarLaudo pre-render 200ms] rooms.length=", (wizard.rooms||[]).length); window._wiz6Ambientes = _rooms.map(function(rm){ return rm.name||''; }); wizard.selectedRooms = window._wiz6Ambientes.slice(); renderRevisaoFromWizard(_rooms, _parties, r); _applyEditUiToWstepRev(6); } catch(e){} }, 200);
+    setTimeout(function(){ try { wizard.rooms = _rooms; wizard.parties = _parties; window._wiz6Ambientes = _rooms.map(function(rm){ return rm.name||''; }); wizard.selectedRooms = window._wiz6Ambientes.slice(); renderRevisaoFromWizard(_rooms, _parties, r); _applyEditUiToWstepRev(6); } catch(e){} }, 500);
   } catch (e) {
     hideLoading && hideLoading();
     alert("Erro ao carregar laudo para edição.");
