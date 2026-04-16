@@ -14,7 +14,7 @@ import uuid
 import jwt
 import hashlib
 import secrets
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 import base64
 from dotenv import load_dotenv
@@ -25,7 +25,9 @@ import threading
 
 # Store de jobs de video em memoria
 _video_jobs = {}
-from pdf_service import generate_pdf
+from pdf_service import generate_pdf, _generate_numero_laudo
+
+BR_TZ = timezone(timedelta(hours=-3))
 
 def _jser(obj):
     """JSON serializer for datetime and other non-serializable types."""
@@ -49,7 +51,7 @@ def create_token(user_id, email):
     payload = {
         'user_id': user_id,
         'email': email,
-        'exp': datetime.utcnow() + timedelta(days=30)
+        'exp': datetime.now(BR_TZ) + timedelta(days=30)
     }
     return jwt.encode(payload, SECRET_KEY, algorithm='HS256')
 
@@ -219,7 +221,7 @@ class PasswordResetRequestHandler(BaseHandler):
                 return self.ok({'ok': True})
             user = dict(user)
             token = secrets.token_urlsafe(48)
-            expires_at = datetime.utcnow() + timedelta(minutes=30)
+            expires_at = datetime.now(BR_TZ) + timedelta(minutes=30)
             conn.execute(
                 'INSERT INTO password_reset_tokens (token, user_id, email, expires_at) VALUES (?,?,?,?)',
                 (token, user['id'], user['email'], expires_at.isoformat())
@@ -250,7 +252,7 @@ class PasswordResetVerifyHandler(BaseHandler):
                 return self.err('Token ja utilizado', 400)
             expires_str = str(row['expires_at']).split('+')[0].split('.')[0]
             expires_at = datetime.strptime(expires_str, '%Y-%m-%dT%H:%M:%S') if 'T' in expires_str else datetime.strptime(expires_str, '%Y-%m-%d %H:%M:%S')
-            if datetime.utcnow() > expires_at:
+            if datetime.now(BR_TZ) > expires_at:
                 return self.err('Token expirado', 400)
             self.ok({'ok': True, 'email': row['email']})
         finally:
@@ -279,7 +281,7 @@ class PasswordResetConfirmHandler(BaseHandler):
                 return self.err('Token ja utilizado')
             expires_str = str(row['expires_at']).split('+')[0].split('.')[0]
             expires_at = datetime.strptime(expires_str, '%Y-%m-%dT%H:%M:%S') if 'T' in expires_str else datetime.strptime(expires_str, '%Y-%m-%d %H:%M:%S')
-            if datetime.utcnow() > expires_at:
+            if datetime.now(BR_TZ) > expires_at:
                 return self.err('Token expirado')
             conn.execute(
                 'UPDATE users SET password_hash=? WHERE id=?',
@@ -307,7 +309,7 @@ def create_admin_token():
     payload = {
         'admin': True,
         'email': ADMIN_EMAIL,
-        'exp': datetime.utcnow() + timedelta(hours=12)
+        'exp': datetime.now(BR_TZ) + timedelta(hours=12)
     }
     return jwt.encode(payload, SECRET_KEY, algorithm='HS256')
 
@@ -680,7 +682,7 @@ class InspectionsHandler(BaseHandler):
         conn = get_conn()
         try:
             insp_id = str(uuid.uuid4())
-            now = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            now = datetime.now(BR_TZ).strftime('%Y-%m-%d %H:%M:%S')
             fields = [
                 'id', 'user_id', 'type', 'status', 'property_address', 'property_type',
                 'property_area', 'inspection_date',
@@ -695,7 +697,7 @@ class InspectionsHandler(BaseHandler):
             values = [
                 insp_id, user['user_id'], data['type'], 'rascunho',
                 data.get('property_address', ''), data.get('property_type', ''),
-                data.get('property_area', ''), data.get('inspection_date', datetime.now().strftime('%d/%m/%Y')),
+                data.get('property_area', ''), data.get('inspection_date', datetime.now(BR_TZ).strftime('%d/%m/%Y')),
                 data.get('bairro', ''), data.get('complemento', ''),
                 data.get('cep', ''), data.get('cidade', ''), data.get('estado', ''),
                 data.get('locador_name', ''), data.get('locador_cpf', ''),
@@ -745,9 +747,11 @@ class InspectionHandler(BaseHandler):
                 # Inclui lista de fotos de cada item
                 for it in items_list:
                     photos = conn.execute(
-                        'SELECT id, filename FROM item_photos WHERE item_id=? ORDER BY created_at',
+                        'SELECT id, filename, ai_description, condition, observation FROM item_photos WHERE item_id=? ORDER BY created_at',
                         (it['id'],)).fetchall()
-                    it['photos'] = [{'id': p['id'], 'url': f'/uploads/{p["filename"]}'} for p in photos]
+                    it['photos'] = [{'id': p['id'], 'url': f'/uploads/{p["filename"]}', 'ai_description': p.get('ai_description') or '', 'condition': p.get('condition') or '', 'observation': p.get('observation') or ''} for p in photos]
+                room_dict['ai_description'] = room_dict.get('consolidated_text') or room_dict.get('ai_description') or ''
+                room_dict['observation'] = room_dict.get('observations') or room_dict.get('general_condition') or ''
                 room_dict['items'] = items_list
                 # Aggregate photos at room level (flattened from items)
                 _room_photos = []
@@ -791,6 +795,8 @@ class InspectionHandler(BaseHandler):
             except Exception:
                 pass
             result['parties'] = _parties
+            result['corretor'] = {'nome': result.get('corretor_name') or '', 'creci': result.get('corretor_creci') or '', 'telefone': result.get('corretor_phone') or '', 'email': result.get('corretor_email') or '', 'cpf': result.get('corretor_cpf') or ''}
+            
 
             # Assinaturas
             sigs = conn.execute(
@@ -838,7 +844,7 @@ class InspectionHandler(BaseHandler):
 
             if sets:
                 sets.append('updated_at=?')
-                vals.append(datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
+                vals.append(datetime.now(BR_TZ).strftime('%Y-%m-%d %H:%M:%S'))
                 vals.append(insp_id)
                 conn.execute(f'UPDATE inspections SET {",".join(sets)} WHERE id=?', vals)
                 conn.commit()
@@ -1314,7 +1320,7 @@ class SignaturesHandler(BaseHandler):
 
             # Marca vistoria como assinada
             conn.execute("UPDATE inspections SET status='assinado', updated_at=? WHERE id=?",
-                        (datetime.now().strftime('%Y-%m-%d %H:%M:%S'), insp_id))
+                        (datetime.now(BR_TZ).strftime('%Y-%m-%d %H:%M:%S'), insp_id))
             conn.commit()
             row = conn.execute('SELECT * FROM signatures WHERE id=?', (sig_id,)).fetchone()
             self.ok(self.row_to_dict(row), 201)
@@ -1368,8 +1374,9 @@ class GeneratePDFHandler(BaseHandler):
                 return self.err('Erro ao gerar PDF', 500)
 
             # Marca como concluÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ­do
-            conn.execute("UPDATE inspections SET status='concluido', updated_at=? WHERE id=?",
-                        (datetime.now().strftime('%Y-%m-%d %H:%M:%S'), insp_id))
+            codigo = _generate_numero_laudo(inspection_data)
+                conn.execute("UPDATE inspections SET status='concluido', codigo=?, updated_at=? WHERE id=?",
+                        (codigo, datetime.now(BR_TZ).strftime('%Y-%m-%d %H:%M:%S'), insp_id))
             conn.commit()
 
             self.set_header('Content-Type', 'application/pdf')
@@ -1438,8 +1445,9 @@ class GeneratePDFHandler(BaseHandler):
                 success = generate_pdf(inspection_data, rooms_list, signatures_list, pdf_path)
                 if not success:
                     return self.err('Erro ao gerar PDF', 500)
-                conn.execute("UPDATE inspections SET status='concluido', updated_at=? WHERE id=?",
-                        (datetime.now().strftime('%Y-%m-%d %H:%M:%S'), insp_id))
+                codigo = _generate_numero_laudo(inspection_data)
+                conn.execute("UPDATE inspections SET status='concluido', codigo=?, updated_at=? WHERE id=?",
+                        (codigo, datetime.now(BR_TZ).strftime('%Y-%m-%d %H:%M:%S'), insp_id))
                 conn.commit()
                 self.set_header('Content-Type', 'application/pdf')
                 self.set_header('Content-Disposition',
@@ -1694,6 +1702,11 @@ def _ensure_status_column():
             pass
         try:
             conn.execute("ALTER TABLE inspections ADD COLUMN data_assinatura TEXT")
+            conn.commit()
+        except Exception:
+            pass
+        try:
+            conn.execute("ALTER TABLE inspections ADD COLUMN codigo TEXT")
             conn.commit()
         except Exception:
             pass
