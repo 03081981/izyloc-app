@@ -2878,14 +2878,61 @@ window._openFotoModal = function(imgSrc) {
 
 <!-- ══════════════ PAGE: DETAIL ══════════════ -->
 <div id="page-detail" class="page">
-  <div class="detail-header">
-    <button class="btn-wiz-back" onclick="showPage('page-dashboard')" style="margin-right:4px"><svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z"/></svg></button>
-    <div class="detail-title">Detalhes da vistoria</div>
-    <button class="btn btn-primary" style="height:36px;font-size:13px" onclick="generatePDF ? generatePDF() : null">
-      Gerar PDF
-    </button>
+  <aside class="sidebar">
+
+  <!-- LOGO -->
+  <div class="sidebar-logo">
+    <div>
+      <span style="font-size:20px;font-weight:400;color:#2d7dd2;font-family:Helvetica,Arial,sans-serif">izy</span><span style="font-size:20px;font-weight:900;color:#fff;font-family:Helvetica,Arial,sans-serif">LAUDO</span>
+    </div>
+    <div style="font-size:7px;color:rgba(255,255,255,0.28);letter-spacing:2px;text-transform:uppercase;margin-top:2px;font-weight:400">Vistorias Imobiliárias</div>
   </div>
-  <div id="detail-content"></div>
+
+  <!-- NAV PRINCIPAL -->
+  <nav class="sidebar-nav">
+    <div class="nav-item" id="nav-dash-d" onclick="showPage('page-dashboard'); switchTab('vistorias',document.getElementById('nav-dash'));">Painel</div>
+    <div class="nav-item active" id="nav-laudos-d" onclick="showMeusLaudosPage(this)">Meus laudos</div>
+
+    <div class="nav-divider"></div>
+    <div class="nav-section-label">Fotos e créditos</div>
+    <div class="nav-item nav-item-cred" id="nav-fotos-d" onclick="showPage('page-dashboard'); switchTab('estatisticas',this);">
+      <span id="nav-saldo-fotos-d" style="color:#4fc3f7;font-weight:600">Fotos restantes</span>
+    </div>
+    <div class="nav-item" id="nav-recarga-d" onclick="showPage('page-dashboard'); switchTab('estatisticas',this);">+ Adicionar créditos</div>
+    <div class="nav-item" id="nav-extrato-d" onclick="showPage('page-dashboard'); switchTab('estatisticas',this);">Extrato de uso</div>
+
+    <div class="nav-divider"></div>
+    <div class="nav-section-label">Ajuda</div>
+    <div class="nav-item" id="nav-manual" onclick="showManual()">Manual do usuário</div>
+
+    <div class="nav-divider"></div>
+    <div class="nav-section-label">Conta</div>
+    <div class="nav-item" id="nav-config" onclick="switchTab('perfil',this)">Configurações</div>
+    <div class="nav-item" onclick="if(confirm('Sair da conta?')){logout()}">Sair</div>
+  </nav>
+
+  <!-- RODAPE SIDEBAR -->
+  <div class="sidebar-bottom">
+    <div class="sidebar-user" onclick="showPage('page-dashboard'); switchTab('perfil',null);">
+      <div class="sidebar-avatar" id="profile-avatar-letter-d">?</div>
+      <div class="sidebar-user-info">
+        <div class="sidebar-user-name" id="profile-name-d"></div>
+        <div id="profile-company-d" style="display:none"></div>
+        <div class="sidebar-user-plan">Plano Profissional</div>
+      </div>
+    </div>
+    <div class="sidebar-empresa">
+      <div class="sidebar-empresa-nome">izyLOC Sistema de Gestao de Carteiras de Locacoes e Cobrancas Ltda</div>
+      <div class="sidebar-empresa-cnpj">CNPJ 57.552.013/0001-90</div>
+      <div class="sidebar-empresa-email">izylaudo@izylaudo.com.br</div>
+    </div>
+  </div>
+
+</aside>
+
+  <div class="dash-main-wrapper">
+    <div id="detail-content"></div>
+  </div>
 </div>
 
 <div id="page-meus-laudos" class="page">
@@ -4927,72 +4974,80 @@ async function openInspection(id) {
 }
 
 function renderDetail(insp) {
-  const tipo = insp.type==='entrada' ? 'Entrada' : 'Saída';
-  const rooms = insp.rooms || [];
-  const sigs = insp.signatures || [];
-
-  const roomsHtml = rooms.map(room => {
-    const items = (room.items||[]).map(item => {
-      const desc = item.manual_description || item.ai_description || '';
-      const photos = item.photos || [];
-      let photosHtml = '';
-      if (photos.length === 1) {
-        photosHtml = `<img src="${photos[0].url}" class="item-photo" alt="foto"/>`;
-      } else if (photos.length > 1) {
-        const thumbs = photos.map(p =>
-          `<div class="photo-thumb"><img src="${p.url}" alt="foto" onclick="window.open('${p.url}','_blank')"/></div>`
-        ).join('');
-        photosHtml = `<div class="photo-grid">${thumbs}</div>
-          <div class="photo-count-badge">${photos.length} fotos • toque para ampliar</div>`;
-      } else if (item.photo_filename) {
-        photosHtml = `<img src="/uploads/${item.photo_filename}" class="item-photo" alt="foto"/>`;
-      }
-      return `<div class="item-card">
-        <div class="item-header">
-          <span class="item-name">${item.name}</span>
-          <span class="cond cond-${(item.condition||'').replace(/[óô]/g,'o').replace(/[éê]/g,'e')||'default'}">
-            ${item.condition||'—'}
-          </span>
-        </div>
-        ${photosHtml}
-        ${desc ? `<div class="ai-badge">✦ Descrição IA</div><div class="ai-description">${desc}</div>` : ''}
-      </div>`;
-    }).join('');
-    return `<div class="room-card">
-      <div class="room-header"><div class="room-header-left">
-        <div class="room-icon">🏠</div>
-        <div class="room-name">${room.name}</div>
-      </div></div>
-      <div class="room-body">${items||'<p class="text-small mt-8">Nenhum item</p>'}</div>
-    </div>`;
-  }).join('');
-
-  document.getElementById('detail-content').innerHTML = `
-    <div class="card mt-8">
-      <div class="flex gap-8 mb-8">
-        <span class="tag tag-${insp.type}">${tipo}</span>
-        <span class="tag tag-${insp.status}">${insp.status}</span>
-      </div>
-      <div style="font-size:17px;font-weight:800">${insp.property_address||'—'}</div>
-      <div class="text-small mt-4">${insp.property_type||''} ${insp.property_area?'· '+insp.property_area+'m²':''}</div>
-      <div class="text-small mt-2">📅 ${insp.inspection_date||'—'}</div>
-      ${insp.imobiliária_name?`<div class="text-small mt-2">🏢 ${insp.imobiliária_name}</div>`:''}
-    </div>
-    <div class="card">
-      <div class="card-title">Partes Envolvidas</div>
-      ${insp.locador_name?`<div class="mb-8"><div class="form-label">Locador</div><div>${insp.locador_name}</div>${insp.locador_cpf?`<div class="text-small">CPF: ${insp.locador_cpf}</div>`:''}</div>`:''}
-      ${insp.locatário_name?`<div class="mb-8"><div class="form-label">Locatário</div><div>${insp.locatário_name}</div>${insp.locatário_cpf?`<div class="text-small">CPF: ${insp.locatário_cpf}</div>`:''}</div>`:''}
-      ${insp.corretor_name?`<div><div class="form-label">Corretor</div><div>${insp.corretor_name} ${insp.corretor_creci?'· CRECI '+insp.corretor_creci:''}</div></div>`:''}
-    </div>
-    ${rooms.length?`<div style="font-size:15px;font-weight:700;margin:12px 0 8px">Ambientes (${rooms.length})</div>${roomsHtml}`:''}
-    ${sigs.length?`<div class="card"><div class="card-title">✍️ Assinaturas</div>
-      ${sigs.map(s=>`<div class="flex gap-8 mb-8"><span class="tag tag-concluído">✓</span>
-        <span class="text-small">${s.party_type} — ${s.party_name||''}</span></div>`).join('')}
-    </div>`:''}
-    <button class="btn btn-primary btn-full mt-8 mb-16" onclick="dlPDF('${insp.id}')">
-      📄 Baixar Laudo PDF
-    </button>`;
-}
+    if (!insp) return;
+    var tipo = insp.type === 'entrada' ? 'Entrada' : (insp.type === 'saida' ? 'Saída' : (insp.type === 'temporada' ? 'Temporada' : (insp.type || '-')));
+    var stRaw = (insp.status || '').toLowerCase();
+    var stLabelMap = {em_andamento:'Em andamento',concluido:'Concluído',aguardando:'Aguardando assinatura',digital:'Assinado digital',fisico:'Assinado físico'};
+    var stBgMap = {em_andamento:'#fef9c3',concluido:'#dcfce7',aguardando:'#fef9c3',digital:'#dcfce7',fisico:'#ede9fe'};
+    var stCoMap = {em_andamento:'#854d0e',concluido:'#166534',aguardando:'#854d0e',digital:'#166534',fisico:'#5b21b6'};
+    var stLabel = stLabelMap[stRaw] || insp.status || '';
+    var stBg = stBgMap[stRaw] || '#f3f4f6';
+    var stCo = stCoMap[stRaw] || '#374151';
+    var code = (typeof _dashLaudoCode === 'function') ? _dashLaudoCode(insp) : (insp.codigo || insp.id || '-');
+    var addr = insp.property_address || insp.endereco || insp.address || '-';
+    var neigh = insp.property_neighborhood || insp.bairro || '';
+    var city = insp.property_city || insp.cidade || '';
+    var uf = insp.property_state || insp.uf || '';
+    var cityLine = '';
+    if (neigh) cityLine = neigh;
+    if (city) cityLine += (cityLine ? ' / ' : '') + city;
+    if (uf) cityLine += (cityLine ? ' · ' : '') + uf;
+    var ptype = insp.property_type || '-';
+    var date = insp.inspection_date || insp.created_at || '-';
+    function initials(name) {
+      if (!name) return '';
+      var p = String(name).trim().split(/\s+/);
+      var r = p[0].charAt(0);
+      if (p.length > 1) r += p[p.length - 1].charAt(0);
+      return r.toUpperCase();
+    }
+    function esc(x) {
+      return String(x == null ? '' : x).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    }
+    var cS = 'background:#fff;border:0.5px solid #e2e8f0;border-radius:12px;padding:10px 14px;margin-bottom:12px;';
+    var hS = 'font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;color:#8898aa;border-bottom:0.5px solid #e2e8f0;padding-bottom:8px;margin-bottom:10px;';
+    var rS = 'display:flex;align-items:center;gap:10px;margin-bottom:10px;';
+    var aB = 'width:30px;height:30px;border-radius:50%;font-size:11px;font-weight:600;display:flex;align-items:center;justify-content:center;flex-shrink:0;';
+    var lS = 'font-size:10px;color:#8898aa;text-transform:uppercase;letter-spacing:0.04em;font-weight:600;';
+    var nS = 'font-size:14px;font-weight:600;color:#111827;';
+    var sS = 'font-size:12px;color:#6b7280;';
+    function partyRow(label, name, sub, bgc, co) {
+      return '<div style="' + rS + '">' +
+        '<div style="' + aB + 'background:' + bgc + ';color:' + co + ';">' + initials(name) + '</div>' +
+        '<div><div style="' + lS + '">' + esc(label) + '</div><div style="' + nS + '">' + esc(name) + '</div>' +
+        (sub ? '<div style="' + sS + '">' + esc(sub) + '</div>' : '') +
+        '</div></div>';
+    }
+    var partiesHtml = '';
+    if (insp.locador_name) partiesHtml += partyRow('Locador', insp.locador_name, insp.locador_cpf ? 'CPF: ' + insp.locador_cpf : '', '#dbeafe', '#1e40af');
+    var locN = insp['locat' + String.fromCharCode(225) + 'rio_name'] || insp.locatario_name;
+    var locC = insp['locat' + String.fromCharCode(225) + 'rio_cpf'] || insp.locatario_cpf;
+    if (locN) partiesHtml += partyRow('Locatário', locN, locC ? 'CPF: ' + locC : '', '#dcfce7', '#166534');
+    if (insp.corretor_name) partiesHtml += partyRow('Corretor', insp.corretor_name, insp.corretor_creci ? 'CRECI: ' + insp.corretor_creci : '', '#eff6ff', '#1e3a5f');
+    if (!partiesHtml) partiesHtml = '<div style="font-size:13px;color:#6b7280;">Nenhuma parte cadastrada.</div>';
+    var topbar = '<div class="topbar" style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:14px 20px;background:#fff;border-bottom:1px solid #e5e7eb;">' +
+      '<button onclick="showMeusLaudosPage()" style="background:none;border:1px solid #d1d5db;padding:6px 12px;border-radius:6px;cursor:pointer;font-size:13px;">&larr; Voltar</button>' +
+      '<h1 style="margin:0;font-size:20px;color:#1f2937;font-weight:600;flex:1;min-width:0;">Detalhes do laudo</h1>' +
+      '<span style="background:#eff6ff;color:#1e3a5f;padding:4px 10px;border-radius:6px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.04em;white-space:nowrap;">' + esc(tipo) + '</span>' +
+      '<span style="background:' + stBg + ';color:' + stCo + ';padding:4px 10px;border-radius:6px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.04em;white-space:nowrap;">' + esc(stLabel) + '</span>' +
+    '</div>';
+    var cardImovel = '<div style="' + cS + '"><div style="' + hS + '">Dados do imóvel</div>' +
+      '<div style="display:inline-block;background:#eff6ff;color:#1e40af;padding:4px 10px;border-radius:6px;font-family:Menlo,Monaco,Consolas,monospace;font-size:12px;font-weight:700;margin-bottom:10px;">' + esc(code) + '</div>' +
+      '<div style="font-size:14px;font-weight:600;color:#111827;margin-bottom:4px;">' + esc(addr) + '</div>' +
+      (cityLine ? '<div style="font-size:12px;color:#6b7280;margin-bottom:6px;">' + esc(cityLine) + '</div>' : '') +
+      '<div style="font-size:12px;color:#6b7280;margin-bottom:4px;"><strong>Tipo:</strong> ' + esc(ptype) + '</div>' +
+      '<div style="font-size:12px;color:#6b7280;"><strong>Data:</strong> ' + esc(date) + '</div></div>';
+    var cardPartes = '<div style="' + cS + '"><div style="' + hS + '">Partes envolvidas</div>' + partiesHtml + '</div>';
+    var btnDownload = '<button onclick="dlPDF(\'' + insp.id + '\')" style="width:100%;padding:14px;background:#1e3a5f;color:#fff;border:none;border-radius:12px;font-size:14px;font-weight:600;display:flex;align-items:center;justify-content:center;gap:8px;cursor:pointer;margin-top:4px;">📄 Baixar Laudo PDF</button>';
+    var body = '<div style="padding:20px;max-width:900px;margin:0 auto;">' + cardImovel + cardPartes + btnDownload + '</div>';
+    var el = document.getElementById('detail-content');
+    if (el) el.innerHTML = topbar + body;
+    try {
+      document.querySelectorAll('.nav-item').forEach(function(n) { n.classList.remove('active'); });
+      var nd = document.getElementById('nav-laudos-d');
+      if (nd) nd.classList.add('active');
+    } catch (_) {}
+  }
 
 async function dlPDF(id) {
   showLoading('Gerando PDF...');
