@@ -3387,24 +3387,27 @@ function _dashLaudoCode(i) {
   return prefix + '-' + y + '-' + id;
 }
 function _dashActionBtns(insp, statusKey) {
-  var btnStyle = 'font-size:11px;padding:4px 10px;border-radius:5px;cursor:pointer;white-space:nowrap;';
-  var btnEdit  = btnStyle + 'border:1px solid #2d7dd2;background:#fff;color:#2d7dd2;';
-  var btnPdf   = btnStyle + 'border:1px solid #e2e8f0;background:#fff;color:#8898aa;';
-  var btnLock  = btnStyle + 'border:1px solid #e2e8f0;background:#f8fafc;color:#ccc;cursor:not-allowed;';
-  var btnAut   = btnStyle + 'border:1px solid #1e3a5f;background:#fff;color:#1e3a5f;';
-  var btnTrash = btnStyle + 'border:1px solid #fee2e2;background:#fff;color:#ef4444;';
-  var canEdit = (statusKey === 'em_andamento' || statusKey === 'concluido');
-  var status = (statusKey || (insp && insp.status) || 'rascunho').toLowerCase();
+  var btnStyle  = 'font-size:11px;padding:4px 10px;border-radius:5px;cursor:pointer;white-space:nowrap;';
+  var btnEdit   = btnStyle + 'border:1px solid #2d7dd2;background:#fff;color:#2d7dd2;';
+  var btnPdf    = btnStyle + 'border:1px solid #e2e8f0;background:#fff;color:#8898aa;';
+  var btnAut    = btnStyle + 'border:1px solid #1e3a5f;background:#fff;color:#1e3a5f;';
+  var btnTrash  = btnStyle + 'border:1px solid #fee2e2;background:#fff;color:#ef4444;';
+  var btnSign   = btnStyle + 'border:none;background:#2d7dd2;color:#fff;font-weight:600;';
+  var btnFis    = btnStyle + 'border:none;background:#1e3a5f;color:#fff;font-weight:600;';
+  var st = (statusKey || (insp && insp.status) || '').toLowerCase();
+  var canEdit = (st === 'em_andamento' || st === 'concluido');
   var id = insp.id;
   var html = '<div style="display:flex;align-items:center;gap:6px;flex-shrink:0;">';
   if (canEdit) {
-    html += '<button style="'+btnEdit+'" onclick="event.stopPropagation();editarLaudo(\''+id+'\',\'dashboard\')">✏️ Editar</button>';
-  } else {
-    html += '<button style="'+btnLock+'" disabled onclick="event.stopPropagation()">🔒 Editar</button>';
+    html += '<button style="'+btnEdit+'" onclick="event.stopPropagation();dashEditar(\''+id+'\')">Editar</button>';
   }
-  html += '<button style="'+btnPdf+'" onclick="event.stopPropagation();dashGerarPdf(\''+id+'\')">📄 PDF</button>';
-  if (status === 'aguardando_assinatura' || status === 'assinado_digital') {
-    html += '<button style="'+btnAut+'" onclick="event.stopPropagation();dashAbrirAutentique(\''+id+'\')">🔗 Autentique</button>';
+  html += '<button style="'+btnPdf+'" onclick="event.stopPropagation();dashGerarPdf(\''+id+'\')">PDF</button>';
+  if (st === 'concluido') {
+    html += '<button style="'+btnSign+'" onclick="event.stopPropagation();_mlEnviarAssinar(\''+id+'\')">Enviar p/ assinar</button>';
+    html += '<button style="'+btnFis+'" onclick="event.stopPropagation();_mlOpenFisico(\''+id+'\')">Marcar f\u00edsico</button>';
+  }
+  if (st === 'aguardando_assinatura' || st === 'assinado_digital') {
+    html += '<button style="'+btnAut+'" onclick="event.stopPropagation();dashAbrirAutentique(\''+id+'\')">Autentique</button>';
   }
   html += '<button style="'+btnTrash+'" onclick="event.stopPropagation();dashExcluir(\''+id+'\')">Excluir</button>';
   html += '</div>';
