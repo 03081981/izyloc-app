@@ -3442,6 +3442,8 @@ async function editarLaudo(id, origin) {
     populateFields();
     if (typeof syncWizSidebar === "function") syncWizSidebar();
     gotoWStep(6);
+    try { if (typeof initAmbientes === "function") initAmbientes(); } catch(_eIA){ try{console.warn("[editarLaudo] initAmbientes",_eIA);}catch(__){} }
+    try { if (typeof initItensEtapa === "function") initItensEtapa(); } catch(_eII){ try{console.warn("[editarLaudo] initItensEtapa",_eII);}catch(__){} }
     try { if (typeof window.initRevisao === "function") window.initRevisao(); } catch(e){ try { console.warn("[editarLaudo] initRevisao", e); } catch(e2){} }
     // Restaurar rooms/parties imediatamente após qualquer reset feito por initRevisao/gotoWStep
     try { wizard.rooms = _rooms; wizard.parties = _parties; wizard.selectedRooms = _rooms.map(function(rm){return rm.name||rm.nome||'';}); wizard.itensData = wizard.itensData||{}; _rooms.forEach(function(rm){var n=rm.name||rm.nome||''; if(!wizard.itensData[n]){wizard.itensData[n]={};}  wizard.itensData[n].consolidatedText=rm.consolidated_text||rm.ai_description||''; wizard.itensData[n].resumo=rm.consolidated_text||rm.ai_description||''; wizard.itensData[n].obs=rm.observation||rm.observations||'';
@@ -3499,12 +3501,22 @@ function renderRevisaoFromWizard(pRooms, pParties, pData) {
   if (!w.area && w.property_area) w.area = w.property_area;
   if (!w.codigo && (w.code || w.codigo_laudo)) w.codigo = w.code || w.codigo_laudo;
   if (!w.address && w.property_address) w.address = w.property_address;
-  try { console.log("[renderRev] wizard.rooms.length=", (w.rooms||[]).length, "parties=", (w.parties||[]).length); } catch(e){}
+  try { console.log("[renderRev] wizard.rooms.length=", (w.rooms||[]).length, "parties=", (w.parties||[]).length); } catch(e){} window.__pcntRev = {loc:0, locat:0};
   var esc = function(v){ v = (v==null?"":String(v)); return v.replace(/[&<>"\x27]/g, function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","\x27":"&#39;"}[c];}); };
   var html = "";
   html += '<div style="margin-bottom:16px;padding:14px;background:#f8fafc;border-radius:10px;border:1px solid #e2e8f0;">';
   html += '<div style="font-weight:700;color:#1a2540;margin-bottom:8px;font-size:14px;">📍 Dados do imóvel</div>';
-  var addrLine = esc(w.property_address||w.address||"Endereço não informado");
+  var addrLine = (function(){
+    var _raw = String(w.property_address||w.address||"");
+    if (!_raw) return esc("Endereço não informado");
+    var _parts = _raw.split(",").map(function(s){return s.trim();});
+    var _uniq = [];
+    for (var _pi=0; _pi<_parts.length; _pi++) {
+      var _p = _parts[_pi];
+      if (_pi===0 || _uniq[_uniq.length-1] !== _p) _uniq.push(_p);
+    }
+    return esc(_uniq.join(", "));
+  })();
   html += '<div style="font-size:13px;color:#1a2540;">'+addrLine+'</div>';
   if (w.bairro || w.cidade || w.uf || w.estado) {
     html += '<div style="font-size:12px;color:#8898aa;">'+esc(w.bairro||"")+(w.bairro?" — ":"")+esc(w.cidade||"")+(w.cidade?"/":"")+esc(w.uf||w.estado||"")+'</div>';
@@ -3519,10 +3531,22 @@ function renderRevisaoFromWizard(pRooms, pParties, pData) {
     w.parties.forEach(function(p){
       var role = p.role === "locador" ? "Locador" : (p.role === "locatario" ? "Locatário" : (p.role||"Parte"));
       html += '<div style="font-size:13px;color:#1a2540;margin-bottom:4px;">';
-      html += '<b>'+esc(role)+':</b> '+esc(p.name||p.nome||"(sem nome)");
-      if (p.cpf) html += ' — CPF: '+esc(p.cpf);
-      var _ph = p.phone||p.telefone;
-      if (_ph) html += ' — Tel: '+esc(_ph);
+      var __pname=p.name||p.nome||"";
+      var __pcpf=p.cpf||"";
+      var __pph=p.phone||p.telefone||"";
+      try {
+        var __pref=(p.role==="locador")?"loc":((p.role==="locatario"||p.role==="locatário")?"locat":null);
+        if (__pref) {
+          window.__pcntRev = window.__pcntRev || {loc:0, locat:0};
+          var __pidx = window.__pcntRev[__pref]++;
+          if (!__pname) { var _dn = document.getElementById(__pref+"-name-"+__pidx); if (_dn && _dn.value) __pname = _dn.value; }
+          if (!__pcpf) { var _dc = document.getElementById(__pref+"-cpf-"+__pidx); if (_dc && _dc.value) __pcpf = _dc.value; }
+          if (!__pph) { var _dp = document.getElementById(__pref+"-phone-"+__pidx); if (_dp && _dp.value) __pph = _dp.value; }
+        }
+      } catch(_ePD){}
+      html += '<b>'+esc(role)+':</b> '+esc(__pname||"(sem nome)");
+      if (__pcpf) html += ' — CPF: '+esc(__pcpf);
+      if (__pph) html += ' — Tel: '+esc(__pph);
       html += '</div>';
     });
     html += '</div>';
