@@ -1740,6 +1740,29 @@ textarea.obs-geral{width:100%;background:#f8fafc;border:.5px solid #dce3ed;borde
 .wiz6-btn-prox{padding:10px 24px;border-radius:8px;background:#2d7dd2;color:#fff;font-size:13px;font-weight:600;border:none;cursor:pointer}
 .wiz6-btn-concluir{padding:10px 24px;border-radius:8px;background:#059669;color:#fff;font-size:13px;font-weight:600;border:none;cursor:pointer}
 .wiz6-mostrar-mais{font-size:12px;color:#2d7dd2;cursor:pointer;padding:8px 0;text-align:center;border-top:0.5px solid #f5f7fa}
+
+/* ===== RESPONSIVE + MOBILE SIDEBAR (Meus Laudos and global) ===== */
+.ml-menu-toggle { display: none; position: fixed; top: 12px; left: 12px; z-index: 200; width: 44px; height: 44px; background: var(--sidebar-bg, #1e293b); color: #fff; border: none; border-radius: 8px; font-size: 22px; line-height: 44px; text-align: center; padding: 0; cursor: pointer; box-shadow: 0 2px 6px rgba(0,0,0,0.25); }
+.ml-menu-toggle:active { opacity: 0.8; }
+@media (max-width: 768px) {
+  .sidebar { transform: translateX(-100%); transition: transform 0.22s ease; width: 82vw; max-width: 320px; }
+  body.sidebar-open .sidebar { transform: translateX(0); box-shadow: 0 0 32px rgba(0,0,0,0.45); }
+  .dash-main-wrapper { margin-left: 0 !important; }
+  .ml-menu-toggle { display: block; }
+  .dash-topbar { padding-left: 64px !important; }
+  #ml-counters { grid-template-columns: repeat(3, 1fr) !important; }
+  #ml-list .ml-card-actions, #ml-list [class*="actions"] { flex-wrap: wrap; gap: 6px; }
+  #ml-list button, #ml-list .btn { min-height: 40px; font-size: 13px; }
+  .topbar { flex-wrap: wrap; gap: 8px; }
+  .topbar h1 { font-size: 18px !important; }
+}
+@media (max-width: 480px) {
+  #ml-counters { grid-template-columns: repeat(2, 1fr) !important; }
+  .dash-topbar-title { font-size: 16px !important; }
+}
+/* Overlay when sidebar is open on mobile */
+body.sidebar-open::before { content: ""; position: fixed; inset: 0; background: rgba(0,0,0,0.45); z-index: 99; }
+@media (min-width: 769px) { body.sidebar-open::before { display: none; } }
 </style>
 <script>
 window._openFotoModal = function(imgSrc) {
@@ -2865,6 +2888,65 @@ window._openFotoModal = function(imgSrc) {
 </div>
 
 <div id="page-meus-laudos" class="page">
+  <aside class="sidebar">
+
+  <!-- LOGO -->
+  <div class="sidebar-logo">
+    <div>
+      <span style="font-size:20px;font-weight:400;color:#2d7dd2;font-family:Helvetica,Arial,sans-serif">izy</span><span style="font-size:20px;font-weight:900;color:#fff;font-family:Helvetica,Arial,sans-serif">LAUDO</span>
+    </div>
+    <div style="font-size:7px;color:rgba(255,255,255,0.28);letter-spacing:2px;text-transform:uppercase;margin-top:2px;font-weight:400">Vistorias Imobiliárias</div>
+  </div>
+
+  <!-- NAV PRINCIPAL -->
+  <nav class="sidebar-nav">
+    <div class="nav-item" id="nav-dash-ml" onclick="showPage('page-dashboard'); switchTab('vistorias',document.getElementById('nav-dash'));">Painel</div>
+    <div class="nav-item active" id="nav-laudos-ml" onclick="showMeusLaudosPage(this)">Meus laudos</div>
+
+    <div class="nav-divider"></div>
+    <div class="nav-section-label">Fotos e créditos</div>
+    <div class="nav-item nav-item-cred" id="nav-fotos-ml" onclick="showPage('page-dashboard'); switchTab('estatisticas',this);">
+      <span id="nav-saldo-fotos-ml" style="color:#4fc3f7;font-weight:600">Fotos restantes</span>
+    </div>
+    <div class="nav-item" id="nav-recarga-ml" onclick="showPage('page-dashboard'); switchTab('estatisticas',this);">+ Adicionar créditos</div>
+    <div class="nav-item" id="nav-extrato-ml" onclick="showPage('page-dashboard'); switchTab('estatisticas',this);">Extrato de uso</div>
+
+    <div class="nav-divider"></div>
+    <div class="nav-section-label">Ajuda</div>
+    <div class="nav-item" id="nav-manual" onclick="showManual()">Manual do usuário</div>
+
+    <div class="nav-divider"></div>
+    <div class="nav-section-label">Conta</div>
+    <div class="nav-item" id="nav-config" onclick="switchTab('perfil',this)">Configurações</div>
+    <div class="nav-item" onclick="if(confirm('Sair da conta?')){logout()}">Sair</div>
+  </nav>
+
+  <!-- RODAPE SIDEBAR -->
+  <div class="sidebar-bottom">
+    <div class="sidebar-user" onclick="showPage('page-dashboard'); switchTab('perfil',null);">
+      <div class="sidebar-avatar" id="profile-avatar-letter-ml">?</div>
+      <div class="sidebar-user-info">
+        <div class="sidebar-user-name" id="profile-name-ml"></div>
+        <div id="profile-company-ml" style="display:none"></div>
+        <div class="sidebar-user-plan">Plano Profissional</div>
+      </div>
+    </div>
+    <div class="sidebar-empresa">
+      <div class="sidebar-empresa-nome">izyLOC Sistema de Gestao de Carteiras de Locacoes e Cobrancas Ltda</div>
+      <div class="sidebar-empresa-cnpj">CNPJ 57.552.013/0001-90</div>
+      <div class="sidebar-empresa-email">izylaudo@izylaudo.com.br</div>
+    </div>
+  </div>
+
+</aside>
+  <button type="button" class="ml-menu-toggle" aria-label="Abrir menu" onclick="document.body.classList.toggle('sidebar-open')">☰</button>
+  <div class="dash-main-wrapper">
+    <div class="dash-topbar">
+      <div class="dash-topbar-title">Meus laudos</div>
+      <div class="dash-topbar-right">
+        <span class="topbar-user-name" id="topbar-user-name-ml" onclick="showPage('page-dashboard'); switchTab('perfil',null);" style="cursor:pointer"></span>
+      </div>
+    </div>
   <div class="topbar" style="display:flex;align-items:center;justify-content:space-between;padding:14px 20px;background:#fff;border-bottom:1px solid #e5e7eb;">
     <div>
       <button onclick="showPage('page-dashboard')" style="background:none;border:1px solid #d1d5db;padding:6px 12px;border-radius:6px;cursor:pointer;font-size:13px;">&larr; Voltar</button>
@@ -2883,6 +2965,7 @@ window._openFotoModal = function(imgSrc) {
     </div>
 
     <div id="ml-list"></div>
+  </div>
   </div>
 </div>
 
@@ -3694,7 +3777,7 @@ function showMeusLaudosPage(el) {
   showPage("page-meus-laudos");
   document.querySelectorAll(".nav-item").forEach(function(n){ n.classList.remove("active"); });
   if (el && el.classList) el.classList.add("active");
-  var nd = document.getElementById("nav-laudos"); if (nd) nd.classList.add("active");
+  var nd = document.getElementById("nav-laudos"); if (nd) nd.classList.add("active"); var nd2 = document.getElementById("nav-laudos-ml"); if (nd2) nd2.classList.add("active"); try { document.body.classList.remove("sidebar-open"); } catch(_eSO){}
   renderMeusLaudos();
 }
 
