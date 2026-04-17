@@ -758,12 +758,12 @@ def add_ambientes(story, s, ambientes):
                       else u'\u26a0 Avaria'  if _estado == 'avaria'
                       else u'\u2717 Ausente' if _estado == 'ausente'
                       else u'\u2014')
-            _linhas.append([str(_item), str(_qty_int), _label, _obs])
+            _linhas.append([str(_item), str(_qty_int), _obs])
         if _linhas:
             story.append(Spacer(1, 8))
             story.append(Paragraph(u'Inventário do ambiente', s['secao']))
-            _dados = [[u'Item', u'Qtd', u'Estado', u'Observação']] + _linhas
-            _t = Table(_dados, colWidths=[180, 30, 70, 180])
+            _dados = [[u'Item', u'Qtd', u'Observação']] + _linhas
+            _t = Table(_dados, colWidths=[175, 46, 239])
             _t.setStyle(TableStyle([
                 ('FONTNAME',     (0,0),(-1,0),   'Helvetica-Bold'),
                 ('FONTSIZE',     (0,0),(-1,-1),  8),
