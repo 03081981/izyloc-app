@@ -2990,10 +2990,10 @@ window._openFotoModal = function(imgSrc) {
   <div class="dash-main-wrapper">
   <div class="topbar" style="display:flex;align-items:center;justify-content:space-between;padding:14px 20px;background:#fff;border-bottom:1px solid #e5e7eb;">
     <div>
-      <button onclick="showPage('page-dashboard')" style="background:none;border:1px solid #d1d5db;padding:6px 12px;border-radius:6px;cursor:pointer;font-size:13px;">&larr; Voltar</button>
+      <button onclick="showPage('page-dashboard')" style="background:#2d7dd2;color:#fff;border:none;padding:9px 20px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;">Voltar</button>
       <h1 style="display:inline-block;margin:0 0 0 16px;font-size:22px;color:#1f2937;font-weight:600;">Meus laudos</h1>
     </div>
-    <button onclick="showNewInspection()" style="background:#2563eb;color:#fff;border:none;padding:8px 16px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;">+ Novo laudo</button>
+    <button onclick="showNewInspection()" style="background:#2d7dd2;color:#fff;border:none;padding:9px 20px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;">+ Novo laudo</button>
   </div>
 
   <div style="padding:20px;max-width:1200px;margin:0 auto;">
@@ -3006,6 +3006,10 @@ window._openFotoModal = function(imgSrc) {
     </div>
 
     <div id="ml-list"></div>
+     <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 20px;background:#fff;border-top:0.5px solid #e2e8f0;margin-top:8px;">
+       <button onclick="showPage('page-dashboard')" style="padding:9px 20px;background:#2d7dd2;color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;">Voltar</button>
+       <button onclick="showNewInspection()" style="padding:9px 20px;background:#2d7dd2;color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;">+ Novo laudo</button>
+     </div>
   </div>
   </div>
 </div>
