@@ -3299,7 +3299,27 @@ async function editarLaudo(id, origin) {
     try { console.log("[editarLaudo] rooms:", JSON.stringify((r.rooms||[]).map(function(x){return {id:x.id,name:x.name,items_count:(x.items||[]).length};}))); } catch(e){}
     // Snapshot local para resistir a resets por initRevisao / gotoWStep
     var _rooms = r.rooms || [];
-    var _parties = r.parties || [];
+    var _parties = (function(){
+      var arr = [];
+      try {
+        var __lj = r.locadores_json;
+        if (typeof __lj === "string") { try { __lj = JSON.parse(__lj); } catch(_) { __lj = null; } }
+        if (Array.isArray(__lj)) {
+          __lj.forEach(function(p){ if(p) arr.push({role:"locador", name:(p.name||p.nome||""), cpf:(p.cpf||""), rg:(p.rg||""), phone:(p.phone||p.telefone||""), email:(p.email||"")}); });
+        } else if (r.locador_name) {
+          arr.push({role:"locador", name:String(r.locador_name||""), cpf:String(r.locador_cpf||""), rg:String(r.locador_rg||""), phone:String(r.locador_phone||""), email:String(r.locador_email||"")});
+        }
+        var __tj = r.locatarios_json;
+        if (typeof __tj === "string") { try { __tj = JSON.parse(__tj); } catch(_) { __tj = null; } }
+        if (Array.isArray(__tj)) {
+          __tj.forEach(function(p){ if(p) arr.push({role:"locatario", name:(p.name||p.nome||""), cpf:(p.cpf||""), rg:(p.rg||""), phone:(p.phone||p.telefone||""), email:(p.email||"")}); });
+        } else if (r.locatario_name) {
+          arr.push({role:"locatario", name:String(r.locatario_name||""), cpf:String(r.locatario_cpf||""), rg:String(r.locatario_rg||""), phone:String(r.locatario_phone||""), email:String(r.locatario_email||"")});
+        }
+      } catch(_ePB){}
+      if (arr.length === 0 && Array.isArray(r.parties)) arr = r.parties;
+      return arr;
+    })();
     // Limpar estado anterior ANTES de popular (Etapa 7)
     try {
       window._fotoStore = {};
@@ -3341,7 +3361,21 @@ async function editarLaudo(id, origin) {
     wizard.mobiliado        = !!(r.mobiliado || r.is_furnished);
     wizard.codigo           = codigo;
     wizard.rooms            = r.rooms || [];
-    wizard.parties          = r.parties || [];
+    wizard.parties          = (function(){
+      var arr = [];
+      try {
+        var __lj = r.locadores_json;
+        if (typeof __lj === "string") { try { __lj = JSON.parse(__lj); } catch(_) { __lj = null; } }
+        if (Array.isArray(__lj)) { __lj.forEach(function(p){ if(p) arr.push({role:"locador", name:(p.name||p.nome||""), cpf:(p.cpf||""), rg:(p.rg||""), phone:(p.phone||p.telefone||""), email:(p.email||"")}); }); }
+        else if (r.locador_name) { arr.push({role:"locador", name:String(r.locador_name||""), cpf:String(r.locador_cpf||""), rg:String(r.locador_rg||""), phone:String(r.locador_phone||""), email:String(r.locador_email||"")}); }
+        var __tj = r.locatarios_json;
+        if (typeof __tj === "string") { try { __tj = JSON.parse(__tj); } catch(_) { __tj = null; } }
+        if (Array.isArray(__tj)) { __tj.forEach(function(p){ if(p) arr.push({role:"locatario", name:(p.name||p.nome||""), cpf:(p.cpf||""), rg:(p.rg||""), phone:(p.phone||p.telefone||""), email:(p.email||"")}); }); }
+        else if (r.locatario_name) { arr.push({role:"locatario", name:String(r.locatario_name||""), cpf:String(r.locatario_cpf||""), rg:String(r.locatario_rg||""), phone:String(r.locatario_phone||""), email:String(r.locatario_email||"")}); }
+      } catch(_ePB2){}
+      if (arr.length === 0 && Array.isArray(r.parties)) arr = r.parties;
+      return arr;
+    })();
     wizard.selectedRooms    = (r.rooms || []).map(function(x){ return x.name || ""; }).filter(Boolean);
     window._wiz6Ambientes   = wizard.selectedRooms.slice();
     function _sv(eid, v){ var el = document.getElementById(eid); if (el) el.value = (v==null?"":v); }
@@ -3470,7 +3504,7 @@ function renderRevisaoFromWizard(pRooms, pParties, pData) {
   var html = "";
   html += '<div style="margin-bottom:16px;padding:14px;background:#f8fafc;border-radius:10px;border:1px solid #e2e8f0;">';
   html += '<div style="font-weight:700;color:#1a2540;margin-bottom:8px;font-size:14px;">📍 Dados do imóvel</div>';
-  var addrLine = esc(w.property_address||w.address||"Endereço não informado")+(w.numero?(", "+esc(w.numero)):"");
+  var addrLine = esc(w.property_address||w.address||"Endereço não informado");
   html += '<div style="font-size:13px;color:#1a2540;">'+addrLine+'</div>';
   if (w.bairro || w.cidade || w.uf || w.estado) {
     html += '<div style="font-size:12px;color:#8898aa;">'+esc(w.bairro||"")+(w.bairro?" — ":"")+esc(w.cidade||"")+(w.cidade?"/":"")+esc(w.uf||w.estado||"")+'</div>';
@@ -3512,6 +3546,7 @@ function renderRevisaoFromWizard(pRooms, pParties, pData) {
       if (!nPhotos && rm.items && rm.items.length) { rm.items.forEach(function(it){ if (it && it.photos && it.photos.length) nPhotos += it.photos.length; }); }
       if (nItems > 0) html += '<div style="font-size:11px;color:#2d7dd2;margin-top:4px;">📦 '+nItems+' item(ns)</div>';
       if (nPhotos > 0) { html += '<div style="font-size:11px;color:#2d7dd2;">📷 '+nPhotos+' foto(s)</div>'; var _phArr = (rm.photos && rm.photos.length) ? rm.photos.slice() : []; if(!_phArr.length && rm.items){ rm.items.forEach(function(_it){ if(_it && _it.photos && _it.photos.length){ _phArr = _phArr.concat(_it.photos); } }); } if(_phArr.length){ html += '<div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;">'; _phArr.forEach(function(_ph){ var _src=_ph.url||_ph.photo_url||_ph.src||_ph.preview||(_ph.base64?('data:image/jpeg;base64,'+_ph.base64):''); if(_src) html += '<img src="'+_src+'" style="width:90px;height:90px;object-fit:cover;border-radius:6px;border:1px solid #e2e8f0;"/>'; }); html += '</div>'; } }
+      try { var __itdT = (window.wizard && window.wizard.itensData && window.wizard.itensData[__ridx]) || {}; if ((!__itdT.testes || Object.keys(__itdT.testes||{}).length===0) && window._wizSnap && window._wizSnap.itensData && window._wizSnap.itensData[__ridx]) __itdT = window._wizSnap.itensData[__ridx] || __itdT; var __testes = __itdT.testes || {}; var __testesExtras = Array.isArray(__itdT.testesExtras) ? __itdT.testesExtras : []; var __tkeys = Object.keys(__testes); if (__tkeys.length > 0 || __testesExtras.length > 0) { var __nomes = {'porta':'Porta — maçaneta e fechadura','chaves':'Chaves da porta','tomadas':'Tomadas e interruptores','ac':'Ar condicionado','janela':'Janela','torneira':'Torneira','chuveiro':'Chuveiro','descarga':'Descarga','ralo':'Ralo','iluminacao':'Iluminação','piso':'Piso','teto':'Teto','parede':'Parede','janelas':'Janelas','portas':'Portas'}; var __vmap = {'ok':'<span style="color:#10b981;font-weight:600;">✅ OK</span>','problema':'<span style="color:#ef4444;font-weight:600;">⚠️ Problema</span>','nao-testado':'<span style="color:#94a3b8;">⚪ Não testado</span>','na':'<span style="color:#94a3b8;">— N/A</span>'}; var __vt = '<div style="margin-top:10px;padding:10px;background:#f8fafc;border-radius:8px;border:1px solid #e2e8f0;"><div style="font-weight:600;font-size:12px;color:#1a2540;margin-bottom:6px;">🔧 Verificações técnicas</div>'; __tkeys.forEach(function(__tk){ var __tv = __testes[__tk]; var __lab = __nomes[__tk] || __tk; var __vh = __vmap[String(__tv)] || esc(String(__tv||'')); __vt += '<div style="font-size:12px;color:#444;margin:3px 0;display:flex;justify-content:space-between;"><span>'+esc(__lab)+'</span><span>'+__vh+'</span></div>'; }); __testesExtras.forEach(function(__ex){ if(!__ex) return; var __lab = __ex.n || __ex.name || __ex.k || 'Extra'; var __tv = __ex.v || __ex.valor || ''; var __vh = __vmap[String(__tv)] || esc(String(__tv||'')); __vt += '<div style="font-size:12px;color:#444;margin:3px 0;display:flex;justify-content:space-between;"><span>'+esc(__lab)+'</span><span>'+__vh+'</span></div>'; }); __vt += '</div>'; html += __vt; } } catch(_eVT) { try { console.warn('[renderRev verif]', _eVT); } catch(__ignored2){} }
       try { var __itd = (window.wizard && window.wizard.itensData && window.wizard.itensData[__ridx]) || {}; if (!__itd.inventario && !__itd.inventarioExtras && window._wizSnap && window._wizSnap.itensData && window._wizSnap.itensData[__ridx]) __itd = window._wizSnap.itensData[__ridx] || __itd; var __hasInv = (__itd.inventario && Object.keys(__itd.inventario).length>0) || (Array.isArray(__itd.inventarioExtras) && __itd.inventarioExtras.length>0); if (__hasInv && typeof _wiz7RenderInventarioRev === 'function') { var __invHtml = _wiz7RenderInventarioRev(__ridx, rm.name||rm.nome||'', __itd); if (__invHtml) html += '<div style="margin-top:10px;">' + __invHtml + '</div>'; } } catch(_eInv) { try { console.warn('[renderRev inv]', _eInv); } catch(__ignored){} }
       html += '</div>';
     });
@@ -4136,7 +4171,7 @@ async function wizardNext(step) {
         showLoading('Criando vistoria...');
     const r = await api('POST', '/api/inspections', {
       type: (typeof wizard !== 'undefined' && wizard.tipo) || document.getElementById('wi-type').value,
-      property_address: (function(){var _a=(document.getElementById('wi-address')||{value:''}).value.trim();var _n=(document.getElementById('wi-n\u00famero')||document.getElementById('wi-numero')||document.getElementById('wi-number')||{value:''}).value.trim();return _n?(_a+', '+_n):_a;})(),
+      property_address: (function(){var _a=(document.getElementById('wi-address')||{value:''}).value.trim();var _n=(document.getElementById('wi-n\u00famero')||document.getElementById('wi-numero')||document.getElementById('wi-number')||{value:''}).value.trim();if(!_n)return _a;var _suf=', '+_n;if(_a&&_a.length>_suf.length&&_a.substring(_a.length-_suf.length)===_suf)return _a;return _a+_suf;})(),
       property_type: document.getElementById('wi-prop-type').value,
       property_area: document.getElementById('wi-area').value,
       inspection_date: fmtDate,
@@ -4592,7 +4627,7 @@ async function gerarLaudo() {
   var tipo = document.getElementById('wi-type').value || 'entrada';
   var body = {
     type: tipo,
-    property_address: (function(){var _a=(document.getElementById('wi-address')||{value:''}).value.trim();var _n=(document.getElementById('wi-n\u00famero')||document.getElementById('wi-numero')||document.getElementById('wi-number')||{value:''}).value.trim();return _n?(_a+', '+_n):_a;})(),
+    property_address: (function(){var _a=(document.getElementById('wi-address')||{value:''}).value.trim();var _n=(document.getElementById('wi-n\u00famero')||document.getElementById('wi-numero')||document.getElementById('wi-number')||{value:''}).value.trim();if(!_n)return _a;var _suf=', '+_n;if(_a&&_a.length>_suf.length&&_a.substring(_a.length-_suf.length)===_suf)return _a;return _a+_suf;})(),
     property_type: document.getElementById('wi-prop-type').value,
     property_area: (document.getElementById('wi-area') || {}).value || '',
     inspection_date: document.getElementById('wi-date').value,
