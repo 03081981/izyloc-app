@@ -7556,8 +7556,8 @@ function wiz6RenderAmbCard(idx) {
     var obsVal = testesSalvos[t.k+'_obs'] || '';
     htmlTestes +=
       '<div style="padding:9px 12px;background:#f8fafc;border:0.5px solid #e2e8f0;border-radius:9px;margin-bottom:5px">' +
-        '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:' + (val!=='nt'?'6':'0') + 'px">' +
-          '<span style="font-size: var(--fs-xs);color:#1a2540;flex:1">' + t.n + '</span>' +
+        '<div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:' + (val!=='nt'?'6':'0') + 'px">' +
+          '<span style="font-size: var(--fs-xs);color:#1a2540;flex:1;min-width:0">' + t.n + '</span>' +
           '<div style="display:flex;gap:4px;flex-wrap:wrap">' +
             '<button onclick="wiz6Teste(' + idx + ',\'' + t.k + '\',\'nt\')" style="padding:4px 7px;border-radius:6px;font-size: var(--fs-tiny);border:0.5px solid;cursor:pointer;font-weight: var(--fw-medium);' + (val==='nt'?'background:#1e3a5f;color:#fff;border-color:#1e3a5f':'background:#f8fafc;color:#8898aa;border-color:#e2e8f0') + '">\u25a1 N&atilde;o testado</button>' +
             '<button onclick="wiz6Teste(' + idx + ',\'' + t.k + '\',\'ok\')" style="padding:4px 7px;border-radius:6px;font-size: var(--fs-tiny);border:0.5px solid;cursor:pointer;font-weight: var(--fw-medium);' + (val==='ok'?'background:#16a34a;color:#fff;border-color:#16a34a':'background:#f0fdf4;color:#166534;border-color:#bbf7d0') + '">\u2713 Funcionando</button>' +
@@ -8406,8 +8406,8 @@ function wiz6BuildSuiteHtml(idx) {
       var val = testesSalvos[t.k] || 'nt';
       var obsVal = testesSalvos[t.k+'_obs'] || '';
       h += '<div style="padding:9px 12px;background:#f8fafc;border:0.5px solid #e2e8f0;border-radius:9px;margin-bottom:5px">';
-      h += '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:' + (val!=='nt'?'6':'0') + 'px">';
-      h += '<span style="font-size: var(--fs-xs);color:#1a2540;flex:1">' + t.n + '</span>';
+      h += '<div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:' + (val!=='nt'?'6':'0') + 'px">';
+      h += '<span style="font-size: var(--fs-xs);color:#1a2540;flex:1;min-width:0">' + t.n + '</span>';
       h += '<div style="display:flex;gap:4px;flex-wrap:wrap">';
       h += '<button onclick="wiz6TesteSub(' + idx + ',\'' + subNome.replace(/'/g,"\\\'") + '\',\'' + t.k + '\',\'nt\')" style="padding:4px 7px;border-radius:6px;font-size: var(--fs-tiny);border:0.5px solid;cursor:pointer;font-weight: var(--fw-medium);' + (val==='nt'?'background:#1e3a5f;color:#fff;border-color:#1e3a5f':'background:#f8fafc;color:#8898aa;border-color:#e2e8f0') + '">\u25a1 N&atilde;o testado</button>';
       h += '<button onclick="wiz6TesteSub(' + idx + ',\'' + subNome.replace(/'/g,"\\\'") + '\',\'' + t.k + '\',\'ok\')" style="padding:4px 7px;border-radius:6px;font-size: var(--fs-tiny);border:0.5px solid;cursor:pointer;font-weight: var(--fw-medium);' + (val==='ok'?'background:#16a34a;color:#fff;border-color:#16a34a':'background:#f0fdf4;color:#166534;border-color:#bbf7d0') + '">\u2713 Funcionando</button>';
