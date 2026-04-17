@@ -2629,12 +2629,8 @@ window._openFotoModal = function(imgSrc) {
         <input id="loc-cpf-0" type="text" placeholder="000.000.000-00" style="border:0.5px solid #e2e8f0;border-radius:8px;padding:9px 12px;font-size: var(--fs-sm);color:#1a2540;font-family:inherit;background:#fff;outline:none"/>
       </div>
       <div style="display:flex;flex-direction:column;gap:4px">
-        <label style="font-size: var(--fs-xs);font-weight: var(--fw-semibold);color:#4a5568">RG</label>
-        <input id="loc-rg-0" type="text" placeholder="00.000.000-0" style="border:0.5px solid #e2e8f0;border-radius:8px;padding:9px 12px;font-size: var(--fs-sm);color:#1a2540;font-family:inherit;background:#fff;outline:none"/>
-      </div>
-      <div style="display:flex;flex-direction:column;gap:4px">
         <label style="font-size: var(--fs-xs);font-weight: var(--fw-semibold);color:#4a5568">Telefone</label>
-        <input id="loc-phone-0" type="tel" placeholder="(00) 00000-0000" style="border:0.5px solid #e2e8f0;border-radius:8px;padding:9px 12px;font-size: var(--fs-sm);color:#1a2540;font-family:inherit;background:#fff;outline:none"/>
+        <input id="loc-phone-0" type="tel" placeholder="Telefone (opcional)" style="border:0.5px solid #e2e8f0;border-radius:8px;padding:9px 12px;font-size: var(--fs-sm);color:#1a2540;font-family:inherit;background:#fff;outline:none"/>
       </div>
       <div style="display:flex;flex-direction:column;gap:4px">
         <label style="font-size: var(--fs-xs);font-weight: var(--fw-semibold);color:#4a5568">E-mail</label>
@@ -2663,12 +2659,8 @@ window._openFotoModal = function(imgSrc) {
         <input id="locat-cpf-0" type="text" placeholder="000.000.000-00" style="border:0.5px solid #e2e8f0;border-radius:8px;padding:9px 12px;font-size: var(--fs-sm);color:#1a2540;font-family:inherit;background:#fff;outline:none"/>
       </div>
       <div style="display:flex;flex-direction:column;gap:4px">
-        <label style="font-size: var(--fs-xs);font-weight: var(--fw-semibold);color:#4a5568">RG</label>
-        <input id="locat-rg-0" type="text" placeholder="00.000.000-0" style="border:0.5px solid #e2e8f0;border-radius:8px;padding:9px 12px;font-size: var(--fs-sm);color:#1a2540;font-family:inherit;background:#fff;outline:none"/>
-      </div>
-      <div style="display:flex;flex-direction:column;gap:4px">
         <label style="font-size: var(--fs-xs);font-weight: var(--fw-semibold);color:#4a5568">Telefone</label>
-        <input id="locat-phone-0" type="tel" placeholder="(00) 00000-0000" style="border:0.5px solid #e2e8f0;border-radius:8px;padding:9px 12px;font-size: var(--fs-sm);color:#1a2540;font-family:inherit;background:#fff;outline:none"/>
+        <input id="locat-phone-0" type="tel" placeholder="Telefone (opcional)" style="border:0.5px solid #e2e8f0;border-radius:8px;padding:9px 12px;font-size: var(--fs-sm);color:#1a2540;font-family:inherit;background:#fff;outline:none"/>
       </div>
       <div style="display:flex;flex-direction:column;gap:4px">
         <label style="font-size: var(--fs-xs);font-weight: var(--fw-semibold);color:#4a5568">E-mail</label>
@@ -2698,7 +2690,7 @@ window._openFotoModal = function(imgSrc) {
     </div>
     <div style="display:flex;flex-direction:column;gap:4px">
       <label style="font-size: var(--fs-xs);font-weight: var(--fw-semibold);color:#4a5568">Telefone</label>
-      <input id="wi-corr-phone" type="tel" placeholder="(00) 00000-0000" style="border:0.5px solid #e2e8f0;border-radius:8px;padding:9px 12px;font-size: var(--fs-sm);color:#1a2540;font-family:inherit;background:#fff;outline:none"/>
+      <input id="wi-corr-phone" type="tel" placeholder="Telefone (opcional)" style="border:0.5px solid #e2e8f0;border-radius:8px;padding:9px 12px;font-size: var(--fs-sm);color:#1a2540;font-family:inherit;background:#fff;outline:none"/>
     </div>
     <div style="display:flex;flex-direction:column;gap:4px">
       <label style="font-size: var(--fs-xs);font-weight: var(--fw-semibold);color:#4a5568">E-mail</label>
@@ -2729,7 +2721,7 @@ window._openFotoModal = function(imgSrc) {
       </div>
       <div style="display:flex;flex-direction:column;gap:4px">
         <label style="font-size: var(--fs-xs);font-weight: var(--fw-semibold);color:#4a5568">Telefone</label>
-        <input id="wi-imob-phone" type="tel" placeholder="(00) 00000-0000" style="border:0.5px solid #e2e8f0;border-radius:8px;padding:9px 12px;font-size: var(--fs-sm);color:#1a2540;font-family:inherit;background:#fff;outline:none"/>
+        <input id="wi-imob-phone" type="tel" placeholder="Telefone (opcional)" style="border:0.5px solid #e2e8f0;border-radius:8px;padding:9px 12px;font-size: var(--fs-sm);color:#1a2540;font-family:inherit;background:#fff;outline:none"/>
       </div>
       <div style="display:flex;flex-direction:column;gap:4px">
         <label style="font-size: var(--fs-xs);font-weight: var(--fw-semibold);color:#4a5568">E-mail</label>
@@ -5247,7 +5239,7 @@ if (typeof initAmbientes === 'function') initAmbientes();
       if (removable) h += '<button onclick="this.closest(\'.person-block\').remove()" style="background:none;border:none;color:#e74c3c;cursor:pointer;font-size: var(--fs-h4);font-weight: var(--fw-bold);padding:0 6px" title="Remover">\u00d7</button>';
       h += '</div>';
       h += '<div class="form-row"><div class="form-group"><label class="form-label">Nome</label><input class="form-input" id="'+prefix+'-name-'+idx+'" type="text" placeholder="Nome completo"/></div><div class="form-group"><label class="form-label">CPF</label><input class="form-input" id="'+prefix+'-cpf-'+idx+'" type="text" placeholder="000.000.000-00"/></div></div>';
-      h += '<div class="form-row"><div class="form-group"><label class="form-label">Telefone</label><input class="form-input" id="'+prefix+'-phone-'+idx+'" type="text" placeholder="(00) 00000-0000"/></div><div class="form-group" style="flex:1"><label class="form-label">E-mail</label><input class="form-input" id="'+prefix+'-email-'+idx+'" type="email" placeholder="email@exemplo.com"/></div></div>';
+      h += '<div class="form-row"><div class="form-group"><label class="form-label">Telefone</label><input class="form-input" id="'+prefix+'-phone-'+idx+'" type="text" placeholder="Telefone (opcional)"/></div><div class="form-group" style="flex:1"><label class="form-label">E-mail</label><input class="form-input" id="'+prefix+'-email-'+idx+'" type="email" placeholder="email@exemplo.com"/></div></div>';
       d.innerHTML = h;
       return d;
     }
@@ -6774,10 +6766,9 @@ function wiz7BuildPartesHtml() {
     h += '<input type="text" value="' + _e(loc.name) + '" onblur="wiz7SalvarLoc(' + i + ',\x27name\x27,this.value)" placeholder="Nome do locador" style="width:100%;padding:10px 12px;border:0.5px solid #e2e8f0;border-radius:8px;font-size: var(--fs-sm);box-sizing:border-box"></div>';
     h += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">';
     h += '<div><div style="font-size: var(--fs-xxs);color:#8898aa;margin-bottom:4px">CPF</div><input type="text" value="' + _e(loc.cpf) + '" onblur="wiz7SalvarLoc(' + i + ',\x27cpf\x27,this.value)" placeholder="000.000.000-00" style="width:100%;padding:10px 12px;border:0.5px solid #e2e8f0;border-radius:8px;font-size: var(--fs-sm);box-sizing:border-box"></div>';
-    h += '<div><div style="font-size: var(--fs-xxs);color:#8898aa;margin-bottom:4px">RG</div><input type="text" value="' + _e(loc.rg) + '" onblur="wiz7SalvarLoc(' + i + ',\x27rg\x27,this.value)" placeholder="00.000.000-0" style="width:100%;padding:10px 12px;border:0.5px solid #e2e8f0;border-radius:8px;font-size: var(--fs-sm);box-sizing:border-box"></div>';
     h += '</div>';
     h += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">';
-    h += '<div><div style="font-size: var(--fs-xxs);color:#8898aa;margin-bottom:4px">Telefone</div><input type="text" value="' + _e(loc.phone) + '" onblur="wiz7SalvarLoc(' + i + ',\x27phone\x27,this.value)" placeholder="(00) 00000-0000" style="width:100%;padding:10px 12px;border:0.5px solid #e2e8f0;border-radius:8px;font-size: var(--fs-sm);box-sizing:border-box"></div>';
+    h += '<div><div style="font-size: var(--fs-xxs);color:#8898aa;margin-bottom:4px">Telefone</div><input type="text" value="' + _e(loc.phone) + '" onblur="wiz7SalvarLoc(' + i + ',\x27phone\x27,this.value)" placeholder="Telefone (opcional)" style="width:100%;padding:10px 12px;border:0.5px solid #e2e8f0;border-radius:8px;font-size: var(--fs-sm);box-sizing:border-box"></div>';
     h += '<div><div style="font-size: var(--fs-xxs);color:#8898aa;margin-bottom:4px">E-mail</div><input type="text" value="' + _e(loc.email) + '" onblur="wiz7SalvarLoc(' + i + ',\x27email\x27,this.value)" placeholder="email@exemplo.com" style="width:100%;padding:10px 12px;border:0.5px solid #e2e8f0;border-radius:8px;font-size: var(--fs-sm);box-sizing:border-box"></div>';
     h += '</div></div>';
   });
@@ -6797,10 +6788,9 @@ function wiz7BuildPartesHtml() {
     h += '<input type="text" value="' + _e(ten.name) + '" onblur="wiz7SalvarTen(' + i + ',\x27name\x27,this.value)" placeholder="Nome do locatário" style="width:100%;padding:10px 12px;border:0.5px solid #e2e8f0;border-radius:8px;font-size: var(--fs-sm);box-sizing:border-box"></div>';
     h += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">';
     h += '<div><div style="font-size: var(--fs-xxs);color:#8898aa;margin-bottom:4px">CPF</div><input type="text" value="' + _e(ten.cpf) + '" onblur="wiz7SalvarTen(' + i + ',\x27cpf\x27,this.value)" placeholder="000.000.000-00" style="width:100%;padding:10px 12px;border:0.5px solid #e2e8f0;border-radius:8px;font-size: var(--fs-sm);box-sizing:border-box"></div>';
-    h += '<div><div style="font-size: var(--fs-xxs);color:#8898aa;margin-bottom:4px">RG</div><input type="text" value="' + _e(ten.rg) + '" onblur="wiz7SalvarTen(' + i + ',\x27rg\x27,this.value)" placeholder="00.000.000-0" style="width:100%;padding:10px 12px;border:0.5px solid #e2e8f0;border-radius:8px;font-size: var(--fs-sm);box-sizing:border-box"></div>';
     h += '</div>';
     h += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">';
-    h += '<div><div style="font-size: var(--fs-xxs);color:#8898aa;margin-bottom:4px">Telefone</div><input type="text" value="' + _e(ten.phone) + '" onblur="wiz7SalvarTen(' + i + ',\x27phone\x27,this.value)" placeholder="(00) 00000-0000" style="width:100%;padding:10px 12px;border:0.5px solid #e2e8f0;border-radius:8px;font-size: var(--fs-sm);box-sizing:border-box"></div>';
+    h += '<div><div style="font-size: var(--fs-xxs);color:#8898aa;margin-bottom:4px">Telefone</div><input type="text" value="' + _e(ten.phone) + '" onblur="wiz7SalvarTen(' + i + ',\x27phone\x27,this.value)" placeholder="Telefone (opcional)" style="width:100%;padding:10px 12px;border:0.5px solid #e2e8f0;border-radius:8px;font-size: var(--fs-sm);box-sizing:border-box"></div>';
     h += '<div><div style="font-size: var(--fs-xxs);color:#8898aa;margin-bottom:4px">E-mail</div><input type="text" value="' + _e(ten.email) + '" onblur="wiz7SalvarTen(' + i + ',\x27email\x27,this.value)" placeholder="email@exemplo.com" style="width:100%;padding:10px 12px;border:0.5px solid #e2e8f0;border-radius:8px;font-size: var(--fs-sm);box-sizing:border-box"></div>';
     h += '</div></div>';
   });
