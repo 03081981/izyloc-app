@@ -7989,45 +7989,32 @@ function _buildInvTable(idx, subNome, titulo, itens, extras, inv, fnEstado, fnQt
   html += '<thead><tr>';
   html += '<th style="font-size: var(--fs-tiny);font-weight: var(--fw-semibold);color:#8898aa;text-align:left;padding:5px 6px;border-bottom:1px solid #dbeafe;background:#e8f2ff">Item</th>';
   html += '<th style="font-size: var(--fs-tiny);font-weight: var(--fw-semibold);color:#8898aa;text-align:center;padding:5px 6px;border-bottom:1px solid #dbeafe;background:#e8f2ff;width:90px">Qtd</th>';
-  html += '<th style="font-size: var(--fs-tiny);font-weight: var(--fw-semibold);color:#8898aa;text-align:center;padding:5px 6px;border-bottom:1px solid #dbeafe;background:#e8f2ff;width:130px">Estado</th>';
   html += '<th style="background:#e8f2ff;border-bottom:1px solid #dbeafe;width:24px"></th>';
   html += '</tr></thead><tbody>';
   function _renderLinha(item, key, isExtra, extraIdx) {
     var _qty = inv[key+'_qty'] !== undefined ? parseInt(inv[key+'_qty']) : 0;
-    var _est = inv[key+'_estado'] || '';
     var _obs = inv[key+'_obs'] || '';
-    var _fnE = fnEstado + '(' + idx + _subKey + ',\'' + key + '\',\'';
     var _fnQ = fnQty + '(' + idx + _subKey + ',\'' + key + '\',';
     var _fnO = fnObs + '(' + idx + _subKey + ',\'' + key + '\',this.value)';
+    var _qtyColor = _qty === 0 ? '#cbd5e1' : '#1a2540';
     var _r = '<tr>';
     _r += '<td style="padding:6px;border-bottom:0.5px solid #e8f2ff;font-size: var(--fs-xs);color:#1a2540">' + item + '</td>';
     _r += '<td style="padding:6px;border-bottom:0.5px solid #e8f2ff">';
-    _r += '<div style="display:flex;align-items:center;justify-content:center;gap:5px">';
-    _r += '<button onclick="' + _fnQ + '-1)" style="width:20px;height:20px;border-radius:50%;border:0.5px solid #93c5fd;background:#fff;color:#1e3a5f;font-size: var(--fs-xs);cursor:pointer;font-weight: var(--fw-semibold);line-height:1">\u2212</button>';
-    _r += '<span id="' + _idPfx + '-' + key + '" style="font-size: var(--fs-xs);font-weight: var(--fw-semibold);color:#1a2540;min-width:16px;text-align:center">' + _qty + '</span>';
-    _r += '<button onclick="' + _fnQ + '1)" style="width:20px;height:20px;border-radius:50%;border:0.5px solid #93c5fd;background:#fff;color:#1e3a5f;font-size: var(--fs-xs);cursor:pointer;font-weight: var(--fw-semibold);line-height:1">+</button>';
-    _r += '</div></td>';
-    var _eBom = _est==='bom'     ? 'background:#059669;color:#fff' : 'background:#d1fae5;color:#065f46';
-    var _eAv  = _est==='avaria'  ? 'background:#dc2626;color:#fff' : 'background:#fee2e2;color:#991b1b';
-    var _eAus = _est==='ausente' ? 'background:#475569;color:#fff' : 'background:#f1f5f9;color:#475569';
-    _r += '<td style="padding:6px;border-bottom:0.5px solid #e8f2ff">';
-    _r += '<div style="display:flex;gap:3px;justify-content:center">';
-    _r += '<button onclick="' + _fnE + 'bom\')" style="font-size: var(--fs-tiny);padding:2px 6px;border-radius:5px;border:none;cursor:pointer;font-weight: var(--fw-medium);' + _eBom + '">' + (_est==='bom' ? '\u2713 Bom' : '\u2713') + '</button>';
-    _r += '<button onclick="' + _fnE + 'avaria\')" style="font-size: var(--fs-tiny);padding:2px 6px;border-radius:5px;border:none;cursor:pointer;font-weight: var(--fw-medium);' + _eAv + '">' + (_est==='avaria' ? '\u26a0 Avaria' : '\u26a0') + '</button>';
-    _r += '<button onclick="' + _fnE + 'ausente\')" style="font-size: var(--fs-tiny);padding:2px 6px;border-radius:5px;border:none;cursor:pointer;font-weight: var(--fw-medium);' + _eAus + '">' + (_est==='ausente' ? '\u2717 Ausente' : '\u2717') + '</button>';
+    _r += '<div style="display:flex;align-items:center;justify-content:center;gap:6px">';
+    _r += '<button onclick="' + _fnQ + '-1)" style="width:26px;height:26px;border-radius:6px;border:none;background:#f1f5f9;color:#475569;font-size:15px;cursor:pointer;font-weight:700;line-height:1" onmouseover="this.style.background=\'#dbeafe\';this.style.color=\'#1e3a5f\'" onmouseout="this.style.background=\'#f1f5f9\';this.style.color=\'#475569\'">−</button>';
+    _r += '<span style="font-size: var(--fs-xs);font-weight: var(--fw-semibold);color:' + _qtyColor + ';min-width:18px;text-align:center">' + _qty + '</span>';
+    _r += '<button onclick="' + _fnQ + '1)" style="width:26px;height:26px;border-radius:6px;border:none;background:#f1f5f9;color:#475569;font-size:15px;cursor:pointer;font-weight:700;line-height:1" onmouseover="this.style.background=\'#dbeafe\';this.style.color=\'#1e3a5f\'" onmouseout="this.style.background=\'#f1f5f9\';this.style.color=\'#475569\'">+</button>';
     _r += '</div></td>';
     _r += '<td style="padding:6px;border-bottom:0.5px solid #e8f2ff;text-align:center">';
     if (isExtra) {
       _r += '<button onclick="' + fnDel + '(' + idx + _subKey + ',' + extraIdx + ')" ';
-      _r += 'style="background:none;border:none;color:#cbd5e1;cursor:pointer;font-size: var(--fs-body);padding:0 2px" ';
-      _r += 'onmouseover="this.style.color=\'#ef4444\'" onmouseout="this.style.color=\'#cbd5e1\'">\u00d7</button>';
+      _r += 'style="background:#fff0f0;border:none;color:#ef4444;cursor:pointer;width:28px;height:28px;border-radius:6px;font-size: var(--fs-body);font-weight: var(--fw-bold);line-height:1">×</button>';
     } else {
       _r += '<button onclick="' + fnClear + '(' + idx + _subKey + ',\'' + key + '\')" ';
-      _r += 'style="background:none;border:none;color:#cbd5e1;cursor:pointer;font-size: var(--fs-body);padding:0 2px" ';
-      _r += 'onmouseover="this.style.color=\'#ef4444\'" onmouseout="this.style.color=\'#cbd5e1\'">\u00d7</button>';
+      _r += 'style="background:#fff0f0;border:none;color:#ef4444;cursor:pointer;width:28px;height:28px;border-radius:6px;font-size: var(--fs-body);font-weight: var(--fw-bold);line-height:1">×</button>';
     }
     _r += '</td></tr>';
-    _r += '<tr><td colspan="4" style="padding:2px 6px 7px;border-bottom:0.5px solid #e8f2ff">';
+    _r += '<tr><td colspan="3" style="padding:2px 6px 7px;border-bottom:0.5px solid #e8f2ff">';
     _r += '<input type="text" placeholder="Obs: (opcional)..." value="' + _obs + '" ';
     _r += 'onblur="' + _fnO + '" ';
     _r += 'style="width:100%;padding:4px 8px;border:0.5px solid #dbeafe;border-radius:5px;font-size: var(--fs-xxs);color:#8898aa;background:#fff">';
