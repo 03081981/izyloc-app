@@ -3953,7 +3953,7 @@ function _mlRenderCard(insp, statusKey) {
   subparts.push(code);
   var sub = subparts.join(" · ");
   return "<div class=\"ml-card\" style=\"display:flex;align-items:stretch;gap:12px;background:#fff;border:1px solid #e5e7eb;border-radius:10px;padding:14px;margin-bottom:10px;\">" +
-    "<div style=\"font-size:26px;width:40px;display:flex;align-items:center;justify-content:center;\">\uD83D\uDCCB</div>" +
+    "<div style=\"width:38px;height:38px;border-radius:8px;background:#eff6ff;display:flex;align-items:center;justify-content:center;flex-shrink:0;\"><svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\"><rect x=\"4\" y=\"3\" width=\"16\" height=\"18\" rx=\"2\" fill=\"none\" stroke=\"#2d7dd2\" stroke-width=\"1.5\"/><line x1=\"8\" y1=\"8\" x2=\"16\" y2=\"8\" stroke=\"#2d7dd2\" stroke-width=\"1.3\" stroke-linecap=\"round\"/><line x1=\"8\" y1=\"12\" x2=\"16\" y2=\"12\" stroke=\"#2d7dd2\" stroke-width=\"1.3\" stroke-linecap=\"round\"/><line x1=\"8\" y1=\"16\" x2=\"13\" y2=\"16\" stroke=\"#2d7dd2\" stroke-width=\"1.3\" stroke-linecap=\"round\"/></svg></div>" +
     "<label style=\"display:flex;align-items:center;padding:0 4px;cursor:pointer;\" onclick=\"event.stopPropagation();\"><input type=\"checkbox\" class=\"ml-sel\" data-id=\""+(insp.id||"")+"\" onclick=\"event.stopPropagation();_mlToggleSel('"+(insp.id||"")+"',this.checked);\" style=\"width:18px;height:18px;cursor:pointer;\"></label>" +
     "<div class=\"insp-info\" style=\"flex:1;min-width:0;\">" +
       "<div style=\"font-size:14px;font-weight:600;color:#111827;margin-bottom:2px;\">"+end+"</div>" +
@@ -3973,8 +3973,8 @@ function _mlActionBtns(insp, statusKey) {
   var btnPdf   = btnStyle + "border:1px solid #e2e8f0;background:#fff;color:#8898aa;";
   var btnAut   = btnStyle + "border:1px solid #1e3a5f;background:#fff;color:#1e3a5f;";
   var btnTrash = btnStyle + "border:1px solid #fee2e2;background:#fff;color:#ef4444;";
-  var btnSign  = btnStyle + "border:none;background:#f59e0b;color:#fff;font-weight:600;";
-  var btnFis   = btnStyle + "border:none;background:#5b21b6;color:#fff;font-weight:600;";
+  var btnSign  = btnStyle + "border:none;background:#2d7dd2;color:#fff;font-weight:600;";
+  var btnFis   = btnStyle + "border:none;background:#1e3a5f;color:#fff;font-weight:600;";
   var st = (statusKey || "").toLowerCase();
   var canEdit = (st === "em_andamento" || st === "concluido");
   var out = "";
