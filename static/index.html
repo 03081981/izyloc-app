@@ -3496,7 +3496,7 @@ function renderRevisaoFromWizard(pRooms, pParties, pData) {
   var rooms = (w.rooms && w.rooms.length) ? w.rooms : null;
   if (rooms) {
     html += '<div style="font-weight:700;color:#1a2540;margin:10px 0 8px;font-size:14px;">🏠 Ambientes ('+rooms.length+')</div>';
-    rooms.forEach(function(rm){
+    rooms.forEach(function(rm, __ridx){
       html += '<div style="margin-bottom:10px;padding:12px;background:#fff;border-radius:10px;border:1px solid #e2e8f0;">';
       html += '<div style="font-weight:600;color:#1a2540;font-size:13px;margin-bottom:6px;">'+esc(rm.name||rm.nome||"Ambiente")+'</div>';
       var desc = rm.ai_description || rm.consolidated_text || rm.descricao || "";
@@ -3512,6 +3512,7 @@ function renderRevisaoFromWizard(pRooms, pParties, pData) {
       if (!nPhotos && rm.items && rm.items.length) { rm.items.forEach(function(it){ if (it && it.photos && it.photos.length) nPhotos += it.photos.length; }); }
       if (nItems > 0) html += '<div style="font-size:11px;color:#2d7dd2;margin-top:4px;">📦 '+nItems+' item(ns)</div>';
       if (nPhotos > 0) { html += '<div style="font-size:11px;color:#2d7dd2;">📷 '+nPhotos+' foto(s)</div>'; var _phArr = (rm.photos && rm.photos.length) ? rm.photos.slice() : []; if(!_phArr.length && rm.items){ rm.items.forEach(function(_it){ if(_it && _it.photos && _it.photos.length){ _phArr = _phArr.concat(_it.photos); } }); } if(_phArr.length){ html += '<div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;">'; _phArr.forEach(function(_ph){ var _src=_ph.url||_ph.photo_url||_ph.src||_ph.preview||(_ph.base64?('data:image/jpeg;base64,'+_ph.base64):''); if(_src) html += '<img src="'+_src+'" style="width:90px;height:90px;object-fit:cover;border-radius:6px;border:1px solid #e2e8f0;"/>'; }); html += '</div>'; } }
+      try { var __itd = (window.wizard && window.wizard.itensData && window.wizard.itensData[__ridx]) || {}; if (!__itd.inventario && !__itd.inventarioExtras && window._wizSnap && window._wizSnap.itensData && window._wizSnap.itensData[__ridx]) __itd = window._wizSnap.itensData[__ridx] || __itd; var __hasInv = (__itd.inventario && Object.keys(__itd.inventario).length>0) || (Array.isArray(__itd.inventarioExtras) && __itd.inventarioExtras.length>0); if (__hasInv && typeof _wiz7RenderInventarioRev === 'function') { var __invHtml = _wiz7RenderInventarioRev(__ridx, rm.name||rm.nome||'', __itd); if (__invHtml) html += '<div style="margin-top:10px;">' + __invHtml + '</div>'; } } catch(_eInv) { try { console.warn('[renderRev inv]', _eInv); } catch(__ignored){} }
       html += '</div>';
     });
   } else {
