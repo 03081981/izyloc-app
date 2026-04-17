@@ -1061,15 +1061,13 @@ def add_assinaturas(story, s, partes, local_data):
         name='_sig_bold', parent=_sig_style,
         fontName='Helvetica-Bold',
     )
-    for nome, papel, cpf in partes:
+    for papel, nome, info in partes:
         story.append(Spacer(1, 40))
         story.append(HRFlowable(width='55%', thickness=0.8, color=PRETO,
                                 hAlign='CENTER', spaceBefore=0, spaceAfter=4))
-        story.append(Paragraph(nome.upper(), _sig_bold))
-        if cpf:
-            story.append(Paragraph(f'{papel} \u00b7 CPF: {cpf}', _sig_style))
-        else:
-            story.append(Paragraph(papel, _sig_style))
+        story.append(Paragraph(f'{papel.upper()}: {nome.upper()}', _sig_bold))
+        if info:
+            story.append(Paragraph(info, _sig_style))
 
 def add_rodape(story, s):
     story.append(Spacer(1, 16))
@@ -1125,13 +1123,19 @@ def gerar_laudo_entrada_proprietario(dados_imovel, dados_locador,
 
     partes_sig = []
     for _loc in locadores:
-        partes_sig.append((_loc['nome'], u'Locador / Propriet\u00e1rio', _loc['cpf']))
+        partes_sig.append((u'Locador', _loc['nome'], (u'CPF: ' + _loc['cpf']) if _loc.get('cpf') else u''))
     for _ten in locatarios:
-        partes_sig.append((_ten['nome'], u'Locat\u00e1rio', _ten['cpf']))
-    if dados_imobiliaria.get('nome'):
-        partes_sig.append((dados_imobiliaria['nome'], u'CNPJ: ' + dados_imobiliaria.get('cnpj', ''), ''))
+        partes_sig.append((u'Locatário', _ten['nome'], (u'CPF: ' + _ten['cpf']) if _ten.get('cpf') else u''))
     if dados_corretor.get('nome'):
-        partes_sig.append((dados_corretor['nome'], u'Corretor \u00b7 CRECI ' + dados_corretor.get('creci', '') + ((u' \u00b7 CPF: ' + dados_corretor.get('cpf', '')) if dados_corretor.get('cpf') else u''), ''))
+        _creci = dados_corretor.get('creci', '')
+        _cpf_corr = dados_corretor.get('cpf', '')
+        if _creci:
+            _info_av = u'CRECI ' + _creci + ((u' · CPF: ' + _cpf_corr) if _cpf_corr else u'')
+        else:
+            _info_av = (u'CPF: ' + _cpf_corr) if _cpf_corr else u''
+        partes_sig.append((u'Avaliador', dados_corretor['nome'], _info_av))
+    if dados_imobiliaria.get('nome'):
+        partes_sig.append((u'Imobiliária', dados_imobiliaria['nome'], u'CNPJ: ' + dados_imobiliaria.get('cnpj', '')))
     add_assinaturas(story, s, partes_sig, local_data)
 
     add_rodape(story, s)
@@ -1186,13 +1190,19 @@ def gerar_laudo_modelo1(dados_imovel, dados_locador, dados_locatario,
 
     partes_sig = []
     for _loc in locadores:
-        partes_sig.append((_loc['nome'], u'Locador', _loc['cpf']))
+        partes_sig.append((u'Locador', _loc['nome'], (u'CPF: ' + _loc['cpf']) if _loc.get('cpf') else u''))
     for _ten in locatarios:
-        partes_sig.append((_ten['nome'], u'Locat\u00e1rio', _ten['cpf']))
-    if dados_imobiliaria.get('nome'):
-        partes_sig.append((dados_imobiliaria['nome'], u'CNPJ: ' + dados_imobiliaria.get('cnpj', ''), ''))
+        partes_sig.append((u'Locatário', _ten['nome'], (u'CPF: ' + _ten['cpf']) if _ten.get('cpf') else u''))
     if dados_corretor.get('nome'):
-        partes_sig.append((dados_corretor['nome'], u'Corretor \u00b7 CRECI ' + dados_corretor.get('creci', '') + ((u' \u00b7 CPF: ' + dados_corretor.get('cpf', '')) if dados_corretor.get('cpf') else u''), ''))
+        _creci = dados_corretor.get('creci', '')
+        _cpf_corr = dados_corretor.get('cpf', '')
+        if _creci:
+            _info_av = u'CRECI ' + _creci + ((u' · CPF: ' + _cpf_corr) if _cpf_corr else u'')
+        else:
+            _info_av = (u'CPF: ' + _cpf_corr) if _cpf_corr else u''
+        partes_sig.append((u'Avaliador', dados_corretor['nome'], _info_av))
+    if dados_imobiliaria.get('nome'):
+        partes_sig.append((u'Imobiliária', dados_imobiliaria['nome'], u'CNPJ: ' + dados_imobiliaria.get('cnpj', '')))
     add_assinaturas(story, s, partes_sig, local_data)
 
     add_rodape(story, s)
@@ -1236,13 +1246,19 @@ def gerar_laudo_modelo3(dados_imovel, dados_locador, dados_locatario,
 
     partes_sig = []
     for _loc in locadores:
-        partes_sig.append((_loc['nome'], u'Locador', _loc['cpf']))
+        partes_sig.append((u'Locador', _loc['nome'], (u'CPF: ' + _loc['cpf']) if _loc.get('cpf') else u''))
     for _ten in locatarios:
-        partes_sig.append((_ten['nome'], u'Locat\u00e1rio', _ten['cpf']))
-    if dados_imobiliaria.get('nome'):
-        partes_sig.append((dados_imobiliaria['nome'], u'CNPJ: ' + dados_imobiliaria.get('cnpj', ''), ''))
+        partes_sig.append((u'Locatário', _ten['nome'], (u'CPF: ' + _ten['cpf']) if _ten.get('cpf') else u''))
     if dados_corretor.get('nome'):
-        partes_sig.append((dados_corretor['nome'], u'Vistoriador/Corretor \u00b7 CRECI ' + dados_corretor.get('creci', '') + ((u' \u00b7 CPF: ' + dados_corretor.get('cpf', '')) if dados_corretor.get('cpf') else u''), ''))
+        _creci = dados_corretor.get('creci', '')
+        _cpf_corr = dados_corretor.get('cpf', '')
+        if _creci:
+            _info_av = u'CRECI ' + _creci + ((u' · CPF: ' + _cpf_corr) if _cpf_corr else u'')
+        else:
+            _info_av = (u'CPF: ' + _cpf_corr) if _cpf_corr else u''
+        partes_sig.append((u'Avaliador', dados_corretor['nome'], _info_av))
+    if dados_imobiliaria.get('nome'):
+        partes_sig.append((u'Imobiliária', dados_imobiliaria['nome'], u'CNPJ: ' + dados_imobiliaria.get('cnpj', '')))
     add_assinaturas(story, s, partes_sig, local_data)
 
     add_rodape(story, s)
@@ -1295,13 +1311,19 @@ def gerar_laudo_modelo4(dados_imovel, dados_locador, dados_locatario,
 
     partes_sig = []
     for _loc in locadores:
-        partes_sig.append((_loc['nome'], u'Locador / Propriet\u00e1rio', _loc['cpf']))
+        partes_sig.append((u'Locador', _loc['nome'], (u'CPF: ' + _loc['cpf']) if _loc.get('cpf') else u''))
     for _ten in locatarios:
-        partes_sig.append((_ten['nome'], u'Locat\u00e1rio', _ten['cpf']))
-    if dados_imobiliaria.get('nome'):
-        partes_sig.append((dados_imobiliaria['nome'], u'CNPJ: ' + dados_imobiliaria.get('cnpj', ''), ''))
+        partes_sig.append((u'Locatário', _ten['nome'], (u'CPF: ' + _ten['cpf']) if _ten.get('cpf') else u''))
     if dados_corretor.get('nome'):
-        partes_sig.append((dados_corretor['nome'], u'Corretor \u00b7 CRECI ' + dados_corretor.get('creci', '') + ((u' \u00b7 CPF: ' + dados_corretor.get('cpf', '')) if dados_corretor.get('cpf') else u''), ''))
+        _creci = dados_corretor.get('creci', '')
+        _cpf_corr = dados_corretor.get('cpf', '')
+        if _creci:
+            _info_av = u'CRECI ' + _creci + ((u' · CPF: ' + _cpf_corr) if _cpf_corr else u'')
+        else:
+            _info_av = (u'CPF: ' + _cpf_corr) if _cpf_corr else u''
+        partes_sig.append((u'Avaliador', dados_corretor['nome'], _info_av))
+    if dados_imobiliaria.get('nome'):
+        partes_sig.append((u'Imobiliária', dados_imobiliaria['nome'], u'CNPJ: ' + dados_imobiliaria.get('cnpj', '')))
     add_assinaturas(story, s, partes_sig, local_data)
 
     add_rodape(story, s)
@@ -1345,13 +1367,19 @@ def gerar_laudo_modelo5(dados_imovel, dados_locador, dados_locatario,
 
     partes_sig = []
     for _loc in locadores:
-        partes_sig.append((_loc['nome'], u'Anfitri\u00e3o / Locador', _loc['cpf']))
+        partes_sig.append((u'Locador', _loc['nome'], (u'CPF: ' + _loc['cpf']) if _loc.get('cpf') else u''))
     for _ten in locatarios:
-        partes_sig.append((_ten['nome'], u'H\u00f3spede / Ocupante', _ten['cpf']))
-    if dados_imobiliaria.get('nome'):
-        partes_sig.append((dados_imobiliaria['nome'], u'CNPJ: ' + dados_imobiliaria.get('cnpj', ''), ''))
+        partes_sig.append((u'Locatário', _ten['nome'], (u'CPF: ' + _ten['cpf']) if _ten.get('cpf') else u''))
     if dados_corretor.get('nome'):
-        partes_sig.append((dados_corretor['nome'], u'Vistoriador/Corretor \u00b7 CRECI ' + dados_corretor.get('creci', '') + ((u' \u00b7 CPF: ' + dados_corretor.get('cpf', '')) if dados_corretor.get('cpf') else u''), ''))
+        _creci = dados_corretor.get('creci', '')
+        _cpf_corr = dados_corretor.get('cpf', '')
+        if _creci:
+            _info_av = u'CRECI ' + _creci + ((u' · CPF: ' + _cpf_corr) if _cpf_corr else u'')
+        else:
+            _info_av = (u'CPF: ' + _cpf_corr) if _cpf_corr else u''
+        partes_sig.append((u'Avaliador', dados_corretor['nome'], _info_av))
+    if dados_imobiliaria.get('nome'):
+        partes_sig.append((u'Imobiliária', dados_imobiliaria['nome'], u'CNPJ: ' + dados_imobiliaria.get('cnpj', '')))
     add_assinaturas(story, s, partes_sig, local_data)
 
     add_rodape(story, s)
@@ -1404,13 +1432,19 @@ def gerar_laudo_modelo6(dados_imovel, dados_locador, dados_locatario,
 
     partes_sig = []
     for _loc in locadores:
-        partes_sig.append((_loc['nome'], u'Anfitri\u00e3o / Locador / Propriet\u00e1rio', _loc['cpf']))
+        partes_sig.append((u'Locador', _loc['nome'], (u'CPF: ' + _loc['cpf']) if _loc.get('cpf') else u''))
     for _ten in locatarios:
-        partes_sig.append((_ten['nome'], u'H\u00f3spede / Ocupante', _ten['cpf']))
-    if dados_imobiliaria.get('nome'):
-        partes_sig.append((dados_imobiliaria['nome'], u'CNPJ: ' + dados_imobiliaria.get('cnpj', ''), ''))
+        partes_sig.append((u'Locatário', _ten['nome'], (u'CPF: ' + _ten['cpf']) if _ten.get('cpf') else u''))
     if dados_corretor.get('nome'):
-        partes_sig.append((dados_corretor['nome'], u'Corretor \u00b7 CRECI ' + dados_corretor.get('creci', '') + ((u' \u00b7 CPF: ' + dados_corretor.get('cpf', '')) if dados_corretor.get('cpf') else u''), ''))
+        _creci = dados_corretor.get('creci', '')
+        _cpf_corr = dados_corretor.get('cpf', '')
+        if _creci:
+            _info_av = u'CRECI ' + _creci + ((u' · CPF: ' + _cpf_corr) if _cpf_corr else u'')
+        else:
+            _info_av = (u'CPF: ' + _cpf_corr) if _cpf_corr else u''
+        partes_sig.append((u'Avaliador', dados_corretor['nome'], _info_av))
+    if dados_imobiliaria.get('nome'):
+        partes_sig.append((u'Imobiliária', dados_imobiliaria['nome'], u'CNPJ: ' + dados_imobiliaria.get('cnpj', '')))
     add_assinaturas(story, s, partes_sig, local_data)
 
     add_rodape(story, s)
