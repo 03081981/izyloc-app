@@ -4717,6 +4717,10 @@ async function gerarLaudo() {
     });
     if (_locArr.length) body.locadores_json = JSON.stringify(_locArr);
     if (_tenArr.length) body.locatarios_json = JSON.stringify(_tenArr);
+    // Guard: restore inspectionId from localStorage if lost (prevents duplicate record creation)
+    if (!wizard.inspectionId) {
+      try { var _lsId = localStorage.getItem('izylo_current_inspection'); if (_lsId) { wizard.inspectionId = _lsId; console.log('[gerarLaudo] Restored inspectionId from localStorage:', _lsId); } } catch(_eGR){}
+    }
     var r;
   if (wizard.inspectionId) {
     r = await api('PUT', '/api/inspections/' + wizard.inspectionId, body);
