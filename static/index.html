@@ -7975,7 +7975,7 @@ function _wiz6RenderInventario(idx, nomeAmb) {
 function _buildInvTable(idx, subNome, titulo, itens, extras, inv, fnEstado, fnQty, fnObs, fnAdd, fnDel, fnClear) {
   var _subKey = subNome ? ',\'' + subNome + '\'' : '';
   var _idPfx = subNome ? 'inv-sub-' + idx + '-' + subNome.replace(/\W/g,'_') : 'inv-' + idx;
-  var html = '<div style="background:#f0f7ff;border:0.5px solid #93c5fd;border-radius:10px;padding:14px;margin-top:12px">';
+  var html = '<div style="background:#f0f7ff;border:0.5px solid #93c5fd;border-radius:9px;padding:12px;margin-top:5px">';
   html += '<div style="font-size: var(--fs-xxs);font-weight: var(--fw-bold);color:#1e3a5f;margin-bottom:12px;display:flex;align-items:center;gap:6px">';
   html += '<svg width="14" height="14" viewBox="0 0 24 24" fill="none"><rect x="2" y="3" width="20" height="18" rx="2" stroke="#1e3a5f" stroke-width="2"/><path d="M8 3v18M16 3v18M2 9h20M2 15h20" stroke="#1e3a5f" stroke-width="1.5"/></svg>';
   html += 'Invent\u00e1rio do ambiente';
