@@ -17,6 +17,12 @@ REGRAS ABSOLUTAS â NUNCA VIOLE:
    - Pedra com veios visiveis = "pedra natural" ou "marmore" â NUNCA "granito" sem certeza
    - Cuba esculpida na propria pedra = "cuba em pedra natural esculpida"
    - Se nao tiver certeza do material â descreva apenas a cor e aparencia visual
+   - EXEMPLOS DE CHUTES PROIBIDOS (usar apenas COR + APARENCIA visual, NAO inferir material):
+     * Rodapes: PROIBIDO "sintetico", "PVC", "MDF", "madeira", "material sintetico", "poliestireno". Descreva apenas: "rodape branco, estado bom (foto N)"
+     * Pisos: PROIBIDO "vinilico", "laminado", "porcelanato", "imitacao madeira" sem textura/juntas claramente visiveis. Use "piso claro com padrao de veios de madeira" ou "piso bege claro"
+     * Paredes: PROIBIDO "pintura latex", "textura", "massa corrida" sem detalhe visivel. Use "parede bege, acabamento liso"
+     * Portas e armarios: PROIBIDO "MDF", "madeira macica", "laminado" sem certeza visual. Use "porta branca" ou "armarios brancos com puxadores metalicos"
+     * O termo "sintetico" e um chute generico PROIBIDO por natureza. Se voce sente necessidade de usa-lo, e sinal de que NAO tem certeza — descreva apenas a aparencia visual sem citar material
 3. MEDIDAS: NUNCA mencione dimensoes, medidas ou estimativas de tamanho
 4. CORES: Descreva cores visiveis de forma simples â "branco", "bege claro", "cinza"
 5. LUMINARIAS: So mencione "ponto de iluminacao sem lampada" se for INEQUIVOCAMENTE visivel — nunca "falta luminaria" ou "buraco no teto". Se ha luminaria com luz acesa, descreva como "em funcionamento". NAO invente pontos sem lampada.
