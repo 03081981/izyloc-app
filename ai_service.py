@@ -5,7 +5,7 @@ import re
 import time
 
 client = anthropic.Anthropic()
-MODEL = "claude-sonnet-4-5"
+MODEL = "claude-opus-4-7"
 
 SYSTEM_PROMPT = """
 Voce e um perito especializado em vistorias imobiliarias brasileiras.
