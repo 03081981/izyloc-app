@@ -151,6 +151,33 @@ REGRA CRITICA — FOCO DA FOTO (NUNCA descreva elementos fora do assunto):
 - PROIBIDO mencionar parede, piso, teto, armario, bancada ou qualquer elemento de FUNDO quando a foto e close de um item — esses elementos sao incidentais e NAO sao o assunto da foto
 - So descreva paredes/piso/teto se a foto for AMPLA e esses elementos estiverem claramente enquadrados e em foco
 
+REGRA CRITICA — ELEMENTO EM SEGUNDO PLANO (NAO FOCO DA FOTO):
+Esta regra se aplica a elementos que aparecem AO FUNDO, DISTANTES, nos cantos, ou atraves de passagens/portas em fotos cujo foco principal e outro item.
+
+CRITERIOS PARA CONSIDERAR UM ELEMENTO "EM SEGUNDO PLANO":
+- Ocupa menos de 15% da area do quadro da foto
+- Esta deslocado para os cantos ou ao fundo da cena
+- Esta visivel atraves de uma passagem, porta aberta ou corredor
+- Esta a varios metros de distancia do foco principal
+- Esta parcialmente cortado pela moldura da foto
+- Pode pertencer a outro ambiente (visivel a partir do ambiente atual)
+
+PARA ELEMENTOS EM SEGUNDO PLANO:
+- PROIBIDO afirmar estado ("estado bom", "em funcionamento", "sem defeitos", "apresenta desgaste", etc.). A distancia e a resolucao NAO permitem avaliacao confiavel.
+- PREFERIR OMITIR totalmente da descricao se o elemento nao e relevante para caracterizar o ambiente vistoriado.
+- NAO listar em Esquadrias, Instalacoes ou Itens se o elemento aparece APENAS ao fundo em todas as fotos do lote.
+- Se mencionar para contexto: maximo uma frase neutra como "ao fundo observa-se passagem para outro ambiente" SEM afirmacao de estado e SEM categorizacao no inventario.
+
+CASO ESPECIFICO — JANELA AO FUNDO EM FOTO DE COZINHA, BANHEIRO OU AREA CONFINADA:
+Quando a janela aparece no fundo de uma passagem estreita, atras de uma parede ou ao final de um corredor dentro da foto, ela PROVAVELMENTE pertence a OUTRO ambiente (area de servico, lavanderia, banheiro anexo). OMITIR da descricao do ambiente atual. Nao listar em Esquadrias.
+
+CHECK OBRIGATORIO ANTES DE LISTAR UM ITEM EM ESQUADRIAS/INSTALACOES/ITENS:
+Pergunte: "Este elemento e foco de pelo menos UMA foto do lote? Ou so aparece ao fundo em todas?"
+- Se e foco de pelo menos uma foto: pode listar normalmente.
+- Se so aparece ao fundo em todas as fotos: NAO listar. No maximo mencionar como contexto sem estado.
+
+FALHA GRAVE: afirmar estado (bom/regular/ruim) de elemento que so aparece ao fundo, distante ou atraves de passagem em todas as fotos do lote.
+
 REGRA CRITICA — ELEMENTOS COMPOSTOS DEVEM SER DESCRITOS SEPARADAMENTE:
 - Quando uma foto mostra um item composto por elemento principal + elemento acessorio (porta + maçaneta, janela + grade/vidro/caixilho, armario + puxador, vaso sanitario + caixa acoplada, pia + torneira, box + porta de vidro), CADA elemento e um item proprio com seu proprio estado
 - Se o elemento PRINCIPAL (porta, janela, armario, vaso, pia, parede, box) apresentar defeito visivel em sua superficie (manchas, rabiscos, pintura estranha, tinta espirrada, arranhoes, rachaduras, sujeira), o defeito deve ser atribuido ao ELEMENTO PRINCIPAL, nao agregado apenas ao acessorio
