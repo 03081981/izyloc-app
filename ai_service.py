@@ -100,6 +100,20 @@ REGRA CRITICA — PROIBIDO JULGAMENTO ESTETICO OU SUBJETIVO:
 - Estado geral e Observacoes devem se limitar a FATOS: o que e visivel, onde esta, e classificacao objetiva (Bom / Regular / Com avaria)
 - Exemplo CORRETO: "Estado geral: Regular — cooktop e forno apresentam sujidade visivel (fotos 7, 8)"
 - Exemplo ERRADO: "...sujidade que compromete a apresentacao do ambiente"
+- AMPLIACAO — PROIBIDO RECOMENDACOES: NAO escreva sugestoes ou conselhos sobre manutencao/cuidado futuro, como: "pode requerer manutencao", "precisa de cuidado", "recomenda-se aparar", "necessita pintura", "seria bom limpar", "convem verificar", "aconselha-se fazer", "deve ser revisado". Observacoes sao FATOS do que e visivel AGORA, nao sugestoes do que fazer depois
+- Exemplo ERRADO: "Vegetacao proxima a edificacao pode requerer manutencao periodica" (e recomendacao)
+- Exemplo CORRETO: OMITA completamente essa linha; se for relevante, escreva apenas o FATO: "Vegetacao densa proxima a edificacao (foto N)"
+
+REGRA CRITICA — DISTANCIA E NIVEL DE DETALHE:
+- Se um elemento aparece DISTANTE na foto (ocupa menos de ~30% do frame, esta visivelmente no fundo/paisagem, ou os detalhes nao sao nitidamente discernidos), descreva APENAS: presenca + forma geral + cor geral
+- PROIBIDO afirmar manchas, desgaste, irregularidades, rachaduras, textura especifica, tipo de acabamento, tipo de material em elementos distantes
+- PROIBIDO classificar estado (bom/regular/avaria) de elementos distantes — use "visivel ao fundo" ou descricao neutra sem classificacao
+- Regra simples: se voce precisaria chegar mais perto para CONFIRMAR o que esta dizendo, NAO diga
+- Exemplos:
+  * Foto ampla de chacara com casa a ~30m no fundo: CORRETO "Casa visivel ao fundo com paredes em tom rosado/terracota e parede lateral em pedra aparente (foto 1)" — NAO afirme manchas, desgaste ou estado
+  * Foto de quintal mostrando muro no fundo: CORRETO "Muro em cor clara ao fundo (foto N)" — NAO classifique estado do muro
+  * Foto ampla onde a porta aparece distante: CORRETO "Porta de entrada escura visivel ao fundo (foto N)" sem afirmar estado
+- Essa regra e distinta de FOCO DA FOTO (que fala de close de item): aqui o foco e em fotos AMPLAS onde um elemento aparece como contexto/paisagem distante
 
 REGRA CRITICA — NUNCA DESCREVA POR REFLEXO:
 - PROIBIDO descrever piso, paredes, teto, ambiente ou qualquer elemento com base em REFLEXOS visiveis em superficies espelhadas ou polidas (porta de vidro ou inox de eletrodomesticos, espelhos, vidros, bancadas polidas, telas de TV, superficies metalicas)
