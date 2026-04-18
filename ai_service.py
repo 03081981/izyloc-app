@@ -79,6 +79,20 @@ Quando o vistoriador tira uma foto ESPECIFICA em zoom/close de uma regiao restri
 - Se nao ha defeito visivel apos inspecao minuciosa: descreva a area de forma neutra (ex: "borda da cuba sem defeito visivel na foto N") — NAO use "estado bom" automaticamente
 - PROIBIDO ignorar um close dedicado afirmando algo generico como "pia em estado bom" quando existe foto especifica da borda da pia — o fotografo esta apontando algo nessa foto, quase nunca e decorativo
 - Se o item ja aparece em foto ampla e depois aparece em close, o close tem PRIORIDADE informacional sobre a foto ampla na analise daquela regiao especifica
+- MAPA REGIAO FOTOGRAFADA NO CLOSE → DEFEITO A BUSCAR ATIVAMENTE (use este mapa para direcionar a inspecao):
+  * Close de canto inferior de parede / encontro parede-piso / rodape isolado → INSPECIONE O RODAPE: buscar descolamento do rodape em relacao a parede, gap/abertura, abaulamento, curvatura, parte solta, tinta descascada, mancha
+  * Close de cuba / pia / vaso sanitario / bacia / bide → buscar trinca, rachadura, lascado, amarelamento, mancha de ferrugem, oxidacao em metais/conexoes, borda chanfrada
+  * Close de teto ou parede alta → buscar mancha de infiltracao, bolha, descascamento, mancha concentrica, fissura horizontal
+  * Close de canto de parede / encontro parede-parede / encontro parede-teto → buscar rachadura, fissura, descolamento de massa corrida, gap entre parede e teto
+  * Close de porta / janela / batente / caixilho → buscar empenamento, desalinhamento, gap no fechamento, ferrugem em dobradicas/trilho, vidro trincado
+  * Close de tomada / interruptor / espelho de tomada → buscar espelho quebrado, queimadura/marca de fumaca, oxidacao, fiacao exposta, fixacao frouxa
+  * Close de piso / rejunte / junta entre pecas → buscar trinca em rejunte, peca quebrada ou lascada, desgaste excessivo, mancha persistente, desnivel
+  * Close de azulejo / revestimento ceramico → buscar trinca, peca rachada, descolamento do revestimento, rejunte ausente/solto, mancha de mofo
+  * Close de box / vidro / divisoria → buscar trinca, estilhacamento, borda lascada, ferragem oxidada, gap na borracha de vedacao
+  * Close de chuveiro / torneira / registro / conexao hidraulica → buscar oxidacao, ferrugem, vazamento aparente, calcario, peca solta, mangueira ressecada
+  * Close de armario / porta de armario / puxador / dobradica → buscar empenamento, risco profundo, descascamento, puxador solto, dobradica oxidada
+- REGRA DE OURO DO CLOSE: SE existe foto close isolada de uma regiao, a descricao FINAL daquela regiao na sintese DEVE referenciar PRIORITARIAMENTE a foto close, NAO a foto ampla. Afirmar "estado bom" com base na foto ampla ignorando o close dedicado e FALHA GRAVE de inspecao.
+- PROIBIDO: descrever rodape como "estado bom" quando existe foto close dedicada ao canto inferior de parede ou ao rodape — o close foi tirado EXATAMENTE porque existe algo para documentar (descolamento, gap, abaulamento, parte solta). Examine a foto close com o MAXIMO de atencao antes de afirmar "estado bom".
 
 REGRA CRITICA â DEFEITOS E AVARIAS:
 - Examine CADA foto atentamente buscando: manchas, mofo, furos, trincas, rachaduras,
