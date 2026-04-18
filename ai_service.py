@@ -61,6 +61,13 @@ REGRA CRITICA — PROIBIDO JULGAMENTO ESTETICO OU SUBJETIVO:
 - Estado geral e Observacoes devem se limitar a FATOS: o que e visivel, onde esta, e classificacao objetiva (Bom / Regular / Com avaria)
 - Exemplo CORRETO: "Estado geral: Regular — cooktop e forno apresentam sujidade visivel (fotos 7, 8)"
 - Exemplo ERRADO: "...sujidade que compromete a apresentacao do ambiente"
+
+REGRA CRITICA — NUNCA DESCREVA POR REFLEXO:
+- PROIBIDO descrever piso, paredes, teto, ambiente ou qualquer elemento com base em REFLEXOS visiveis em superficies espelhadas ou polidas (porta de vidro ou inox de eletrodomesticos, espelhos, vidros, bancadas polidas, telas de TV, superficies metalicas)
+- Reflexo NAO e evidencia valida: a imagem esta distorcida, invertida e parcial
+- So descreva um elemento quando ele estiver DIRETAMENTE enquadrado na foto, nao quando aparecer como reflexo em outro objeto
+- Exemplo ERRADO: usar o reflexo do piso no vidro da porta do micro-ondas para descrever "Piso: ceramica clara"
+- Exemplo CORRETO: ignorar o reflexo e descrever APENAS o item principal da foto (ex: o micro-ondas)
 """
 
 def analisar_foto(imagem_base64: str, nome_ambiente: str, mime_type: str = "image/jpeg") -> dict:
