@@ -7,7 +7,14 @@ import traceback
 from datetime import datetime
 
 client = anthropic.Anthropic()
-MODEL = "claude-opus-4-7"
+MODEL_CONVENCIONAL = "claude-sonnet-4-6"
+MODEL_PREMIUM = "claude-opus-4-7"
+MODEL = MODEL_CONVENCIONAL  # default (compatibilidade)
+
+def get_model(tipo_analise="convencional"):
+    if tipo_analise == "premium":
+        return MODEL_PREMIUM
+    return MODEL_CONVENCIONAL
 
 SYSTEM_PROMPT = """
 ═══════════════════════════════════════════════════════════════
@@ -409,7 +416,7 @@ REGRA CRITICA — NUNCA DESCREVA POR REFLEXO:
 - Exemplo CORRETO: ignorar o reflexo e descrever APENAS o item principal da foto (ex: o micro-ondas)
 """
 
-def analisar_foto(imagem_base64: str, nome_ambiente: str, mime_type: str = "image/jpeg") -> dict:
+def analisar_foto(imagem_base64: str, nome_ambiente: str, mime_type: str = "image/jpeg", tipo_analise: str = "convencional") -> dict:
     """
     Analisa uma foto de vistoria e retorna descricao tecnica completa.
 
@@ -451,16 +458,18 @@ IMPORTANTE:
         try:
             print(f"[AI] >>> Iniciando chamada Anthropic", flush=True)
             print(f"[AI] >>> Funcao: analisar_foto", flush=True)
-            print(f"[AI] >>> Modelo: {MODEL}", flush=True)
+            modelo_atual = get_model(tipo_analise)
+    print(f"[AI] >>> Tipo de análise: {tipo_analise}", flush=True)
+    print(f"[AI] >>> Modelo: {modelo_atual}", flush=True)
             print(f"[AI] >>> max_tokens: 1000", flush=True)
             print(f"[AI] >>> Tentativa: {tentativa+1}/3", flush=True)
             print(f"[AI] >>> Timestamp: {datetime.now().isoformat()}", flush=True)
             _ai_inicio = time.time()
             # Opus 4.7+ depreciou temperature (controle interno via adaptive thinking)
             # Modelos anteriores se beneficiam de temperature baixa para tarefas deterministicas
-            _temp_kwarg = {} if MODEL.startswith("claude-opus-4-7") else {"temperature": 0.2}
+            _temp_kwarg = {} if modelo_atual.startswith("claude-opus-4-7") else {"temperature": 0.2}
             response = client.messages.create(
-                model=MODEL,
+                model=modelo_atual,
                 max_tokens=1000,
                 **_temp_kwarg,
                 system=SYSTEM_PROMPT,
@@ -557,7 +566,7 @@ IMPORTANTE:
     }
 
 
-def consolidar_ambiente(nome_ambiente: str, descricoes: list) -> dict:
+def consolidar_ambiente(nome_ambiente: str, descricoes: list, tipo_analise: str = "convencional") -> dict:
     """
     Consolida todas as descricoes de fotos de um ambiente em sintese estruturada.
     """
@@ -590,16 +599,18 @@ Retorne APENAS este JSON sem markdown:
         try:
             print(f"[AI] >>> Iniciando chamada Anthropic", flush=True)
             print(f"[AI] >>> Funcao: consolidar_ambiente", flush=True)
-            print(f"[AI] >>> Modelo: {MODEL}", flush=True)
+            modelo_atual = get_model(tipo_analise)
+    print(f"[AI] >>> Tipo de análise: {tipo_analise}", flush=True)
+    print(f"[AI] >>> Modelo: {modelo_atual}", flush=True)
             print(f"[AI] >>> max_tokens: 800", flush=True)
             print(f"[AI] >>> Tentativa: {tentativa+1}/3", flush=True)
             print(f"[AI] >>> Timestamp: {datetime.now().isoformat()}", flush=True)
             _ai_inicio = time.time()
             # Opus 4.7+ depreciou temperature (controle interno via adaptive thinking)
             # Modelos anteriores se beneficiam de temperature baixa para tarefas deterministicas
-            _temp_kwarg = {} if MODEL.startswith("claude-opus-4-7") else {"temperature": 0.2}
+            _temp_kwarg = {} if modelo_atual.startswith("claude-opus-4-7") else {"temperature": 0.2}
             response = client.messages.create(
-                model=MODEL,
+                model=modelo_atual,
                 max_tokens=800,
                 **_temp_kwarg,
                 system=SYSTEM_PROMPT,
@@ -676,7 +687,7 @@ def analisar_imagem(imagem_base64: str, ambiente: str = "Ambiente", modo: str = 
     else:
         return analisar_foto(imagem_base64, ambiente, mime_type)
 
-def analisar_batch(imagens: list, nome_ambiente: str, tipo_vistoria: str = "entrada") -> dict:
+def analisar_batch(imagens: list, nome_ambiente: str, tipo_vistoria: str = "entrada", tipo_analise: str = "convencional") -> dict:
     """
     Analisa um lote de fotos do mesmo ambiente em uma unica chamada.
     """
@@ -869,7 +880,9 @@ Se TODAS as fotos pertencem ao ambiente "{nome_ambiente}", retorne "ambientes_ex
             try:
                 print(f"[AI] >>> Iniciando chamada Anthropic", flush=True)
                 print(f"[AI] >>> Funcao: analisar_batch", flush=True)
-                print(f"[AI] >>> Modelo: {MODEL}", flush=True)
+                modelo_atual = get_model(tipo_analise)
+    print(f"[AI] >>> Tipo de análise: {tipo_analise}", flush=True)
+    print(f"[AI] >>> Modelo: {modelo_atual}", flush=True)
                 print(f"[AI] >>> max_tokens: 4000", flush=True)
                 print(f"[AI] >>> Tentativa: {tentativa+1}/3", flush=True)
                 print(f"[AI] >>> Qtd imagens: {len(imagens) if imagens else 0}", flush=True)
@@ -877,9 +890,9 @@ Se TODAS as fotos pertencem ao ambiente "{nome_ambiente}", retorne "ambientes_ex
                 _ai_inicio = time.time()
                 # Opus 4.7+ depreciou temperature (controle interno via adaptive thinking)
                 # Modelos anteriores se beneficiam de temperature baixa para tarefas deterministicas
-                _temp_kwarg = {} if MODEL.startswith("claude-opus-4-7") else {"temperature": 0.2}
+                _temp_kwarg = {} if modelo_atual.startswith("claude-opus-4-7") else {"temperature": 0.2}
                 response = client.messages.create(
-                    model=MODEL,
+                    model=modelo_atual,
                     max_tokens=4000,
                     **_temp_kwarg,
                     system=SYSTEM_PROMPT,
