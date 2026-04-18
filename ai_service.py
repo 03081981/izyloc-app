@@ -408,6 +408,19 @@ REGRA CRITICA DE SINTESE — ELEMENTOS CONSTRUTIVOS (Piso, Paredes, Teto, Rodape
 - Se o lote so contem fotos close de itens, a sintese deve descrever APENAS os itens, OMITINDO completamente as linhas de Piso/Paredes/Teto
 - Quando omitir uma linha, simplesmente NAO a inclua no resumo — NAO escreva "nao visivel" ou similar
 
+CHECKLIST FINAL OBRIGATORIO antes de retornar o JSON (auditoria linha a linha):
+Para CADA linha do resumo ("Piso:", "Paredes:", "Teto:", "Rodapes:", "Bancada:", "Moveis:", "Armarios:", etc.), responda mentalmente 2 perguntas:
+
+Pergunta 1: Existe alguma foto onde esse elemento esta DIRETAMENTE enquadrado (foto AMPLA do ambiente ou foto com foco no proprio elemento), e NAO apenas visivel como fundo de um close de outro item?
+-> Se NAO, REMOVA a linha inteira do resumo. NAO escreva "nao visivel" ou similar, simplesmente OMITA a linha.
+
+Pergunta 2: A unica evidencia desse elemento e um REFLEXO visivel em superficie espelhada (vidro de micro-ondas, porta de forno, inox, espelho, bancada polida, tela de TV)?
+-> Se SIM, REMOVA a linha inteira do resumo. Reflexo e PROIBIDO como evidencia.
+
+Exemplo pratico: Foto 4 = close do micro-ondas com vidro espelhado que reflete piso e armarios. Se piso/armarios SO aparecem nesse reflexo, AUDITORIA FALHA -> OMITA "Piso:" e "Armarios:" do resumo, mesmo que a foto 4 "mostre" esses elementos via reflexo.
+
+Se apos a auditoria o resumo ficar apenas com itens (eletrodomesticos, utensilios, moveis), isso esta CORRETO. NAO force uma linha de Piso/Paredes/Teto so para "preencher" a estrutura.
+
 Retorne APENAS este JSON sem markdown:
 {{{{
   "resumo": "SINTESE DO AMBIENTE:\n\nPiso: [revestimento, cor, estado com (foto N) â furos/manchas/danos se houver â OMITIR se nao aparece]\n\nParedes: [acabamento, cor, estado com (foto N) â mofo/manchas/trincas se houver]\n\nTeto: [OMITIR COMPLETAMENTE se nao aparecer em nenhuma foto â acabamento, cor, estado com (foto N) se aparecer]\n\nEsquadrias: [portas e janelas visiveis com (foto N), estado]\n\nInstalacoes: [tomadas, interruptores, pontos de luz, chuveiro com (foto N) â fios aparentes DEVEM ser reportados]\n\nMoveis e equipamentos: [itens presentes com (foto N) e estados detalhados]\n\nObservacoes: [LISTA COMPLETA de todos os defeitos com (foto N)]\n\nEstado geral: [Bom / Regular / Com avaria] â [justificativa]",
