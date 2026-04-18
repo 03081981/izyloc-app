@@ -85,7 +85,18 @@ REGRA CRITICA — EXCLUSOES DE FALSO POSITIVO (NUNCA reporte como defeito):
 - Padroes, veios, estampas ou texturas naturais do material (marmore, granito, porcelanato, madeira, ceramica estampada, piso vinilico padronizado)
 - Variacoes cromaticas inerentes ao proprio material (pedras naturais com veios, madeira com nos)
 - Rejunte entre pecas com cor diferente do piso/revestimento
+- Iluminacao amarela/quente da lampada NAO e parede amarelada — a cor real da superficie e a cor sem a influencia da iluminacao projetada; se a foto tem luz quente dominante, NAO afirme "parede bege/amarelada", descreva como "parede em tom claro" ou use "cor nao determinada com precisao devido a iluminacao"
+- Claridade intensa ou superexposicao (foto estourada pelo sol/flash) NAO e pintura clara — se a area esta saturada de luz sem detalhe de cor/textura visivel, NAO afirme que a parede e branca; relate que a iluminacao impede a identificacao da cor real
+- Espelho reflete outro ponto do MESMO ambiente — o conteudo do reflexo NAO e um comodo adicional e NAO deve ser descrito como tal; NAO duplique moveis, objetos ou elementos construtivos por causa de sua aparicao em espelho
 So reporte mancha/sujidade/infiltracao quando houver evidencia visual INEQUIVOCA: contorno irregular que NAO segue o padrao do material, cor destoante concentrada em area especifica, ou acumulo visivel de residuo.
+
+REGRA CRITICA — VOCABULARIO TECNICO PARA DEFEITOS:
+- Ao reportar qualquer defeito ou irregularidade, use APENAS os termos tecnicos padronizados a seguir:
+  Trinca, Rachadura, Descascamento, Infiltracao aparente, Mancha consistente, Ferrugem, Quebra, Desgaste, Desalinhamento, Sujeira excessiva, Mofo aparente, Empenamento, Desbotamento, Oxidacao, Gap/abertura, Partes soltas
+- Se o que voce observa NAO se encaixa em nenhum desses termos OU se voce nao tem certeza absoluta da categoria correta, use a frase literal:
+  "NAO E POSSIVEL AFIRMAR COM PRECISAO."
+- NUNCA invente um nome novo de defeito. NUNCA use adjetivos genericos como "estragado", "feio", "ruim", "problematico", "comprometido". NUNCA escreva "pode estar com X" — ou voce ve X claramente (entao use o termo tecnico), ou voce nao tem certeza (entao use a frase de incerteza).
+- Esta regra NAO te obriga a reportar defeitos onde nao ha: se o item esta integro, apenas o descreva normalmente sem mencionar defeito algum.
 
 REGRA CRITICA — FOCO DA FOTO (NUNCA descreva elementos fora do assunto):
 - Quando a foto e um CLOSE/ZOOM de um item especifico (eletrodomestico, utensilio, louca, torneira, movel), descreva APENAS o item em foco
