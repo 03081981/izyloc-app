@@ -164,6 +164,35 @@ Pares item/componente obrigatorio a verificar:
 - CHUVEIRO — deve ter crivo/difusor (a parte furada que distribui a agua). Se aparece apenas o cano/registro sem o cabecote, reporte
 Esta regra NAO te obriga a reportar componentes que voce simplesmente nao consegue ver na foto (ex: macaneta de porta que esta pro outro lado) — e OBRIGADO a reportar quando a AUSENCIA e claramente visivel na foto (ex: vaso sem assento, porta sem macaneta, tomada sem espelho).
 
+REGRA CRITICA — NAO CONFUNDIR ELEMENTO ARQUITETONICO COM ELETRODOMESTICO/MOVEL:
+Antes de afirmar que um painel vertical grande e "geladeira", "freezer" ou qualquer eletrodomestico grande, CONFIRME visualmente que e um ITEM INDEPENDENTE da estrutura do imovel. Painel vertical pode ser porta de correr, divisoria, armario embutido ou box arquitetonico — e NAO um eletrodomestico.
+Protocolo obrigatorio de 4 perguntas antes de afirmar "geladeira/freezer/eletrodomestico":
+1. E um corpo INDEPENDENTE apoiado no piso (nao integrado a parede/estrutura)? Geladeira sim; porta/divisoria nao.
+2. Tem LOGO da marca visivel (Brastemp, Consul, Electrolux, Samsung, LG, Panasonic, Continental, Midea, etc.)? Geladeira moderna SEMPRE tem logo visivel. Porta/divisoria NAO tem logo de marca.
+3. Altura vai do piso ate muito proximo do teto (ou ate o teto)? Geladeira normalmente NAO vai ate o teto (tem folga acima). Porta de correr e divisoria arquitetonica GERALMENTE vao do piso ao teto.
+4. Superficie lisa brilhante (inox escovado, esmalte branco liso, vidro refrigerador)? Ou superficie FOSCA/TEXTURIZADA/LEITOSA? Geladeira tem superficie LISA. Porta/divisoria com painel fosco/texturizado NAO e geladeira.
+Se NAO consegue responder SIM com certeza a pelo menos 3 dessas 4 perguntas, NAO AFIRME "geladeira". Use descricoes alternativas seguras:
+- "Painel de correr com superficie fosca/texturizada fechando vao de passagem"
+- "Divisoria de vao com painel texturizado e caixilho metalico"
+- "Porta de correr com painel opaco e puxador vertical metalico"
+- "Painel vertical de material nao determinado com precisao fechando vao"
+Erro comum a EVITAR: afirmar "geladeira" para qualquer painel alto que apareca em cozinha. Porta de area de servico, porta de despensa, porta de passagem para outro comodo sao frequentemente confundidas com geladeira quando tem painel fosco e puxador vertical.
+Consequencia dessa confusao alem do erro principal: a IA tende a transferir adjetivos errados para itens proximos (ex: "armarios com portas de correr" quando os armarios tem portas de abrir) — evite contaminacao cruzada.
+
+REGRA CRITICA — ANTI-INVENCAO DE ABERTURAS ARQUITETONICAS (PORTA/JANELA/PASSAGEM):
+Uma porta, janela ou passagem SO existe na foto quando voce VE CLARAMENTE pelo menos 2 dos 4 indicadores abaixo:
+- CAIXILHO/BATENTE/MOLDURA retangular definindo uma abertura no plano da parede
+- MATERIAL DIFERENTE do plano da parede (madeira, vidro, metal, painel fosco, folha de porta)
+- DOBRADICAS, PUXADOR, FECHADURA, MACANETA, TRILHO ou FERRAGEM visivel
+- VAO ABERTO mostrando outro comodo/area alem da parede
+NAO e porta/janela/passagem:
+- Parede mais clara ao fundo ou regiao de parede com iluminacao diferente
+- Extremidade do enquadramento (onde a foto simplesmente corta)
+- Sombra ou canto escuro que sugere profundidade sem abertura definida
+- Area da parede com menos detalhe ou mais desfocada
+- Azulejo/revestimento uniforme sem interrupcao estrutural
+Na duvida: NAO inclua "porta branca ao fundo" nem "janela visivel" nem "passagem" em "Esquadrias". O custo de omitir uma porta real e menor que o custo de inventar uma porta inexistente.
+
 REGRA CRITICA — PROIBIDO JULGAMENTO ESTETICO OU SUBJETIVO:
 - NAO escreva frases de valor sobre impacto visual ou estetica, como: "compromete a apresentacao", "prejudica a aparencia", "afeta a estetica", "deixa o ambiente feio/ruim", "visualmente desagradavel", "prejudica visualmente"
 - Estado geral e Observacoes devem se limitar a FATOS: o que e visivel, onde esta, e classificacao objetiva (Bom / Regular / Com avaria)
