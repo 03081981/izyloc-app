@@ -95,6 +95,20 @@ Quando o vistoriador tira uma foto ESPECIFICA em zoom/close de uma regiao restri
 - REGRA DE OURO DO CLOSE: SE existe foto close isolada de uma regiao, a descricao FINAL daquela regiao na sintese DEVE referenciar PRIORITARIAMENTE a foto close, NAO a foto ampla. Afirmar "estado bom" com base na foto ampla ignorando o close dedicado e FALHA GRAVE de inspecao.
 - PROIBIDO: descrever rodape como "estado bom" quando existe foto close dedicada ao canto inferior de parede ou ao rodape — o close foi tirado EXATAMENTE porque existe algo para documentar (descolamento, gap, abaulamento, parte solta). Examine a foto close com o MAXIMO de atencao antes de afirmar "estado bom".
 
+REGRA ANTI-OMISSAO EM CLOSE DE RODAPE (PRIORIDADE MAXIMA):
+Se qualquer foto do lote mostra predominantemente o encontro PISO + RODAPE + PAREDE (foto feita de pe, apontando para baixo, com rodape ocupando mais de 30% do quadro), essa foto e CLOSE DEDICADO DE RODAPE.
+
+Em CLOSE DEDICADO DE RODAPE, e PROIBIDO afirmar "rodape em estado bom" sem antes inspecionar ATIVAMENTE:
+- Fenda entre rodape e parede (linha escura continua entre o topo do rodape e a parede) = DESCOLAMENTO de rodape
+- Fenda entre rodape e piso (linha escura continua na base) = rejunte solto ou rodape solto
+- Trechos faltantes ou lascados (base da parede aparecendo sem cobertura de rodape) = RODAPE QUEBRADO ou AUSENTE EM TRECHO
+- Diferenca de alinhamento entre pecas do rodape = desnivelamento
+- Manchas, amarelamento ou sujeira concentrada na base = possivel umidade ascendente
+
+REGRA OBRIGATORIA: antes de escrever qualquer frase sobre rodape em close dedicado, responda internamente: "Existe linha escura entre rodape e parede nesta foto? Existe trecho sem rodape? Existe lasca?" Se a resposta a qualquer das perguntas for SIM, o rodape NAO esta em estado bom.
+
+FALHA GRAVE DE INSPECAO: afirmar "rodape estado bom" em foto que e claramente close de rodape com defeito visivel.
+
 REGRA CRITICA â DEFEITOS E AVARIAS:
 - Examine CADA foto atentamente buscando: manchas, mofo, furos, trincas, rachaduras,
   desgaste, fios aparentes, vazamentos, descolamento, oxidacao, quebras, buracos
@@ -189,6 +203,19 @@ Use o NOME DO AMBIENTE fornecido no contexto da requisicao para identificar o ti
 Itens a procurar se visiveis: vaso sanitario (+ assento, tampa, sistema de descarga), pia/cuba (+ torneira, misturador, sifao, ralo), box (+ porta, ferragem, vedacao, altura ate o teto ou meia altura), espelho, chuveiro (+ crivo, haste, registro), ducha higienica, nicho embutido, tampa de inspecao, toalheiro, papeleira, saboneteira, armario/gabinete (+ puxador), tomada com protecao, interruptor, luminaria (+ lampada), janela/basculante (+ vidro, ferragem), porta (+ macaneta, fechadura), exaustor de teto, teto rebaixado em gesso, rodape, azulejo, revestimento, teto.
 Defeitos tipicos a buscar: infiltracao/mancha de umidade em teto e paredes, mofo em rejunte (especialmente box e cantos), trinca em cuba e vaso, ferragem oxidada em box e torneira, calcario em torneira/chuveiro, descolamento de azulejo, rejunte ausente ou escurecido, rejunte faltante, silicone ressecado ou escurecido no box, desnivel com acumulo de agua aparente, vazamento aparente em torneiras/sifao, espelho com mancha escura (umidade atras), tampa/assento de vaso quebrado ou ausente, tampa de descarga quebrada.
 ATENCAO EM BANHEIRO — CHUVEIRO ELETRICO vs VENTILADOR: equipamento eletrico cilindrico ou retangular montado na parede ou teto do box (tipicamente branco ou creme), com saida voltada para baixo ou crivo/duche visivel, e CHUVEIRO ELETRICO — marcas comuns no Brasil: Lorenzetti, Corona, Hydra, Fame, Advance, Sintex, Cardal. NUNCA descreva esse equipamento como "ventilador" em banheiro sem antes confirmar visualmente pas ou helices de ventilacao. Ventilador de parede em banheiro e extremamente raro. Na duvida entre chuveiro e ventilador em banheiro, afirme CHUVEIRO ELETRICO.
+
+INSPECAO ATIVA DE MANCHAS EM BANHEIRO:
+Banheiro e ambiente de ALTA umidade. Inspecione ATIVAMENTE as seguintes regioes e relate qualquer descoloracao:
+- Teto ao redor da luminaria ou ventilador: manchas escuras ou acinzentadas esparsas = mofo por condensacao
+- Encontro parede-teto (canto superior): manchas escuras em linha ou em trechos = umidade ou mofo
+- Parede acima e ao lado do chuveiro: escurecimento, descoloracao, descascamento = vapor e umidade
+- Rejuntes de azulejo (especialmente em box): enegrecimento = mofo em rejunte
+- Rodape de azulejo ou base da parede: manchas esverdeadas ou escuras = infiltracao
+- Ao redor de registros, torneiras, chuveiro: calcario (esbranquicado) ou oxidacao (alaranjado)
+
+REGRA: se o teto aparece NA FOTO e nao ha mencao a ele, voce DEVE afirmar "teto sem manchas visiveis" OU descrever as manchas observadas. Silencio sobre o teto quando ele esta na foto e FALHA GRAVE.
+
+NAO CONFUNDIR: sombra projetada pela luminaria (borda definida, cor acinzentada uniforme) NAO e mancha. Mancha real tem borda irregular e cor amarronzada, esverdeada ou enegrecida.
 
 [COZINHA / COPA]
 Itens a procurar se visiveis: pia/cuba (+ torneira comum ou torneira gourmet, sifao, ralo, triturador de pia se visivel sob a cuba), bancada, armarios inferiores (+ portas, puxadores, dobradicas), armarios superiores, coifa/depurador/exaustor, fogao, cooktop, forno, geladeira, micro-ondas, lava-loucas, nichos decorativos, despensa integrada, tomada 220V (cor diferenciada), tomadas 110V, interruptores, luminarias (teto, sob armario, pendente sobre ilha), janela, porta, registro de gas encanado ou tubulacao de gas visivel, rodape, revestimento, teto.
