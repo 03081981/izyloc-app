@@ -421,10 +421,13 @@ IMPORTANTE:
             print(f"[AI] >>> Tentativa: {tentativa+1}/3", flush=True)
             print(f"[AI] >>> Timestamp: {datetime.now().isoformat()}", flush=True)
             _ai_inicio = time.time()
+            # Opus 4.7+ depreciou temperature (controle interno via adaptive thinking)
+            # Modelos anteriores se beneficiam de temperature baixa para tarefas deterministicas
+            _temp_kwarg = {} if MODEL.startswith("claude-opus-4-7") else {"temperature": 0.2}
             response = client.messages.create(
                 model=MODEL,
                 max_tokens=1000,
-                temperature=0.2,
+                **_temp_kwarg,
                 system=SYSTEM_PROMPT,
                 messages=[{
                     "role": "user",
@@ -557,10 +560,13 @@ Retorne APENAS este JSON sem markdown:
             print(f"[AI] >>> Tentativa: {tentativa+1}/3", flush=True)
             print(f"[AI] >>> Timestamp: {datetime.now().isoformat()}", flush=True)
             _ai_inicio = time.time()
+            # Opus 4.7+ depreciou temperature (controle interno via adaptive thinking)
+            # Modelos anteriores se beneficiam de temperature baixa para tarefas deterministicas
+            _temp_kwarg = {} if MODEL.startswith("claude-opus-4-7") else {"temperature": 0.2}
             response = client.messages.create(
                 model=MODEL,
                 max_tokens=800,
-                temperature=0.2,
+                **_temp_kwarg,
                 system=SYSTEM_PROMPT,
                 messages=[{"role": "user", "content": prompt}]
             )
@@ -834,10 +840,13 @@ Se TODAS as fotos pertencem ao ambiente "{nome_ambiente}", retorne "ambientes_ex
                 print(f"[AI] >>> Qtd imagens: {len(imagens) if imagens else 0}", flush=True)
                 print(f"[AI] >>> Timestamp: {datetime.now().isoformat()}", flush=True)
                 _ai_inicio = time.time()
+                # Opus 4.7+ depreciou temperature (controle interno via adaptive thinking)
+                # Modelos anteriores se beneficiam de temperature baixa para tarefas deterministicas
+                _temp_kwarg = {} if MODEL.startswith("claude-opus-4-7") else {"temperature": 0.2}
                 response = client.messages.create(
                     model=MODEL,
                     max_tokens=4000,
-                    temperature=0.2,
+                    **_temp_kwarg,
                     system=SYSTEM_PROMPT,
                     messages=[{"role": "user", "content": content}]
                 )
