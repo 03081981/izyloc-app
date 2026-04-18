@@ -42,6 +42,19 @@ REGRA CRITICA â OBJETOS PESSOAIS:
 - Vistoria de entrada ou saida: IGNORE completamente tapetes, vasos decorativos,
   produtos de higiene, roupas, itens pessoais do morador â nao fazem parte do laudo
 - Vistoria de temporada/airbnb: inclua inventario completo de todos os itens presentes
+
+REGRA CRITICA — EXCLUSOES DE FALSO POSITIVO (NUNCA reporte como defeito):
+- Sombras projetadas por luz natural (sol pela janela, luminarias) — costumam ter bordas definidas pelo formato da abertura e gradiente suave de luz para sombra
+- Reflexos de luz em superficies polidas (piso, bancada, porta de armario, vidro)
+- Padroes, veios, estampas ou texturas naturais do material (marmore, granito, porcelanato, madeira, ceramica estampada, piso vinilico padronizado)
+- Variacoes cromaticas inerentes ao proprio material (pedras naturais com veios, madeira com nos)
+- Rejunte entre pecas com cor diferente do piso/revestimento
+So reporte mancha/sujidade/infiltracao quando houver evidencia visual INEQUIVOCA: contorno irregular que NAO segue o padrao do material, cor destoante concentrada em area especifica, ou acumulo visivel de residuo.
+
+REGRA CRITICA — FOCO DA FOTO (NUNCA descreva elementos fora do assunto):
+- Quando a foto e um CLOSE/ZOOM de um item especifico (eletrodomestico, utensilio, louca, torneira, movel), descreva APENAS o item em foco
+- PROIBIDO mencionar parede, piso, teto, armario, bancada ou qualquer elemento de FUNDO quando a foto e close de um item — esses elementos sao incidentais e NAO sao o assunto da foto
+- So descreva paredes/piso/teto se a foto for AMPLA e esses elementos estiverem claramente enquadrados e em foco
 """
 
 def analisar_foto(imagem_base64: str, nome_ambiente: str, mime_type: str = "image/jpeg") -> dict:
@@ -87,6 +100,7 @@ IMPORTANTE:
             response = client.messages.create(
                 model=MODEL,
                 max_tokens=1000,
+                temperature=0.2,
                 system=SYSTEM_PROMPT,
                 messages=[{
                     "role": "user",
@@ -199,6 +213,7 @@ Retorne APENAS este JSON sem markdown:
             response = client.messages.create(
                 model=MODEL,
                 max_tokens=800,
+                temperature=0.2,
                 system=SYSTEM_PROMPT,
                 messages=[{"role": "user", "content": prompt}]
             )
@@ -323,6 +338,14 @@ Para cada foto, verifique APENAS o que e claramente visivel:
 - Rejuntes falhos, escurecidos ou com mofo?
 - Pontos escuros dispersos no piso (sujidade grave ou infestacao)?
 - Oxidacao, ferrugem ou deterioracao em metais?
+
+ANTES de registrar qualquer mancha/sujidade/infiltracao/desgaste, responda mentalmente 4 perguntas:
+1. A suposta "mancha" tem forma compativel com luz natural entrando por janela ou luminaria, com gradiente suave? -> e SOMBRA, NAO defeito
+2. A suposta "mancha" se repete ritmicamente pelo piso/parede acompanhando o desenho do material? -> e PADRAO/VEIO/TEXTURA do material, NAO defeito
+3. A cor destoante esta restrita a linhas entre pecas? -> e REJUNTE, NAO defeito
+4. Ha brilho/reflexo numa superficie polida? -> e REFLEXO de luz, NAO defeito
+So prossiga com o defeito se nenhuma das 4 hipoteses acima se aplica.
+
 IMPORTANTE: So reporte um defeito se voce tem CERTEZA VISUAL. Em fotos amplas, nao force deteccao de defeitos.
 
 PASSO 3 â REGRAS DE DESCRICAO:
@@ -366,6 +389,12 @@ Compile tudo em descricao unica sem omitir nenhum defeito.
 Para CADA elemento ou defeito, inclua entre parenteses o numero da foto: (foto N)
 Prioridade: fotos de avaria > fotos de item > fotos amplas.
 
+REGRA CRITICA DE SINTESE — ELEMENTOS CONSTRUTIVOS (Piso, Paredes, Teto, Rodapes, Bancada):
+- So emita linhas "Piso:", "Paredes:", "Teto:", "Rodapes:", "Bancada:" se PELO MENOS UMA foto do lote for AMPLA e esse elemento estiver claramente enquadrado e em foco
+- PROIBIDO inferir estado de parede/piso/teto a partir do FUNDO INCIDENTAL de fotos close de itens (ex: close de liquidificador dentro de armario NAO permite descrever "paredes brancas")
+- Se o lote so contem fotos close de itens, a sintese deve descrever APENAS os itens, OMITINDO completamente as linhas de Piso/Paredes/Teto
+- Quando omitir uma linha, simplesmente NAO a inclua no resumo — NAO escreva "nao visivel" ou similar
+
 Retorne APENAS este JSON sem markdown:
 {{{{
   "resumo": "SINTESE DO AMBIENTE:\n\nPiso: [revestimento, cor, estado com (foto N) â furos/manchas/danos se houver â OMITIR se nao aparece]\n\nParedes: [acabamento, cor, estado com (foto N) â mofo/manchas/trincas se houver]\n\nTeto: [OMITIR COMPLETAMENTE se nao aparecer em nenhuma foto â acabamento, cor, estado com (foto N) se aparecer]\n\nEsquadrias: [portas e janelas visiveis com (foto N), estado]\n\nInstalacoes: [tomadas, interruptores, pontos de luz, chuveiro com (foto N) â fios aparentes DEVEM ser reportados]\n\nMoveis e equipamentos: [itens presentes com (foto N) e estados detalhados]\n\nObservacoes: [LISTA COMPLETA de todos os defeitos com (foto N)]\n\nEstado geral: [Bom / Regular / Com avaria] â [justificativa]",
@@ -388,6 +417,7 @@ Se TODAS as fotos pertencem ao ambiente "{nome_ambiente}", retorne "ambientes_ex
                 response = client.messages.create(
                     model=MODEL,
                     max_tokens=4000,
+                    temperature=0.2,
                     system=SYSTEM_PROMPT,
                     messages=[{"role": "user", "content": content}]
                 )
