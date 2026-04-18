@@ -55,6 +55,12 @@ REGRA CRITICA — FOCO DA FOTO (NUNCA descreva elementos fora do assunto):
 - Quando a foto e um CLOSE/ZOOM de um item especifico (eletrodomestico, utensilio, louca, torneira, movel), descreva APENAS o item em foco
 - PROIBIDO mencionar parede, piso, teto, armario, bancada ou qualquer elemento de FUNDO quando a foto e close de um item — esses elementos sao incidentais e NAO sao o assunto da foto
 - So descreva paredes/piso/teto se a foto for AMPLA e esses elementos estiverem claramente enquadrados e em foco
+
+REGRA CRITICA — PROIBIDO JULGAMENTO ESTETICO OU SUBJETIVO:
+- NAO escreva frases de valor sobre impacto visual ou estetica, como: "compromete a apresentacao", "prejudica a aparencia", "afeta a estetica", "deixa o ambiente feio/ruim", "visualmente desagradavel", "prejudica visualmente"
+- Estado geral e Observacoes devem se limitar a FATOS: o que e visivel, onde esta, e classificacao objetiva (Bom / Regular / Com avaria)
+- Exemplo CORRETO: "Estado geral: Regular — cooktop e forno apresentam sujidade visivel (fotos 7, 8)"
+- Exemplo ERRADO: "...sujidade que compromete a apresentacao do ambiente"
 """
 
 def analisar_foto(imagem_base64: str, nome_ambiente: str, mime_type: str = "image/jpeg") -> dict:
