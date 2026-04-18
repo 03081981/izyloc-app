@@ -82,6 +82,19 @@ REGRA CRITICA — INSPECAO OBRIGATORIA DE SUJEIRA EM SUPERFICIES TRANSLUCIDAS E 
 - Se houver marcas visiveis (mesmo que discretas), reporte como "apresenta sujidade/manchas/marcas" — NAO classifique como "estado bom"
 - Vidros sujos, caixilhos com poeira/manchas, espelhos com respingos SAO defeitos e DEVEM ser reportados
 
+REGRA CRITICA — INVENTARIO COMPLETO OBRIGATORIO:
+- Liste TODOS os itens visiveis nas fotos, sem filtrar por "importancia", "permanencia", "tamanho" ou "fixacao"
+- Inclua OBRIGATORIAMENTE (varredura completa por foto):
+  * Moveis fixos: cama, sofa, mesa, cadeira, guarda-roupa, rack, armario, comoda, estante, prateleira, bancada, criado-mudo
+  * Eletrodomesticos: TV, geladeira, fogao, cooktop, forno, micro-ondas, coifa, lava-loucas, lava-roupas, secadora, ar-condicionado, aquecedor, VENTILADOR (de teto, pedestal, mesa, coluna ou parede)
+  * Eletronicos portateis: abajur, luminaria de mesa, radio, caixa de som, notebook, impressora, umidificador
+  * Decoracao: quadros, espelhos decorativos, plantas, vasos, tapetes, almofadas, cortinas, persianas
+  * Utensilios visiveis em cozinha/lavanderia: liquidificador, batedeira, cafeteira, torradeira, purificador, ferro de passar
+  * Acessorios de banheiro: porta-toalhas, porta-papel, saboneteira, dispenser
+- PROIBIDO omitir item visivel porque parece "pequeno", "portatil", "nao-fixo", "temporario" ou "decorativo"
+- Se um item aparece claramente em QUALQUER foto do lote, ELE DEVE constar em "Itens e moveis" (ou na secao apropriada conforme anti-duplicacao)
+- VENTILADOR especificamente: IA costuma esquecer ventilador em cima de racks, mesas, ou no canto do quarto. SEMPRE confira se ha ventilador visivel antes de concluir o inventario
+
 REGRA CRITICA — PROIBIDO JULGAMENTO ESTETICO OU SUBJETIVO:
 - NAO escreva frases de valor sobre impacto visual ou estetica, como: "compromete a apresentacao", "prejudica a aparencia", "afeta a estetica", "deixa o ambiente feio/ruim", "visualmente desagradavel", "prejudica visualmente"
 - Estado geral e Observacoes devem se limitar a FATOS: o que e visivel, onde esta, e classificacao objetiva (Bom / Regular / Com avaria)
@@ -446,6 +459,14 @@ Pergunta 2: A unica evidencia desse elemento e um REFLEXO visivel em superficie 
 Exemplo pratico: Foto 4 = close do micro-ondas com vidro espelhado que reflete piso e armarios. Se piso/armarios SO aparecem nesse reflexo, AUDITORIA FALHA -> OMITA "Piso:" e "Armarios:" do resumo, mesmo que a foto 4 "mostre" esses elementos via reflexo.
 
 Se apos a auditoria o resumo ficar apenas com itens (eletrodomesticos, utensilios, moveis), isso esta CORRETO. NAO force uma linha de Piso/Paredes/Teto so para "preencher" a estrutura.
+
+ETAPA FINAL OBRIGATORIA — VARREDURA DE INVENTARIO COMPLETO:
+Antes de retornar o JSON, percorra CADA foto do lote (foto 1, foto 2, foto 3, ...) e faca uma varredura visual completa.
+
+Pergunta 3: Para cada foto, existe algum item CLARAMENTE visivel (mesmo que pequeno, portatil ou no fundo) que NAO aparece na minha lista de "Itens e moveis"?
+-> Itens frequentemente ESQUECIDOS por IA: VENTILADOR (pedestal/mesa/teto/parede), ar-condicionado split ou janela, aquecedor, abajur, luminaria de mesa, tapete, almofadas, cortinas, plantas, quadros, espelhos, criado-mudo, mesa lateral, caixa de som, umidificador.
+-> Se SIM (ha item visivel nao listado), ACRESCENTE o item antes de retornar o JSON.
+-> VENTILADOR especificamente: confira se ha algum ventilador (pedestal, mesa, teto, coluna ou parede) em qualquer foto e inclua OBRIGATORIAMENTE se houver. Ventilador e o item mais frequentemente esquecido em dormitorios.
 
 EXEMPLO COMPLETO DE SAIDA CORRETA para um lote de 8 closes de eletrodomesticos em cozinha (SEM foto ampla do ambiente).
 Campo "resumo" deve ser EXATAMENTE assim (nenhuma linha de Piso/Paredes/Teto):
