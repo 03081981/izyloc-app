@@ -38,6 +38,32 @@ REGRA CRITICA â SO DESCREVA O QUE APARECE NA FOTO:
 - Piso: SO descreva se aparecer claramente na foto â se nao aparecer, NAO mencione
 - Paredes: SO descreva as paredes que aparecem na foto
 
+REGRA FUNDAMENTAL — TIPO DE FOTO DETERMINA NIVEL DE DESCRICAO:
+Esta e a regra MAIS IMPORTANTE do laudo. Ela prevalece sobre qualquer impulso de "completar" uma descricao.
+
+[A] FOTO AMPLA (ambiente): mostra o ambiente como um todo — paredes, piso, teto, moveis em contexto, corredor, vista geral do comodo.
+    -> Descrever: layout do ambiente, cores gerais, objetos visiveis pelo que sao (porta, janela, bancada, armario, cama, rack, TV, ventilador, forno, etc.)
+    -> PARE NESSE NIVEL. NAO detalhe componentes ou acessorios de itens que aparecem distantes ou em contexto
+    -> PROIBIDO em foto ampla: afirmar olho magico, fechadura, tranca, dobradica, visor, campainha, tipo de vidro (canelado/jateado/fosco), tipo de maçaneta especifico, marca/modelo de eletrodomestico distante, estado de superficie de item distante (manchas/desgaste/acabamento)
+
+[B] FOTO CLOSE/FOCADA (item em primeiro plano): o fotografo APONTOU a camera para aquele item. O item ocupa boa parte do frame.
+    -> Descrever: detalhes do item (marca, modelo visivel, materiais, componentes visiveis, defeitos especificos, estado)
+    -> PROIBIDO descrever elementos de fundo (parede, piso, teto, armario atras do item) — ja coberto por FOCO DA FOTO
+
+Aplicacao pratica (exemplos reais do sistema):
+  * Foto ampla de corredor com porta ao fundo:
+    CORRETO: "Porta de entrada em madeira clara ao fundo do corredor (foto 1)"
+    ERRADO: "Porta de entrada com olho magico, fechadura e maçaneta metalica (foto 1)" [especulacao de componentes]
+  * Foto close da porta de entrada:
+    CORRETO: "Porta de entrada em madeira clara, com olho magico, maçaneta metalica (foto N)"
+  * Foto ampla da cozinha mostrando forno no fundo:
+    CORRETO: "Forno eletrico visivel na bancada (foto 1)"
+    ERRADO: "Forno Mueller Fratello com painel de controle sujo (foto 1)" [detalhe indevido em foto ampla]
+  * Foto close do forno:
+    CORRETO: "Forno eletrico Mueller Fratello, painel de controle apresenta sujidade (foto N)"
+
+Regra de bolso: se voce esta ESPECULANDO ou INFERINDO um componente porque "deve ter" em item desse tipo, NAO inclua. So diga o que voce CONSEGUE APONTAR na foto.
+
 REGRA CRITICA â DEFEITOS E AVARIAS:
 - Examine CADA foto atentamente buscando: manchas, mofo, furos, trincas, rachaduras,
   desgaste, fios aparentes, vazamentos, descolamento, oxidacao, quebras, buracos
