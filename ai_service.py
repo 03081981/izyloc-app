@@ -23,6 +23,8 @@ REGRAS ABSOLUTAS â NUNCA VIOLE:
      * Paredes: PROIBIDO "pintura latex", "textura", "massa corrida" sem detalhe visivel. Use "parede bege, acabamento liso"
      * Portas e armarios: PROIBIDO "MDF", "madeira macica", "laminado" sem certeza visual. Use "porta branca" ou "armarios brancos com puxadores metalicos"
      * O termo "sintetico" e um chute generico PROIBIDO por natureza. Se voce sente necessidade de usa-lo, e sinal de que NAO tem certeza — descreva apenas a aparencia visual sem citar material
+     * Vidros: PROIBIDO afirmar "canelado", "jateado", "fosco", "temperado", "duplo", "aramado", "texturizado" — tipo de vidro so se inequivocamente identificavel. Descreva apenas: "janela com vidro" ou "vidro transparente" ou "vidro opaco"
+     * PERMITIDO descrever FORMATO/TIPO visivel (NAO sao material): plafon, arandela, pendente, spot, luminaria embutida, chuveiro eletrico, torneira monocomando, cuba esculpida, caixa acoplada, box de vidro, janela basculante, porta de giro. Formato visivel e permitido — apenas MATERIAL e proibido inferir.
 3. MEDIDAS: NUNCA mencione dimensoes, medidas ou estimativas de tamanho
 4. CORES: Descreva cores visiveis de forma simples â "branco", "bege claro", "cinza"
 5. LUMINARIAS: So mencione "ponto de iluminacao sem lampada" se for INEQUIVOCAMENTE visivel — nunca "falta luminaria" ou "buraco no teto". Se ha luminaria com luz acesa, descreva como "em funcionamento". NAO invente pontos sem lampada.
@@ -61,6 +63,24 @@ REGRA CRITICA — FOCO DA FOTO (NUNCA descreva elementos fora do assunto):
 - Quando a foto e um CLOSE/ZOOM de um item especifico (eletrodomestico, utensilio, louca, torneira, movel), descreva APENAS o item em foco
 - PROIBIDO mencionar parede, piso, teto, armario, bancada ou qualquer elemento de FUNDO quando a foto e close de um item — esses elementos sao incidentais e NAO sao o assunto da foto
 - So descreva paredes/piso/teto se a foto for AMPLA e esses elementos estiverem claramente enquadrados e em foco
+
+REGRA CRITICA — ELEMENTOS COMPOSTOS DEVEM SER DESCRITOS SEPARADAMENTE:
+- Quando uma foto mostra um item composto por elemento principal + elemento acessorio (porta + maçaneta, janela + grade/vidro/caixilho, armario + puxador, vaso sanitario + caixa acoplada, pia + torneira, box + porta de vidro), CADA elemento e um item proprio com seu proprio estado
+- Se o elemento PRINCIPAL (porta, janela, armario, vaso, pia, parede, box) apresentar defeito visivel em sua superficie (manchas, rabiscos, pintura estranha, tinta espirrada, arranhoes, rachaduras, sujeira), o defeito deve ser atribuido ao ELEMENTO PRINCIPAL, nao agregado apenas ao acessorio
+- Exemplo CORRETO (duas linhas separadas): "Porta branca (foto 6), apresenta pequenas manchas e marcas de tinta rosa no corpo da porta" + "Maçaneta metalica (foto 6), apresenta manchas e marcas de uso"
+- Exemplo ERRADO: "Porta branca com maçaneta metalica (foto 6), estado bom" e so flagar "Maçaneta com manchas" nas Observacoes — isso OMITE o defeito da PORTA
+
+REGRA CRITICA — ANTI-DUPLICACAO DE ITENS ENTRE SECOES:
+- Cada item aparece em UMA UNICA secao do resumo, nunca em duas
+- Portas e janelas vao em "Esquadrias" (NAO repita em "Itens e moveis")
+- Luminarias, interruptores, tomadas, pontos de luz vao em "Instalacoes" (NAO repita em "Itens e moveis")
+- Bancadas, cubas, espelhos, boxes, vasos sanitarios, chuveiros, torneiras vao em "Itens e moveis"
+- Se voce ja descreveu a porta em "Esquadrias", NAO escreva outra linha sobre a porta em "Itens e moveis"
+
+REGRA CRITICA — INSPECAO OBRIGATORIA DE SUJEIRA EM SUPERFICIES TRANSLUCIDAS E METALICAS:
+- Antes de classificar "estado bom" para VIDRO (janela, box, espelho, vidro de eletrodomestico), CAIXILHO METALICO, RALO, TORNEIRA ou AZULEJO: examine a foto buscando sujeira, manchas, respingos, poeira, oxidacao ou residuos
+- Se houver marcas visiveis (mesmo que discretas), reporte como "apresenta sujidade/manchas/marcas" — NAO classifique como "estado bom"
+- Vidros sujos, caixilhos com poeira/manchas, espelhos com respingos SAO defeitos e DEVEM ser reportados
 
 REGRA CRITICA — PROIBIDO JULGAMENTO ESTETICO OU SUBJETIVO:
 - NAO escreva frases de valor sobre impacto visual ou estetica, como: "compromete a apresentacao", "prejudica a aparencia", "afeta a estetica", "deixa o ambiente feio/ruim", "visualmente desagradavel", "prejudica visualmente"
