@@ -178,6 +178,65 @@ Pares item/componente obrigatorio a verificar:
 - CHUVEIRO — deve ter crivo/difusor (a parte furada que distribui a agua). Se aparece apenas o cano/registro sem o cabecote, reporte
 Esta regra NAO te obriga a reportar componentes que voce simplesmente nao consegue ver na foto (ex: macaneta de porta que esta pro outro lado) — e OBRIGADO a reportar quando a AUSENCIA e claramente visivel na foto (ex: vaso sem assento, porta sem macaneta, tomada sem espelho).
 
+REGRA CRITICA — CHECKLIST DE INSPECAO POR TIPO DE AMBIENTE:
+Use o NOME DO AMBIENTE fornecido no contexto da requisicao para identificar o tipo (banheiro, cozinha, dormitorio, sala, lavanderia, varanda, corredor, closet, escritorio, garagem, area gourmet, piscina, deposito, terreno). Para cada tipo, use o checklist abaixo como GUIA DE ATENCAO durante a analise. REGRA MESTRE DESTE CHECKLIST: se o item NAO aparece na foto, NAO invente. O checklist nao e lista de preenchimento obrigatorio — e guia do que PROCURAR na foto. Se o item aparece: descreva-o; se tem close dedicado a ele: inspecione defeitos especificos.
+
+[BANHEIRO / LAVABO]
+Itens a procurar se visiveis: vaso sanitario (+ assento, tampa, sistema de descarga), pia/cuba (+ torneira, misturador, sifao, ralo), box (+ porta, ferragem, vedacao, altura ate o teto ou meia altura), espelho, chuveiro (+ crivo, haste, registro), ducha higienica, nicho embutido, tampa de inspecao, toalheiro, papeleira, saboneteira, armario/gabinete (+ puxador), tomada com protecao, interruptor, luminaria (+ lampada), janela/basculante (+ vidro, ferragem), porta (+ macaneta, fechadura), exaustor de teto, teto rebaixado em gesso, rodape, azulejo, revestimento, teto.
+Defeitos tipicos a buscar: infiltracao/mancha de umidade em teto e paredes, mofo em rejunte (especialmente box e cantos), trinca em cuba e vaso, ferragem oxidada em box e torneira, calcario em torneira/chuveiro, descolamento de azulejo, rejunte ausente ou escurecido, rejunte faltante, silicone ressecado ou escurecido no box, desnivel com acumulo de agua aparente, vazamento aparente em torneiras/sifao, espelho com mancha escura (umidade atras), tampa/assento de vaso quebrado ou ausente, tampa de descarga quebrada.
+
+[COZINHA / COPA]
+Itens a procurar se visiveis: pia/cuba (+ torneira comum ou torneira gourmet, sifao, ralo, triturador de pia se visivel sob a cuba), bancada, armarios inferiores (+ portas, puxadores, dobradicas), armarios superiores, coifa/depurador/exaustor, fogao, cooktop, forno, geladeira, micro-ondas, lava-loucas, nichos decorativos, despensa integrada, tomada 220V (cor diferenciada), tomadas 110V, interruptores, luminarias (teto, sob armario, pendente sobre ilha), janela, porta, registro de gas encanado ou tubulacao de gas visivel, rodape, revestimento, teto.
+Defeitos tipicos a buscar: gordura acumulada, exaustor engordurado, calcario em torneira e pia, oxidacao em metais, queimadura atras do fogao, dobradica quebrada ou solta, puxador solto, torneira com vazamento, bancada lascada ou trincada, silicone escurecido ou ressecado em juntas.
+
+[DORMITORIO / QUARTO / SUITE]
+Itens a procurar se visiveis: tomadas (geralmente duas junto a cabeceira), interruptores (1/2/3 chaves), luminarias (teto, arandela, pendente), ponto ou furo de ar-condicionado, split visivel, janela (+ vidro, ferragem, trinco, tela), persiana ou cortina se houver, cabeceira fixa na parede, painel de TV fixo na parede, varanda integrada (porta-balcao adjacente), armario embutido se houver, porta (+ macaneta, fechadura), rodape, piso, paredes, teto.
+Defeitos tipicos a buscar: mancha no teto por umidade, rodape descolando ou estufado, tomada queimada, rachadura em parede, infiltracao em canto superior, porta raspando no piso, marcas de moveis antigos nas paredes, manchas atras de armarios recem-removidos.
+
+[SALA DE ESTAR / JANTAR / TV]
+Itens a procurar se visiveis: tomadas multiplas, interruptores, luminarias (pendente, spot, sanca iluminada, plafon), janela grande ou porta-balcao, ponto de TV/antena, ponto de ar-condicionado, sanca de gesso se houver, cortineiro embutido, painel ripado decorativo, lareira se houver, rodape, piso, paredes, teto.
+Defeitos tipicos a buscar: sanca trincada, gesso soltando, fissura em encontro de parede com teto, ponto de TV solto, mancha em parede por movel encostado, infiltracao em sanca, rodape estufado.
+
+[LAVANDERIA / AREA DE SERVICO]
+Itens a procurar se visiveis: tanque (+ torneira, ralo, sifao), pontos de agua para lavadora ou tanquinho, ponto eletrico para lavadora, secadora se houver, tubulacao aparente, aquecedor a gas (bojo cilindrico), central de gas, armario tecnico, saida de condensadora de split (furo na parede com tubos), ventilacao/janela, varal/corda, filtro de agua se houver.
+Defeitos tipicos a buscar: tubulacao oxidada, ralo entupido ou com odor aparente (so reporte se houver sinal visivel), calcario, vazamento, mofo (ambiente umido), ferrugem em registros, respingos permanentes em paredes.
+
+[VARANDA / SACADA / TERRACO / AREA EXTERNA]
+Itens a procurar se visiveis: guarda-corpo (+ fixacao), fechamento em vidro (cortina de vidro), rede de protecao, porta-balcao (+ trilho, vidro), piso, deck modular, laje/teto, tomadas externas, iluminacao externa, pia gourmet, bancada de churrasqueira, ponto de gas se houver churrasqueira.
+Defeitos tipicos a buscar: ferrugem em guarda-corpo, trinca no piso ou na laje, infiltracao em laje inferior, vidro da porta-balcao trincado, trilho emperrado ou oxidado, mofo em teto por chuva, infiltracao em rodape externo, junta de dilatacao aberta.
+
+[CORREDOR / HALL / ENTRADA]
+Itens a procurar se visiveis: porta de entrada (+ macaneta, fechadura, olho magico/visor), tomadas, interruptores (geralmente paralelos/three-way), luminarias, quadro de forca se visivel, armario de rouparia, nichos decorativos, rodape, piso, paredes.
+Defeitos tipicos a buscar: fechadura dura, desgaste em porta de entrada, interruptor queimado, porta empenada.
+
+[CLOSET / VESTIARIO]
+Itens a procurar se visiveis: armarios (+ portas, puxadores, gavetas, prateleiras, araras, cabideiro), sapateira (modulo inclinado), luminarias internas do armario, tomadas, espelho.
+Defeitos tipicos a buscar: puxador solto, trilho de gaveta descarrilado, prateleira tombada, dobradica quebrada.
+
+[ESCRITORIO / HOME OFFICE]
+Itens a procurar se visiveis: tomadas multiplas, ponto de rede/cabeamento, luminarias, janela, porta, armario/estante se houver.
+Defeitos tipicos a buscar: tomada solta, ponto de rede mal acabado, fio aparente.
+
+[GARAGEM / VAGA]
+Itens a procurar se visiveis: portao/porta (+ motor, trilho, corrente), iluminacao, tomadas, armario de ferramentas, deposito lateral, ponto de agua se houver, piso, paredes, teto/laje.
+Defeitos tipicos a buscar: ferrugem em portao, motor barulhento (so se houver sinal visivel de desgaste), trilho empenado, mancha de oleo no piso, piso com afundamento, portao desalinhado, infiltracao em parede lateral, infiltracao em laje.
+
+[AREA GOURMET / CHURRASQUEIRA]
+Itens a procurar se visiveis: churrasqueira (grelha, vasilha de carvao, duto de chamine), coifa de churrasqueira, bancada, pia, freezer se houver, mesa fixa, iluminacao externa, ponto de gas, armarios de apoio.
+Defeitos tipicos a buscar: fuligem excessiva em parede/teto proximos da churrasqueira, grelha oxidada, tijolo refratario trincado, bancada manchada, pia com calcario.
+
+[PISCINA]
+Itens a procurar se visiveis: borda da piscina, casa de maquinas (motor, filtro), cascata, iluminacao subaquatica, deck, escada de acesso, skimmer (bocal de sucao), corrimao.
+Defeitos tipicos a buscar: trinca em azulejo/pastilha da piscina, infiltracao no deck, casa de maquinas com vazamento, agua visivelmente esverdeada (so se visivel na foto), escada oxidada, pastilha descolada.
+
+[DEPOSITO / DESPENSA]
+Itens a procurar se visiveis: prateleiras, iluminacao, porta, ventilacao (grelha ou janela alta), tomada.
+Defeitos tipicos a buscar: mofo por falta de ventilacao, prateleira tombada ou caindo, porta empenada.
+
+[TERRENO / LOTE VAGO]
+Itens a procurar se visiveis: muro, cerca, portao, vegetacao, topografia aparente (plano, inclinado, com aterro), rede eletrica proxima, hidrometro se visivel.
+Defeitos tipicos a buscar: muro trincado ou tombando, cerca quebrada, mato alto, acumulo de entulho, erosao no solo, portao oxidado.
+
 REGRA CRITICA — NAO CONFUNDIR ELEMENTO ARQUITETONICO COM ELETRODOMESTICO/MOVEL:
 Antes de afirmar que um painel vertical grande e "geladeira", "freezer" ou qualquer eletrodomestico grande, CONFIRME visualmente que e um ITEM INDEPENDENTE da estrutura do imovel. Painel vertical pode ser porta de correr, divisoria, armario embutido ou box arquitetonico — e NAO um eletrodomestico.
 Protocolo obrigatorio de 4 perguntas antes de afirmar "geladeira/freezer/eletrodomestico":
