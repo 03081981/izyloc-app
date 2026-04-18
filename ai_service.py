@@ -45,6 +45,8 @@ REGRA CRITICA â DEFEITOS E AVARIAS:
 - Furos e buracos no piso ou paredes DEVEM ser mencionados obrigatoriamente
 - Pontos escuros dispersos no piso podem indicar sujidade grave ou infestacao â reporte com precisao
 - NUNCA diga "sem avarias" se qualquer irregularidade e visivel
+- RODAPES: examine alinhamento com a parede e com o piso, presenca de gap/abertura, abaulamento, partes soltas ou descoladas, quebras, rachaduras. Rodape descolado da parede apresenta curvatura/saliencia visivel ou sombra de abertura — DEVE ser reportado como defeito
+- RUFOS E ACABAMENTOS: cantoneiras, arremates, molduras, rufos de teto tambem podem descolar ou apresentar gap — examine sempre que visiveis
 
 REGRA CRITICA â OBJETOS PESSOAIS:
 - Vistoria de entrada ou saida: IGNORE completamente tapetes, vasos decorativos,
@@ -114,6 +116,19 @@ REGRA CRITICA — DISTANCIA E NIVEL DE DETALHE:
   * Foto de quintal mostrando muro no fundo: CORRETO "Muro em cor clara ao fundo (foto N)" — NAO classifique estado do muro
   * Foto ampla onde a porta aparece distante: CORRETO "Porta de entrada escura visivel ao fundo (foto N)" sem afirmar estado
 - Essa regra e distinta de FOCO DA FOTO (que fala de close de item): aqui o foco e em fotos AMPLAS onde um elemento aparece como contexto/paisagem distante
+
+REGRA CRITICA — DETECCAO DE DEFEITOS POR COMPARACAO ENTRE ELEMENTOS SIMILARES:
+- Quando houver MULTIPLOS elementos do MESMO tipo na foto (luminarias iguais, azulejos, ripas de piso, rodape continuo, interruptores, tomadas, portas de armario, lampadas de um trilho), COMPARE-OS entre si
+- Se um elemento esta DIFERENTE dos outros similares, isso e sinal de DEFEITO POTENCIAL — NAO interprete como "modelo diferente" ou "caracteristica do produto"
+- Casos tipicos que indicam DEFEITO:
+  * Luminaria APAGADA enquanto outras iguais estao ACESAS -> lampada QUEIMADA (reporte como defeito)
+  * Azulejo com cor ou tom diferente no meio de fileira identica -> azulejo manchado, substituido mal, ou com infiltracao
+  * Ripa de piso ou tabua desalinhada vs as outras adjacentes -> levantamento ou defeito de instalacao
+  * Interruptor/tomada com cor ou estado diferente dos outros iguais -> queimado, sujo ou com problema
+  * Porta de armario desalinhada vs as outras portas do mesmo conjunto -> dobradica solta ou mal instalada
+- Exemplo ERRADO (falha real da IA): "Luminaria embutida sem moldura visivel" quando na verdade era uma luminaria igual as outras do teto mas APAGADA/QUEIMADA
+- Exemplo CORRETO: "Quatro luminarias embutidas acesas + uma luminaria APAGADA no canto superior esquerdo (foto 1), sugerindo lampada queimada ou pontual desligado"
+- Regra de bolso: antes de descrever um elemento como tendo caracteristica diferente, pergunte-se "os outros elementos iguais estao assim tambem?" Se NAO estao, provavelmente e defeito
 
 REGRA CRITICA — NUNCA DESCREVA POR REFLEXO:
 - PROIBIDO descrever piso, paredes, teto, ambiente ou qualquer elemento com base em REFLEXOS visiveis em superficies espelhadas ou polidas (porta de vidro ou inox de eletrodomesticos, espelhos, vidros, bancadas polidas, telas de TV, superficies metalicas)
