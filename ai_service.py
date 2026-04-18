@@ -421,9 +421,32 @@ Exemplo pratico: Foto 4 = close do micro-ondas com vidro espelhado que reflete p
 
 Se apos a auditoria o resumo ficar apenas com itens (eletrodomesticos, utensilios, moveis), isso esta CORRETO. NAO force uma linha de Piso/Paredes/Teto so para "preencher" a estrutura.
 
+EXEMPLO COMPLETO DE SAIDA CORRETA para um lote de 8 closes de eletrodomesticos em cozinha (SEM foto ampla do ambiente).
+Campo "resumo" deve ser EXATAMENTE assim (nenhuma linha de Piso/Paredes/Teto):
+---
+SINTESE DO AMBIENTE:
+
+Itens e moveis:
+- Micro-ondas Philco prata e preto, display 17:01 (foto 1), estado bom
+- Purificador Electrolux Acqua Pure (foto 2), estado bom
+- Conjunto de tacas e copos de vidro com lapidacao (foto 3), estado bom
+- Air fryer preto e prata (foto 4), estado bom
+- Panela de pressao eletrica Wap (foto 5), estado bom
+- Liquidificador Philco (foto 6), estado bom
+- Forno eletrico Mueller Fratello (foto 7), apresenta sujidade no vidro da porta
+- Cooktop Philco 5 bocas a gas (foto 8), apresenta sujidade na superficie
+
+Observacoes:
+- Forno eletrico com sujidade visivel no vidro da porta (foto 7)
+- Cooktop com sujidade e residuos na superficie (foto 8)
+
+Estado geral: Regular — forno e cooktop apresentam sujidade visivel (fotos 7, 8)
+---
+NOTE: este resumo CORRETO NAO tem linha "Piso:", NAO tem linha "Paredes:", NAO tem linha "Teto:". Nenhuma foto do lote enquadra diretamente esses elementos — reflexos em vidros/inox/espelhos de eletrodomesticos NAO contam como evidencia. Se o seu lote for parecido (so closes de itens), reproduza esse padrao.
+
 Retorne APENAS este JSON sem markdown:
 {{{{
-  "resumo": "SINTESE DO AMBIENTE:\n\nPiso: [revestimento, cor, estado com (foto N) â furos/manchas/danos se houver â OMITIR se nao aparece]\n\nParedes: [acabamento, cor, estado com (foto N) â mofo/manchas/trincas se houver]\n\nTeto: [OMITIR COMPLETAMENTE se nao aparecer em nenhuma foto â acabamento, cor, estado com (foto N) se aparecer]\n\nEsquadrias: [portas e janelas visiveis com (foto N), estado]\n\nInstalacoes: [tomadas, interruptores, pontos de luz, chuveiro com (foto N) â fios aparentes DEVEM ser reportados]\n\nMoveis e equipamentos: [itens presentes com (foto N) e estados detalhados]\n\nObservacoes: [LISTA COMPLETA de todos os defeitos com (foto N)]\n\nEstado geral: [Bom / Regular / Com avaria] â [justificativa]",
+  "resumo": "SINTESE DO AMBIENTE:\n\nItens e moveis:\n- [liste cada item/movel/eletrodomestico com (foto N) e estado]\n\n[SECAO OPCIONAL - ELEMENTOS CONSTRUTIVOS: inclua as linhas abaixo SOMENTE se houver foto AMPLA do ambiente enquadrando DIRETAMENTE o elemento. Reflexo em vidro/inox NAO conta. Se NAO houver foto ampla direta, OMITA cada linha por completo. NAO escreva 'nao visivel' ou similar]\n[Piso: revestimento, cor, estado (foto N)]\n[Paredes: acabamento, cor, estado (foto N)]\n[Teto: acabamento, cor, estado (foto N)]\n[Rodapes: material, cor, estado (foto N)]\n[Bancada: material, cor, estado (foto N)]\n[Esquadrias: portas e janelas visiveis, estado (foto N)]\n[Instalacoes: tomadas, interruptores, pontos de luz — fios aparentes DEVEM ser reportados (foto N)]\n\nObservacoes: [LISTA COMPLETA de defeitos factuais com (foto N)]\n\nEstado geral: [Bom / Regular / Com avaria] — [justificativa factual, sem julgamento estetico]",
   "estado_geral": "Bom ou Regular ou Com avaria",
   "ambientes_extras": [
     {{{{
