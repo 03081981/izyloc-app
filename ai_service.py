@@ -624,6 +624,10 @@ Retorne APENAS este JSON sem markdown:
             texto = re.sub(r'```json\s*', '', texto)
             texto = re.sub(r'```\s*', '', texto)
             texto = texto.strip()
+            # Extracao robusta: isola o primeiro bloco {...} ignorando prose prefix/suffix
+            _m = re.search(r'\{.*\}', texto, re.DOTALL)
+            if _m:
+                texto = _m.group(0)
             dados = json.loads(texto, strict=False)
             dados['success'] = True
             return dados
@@ -907,6 +911,10 @@ Se TODAS as fotos pertencem ao ambiente "{nome_ambiente}", retorne "ambientes_ex
                 texto = re.sub(r'```json\s*', '', texto)
                 texto = re.sub(r'```\s*', '', texto)
                 texto = texto.strip()
+                # Extracao robusta: isola o primeiro bloco {...} ignorando prose prefix/suffix
+                _m = re.search(r'\{.*\}', texto, re.DOTALL)
+                if _m:
+                    texto = _m.group(0)
                 dados = json.loads(texto, strict=False)
                 resumos.append(dados.get("resumo", ""))
                 extras = dados.get("ambientes_extras", [])
