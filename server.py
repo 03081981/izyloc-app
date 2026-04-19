@@ -1051,6 +1051,9 @@ class AnalyzePhotoHandler(BaseHandler):
             room_name = data.get("ambiente", "Ambiente")
             modo = data.get("modo", "completo")
             mime_type = data.get("mime_type", "image/jpeg")
+            tipo_analise = data.get("tipo_analise", "convencional")
+            if tipo_analise not in ["convencional", "premium"]:
+                tipo_analise = "convencional"
 
             if not image_b64:
                 self.set_status(400)
@@ -1061,7 +1064,7 @@ class AnalyzePhotoHandler(BaseHandler):
             if "," in image_b64:
                 image_b64 = image_b64.split(",", 1)[1]
 
-            result = analyze_image(image_b64, room_name, modo, mime_type)
+            result = analyze_image(image_b64, room_name, modo, mime_type, tipo_analise=tipo_analise)
             self.write(result)
 
         except Exception as e:
@@ -1081,7 +1084,10 @@ class AnalisarBatchHandler(BaseHandler):
                 return
 
             tipo_vistoria = data.get("tipo_vistoria", "entrada")
-            resultado = analyze_batch(imagens, ambiente, tipo_vistoria)
+            tipo_analise = data.get("tipo_analise", "convencional")
+            if tipo_analise not in ["convencional", "premium"]:
+                tipo_analise = "convencional"
+            resultado = analyze_batch(imagens, ambiente, tipo_vistoria, tipo_analise=tipo_analise)
             self.write(resultado)
         except Exception as e:
             self.set_status(500)
@@ -1094,12 +1100,15 @@ class ConsolidarAmbienteHandler(BaseHandler):
             data = tornado.escape.json_decode(self.request.body)
             ambiente = data.get("ambiente", "Ambiente")
             descricoes = data.get("descricoes", [])
+            tipo_analise = data.get("tipo_analise", "convencional")
+            if tipo_analise not in ["convencional", "premium"]:
+                tipo_analise = "convencional"
 
             if not descricoes:
                 self.write({"resumo": "", "success": False})
                 return
 
-            result = consolidate_environment(ambiente, descricoes)
+            result = consolidate_environment(ambiente, descricoes, tipo_analise=tipo_analise)
             self.write(result)
 
         except Exception as e:
@@ -1163,7 +1172,10 @@ class PhotoUploadHandler(BaseHandler):
             all_paths = [os.path.join(UPLOAD_DIR, p['filename']) for p in all_photos if os.path.exists(os.path.join(UPLOAD_DIR, p['filename']))]
 
             # Analisa com IA usando todas as fotos disponÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ­veis
-            ai_result = analyze_photos(all_paths, item['name'], item['room_name'])
+            tipo_analise = self.get_argument("tipo_analise", "convencional")
+            if tipo_analise not in ["convencional", "premium"]:
+                tipo_analise = "convencional"
+            ai_result = analyze_photos(all_paths, item['name'], item['room_name'], tipo_analise=tipo_analise)
 
             # Atualiza descriÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ£o da IA no banco
             if ai_result.get('success') and ai_result.get('description'):
