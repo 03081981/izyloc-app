@@ -424,9 +424,24 @@ REGRA CRÍTICA — ANÁLISE INDIVIDUAL DE ILUMINAÇÃO:
 Ao descrever iluminação em qualquer ambiente, é OBRIGATÓRIO 
 analisar CADA luminária/lâmpada visível INDIVIDUALMENTE.
 
+IMPORTANTE: Uma luminária APAGADA é uma luminária — ela existe 
+fisicamente no teto como moldura/recorte embutido, mesmo sem 
+emitir luz. Luminárias apagadas aparecem como RETÂNGULOS ou 
+QUADRADOS ESCUROS no teto, com a mesma moldura/formato das 
+luminárias acesas ao redor.
+
 Procedimento obrigatório:
 
 1. Contar o total de luminárias visíveis no ambiente
+
+1.5. PROCURAR ATIVAMENTE por luminárias apagadas:
+   - Examinar o teto buscando MOLDURAS/RECORTES que tenham o 
+     mesmo formato das luminárias acesas
+   - Se houver PADRÃO SIMÉTRICO (grade 2x2, 2x3, 3x3, linha, 
+     etc.), verificar se há "posição faltante" no padrão — 
+     uma luminária apagada frequentemente completa a simetria
+   - Quadrados/retângulos escuros no teto com moldura definida 
+     = luminária apagada (NÃO ignorar)
 
 2. Para CADA UMA, verificar individualmente se está:
    - ACESA (emitindo luz visível)
@@ -451,6 +466,16 @@ Procedimento obrigatório:
    - Classificar como "possível lâmpada queimada" se houver 
      outras acesas (sugere fonte de energia funcionando)
    - Incluir em "Observações" e considerar no estado geral
+
+6. VIÉS DE CONTAGEM — ATENÇÃO:
+   ❌ ERRO COMUM: contar APENAS luminárias acesas e ignorar 
+      as apagadas, reportando total menor
+   ✅ CORRETO: incluir APAGADAS no total
+
+   Exemplo de erro: "4 luminárias, todas acesas" quando na 
+   verdade há 5 (4 acesas + 1 apagada = 5 no total)
+   Exemplo correto: "5 luminárias embutidas, 4 acesas e 1 
+   apagada (foto 2), possível lâmpada queimada"
 
 IMPORTANTE: Esta regra é JURIDICAMENTE RELEVANTE para laudo 
 de vistoria. Lâmpadas queimadas podem ser responsabilidade do 
