@@ -647,6 +647,7 @@ Retorne APENAS este JSON sem markdown:
 
 
 def analisar_foto_simples(imagem_base64: str, nome_ambiente: str = "Ambiente", mime_type: str = "image/jpeg") -> dict:
+    # TODO: adicionar tipo_analise quando modo="simples" for usado
     """
     Modo legado -- compatibilidade com codigo anterior.
     Chama analisar_foto e normaliza para formato antigo.
@@ -677,7 +678,7 @@ def analisar_foto_simples(imagem_base64: str, nome_ambiente: str = "Ambiente", m
 
 
 # Funcao principal chamada pelo server.py
-def analisar_imagem(imagem_base64: str, ambiente: str = "Ambiente", modo: str = "completo", mime_type: str = "image/jpeg") -> dict:
+def analisar_imagem(imagem_base64: str, ambiente: str = "Ambiente", modo: str = "completo", mime_type: str = "image/jpeg", tipo_analise: str = "convencional") -> dict:
     """
     Ponto de entrada principal.
     modo: 'completo' (novo) | 'simples' (legado)
@@ -685,7 +686,7 @@ def analisar_imagem(imagem_base64: str, ambiente: str = "Ambiente", modo: str = 
     if modo == 'simples':
         return analisar_foto_simples(imagem_base64, ambiente, mime_type)
     else:
-        return analisar_foto(imagem_base64, ambiente, mime_type)
+        return analisar_foto(imagem_base64, ambiente, mime_type, tipo_analise=tipo_analise)
 
 def analisar_batch(imagens: list, nome_ambiente: str, tipo_vistoria: str = "entrada", tipo_analise: str = "convencional") -> dict:
     """
@@ -943,19 +944,19 @@ Se TODAS as fotos pertencem ao ambiente "{nome_ambiente}", retorne "ambientes_ex
     return result
 
 
-def analyze_batch(images: list, environment_name: str, tipo_vistoria: str = "entrada") -> dict:
-    return analisar_batch(images, environment_name, tipo_vistoria)
+def analyze_batch(images: list, environment_name: str, tipo_vistoria: str = "entrada", tipo_analise: str = "convencional") -> dict:
+    return analisar_batch(images, environment_name, tipo_vistoria, tipo_analise=tipo_analise)
 
 
 # Aliases em ingles para compatibilidade com server.py
-def analyze_photo(image_base64: str, environment: str = "Ambiente", mime_type: str = "image/jpeg") -> dict:
-    return analisar_foto(image_base64, environment, mime_type)
+def analyze_photo(image_base64: str, environment: str = "Ambiente", mime_type: str = "image/jpeg", tipo_analise: str = "convencional") -> dict:
+    return analisar_foto(image_base64, environment, mime_type, tipo_analise=tipo_analise)
 
-def analyze_photos(images_base64: list, environment: str = "Ambiente", mime_type: str = "image/jpeg") -> list:
-    return [analisar_foto(img, environment, mime_type) for img in images_base64]
+def analyze_photos(images_base64: list, environment: str = "Ambiente", mime_type: str = "image/jpeg", tipo_analise: str = "convencional") -> list:
+    return [analisar_foto(img, environment, mime_type, tipo_analise=tipo_analise) for img in images_base64]
 
-def consolidate_environment(environment_name: str, descriptions: list) -> dict:
-    return consolidar_ambiente(environment_name, descriptions)
+def consolidate_environment(environment_name: str, descriptions: list, tipo_analise: str = "convencional") -> dict:
+    return consolidar_ambiente(environment_name, descriptions, tipo_analise=tipo_analise)
 
-def analyze_image(image_base64: str, environment: str = "Ambiente", mode: str = "completo", mime_type: str = "image/jpeg") -> dict:
-    return analisar_imagem(image_base64, environment, mode, mime_type)
+def analyze_image(image_base64: str, environment: str = "Ambiente", mode: str = "completo", mime_type: str = "image/jpeg", tipo_analise: str = "convencional") -> dict:
+    return analisar_imagem(image_base64, environment, mode, mime_type, tipo_analise=tipo_analise)
