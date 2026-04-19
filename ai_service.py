@@ -448,6 +448,16 @@ Procedimento obrigatório:
    - APAGADA (sem luz, possível lâmpada queimada ou desligada)
    - INDEFINIDA (sombra ou ângulo impede confirmação)
 
+   CRITÉRIO COMPARATIVO: comparar o brilho de cada luminária 
+   com as demais da mesma foto. Se TODAS aparentam mesmo brilho 
+   intenso → todas acesas. Se UMA ou MAIS aparecem mais ESCURAS, 
+   mais OPACAS, ou SEM a mesma luminosidade das outras → essas 
+   estão APAGADAS (lâmpada queimada ou desligada).
+
+   ATENÇÃO: a diferença de brilho pode ser SUTIL. Uma luminária 
+   apagada pode apenas refletir luz ambiente das outras — ainda 
+   assim é APAGADA se não emite luz própria.
+
 3. Na descrição, SEMPRE especificar a contagem:
    ✅ "X luminárias embutidas, sendo Y acesas e Z apagadas 
        (foto N), possível lâmpada queimada ou ponto desligado"
@@ -476,6 +486,22 @@ Procedimento obrigatório:
    verdade há 5 (4 acesas + 1 apagada = 5 no total)
    Exemplo correto: "5 luminárias embutidas, 4 acesas e 1 
    apagada (foto 2), possível lâmpada queimada"
+
+7. VIÉS DE UNIFORMIDADE — ATENÇÃO:
+   ❌ ERRO COMUM: assumir "todas acesas" apenas porque o conjunto 
+      de luminárias PARECE uniforme à primeira vista
+   ✅ CORRETO: comparar o brilho de cada uma individualmente
+
+   Se você contou 5 luminárias (seguindo a regra 1.5), é 
+   ESTATISTICAMENTE RARO que todas estejam perfeitamente 
+   acesas — lâmpadas queimadas são comuns. Investigar CADA UMA 
+   com atenção antes de afirmar "todas acesas".
+
+   Exemplo de erro: "5 luminárias, todas acesas" sem ter 
+   comparado brilho individual
+   Exemplo correto: "5 luminárias, sendo 4 acesas com brilho 
+   intenso e 1 apagada no canto (foto N) — claramente mais 
+   escura que as demais"
 
 IMPORTANTE: Esta regra é JURIDICAMENTE RELEVANTE para laudo 
 de vistoria. Lâmpadas queimadas podem ser responsabilidade do 
