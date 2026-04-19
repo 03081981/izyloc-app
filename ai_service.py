@@ -16,7 +16,7 @@ def get_model(tipo_analise="convencional"):
         return MODEL_PREMIUM
     return MODEL_CONVENCIONAL
 
-SYSTEM_PROMPT = """
+SYSTEM_PROMPT_PREMIUM = """
 ═══════════════════════════════════════════════════════════════
 IMPORTANTE — PORTUGUÊS BRASILEIRO COM ACENTUAÇÃO COMPLETA:
 Todas as respostas devem usar português brasileiro padrão
@@ -416,6 +416,58 @@ REGRA CRITICA — NUNCA DESCREVA POR REFLEXO:
 - Exemplo CORRETO: ignorar o reflexo e descrever APENAS o item principal da foto (ex: o micro-ondas)
 """
 
+SYSTEM_PROMPT_CONVENCIONAL = SYSTEM_PROMPT_PREMIUM + """
+
+═══════════════════════════════════════════════════════════════
+REGRA CRÍTICA — ANÁLISE INDIVIDUAL DE ILUMINAÇÃO:
+
+Ao descrever iluminação em qualquer ambiente, é OBRIGATÓRIO 
+analisar CADA luminária/lâmpada visível INDIVIDUALMENTE.
+
+Procedimento obrigatório:
+
+1. Contar o total de luminárias visíveis no ambiente
+
+2. Para CADA UMA, verificar individualmente se está:
+   - ACESA (emitindo luz visível)
+   - APAGADA (sem luz, possível lâmpada queimada ou desligada)
+   - INDEFINIDA (sombra ou ângulo impede confirmação)
+
+3. Na descrição, SEMPRE especificar a contagem:
+   ✅ "X luminárias embutidas, sendo Y acesas e Z apagadas 
+       (foto N), possível lâmpada queimada ou ponto desligado"
+   ✅ "Três luminárias no teto, todas acesas em funcionamento 
+       (foto N)"
+   ✅ "Quatro luminárias embutidas, três acesas e uma apagada 
+       no canto esquerdo (foto N)"
+
+4. NUNCA usar afirmações genéricas como:
+   ❌ "luminárias em funcionamento" (sem especificar quantas)
+   ❌ "iluminação adequada" (sem contagem)
+   ❌ "todas em funcionamento" sem CONFIRMAR cada uma
+
+5. Se houver lâmpada APAGADA visivelmente:
+   - Mencionar explicitamente a posição (canto, parede, etc)
+   - Classificar como "possível lâmpada queimada" se houver 
+     outras acesas (sugere fonte de energia funcionando)
+   - Incluir em "Observações" e considerar no estado geral
+
+IMPORTANTE: Esta regra é JURIDICAMENTE RELEVANTE para laudo 
+de vistoria. Lâmpadas queimadas podem ser responsabilidade do 
+locatário na entrega do imóvel. A detalhada contagem protege 
+ambas as partes no contrato.
+
+═══════════════════════════════════════════════════════════════
+"""
+
+
+def get_system_prompt(tipo_analise="convencional"):
+    """Seleciona SYSTEM_PROMPT por modelo/tier."""
+    if tipo_analise == "premium":
+        return SYSTEM_PROMPT_PREMIUM
+    return SYSTEM_PROMPT_CONVENCIONAL
+
+
 def analisar_foto(imagem_base64: str, nome_ambiente: str, mime_type: str = "image/jpeg", tipo_analise: str = "convencional") -> dict:
     """
     Analisa uma foto de vistoria e retorna descricao tecnica completa.
@@ -472,7 +524,7 @@ IMPORTANTE:
                 model=modelo_atual,
                 max_tokens=1000,
                 **_temp_kwarg,
-                system=SYSTEM_PROMPT,
+                system=get_system_prompt(tipo_analise),
                 messages=[{
                     "role": "user",
                     "content": [
@@ -613,7 +665,7 @@ Retorne APENAS este JSON sem markdown:
                 model=modelo_atual,
                 max_tokens=800,
                 **_temp_kwarg,
-                system=SYSTEM_PROMPT,
+                system=get_system_prompt(tipo_analise),
                 messages=[{"role": "user", "content": prompt}]
             )
             print(f"[AI] <<< Sucesso em consolidar_ambiente", flush=True)
@@ -900,7 +952,7 @@ Se TODAS as fotos pertencem ao ambiente "{nome_ambiente}", retorne "ambientes_ex
                     model=modelo_atual,
                     max_tokens=4000,
                     **_temp_kwarg,
-                    system=SYSTEM_PROMPT,
+                    system=get_system_prompt(tipo_analise),
                     messages=[{"role": "user", "content": content}]
                 )
                 print(f"[AI] <<< Sucesso em analisar_batch", flush=True)
