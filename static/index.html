@@ -4623,7 +4623,7 @@ async function uploadPhoto(itemId, input) {
     : '🤖 A IA está analisando a foto...\nAguarde alguns segundos';
   showLoading(loadMsg);
 
-  const fd = new FormData(); fd.append('photo', file);
+  const fd = new FormData(); fd.append('photo', file); fd.append('tipo_analise', 'convencional');
   const r = await api('POST', `/api/items/${itemId}/photo`, fd, true);
   hideLoading();
 
@@ -6092,7 +6092,7 @@ if (!window._fotoStore) window._fotoStore = {};
       fetch('/api/analyze-photo', {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({image: dataUrl, item: item, ambiente: amb})
+        body: JSON.stringify({image: dataUrl, item: item, ambiente: amb, tipo_analise: 'convencional'})
       }).then(function(r) { return r.json(); }).then(function(d) {
         var estado = d.estado || 'Bom';
         badge.textContent = '\u2713 IA: ' + estado;
@@ -7439,13 +7439,6 @@ function wiz6AceitarMoverExtras(ambIdx) {
   wiz6AtualizarProgress();
 
   // Re-analyze ORIGINAL environment (its photos changed, so resumo and estado_geral are stale)
-  if (wizard.itensData[ambIdx] && wizard.itensData[ambIdx].fotos && wizard.itensData[ambIdx].fotos.length > 0) {
-    wizard.itensData[ambIdx].jaAnalisou = false;
-    wizard.itensData[ambIdx].resumo = '';
-    wizard.itensData[ambIdx].estado_geral = 'Bom';
-    console.log('[AI] Re-analyzing original environment after photo move: ' + _wiz6Ambientes[ambIdx]);
-    setTimeout(function() { wiz6AnalisarBatch(ambIdx); }, 300);
-  }
 
   // Navigate to new environments and trigger AI analysis
   var newEnvs = [];
@@ -7460,12 +7453,6 @@ function wiz6AceitarMoverExtras(ambIdx) {
     wiz6RenderTabs();
     var delay = 800;
     newEnvs.forEach(function(newIdx) {
-      if (wizard.itensData[newIdx] && wizard.itensData[newIdx].fotos && wizard.itensData[newIdx].fotos.length > 0) {
-        wizard.itensData[newIdx].jaAnalisou = false;
-        wizard.itensData[newIdx].resumo = '';
-        setTimeout(function() { wiz6AnalisarBatch(newIdx); }, delay);
-        delay += 500;
-      }
     });
   }
 }
@@ -7605,8 +7592,11 @@ function wiz6RenderAmbCard(idx) {
               '+ Adicionar mais fotos' +
               '<input type="file" accept="image/*" capture="environment" multiple style="display:none" onchange="wiz6AddFotos(this,' + idx + ')">' +
             '</label>' +
-            '<button onclick="wiz6AnalisarBatch(' + idx + ')" style="padding:10px 24px;background:#16a34a;color:#fff;border:none;border-radius:8px;font-size: var(--fs-sm);font-weight: var(--fw-bold);cursor:pointer">' +
+            '<button id="btnConv_' + idx + '" onclick="wiz6AnalisarBatch(' + idx + ', \'convencional\')" style="padding:10px 24px;background:#16a34a;color:#fff;border:none;border-radius:8px;font-size: var(--fs-sm);font-weight: var(--fw-bold);cursor:pointer;margin-right:8px">' +
               (jaAnalisou ? '\ud83d\udd04 Re-analisar com IA' : '\ud83e\udd16 Analisar com IA') +
+            '</button>' +
+            '<button id="btnPrem_' + idx + '" onclick="wiz6AnalisarBatch(' + idx + ', \'premium\')" style="padding:10px 24px;background:#9333ea;color:#fff;border:none;border-radius:8px;font-size: var(--fs-sm);font-weight: var(--fw-bold);cursor:pointer;text-transform:uppercase">' +
+              '\u2b50 ' + (jaAnalisou ? 'RE-ANALISAR COM IA PREMIUM' : 'ANALISAR COM IA PREMIUM') +
             '</button>' +
           '</div>' +
         '</div>'
@@ -8483,7 +8473,7 @@ function wiz6RemoverFotoSub(idx, subNome, fi) {
   if (sd && sd.fotos) { sd.fotos.splice(fi, 1); wiz6RenderAmbCard(_wiz6AmbIdx); }
 }
 
-function wiz6AnalisarBatchSub(idx, subNome, si) {
+function wiz6AnalisarBatchSub(idx, subNome, si, modo = 'convencional') {
   var sd = wizard.itensData[idx].subs[subNome];
   if (!sd || !sd.fotos || sd.fotos.length === 0) return;
   var fotos = sd.fotos;
@@ -8508,7 +8498,8 @@ function wiz6AnalisarBatchSub(idx, subNome, si) {
     body: JSON.stringify({
       imagens: imagens,
       ambiente: subNome,
-      tipo_vistoria: (typeof wizard !== 'undefined' && wizard.tipo) || 'entrada'
+      tipo_vistoria: (typeof wizard !== 'undefined' && wizard.tipo) || 'entrada',
+      tipo_analise: modo
     })
   })
   .then(function(resp) { return resp.json(); })
@@ -8877,7 +8868,7 @@ function wiz6RemoverFotoPos(ambIdx, fotoIdx) {
   wiz6RenderAmbCard(ambIdx);
 }
 
-function wiz6AnalisarBatch(ambIdx) {
+function wiz6AnalisarBatch(ambIdx, modo = 'convencional') {
   var nome = _wiz6Ambientes[ambIdx] || 'Ambiente';
   var fotos = (wizard.itensData[ambIdx] && wizard.itensData[ambIdx].fotos) ? wizard.itensData[ambIdx].fotos : [];
   if (fotos.length === 0) return;
@@ -8888,7 +8879,7 @@ function wiz6AnalisarBatch(ambIdx) {
     statusEl.innerHTML = '\u23f3 IA analisando ' + fotos.length + ' foto' + (fotos.length!==1?'s':'') + ' do ' + nome + '... aguarde.';
   }
 
-  var btnAnalisar = document.querySelector('[onclick="wiz6AnalisarBatch(' + ambIdx + ')"]');
+  var btnAnalisar = document.getElementById('btnConv_' + ambIdx) || document.getElementById('btnPrem_' + ambIdx);
   if (btnAnalisar) btnAnalisar.closest('div').style.display = 'none';
 
   // Limit frames to max 18 per environment to avoid repeated AI synthesis
@@ -8912,7 +8903,8 @@ function wiz6AnalisarBatch(ambIdx) {
     body: JSON.stringify({
       imagens: imagens,
       ambiente: nome,
-      tipo_vistoria: (typeof wizard !== 'undefined' && wizard.tipo) || 'entrada'
+      tipo_vistoria: (typeof wizard !== 'undefined' && wizard.tipo) || 'entrada',
+      tipo_analise: modo
     })
   })
   .then(function(resp) { return resp.json(); })
@@ -9137,7 +9129,7 @@ function wiz6ProxAmb() {
     fetch('/api/consolidar-ambiente', {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({ambiente: nome, descricoes: descricoes})
+      body: JSON.stringify({ambiente: nome, descricoes: descricoes, tipo_analise: 'convencional'})
     })
     .then(function(resp) { return resp.json(); })
     .then(function(result) {
@@ -9192,6 +9184,7 @@ async function wiz6UploadVideo(input) {
 
   var fd = new FormData();
   fd.append('video', file);
+  fd.append('tipo_analise', 'convencional');
   fd.append('ambientes', JSON.stringify(_wiz6Ambientes));
 
   try {
@@ -9416,17 +9409,6 @@ function wiz6ConfirmarVideo() {
         }
       }
       console.log('[wiz6ConfirmarVideo] Disparando análise IA para ' + ambientesParaAnalisar.length + ' ambientes');
-      if (ambientesParaAnalisar.length > 0) {
-        // Analyze sequentially to avoid overwhelming the server
-        (function analisarProximo(idx) {
-          if (idx >= ambientesParaAnalisar.length) return;
-          var ambIdx = ambientesParaAnalisar[idx];
-          console.log('[wiz6ConfirmarVideo] Analisando ambiente ' + ambIdx + ': ' + _wiz6Ambientes[ambIdx]);
-          wiz6AnalisarBatch(ambIdx);
-          // Wait 2 seconds before starting next to avoid overload
-          setTimeout(function() { analisarProximo(idx + 1); }, 2000);
-        })(0);
-      }
     }
 // ── HELPERS ──────────────────────────────────────────────
 function _wiz6GetVideoDuration(file) {
