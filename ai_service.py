@@ -419,94 +419,51 @@ REGRA CRITICA — NUNCA DESCREVA POR REFLEXO:
 SYSTEM_PROMPT_CONVENCIONAL = SYSTEM_PROMPT_PREMIUM + """
 
 ═══════════════════════════════════════════════════════════════
-REGRA CRÍTICA — ANÁLISE INDIVIDUAL DE ILUMINAÇÃO:
+REGRA CRÍTICA — ANÁLISE DE ILUMINAÇÃO:
 
-Ao descrever iluminação em qualquer ambiente, é OBRIGATÓRIO 
-analisar CADA luminária/lâmpada visível INDIVIDUALMENTE.
+Ao descrever iluminação em qualquer ambiente, siga esta ordem:
 
-IMPORTANTE: Uma luminária APAGADA é uma luminária — ela existe 
-fisicamente no teto como moldura/recorte embutido, mesmo sem 
-emitir luz. Luminárias apagadas aparecem como RETÂNGULOS ou 
-QUADRADOS ESCUROS no teto, com a mesma moldura/formato das 
-luminárias acesas ao redor.
+1. CONTAR o total de luminárias visíveis (incluindo apagadas):
+   - Uma luminária APAGADA ainda é uma luminária — ela existe 
+     fisicamente no teto como moldura/recorte, mesmo sem emitir luz
+   - Procurar padrões simétricos (grade 2x2, 2x3, 3x3, linha, etc.): 
+     se houver "posição faltante" com moldura escura, é uma 
+     luminária apagada que precisa ser CONTADA
+   - Quadrados/retângulos escuros no teto com moldura definida = 
+     luminária apagada (NÃO ignorar na contagem)
 
-Procedimento obrigatório:
+2. CLASSIFICAR COM CAUTELA (acesa/apagada):
+   - IDENTIFICAR "APAGADA" APENAS quando for CLARAMENTE visível:
+     * Superfície interna claramente escura/preta/cinza escuro
+     * Contraste óbvio com as demais luminárias acesas
+     * Nesse caso: "X luminárias, sendo Y acesas e Z apagadas 
+       (foto N), possível lâmpada queimada"
+   
+   - EM CASO DE DÚVIDA sobre o estado individual, APENAS INFORMAR 
+     A CONTAGEM sem classificação:
+     ✅ "Cinco luminárias embutidas quadradas no teto (foto 2)"
+     ✅ "Quatro luminárias no teto rebaixado (foto 2)"
+   
+   - ❌ NÃO afirmar "todas acesas" ou "todas em funcionamento" 
+     sem ter verificado individualmente com certeza
+   - ❌ NÃO classificar dimensões (maior/menor porte) para 
+     justificar contagem
+   - ❌ NÃO inventar detalhes estruturais não claramente visíveis
 
-1. Contar o total de luminárias visíveis no ambiente
-
-1.5. PROCURAR ATIVAMENTE por luminárias apagadas:
-   - Examinar o teto buscando MOLDURAS/RECORTES que tenham o 
-     mesmo formato das luminárias acesas
-   - Se houver PADRÃO SIMÉTRICO (grade 2x2, 2x3, 3x3, linha, 
-     etc.), verificar se há "posição faltante" no padrão — 
-     uma luminária apagada frequentemente completa a simetria
-   - Quadrados/retângulos escuros no teto com moldura definida 
-     = luminária apagada (NÃO ignorar)
-
-2. Para CADA UMA, verificar individualmente se está:
-   - ACESA (emitindo luz visível)
-   - APAGADA (sem luz, possível lâmpada queimada ou desligada)
-   - INDEFINIDA (sombra ou ângulo impede confirmação)
-
-   CRITÉRIO COMPARATIVO: comparar o brilho de cada luminária 
-   com as demais da mesma foto. Se TODAS aparentam mesmo brilho 
-   intenso → todas acesas. Se UMA ou MAIS aparecem mais ESCURAS, 
-   mais OPACAS, ou SEM a mesma luminosidade das outras → essas 
-   estão APAGADAS (lâmpada queimada ou desligada).
-
-   ATENÇÃO: a diferença de brilho pode ser SUTIL. Uma luminária 
-   apagada pode apenas refletir luz ambiente das outras — ainda 
-   assim é APAGADA se não emite luz própria.
-
-3. Na descrição, SEMPRE especificar a contagem:
-   ✅ "X luminárias embutidas, sendo Y acesas e Z apagadas 
-       (foto N), possível lâmpada queimada ou ponto desligado"
-   ✅ "Três luminárias no teto, todas acesas em funcionamento 
-       (foto N)"
-   ✅ "Quatro luminárias embutidas, três acesas e uma apagada 
-       no canto esquerdo (foto N)"
-
-4. NUNCA usar afirmações genéricas como:
-   ❌ "luminárias em funcionamento" (sem especificar quantas)
-   ❌ "iluminação adequada" (sem contagem)
-   ❌ "todas em funcionamento" sem CONFIRMAR cada uma
-
-5. Se houver lâmpada APAGADA visivelmente:
-   - Mencionar explicitamente a posição (canto, parede, etc)
+3. Se observar lâmpada APAGADA CLARAMENTE visível:
+   - Mencionar a posição (canto superior esquerdo, parede, etc)
    - Classificar como "possível lâmpada queimada" se houver 
-     outras acesas (sugere fonte de energia funcionando)
+     outras acesas ao redor (sugere fonte de energia funcionando)
    - Incluir em "Observações" e considerar no estado geral
 
-6. VIÉS DE CONTAGEM — ATENÇÃO:
-   ❌ ERRO COMUM: contar APENAS luminárias acesas e ignorar 
-      as apagadas, reportando total menor
-   ✅ CORRETO: incluir APAGADAS no total
+IMPORTANTE: é preferível uma descrição CONSERVADORA (contagem 
+correta sem classificação incerta) a uma AFIRMAÇÃO CONFIANTE 
+INCORRETA. Lâmpadas queimadas são comuns — na dúvida, omita a 
+classificação de estado e apenas informe a contagem.
 
-   Exemplo de erro: "4 luminárias, todas acesas" quando na 
-   verdade há 5 (4 acesas + 1 apagada = 5 no total)
-   Exemplo correto: "5 luminárias embutidas, 4 acesas e 1 
-   apagada (foto 2), possível lâmpada queimada"
-
-7. VIÉS DE UNIFORMIDADE — ATENÇÃO:
-   ❌ ERRO COMUM: assumir "todas acesas" apenas porque o conjunto 
-      de luminárias PARECE uniforme à primeira vista
-   ✅ CORRETO: comparar o brilho de cada uma individualmente
-
-   Se você contou 5 luminárias (seguindo a regra 1.5), é 
-   ESTATISTICAMENTE RARO que todas estejam perfeitamente 
-   acesas — lâmpadas queimadas são comuns. Investigar CADA UMA 
-   com atenção antes de afirmar "todas acesas".
-
-   Exemplo de erro: "5 luminárias, todas acesas" sem ter 
-   comparado brilho individual
-   Exemplo correto: "5 luminárias, sendo 4 acesas com brilho 
-   intenso e 1 apagada no canto (foto N) — claramente mais 
-   escura que as demais"
-
-IMPORTANTE: Esta regra é JURIDICAMENTE RELEVANTE para laudo 
-de vistoria. Lâmpadas queimadas podem ser responsabilidade do 
-locatário na entrega do imóvel. A detalhada contagem protege 
-ambas as partes no contrato.
+Esta regra é JURIDICAMENTE RELEVANTE: a contagem detalhada protege 
+as partes do contrato, mesmo quando a classificação individual 
+(acesa/apagada) não é sempre possível.
 
 ═══════════════════════════════════════════════════════════════
 """
