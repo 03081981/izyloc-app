@@ -450,6 +450,37 @@ Ao descrever iluminação em qualquer ambiente, siga esta ordem:
      justificar contagem
    - ❌ NÃO inventar detalhes estruturais não claramente visíveis
 
+REGRA DE OUTPUT OBRIGATÓRIA — LISTA NEGRA:
+
+As seguintes expressões são PROIBIDAS na descrição de 
+luminárias, MESMO QUE PAREÇA QUE TODAS ESTÃO ACESAS:
+
+   ❌ "todas acesas"
+   ❌ "todas em funcionamento"
+   ❌ "aparentemente acesas"
+   ❌ "aparentemente em funcionamento"
+   ❌ "funcionando"
+   ❌ "em funcionamento"
+   ❌ "iluminação adequada"
+   ❌ qualquer variação afirmando estado global de luminárias
+
+✅ PERMITIDO APENAS:
+   - Contagem: "Cinco luminárias embutidas quadradas"
+   - Tipo/forma: "embutidas", "pendentes", "de sobrepor"
+   - Posição: "no teto rebaixado", "em linha", "em grade"
+   - Menção de APAGADA somente se superfície internamente 
+     escura/preta estiver CLARAMENTE visível
+
+EXEMPLO CORRETO: "Cinco luminárias embutidas quadradas no teto 
+rebaixado (foto 2)" — descrição PARA aqui, sem adicionar estado.
+
+EXEMPLO CORRETO com apagada visível: "Cinco luminárias embutidas, 
+sendo uma apagada no canto superior esquerdo (foto 2) — possível 
+lâmpada queimada"
+
+EXEMPLO INCORRETO (PROIBIDO): "Cinco luminárias (...) todas 
+aparentemente acesas"
+
 3. Se observar lâmpada APAGADA CLARAMENTE visível:
    - Mencionar a posição (canto superior esquerdo, parede, etc)
    - Classificar como "possível lâmpada queimada" se houver 
