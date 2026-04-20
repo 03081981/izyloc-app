@@ -540,11 +540,14 @@ def filter_sonnet_output(text: str) -> str:
         return text
     for p in _FORBIDDEN_STATE_PATTERNS:
         text = re.sub(p, '', text, flags=re.IGNORECASE)
-    # Limpeza de artefatos de pontuação e espaços
-    text = re.sub(r',\s*,', ',', text)
-    text = re.sub(r'\s+', ' ', text)
-    text = re.sub(r'\s+([.,;:])', r'\1', text)
-    text = re.sub(r',\s*\.', '.', text)
+    # Limpeza de artefatos — usa [ \t]+ (não \s+) para preservar \n entre subgrupos
+    text = re.sub(r',[ \t]*,', ',', text)
+    text = re.sub(r'[ \t]+', ' ', text)
+    text = re.sub(r'[ \t]+([.,;:])', r'\1', text)
+    text = re.sub(r',[ \t]*\.', '.', text)
+    # Remove espaços antes do fim de linha e colapsa 3+ newlines em 2
+    text = re.sub(r'[ \t]+\n', '\n', text)
+    text = re.sub(r'\n{3,}', '\n\n', text)
     return text.strip()
 
 
