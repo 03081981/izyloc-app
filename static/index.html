@@ -8729,7 +8729,7 @@ function _wiz6RenderSubsBlock(ambIdx, dados) {
       h += '<div style="display:flex;gap:8px;justify-content:center;align-items:center">';
       h += '<label style="display:flex;align-items:center;gap:6px;padding:7px 12px;border:0.5px solid #e2e8f0;border-radius:7px;background:#fff;font-size: var(--fs-xxs);color:#8898aa;cursor:pointer">+ Adicionar mais fotos<input type="file" accept="image/*" multiple style="display:none" onchange="wiz6AddFotosSub(this,' + ambIdx + ',\'' + subNome.replace(/'/g,"\\\'") + '\')">';
       h += '</label>';
-      h += '<button onclick="wiz6AnalisarSub(' + ambIdx + ',\'' + subNome.replace(/'/g,"\\\'") + '\')" style="background:#2d7dd2;color:#fff;border:none;border-radius:7px;padding:7px 14px;font-size: var(--fs-xxs);font-weight: var(--fw-semibold);cursor:pointer">' + (sd.jaAnalisou ? '\ud83d\udd04 Re-analisar com IA' : '\ud83e\udd16 Analisar com IA') + '</button>';
+      h += '<div style="display:flex;gap:8px;flex-wrap:wrap">' + '<button onclick="wiz6AnalisarSub(' + ambIdx + ',\'' + subNome.replace(/'/g,"\\\'") + '\',\'convencional\')" style="background:#2d7dd2;color:#fff;border:none;border-radius:7px;padding:7px 14px;font-size: var(--fs-xxs);font-weight: var(--fw-semibold);cursor:pointer">' + (sd.jaAnalisou ? '\ud83d\udd04 Re-analisar com IA' : '\ud83e\udd16 Analisar com IA') + '</button>' + '<button onclick="wiz6AnalisarSub(' + ambIdx + ',\'' + subNome.replace(/'/g,"\\\'") + '\',\'premium\')" style="background:#9333ea;color:#fff;border:none;border-radius:7px;padding:7px 14px;font-size: var(--fs-xxs);font-weight: var(--fw-semibold);cursor:pointer">' + (sd.jaAnalisou ? '\ud83d\udd04 Re-analisar com IA PREMIUM' : '\ud83e\udd16 Analisar com IA PREMIUM') + '</button>' + '</div>';
       h += '</div>';
       h += '<div id="wiz6-ai-status-sub-' + ambIdx + '-' + _subSi + '" style="display:none;margin-top:8px"></div>';
       h += '</div>';
@@ -8789,11 +8789,11 @@ function _wiz6RenderSubsBlock(ambIdx, dados) {
   return h;
 }
 
-function wiz6AnalisarSub(idx, subNome) {
+function wiz6AnalisarSub(idx, subNome, modo) {
   var d = wizard.itensData[idx];
   if (!d || !d.subAmbientes) return;
   var si = d.subAmbientes.indexOf(subNome);
-  wiz6AnalisarBatchSub(idx, subNome, si >= 0 ? si : 0);
+  wiz6AnalisarBatchSub(idx, subNome, si >= 0 ? si : 0, modo || 'convencional');
 }
 function wiz6ExcluirSubAmb(idx, subNome) {
   if (!confirm('Excluir sub-ambiente "' + subNome + '"?')) return;
