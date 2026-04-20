@@ -12,6 +12,7 @@ import json
 import os
 import uuid
 import jwt
+import bcrypt
 import hashlib
 import secrets
 from datetime import datetime, timedelta
@@ -45,19 +46,64 @@ Path(PDF_DIR).mkdir(exist_ok=True)
 def hash_password(pwd):
     return hashlib.sha256(pwd.encode()).hexdigest()
 
+def hash_password_v2(pwd):
+    """Bcrypt hash (cost=12). Nova hash canonica."""
+    if isinstance(pwd, str):
+        pwd = pwd.encode('utf-8')
+    return bcrypt.hashpw(pwd, bcrypt.gensalt(rounds=12)).decode('utf-8')
+
+def verify_password_v2(pwd, stored_hash):
+    """Verifica senha contra hash bcrypt ou SHA-256 legacy."""
+    if not stored_hash:
+        return False
+    if stored_hash.startswith('$2b$') or stored_hash.startswith('$2a$'):
+        if isinstance(pwd, str):
+            pwd = pwd.encode('utf-8')
+        try:
+            return bcrypt.checkpw(pwd, stored_hash.encode('utf-8'))
+        except Exception:
+            return False
+    return hash_password(pwd) == stored_hash
+
 def create_token(user_id, email):
+    jti = str(uuid.uuid4())
     payload = {
         'user_id': user_id,
         'email': email,
+        'jti': jti,
         'exp': datetime.utcnow() + timedelta(days=30)
     }
-    return jwt.encode(payload, SECRET_KEY, algorithm='HS256')
+    return jwt.encode(payload, SECRET_KEY, algorithm='HS256'), jti
 
 def verify_token(token):
     try:
-        return jwt.decode(token, SECRET_KEY, algorithms=['HS256'])
+        payload = jwt.decode(token, SECRET_KEY, algorithms=['HS256'])
     except Exception:
         return None
+    if payload.get('admin'):
+        return payload
+    jti = payload.get('jti')
+    if not jti:
+        print("[AUTH] Token rejected: missing jti", flush=True)
+        return None
+    try:
+        conn = get_conn()
+        try:
+            row = conn.execute(
+                'SELECT user_id, expires_at FROM user_sessions WHERE token=?',
+                (jti,)
+            ).fetchone()
+        finally:
+            conn.close()
+    except Exception:
+        return None
+    if not row:
+        print(f"[AUTH] Token rejected: jti not in sessions ({jti[:8]}...)", flush=True)
+        return None
+    exp = row['expires_at']
+    if exp and exp < datetime.utcnow():
+        return None
+    return payload
 
 
 class BaseHandler(tornado.web.RequestHandler):
@@ -143,7 +189,15 @@ class RegisterHandler(BaseHandler):
                          data.get('creci', ''),
                          data.get('phone', '')))
             conn.commit()
-            token = create_token(user_id, data['email'])
+            token, jti = create_token(user_id, data['email'])
+            conn.execute('''INSERT INTO user_sessions (user_id, token, expires_at, ip, user_agent)
+                            VALUES (?, ?, ?, ?, ?)''',
+                         (user_id, jti,
+                          datetime.utcnow() + timedelta(days=30),
+                          self.request.remote_ip,
+                          self.request.headers.get('User-Agent', '')))
+            conn.commit()
+            print(f"[AUTH] Register OK: user_id={user_id[:8]}... email={data['email']} jti={jti[:8]}...", flush=True)
             self.ok({'token': token, 'user': {
                 'id': user_id, 'name': data['name'],
                 'email': data['email'], 'company_name': data['company_name']
@@ -163,13 +217,22 @@ class LoginHandler(BaseHandler):
             user = conn.execute('SELECT * FROM users WHERE email=? AND active=1',
                                (data['email'],)).fetchone()
             if not user or user['password_hash'] != hash_password(data['password']):
+                print(f"[AUTH] Login FAIL: email={data.get('email','')}", flush=True)
                 return self.err('E-mail ou senha incorretos', 401)
 
             # Verificar se conta esta bloqueada
             if user.get('status') == 'blocked':
                 return self.err('Conta bloqueada. Entre em contato com o suporte.', 403)
 
-            token = create_token(user['id'], user['email'])
+            token, jti = create_token(user['id'], user['email'])
+            conn.execute('''INSERT INTO user_sessions (user_id, token, expires_at, ip, user_agent)
+                            VALUES (?, ?, ?, ?, ?)''',
+                         (user['id'], jti,
+                          datetime.utcnow() + timedelta(days=30),
+                          self.request.remote_ip,
+                          self.request.headers.get('User-Agent', '')))
+            conn.commit()
+            print(f"[AUTH] Login OK: user_id={user['id'][:8]}... email={user['email']} jti={jti[:8]}...", flush=True)
             self.ok({'token': token, 'user': {
                 'id': user['id'], 'name': user['name'],
                 'email': user['email'],
