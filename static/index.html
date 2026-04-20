@@ -7585,18 +7585,18 @@ function wiz6RenderAmbCard(idx) {
     '</div>' +
 
     (fotos.length > 0
-      ? '<div style="background:#f0fdf4;border:0.5px solid #bbf7d0;border-radius:10px;padding:14px;margin-bottom:14px;text-align:center">' +
+      ? '<div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:10px;padding:14px;margin-bottom:14px;text-align:center">' +
           '<div style="font-size: var(--fs-sm);color:#166534;font-weight: var(--fw-semibold);margin-bottom:8px">' + fotos.length + ' foto' + (fotos.length!==1?'s':'') + ' prontas para an&aacute;lise</div>' +
           '<div style="display:flex;gap:8px;justify-content:center">' +
             '<label style="padding:10px 18px;background:#fff;color:#2d7dd2;border:1px solid #2d7dd2;border-radius:8px;font-size: var(--fs-xs);font-weight: var(--fw-medium);cursor:pointer">' +
               '+ Adicionar mais fotos' +
               '<input type="file" accept="image/*" capture="environment" multiple style="display:none" onchange="wiz6AddFotos(this,' + idx + ')">' +
             '</label>' +
-            '<button id="btnConv_' + idx + '" onclick="wiz6AnalisarBatch(' + idx + ', \'convencional\')" style="padding:10px 24px;background:#16a34a;color:#fff;border:none;border-radius:8px;font-size: var(--fs-sm);font-weight: var(--fw-bold);cursor:pointer;margin-right:8px">' +
+            '<button id="btnConv_' + idx + '" onclick="wiz6AnalisarBatch(' + idx + ', \'convencional\')" style="padding:10px 24px;background:#2d7dd2;color:#fff;border:none;border-radius:8px;font-size: var(--fs-sm);font-weight: var(--fw-bold);cursor:pointer;margin-right:8px">' +
               (jaAnalisou ? '\ud83d\udd04 Re-analisar com IA' : '\ud83e\udd16 Analisar com IA') +
             '</button>' +
-            '<button id="btnPrem_' + idx + '" onclick="wiz6AnalisarBatch(' + idx + ', \'premium\')" style="padding:10px 24px;background:#9333ea;color:#fff;border:none;border-radius:8px;font-size: var(--fs-sm);font-weight: var(--fw-bold);cursor:pointer;text-transform:uppercase">' +
-              '\u2b50 ' + (jaAnalisou ? 'RE-ANALISAR COM IA PREMIUM' : 'ANALISAR COM IA PREMIUM') +
+            '<button id="btnPrem_' + idx + '" onclick="wiz6AnalisarBatch(' + idx + ', \'premium\')" style="padding:10px 24px;background:#9333ea;color:#fff;border:none;border-radius:8px;font-size: var(--fs-sm);font-weight: var(--fw-bold);cursor:pointer">' +
+              '\u2b50 ' + (jaAnalisou ? 'Re-analisar com IA PREMIUM' : 'Analisar com IA PREMIUM') +
             '</button>' +
           '</div>' +
         '</div>'
@@ -8346,14 +8346,14 @@ function wiz6BuildSuiteHtml(idx) {
 
     // === GREEN BOX with fotos count + Analyze button - same as regular room ===
     if (fotos.length > 0) {
-      h += '<div style="background:#f0fdf4;border:0.5px solid #bbf7d0;border-radius:10px;padding:14px;margin-bottom:14px;text-align:center">';
+      h += '<div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:10px;padding:14px;margin-bottom:14px;text-align:center">';
       h += '<div style="font-size: var(--fs-sm);color:#166534;font-weight: var(--fw-semibold);margin-bottom:8px">' + fotos.length + ' foto' + (fotos.length!==1?'s':'') + ' prontas para an\u00e1lise</div>';
       h += '<div style="display:flex;gap:8px;justify-content:center">';
       h += '<label style="padding:10px 18px;background:#fff;color:#2d7dd2;border:1px solid #2d7dd2;border-radius:8px;font-size: var(--fs-xs);font-weight: var(--fw-medium);cursor:pointer">';
       h += '+ Adicionar mais fotos';
       h += '<input type="file" accept="image/*" capture="environment" multiple style="display:none" onchange="wiz6AddFotosSub(this,' + idx + ',\'' + subNome.replace(/'/g,"\\\'") + '\')">';
       h += '</label>';
-      h += '<button onclick="wiz6AnalisarBatchSub(' + idx + ',\'' + subNome.replace(/'/g,"\\\'") + '\',' + si + ')" style="padding:10px 24px;background:#16a34a;color:#fff;border:none;border-radius:8px;font-size: var(--fs-sm);font-weight: var(--fw-bold);cursor:pointer">';
+      h += '<button onclick="wiz6AnalisarBatchSub(' + idx + ',\'' + subNome.replace(/'/g,"\\\'") + '\',' + si + ')" style="padding:10px 24px;background:#2d7dd2;color:#fff;border:none;border-radius:8px;font-size: var(--fs-sm);font-weight: var(--fw-bold);cursor:pointer">';
       h += jaAnalisou ? '\ud83d\udd04 Re-analisar com IA' : '\ud83e\udd16 Analisar com IA';
       h += '</button></div></div>';
     }
@@ -8724,12 +8724,12 @@ function _wiz6RenderSubsBlock(ambIdx, dados) {
     h += '</div>';
     // IA BUTTON
     if (fotos.length > 0) {
-      h += '<div style="background:#f0fdf4;border:0.5px solid #bbf7d0;border-radius:8px;padding:10px;margin-bottom:10px;text-align:center">';
+      h += '<div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:8px;padding:10px;margin-bottom:10px;text-align:center">';
       h += '<div style="font-size: var(--fs-xxs);color:#166534;margin-bottom:7px">' + fotos.length + ' foto(s) pronta(s) para an\u00e1lise</div>';
       h += '<div style="display:flex;gap:8px;justify-content:center;align-items:center">';
       h += '<label style="display:flex;align-items:center;gap:6px;padding:7px 12px;border:0.5px solid #e2e8f0;border-radius:7px;background:#fff;font-size: var(--fs-xxs);color:#8898aa;cursor:pointer">+ Adicionar mais fotos<input type="file" accept="image/*" multiple style="display:none" onchange="wiz6AddFotosSub(this,' + ambIdx + ',\'' + subNome.replace(/'/g,"\\\'") + '\')">';
       h += '</label>';
-      h += '<button onclick="wiz6AnalisarSub(' + ambIdx + ',\'' + subNome.replace(/'/g,"\\\'") + '\')" style="background:#16a34a;color:#fff;border:none;border-radius:7px;padding:7px 14px;font-size: var(--fs-xxs);font-weight: var(--fw-semibold);cursor:pointer">' + (sd.jaAnalisou ? '\ud83d\udd04 Re-analisar com IA' : '\ud83e\udd16 Analisar com IA') + '</button>';
+      h += '<button onclick="wiz6AnalisarSub(' + ambIdx + ',\'' + subNome.replace(/'/g,"\\\'") + '\')" style="background:#2d7dd2;color:#fff;border:none;border-radius:7px;padding:7px 14px;font-size: var(--fs-xxs);font-weight: var(--fw-semibold);cursor:pointer">' + (sd.jaAnalisou ? '\ud83d\udd04 Re-analisar com IA' : '\ud83e\udd16 Analisar com IA') + '</button>';
       h += '</div>';
       h += '<div id="wiz6-ai-status-sub-' + ambIdx + '-' + _subSi + '" style="display:none;margin-top:8px"></div>';
       h += '</div>';
@@ -9317,10 +9317,10 @@ function wiz6MostrarRevisaoVideo(ambientes) {
     html += '</div></div>';
   });
 
-  html += '<div style="background:#f0fdf4;border:0.5px solid #bbf7d0;border-radius:10px;padding:14px;text-align:center;margin-top:8px">';
+  html += '<div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:10px;padding:14px;text-align:center;margin-top:8px">';
   html += '<div style="font-size: var(--fs-sm);color:#166534;font-weight: var(--fw-semibold);margin-bottom:4px">' + totalFrames + ' frames capturados</div>';
   html += '<div style="font-size: var(--fs-xxs);color:#166534;margin-bottom:12px">Desmarque os ruins e confirme para a IA analisar</div>';
-  html += '<button onclick="wiz6ConfirmarVideo()" style="padding:12px 28px;background:#16a34a;color:#fff;border:none;border-radius:8px;font-size: var(--fs-body);font-weight: var(--fw-bold);cursor:pointer">';
+  html += '<button onclick="wiz6ConfirmarVideo()" style="padding:12px 28px;background:#2d7dd2;color:#fff;border:none;border-radius:8px;font-size: var(--fs-body);font-weight: var(--fw-bold);cursor:pointer">';
   html += '\u2713 Confirmar e analisar com IA</button>';
   html += '</div>';
   html += '</div>';
