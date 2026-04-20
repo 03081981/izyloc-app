@@ -4899,6 +4899,7 @@ async function generatePDF() {
     var _ambData=[];
     for(var _ai=0;_ai<(wizard.selectedRooms||[]).length;_ai++){
       var _d=(wizard.itensData&&wizard.itensData[_ai])||{};
+      var _rn=(wizard.selectedRooms&&wizard.selectedRooms[_ai])?wizard.selectedRooms[_ai]:((window._wiz6Ambientes&&window._wiz6Ambientes[_ai])?window._wiz6Ambientes[_ai]:String(_ai));
       var _verif={};var _verifObs={};var _tNomes={};var _tt=_d.testes||{};
       for(var _tk in _tt){if(!_tt[_tk])continue;if(_tk.length>4&&_tk.slice(-4)==='_obs'){_verifObs[_tk.slice(0,-4)]=_tt[_tk];}else{_verif[_tk]=_eMap[_tt[_tk]]||_tt[_tk];}}
       (_d.testesExtras||[]).forEach(function(ex){_tNomes[ex.k]=ex.n;});
