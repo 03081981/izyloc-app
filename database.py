@@ -108,6 +108,16 @@ def init_db():
         "ALTER TABLE users ADD COLUMN IF NOT EXISTS creci TEXT",
         "ALTER TABLE users ADD COLUMN IF NOT EXISTS phone TEXT",
         "ALTER TABLE users ADD COLUMN IF NOT EXISTS plan TEXT DEFAULT 'free'",
+        "ALTER TABLE users ADD COLUMN IF NOT EXISTS balance_cents INTEGER NOT NULL DEFAULT 0",
+        "ALTER TABLE users ADD COLUMN IF NOT EXISTS cpf VARCHAR(14)",
+        "ALTER TABLE users ADD COLUMN IF NOT EXISTS email_verified_at TIMESTAMP",
+        "ALTER TABLE users ADD COLUMN IF NOT EXISTS google_id VARCHAR(255)",
+        "ALTER TABLE users ADD COLUMN IF NOT EXISTS terms_accepted_at TIMESTAMP",
+        "ALTER TABLE users ADD COLUMN IF NOT EXISTS created_at TIMESTAMP DEFAULT NOW()",
+        "ALTER TABLE users ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP DEFAULT NOW()",
+        "ALTER TABLE users ADD COLUMN IF NOT EXISTS last_login_at TIMESTAMP",
+        "CREATE UNIQUE INDEX IF NOT EXISTS idx_users_google_id ON users(google_id)",
+        "CREATE INDEX IF NOT EXISTS idx_users_status ON users(status)",
     ]:
         _run_migration(c, raw, sql)
 
@@ -312,5 +322,101 @@ def init_db():
         )
     """)
     raw.commit()
+
+    c.execute("""CREATE TABLE IF NOT EXISTS email_verification_tokens (
+            id SERIAL PRIMARY KEY,
+            user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+            token VARCHAR(64) UNIQUE NOT NULL,
+            expires_at TIMESTAMP NOT NULL,
+            used_at TIMESTAMP,
+            created_at TIMESTAMP DEFAULT NOW()
+        )
+    """)
+    c.execute("CREATE INDEX IF NOT EXISTS idx_email_verif_token ON email_verification_tokens(token)")
+    c.execute("CREATE INDEX IF NOT EXISTS idx_email_verif_user ON email_verification_tokens(user_id)")
+    raw.commit()
+
+    c.execute("""CREATE TABLE IF NOT EXISTS email_queue (
+            id SERIAL PRIMARY KEY,
+            user_id TEXT REFERENCES users(id) ON DELETE SET NULL,
+            to_email VARCHAR(255) NOT NULL,
+            template VARCHAR(50) NOT NULL,
+            subject VARCHAR(255) NOT NULL,
+            body_html TEXT NOT NULL,
+            body_text TEXT NOT NULL,
+            status VARCHAR(20) NOT NULL DEFAULT 'pending',
+            provider VARCHAR(20),
+            provider_id VARCHAR(100),
+            attempts INTEGER NOT NULL DEFAULT 0,
+            max_attempts INTEGER NOT NULL DEFAULT 5,
+            last_error TEXT,
+            next_retry_at TIMESTAMP,
+            sent_at TIMESTAMP,
+            created_at TIMESTAMP DEFAULT NOW(),
+            updated_at TIMESTAMP DEFAULT NOW()
+        )
+    """)
+    c.execute("CREATE INDEX IF NOT EXISTS idx_email_queue_status ON email_queue(status, next_retry_at)")
+    c.execute("CREATE INDEX IF NOT EXISTS idx_email_queue_user ON email_queue(user_id)")
+    raw.commit()
+
+    c.execute("""CREATE TABLE IF NOT EXISTS user_sessions (
+            id SERIAL PRIMARY KEY,
+            user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+            token VARCHAR(100) UNIQUE NOT NULL,
+            expires_at TIMESTAMP NOT NULL,
+            ip VARCHAR(45),
+            user_agent TEXT,
+            created_at TIMESTAMP DEFAULT NOW(),
+            last_used_at TIMESTAMP DEFAULT NOW()
+        )
+    """)
+    c.execute("CREATE INDEX IF NOT EXISTS idx_sessions_token ON user_sessions(token)")
+    c.execute("CREATE INDEX IF NOT EXISTS idx_sessions_user ON user_sessions(user_id)")
+    raw.commit()
+
+    c.execute("""CREATE TABLE IF NOT EXISTS balance_transactions (
+            id SERIAL PRIMARY KEY,
+            user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+            type VARCHAR(20) NOT NULL,
+            amount_cents INTEGER NOT NULL,
+            balance_after_cents INTEGER NOT NULL,
+            description TEXT,
+            inspection_id TEXT,
+            room_id TEXT,
+            payment_id VARCHAR(100),
+            analysis_type VARCHAR(20),
+            photos_count INTEGER,
+            metadata JSONB,
+            created_at TIMESTAMP DEFAULT NOW()
+        )
+    """)
+    c.execute("CREATE INDEX IF NOT EXISTS idx_balance_trans_user ON balance_transactions(user_id, created_at DESC)")
+    c.execute("CREATE INDEX IF NOT EXISTS idx_balance_trans_type ON balance_transactions(type)")
+    c.execute("CREATE INDEX IF NOT EXISTS idx_balance_trans_payment ON balance_transactions(payment_id)")
+    raw.commit()
+
+    c.execute("""CREATE TABLE IF NOT EXISTS settings (
+            key VARCHAR(100) PRIMARY KEY,
+            value TEXT NOT NULL,
+            value_type VARCHAR(20) NOT NULL DEFAULT 'string',
+            category VARCHAR(50),
+            description TEXT,
+            updated_by TEXT REFERENCES users(id) ON DELETE SET NULL,
+            updated_at TIMESTAMP DEFAULT NOW(),
+            created_at TIMESTAMP DEFAULT NOW()
+        )
+    """)
+    raw.commit()
+
+    for _s_row in [
+        ('price_per_photo_convencional_cents', '50', 'integer', 'pricing', 'Preço por foto da análise Convencional em centavos (R$ 0,50)'),
+        ('price_per_photo_premium_cents', '90', 'integer', 'pricing', 'Preço por foto da análise Premium em centavos (R$ 0,90)'),
+        ('welcome_bonus_cents', '500', 'integer', 'pricing', 'Bônus de boas-vindas em centavos após verificação de email (R$ 5,00)'),
+        ('min_photos_per_room', '10', 'integer', 'general', 'Quantidade mínima de fotos necessárias por ambiente para análise'),
+    ]:
+        c.execute("INSERT INTO settings (key, value, value_type, category, description) VALUES (%s, %s, %s, %s, %s) ON CONFLICT (key) DO NOTHING", _s_row)
+    raw.commit()
+
     raw.close()
     print("✅ Banco de dados PostgreSQL inicializado com sucesso")
