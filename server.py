@@ -149,11 +149,13 @@ class BaseHandler(tornado.web.RequestHandler):
 
     def ok(self, data=None, status=200):
         self.set_status(status)
-        self.write(data or {'ok': True})
+        self.set_header('Content-Type', 'application/json; charset=UTF-8')
+        self.write(json.dumps(data or {'ok': True}, default=_jser))
 
     def err(self, msg, status=400):
         self.set_status(status)
-        self.write({'error': msg})
+        self.set_header('Content-Type', 'application/json; charset=UTF-8')
+        self.write(json.dumps({'error': msg}, default=_jser))
 
     def row_to_dict(self, row):
         if row is None:
