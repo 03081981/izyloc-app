@@ -4893,7 +4893,7 @@ async function gerarLaudo() {
 async function generatePDF() {
   showLoading('📄 Gerando laudo PDF...');
   try{ console.log('[generatePDF] START', {inspId: (window.wizard||{}).inspectionId, ts: Date.now(), rooms: ((window.wizard||{}).selectedRooms||[]).length}); }catch(_sL){}
-  if(!window.wizard || !window.wizard.inspectionId){ hideLoading(); try{toast('⚠️ Laudo ainda não foi salvo. Clique em "Gerar Laudo →" primeiro.','error');}catch(_t1){} try{alert('⚠️ Laudo ainda não foi salvo. Clique em "Gerar Laudo →" antes de "Baixar PDF".');}catch(_a1){} return; }
+  var _lsId = localStorage.getItem('izylo_current_inspection') || ''; if (!window.wizard) { window.wizard = {}; } if (!window.wizard.inspectionId && _lsId) { window.wizard.inspectionId = _lsId; } try{ console.log('[generatePDF] inspId resolved:', window.wizard.inspectionId, 'from:', (_lsId && window.wizard.inspectionId === _lsId ? 'localStorage' : 'wizard')); }catch(_li){} if(!window.wizard.inspectionId){ hideLoading(); try{toast('⚠️ Laudo ainda não foi salvo. Clique em "Gerar Laudo →" primeiro.','error');}catch(_t1){} try{alert('⚠️ Laudo ainda não foi salvo. Clique em "Gerar Laudo →" antes de "Baixar PDF".');}catch(_a1){} return; }
   try {
     var _eMap={'ok':'Funcionando','nok':'Não Funcionando','nao':'Não Funcionando','nt':'Não Testado','na':'N/A','nexiste':'N/A'};
     var _ambData=[];
