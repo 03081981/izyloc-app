@@ -6216,11 +6216,15 @@ function buscarCep(cep) {
 }
 
 
+function _normAmb(s) {
+  return (s || '').trim().toLowerCase().replace(/(^|[\s\-\/])([a-záàâãéêíóôõúüç])/g, function(m, sep, c) { return sep + c.toUpperCase(); });
+}
+
 // Adicionar ambiente personalizado por seção
 function adicionarOutro(secao, containerId, customId) {
   var nome = prompt('Nome do ambiente:');
   if (!nome || nome.trim() === '') return;
-  nome = nome.trim();
+  nome = _normAmb(nome);
   var key = 'custom_' + secao + '_' + Date.now();
   var container = document.getElementById(customId);
   if (!container) return;
@@ -6346,7 +6350,7 @@ function wizToggle(row, key) {
 function wizCriarNovoAmbiente(btn) {
   var nome = prompt('Nome do novo ambiente:');
   if (!nome || !nome.trim()) return;
-  nome = nome.trim();
+  nome = _normAmb(nome);
   var key = 'custom_' + Date.now();
   var svgCustom = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="#2d7dd2" stroke-width="1.5" stroke-dasharray="3 2"/><line x1="12" y1="8" x2="12" y2="16" stroke="#2d7dd2" stroke-width="1.5"/><line x1="8" y1="12" x2="16" y2="12" stroke="#2d7dd2" stroke-width="1.5"/></svg>';
   var row = '<div class="wiz-amb-row" id="wiz-row-' + key + '">' +
@@ -6445,6 +6449,7 @@ function wizAtualizarCasa(num, val) {
 function wizAdicionarOutro(btn) {
   var nome = prompt('Nome do ambiente:');
   if (!nome || !nome.trim()) return;
+  nome = _normAmb(nome);
   var row = document.createElement('div');
   row.className = 'wiz-amb-row';
   var uid = 'custom_'+Date.now();
@@ -8671,7 +8676,7 @@ function wiz6AdicionarSubAmbSugerido(idx, nome) {
 }
 
 function wiz6ConfirmarSubAmb(idx) {
-  var nome = document.getElementById('inp-subamb').value.trim();
+  var nome = _normAmb(document.getElementById('inp-subamb').value);
   if (!nome) return;
   var modal = document.getElementById('modal-subamb');
   if (modal) modal.remove();
