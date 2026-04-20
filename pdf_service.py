@@ -1686,10 +1686,11 @@ def generate_pdf(inspection_data: dict, rooms_data: list,
         amb_json = insp.get('ambientes_json', '')
         if amb_json:
             ambientes = _build_ambientes_from_json(amb_json)
-            # Overlay POST data by index (order is always consistent)
+            # Overlay POST data by matching ambiente name to room name
+            _rooms_by_name = {(_rr.get('name') or _rr.get('nome') or ''): _rr for _rr in rooms_data}
             for i, amb in enumerate(ambientes):
-                if i < len(rooms_data):
-                    r = rooms_data[i]
+                r = _rooms_by_name.get(amb.get('nome', ''))
+                if r:
                     if r.get('verificacoes'):
                         amb['verificacoes'] = r['verificacoes']
                     if r.get('verificacoes_obs'):
@@ -1710,8 +1711,9 @@ def generate_pdf(inspection_data: dict, rooms_data: list,
 
         # === Suite sub-ambientes expansion ===
         _expanded = []
+        _rooms_by_name_sub = {(_rr.get('name') or _rr.get('nome') or ''): _rr for _rr in rooms_data}
         for _i, _amb in enumerate(ambientes):
-            _rd = rooms_data[_i] if _i < len(rooms_data) else {}
+            _rd = _rooms_by_name_sub.get(_amb.get('nome', ''), {})
             if _rd.get('subAmbientes'):
                 _suite_name = _amb['nome']
                 # Build photo lookup from original ambientes_json itens by sub-ambiente name
