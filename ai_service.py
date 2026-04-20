@@ -507,6 +507,58 @@ def get_system_prompt(tipo_analise="convencional"):
     return SYSTEM_PROMPT_CONVENCIONAL
 
 
+# ═══════════════════════════════════════════════════════════════════════════
+# POST-PROCESSING FILTER (CONVENCIONAL / Sonnet 4.6)
+# ═══════════════════════════════════════════════════════════════════════════
+# Sonnet 4.6 demonstrou ter um teto de instruction-following para o caso
+# "lâmpada queimada em teto rebaixado": mesmo com SYSTEM_PROMPT explícito
+# proibindo as expressões, o modelo ainda afirma "todas acesas".
+# Este filtro é a rede de segurança final — remove frases proibidas do
+# output antes de persistir no laudo. Zero impacto em Opus (PREMIUM).
+# ═══════════════════════════════════════════════════════════════════════════
+
+_FORBIDDEN_STATE_PATTERNS = [
+    r',?\s*todas?\s+aparentemente\s+acesas?(?:\s+e\s+em\s+funcionamento)?',
+    r',?\s*todas?\s+aparentemente\s+em\s+funcionamento',
+    r',?\s*todas?\s+acesas?(?:\s+e\s+em\s+funcionamento)?',
+    r',?\s*todas?\s+em\s+funcionamento',
+    r',?\s*aparentemente\s+acesas?',
+    r',?\s*aparentemente\s+em\s+funcionamento',
+    r',?\s*em\s+funcionamento(?!\s+adequado)',
+    r',?\s*funcionando\s+corretamente',
+    r',?\s*com\s+iluminação\s+adequada',
+]
+
+
+def filter_sonnet_output(text: str) -> str:
+    """Remove afirmações proibidas de estado de luminárias (só CONVENCIONAL).
+
+    Sonnet 4.6 tem tendência residual a afirmar 'todas acesas' mesmo quando
+    há lâmpada queimada visível. Este filtro é a rede de segurança final.
+    """
+    if not text or not isinstance(text, str):
+        return text
+    for p in _FORBIDDEN_STATE_PATTERNS:
+        text = re.sub(p, '', text, flags=re.IGNORECASE)
+    # Limpeza de artefatos de pontuação e espaços
+    text = re.sub(r',\s*,', ',', text)
+    text = re.sub(r'\s+', ' ', text)
+    text = re.sub(r'\s+([.,;:])', r'\1', text)
+    text = re.sub(r',\s*\.', '.', text)
+    return text.strip()
+
+
+def _filter_dados_convencional(dados: dict, tipo_analise: str) -> dict:
+    """Aplica filter_sonnet_output aos campos textuais quando CONVENCIONAL."""
+    if tipo_analise != "convencional" or not isinstance(dados, dict):
+        return dados
+    for _k in ('descricao', 'resumo', 'sintese', 'observacoes'):
+        _v = dados.get(_k)
+        if isinstance(_v, str):
+            dados[_k] = filter_sonnet_output(_v)
+    return dados
+
+
 def analisar_foto(imagem_base64: str, nome_ambiente: str, mime_type: str = "image/jpeg", tipo_analise: str = "convencional") -> dict:
     """
     Analisa uma foto de vistoria e retorna descricao tecnica completa.
@@ -594,6 +646,7 @@ IMPORTANTE:
 
             dados = json.loads(texto, strict=False)
             dados['success'] = True
+            _filter_dados_convencional(dados, tipo_analise)
 
             # Normalizar estado
             estado = dados.get('estado', 'Bom')
@@ -721,6 +774,7 @@ Retorne APENAS este JSON sem markdown:
                 texto = _m.group(0)
             dados = json.loads(texto, strict=False)
             dados['success'] = True
+            _filter_dados_convencional(dados, tipo_analise)
             return dados
         except Exception as e:
             print(f"[AI] !!! ERRO em consolidar_ambiente tentativa {tentativa+1}/3", flush=True)
@@ -1007,6 +1061,7 @@ Se TODAS as fotos pertencem ao ambiente "{nome_ambiente}", retorne "ambientes_ex
                 if _m:
                     texto = _m.group(0)
                 dados = json.loads(texto, strict=False)
+                _filter_dados_convencional(dados, tipo_analise)
                 resumos.append(dados.get("resumo", ""))
                 extras = dados.get("ambientes_extras", [])
                 if extras:
