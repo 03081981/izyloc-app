@@ -1993,7 +1993,7 @@ window._openFotoModal = function(imgSrc) {
     <div class="nav-divider"></div>
     <div class="nav-section-label">Conta</div>
     <div class="nav-item" id="nav-config" onclick="switchTab('perfil',this)">Configurações</div>
-    <div class="nav-item" onclick="if(confirm('Sair da conta?')){logout()}">Sair</div>
+    <div class="nav-item" onclick="logout()">Sair</div>
   </nav>
 
   <!-- RODAPE SIDEBAR -->
@@ -2244,7 +2244,7 @@ window._openFotoModal = function(imgSrc) {
             <span class="profile-field-value" id="profile-company-val">—</span>
           </div>
           <div class="profile-field" style="border:none;padding-top:20px">
-            <button class="btn btn-ghost" onclick="if(confirm('Sair da conta?')){logout()}">
+            <button class="btn btn-ghost" onclick="logout()">
               <svg viewBox="0 0 20 20" fill="currentColor" width="16" height="16"><path fill-rule="evenodd" d="M3 3a1 1 0 00-1 1v12a1 1 0 102 0V4a1 1 0 00-1-1zm10.293 9.293a1 1 0 001.414 1.414l3-3a1 1 0 000-1.414l-3-3a1 1 0 10-1.414 1.414L14.586 9H7a1 1 0 100 2h7.586l-1.293 1.293z"/></svg>
               Sair da conta
             </button>
@@ -2288,7 +2288,7 @@ window._openFotoModal = function(imgSrc) {
         <div class="nav-divider"></div>
         <div class="nav-section-label">Conta</div>
         <div class="nav-item" onclick="showPage('page-dashboard')">Configurações</div>
-        <div class="nav-item" onclick="if(confirm('Sair da conta?')){logout()}">Sair</div>
+        <div class="nav-item" onclick="logout()">Sair</div>
       </nav>
       <div class="sidebar-bottom">
         <div class="sidebar-user" onclick="showPage('page-dashboard')">
@@ -2931,7 +2931,7 @@ window._openFotoModal = function(imgSrc) {
     <div class="nav-divider"></div>
     <div class="nav-section-label">Conta</div>
     <div class="nav-item" id="nav-config" onclick="switchTab('perfil',this)">Configurações</div>
-    <div class="nav-item" onclick="if(confirm('Sair da conta?')){logout()}">Sair</div>
+    <div class="nav-item" onclick="logout()">Sair</div>
   </nav>
 
   <!-- RODAPE SIDEBAR -->
@@ -2989,7 +2989,7 @@ window._openFotoModal = function(imgSrc) {
     <div class="nav-divider"></div>
     <div class="nav-section-label">Conta</div>
     <div class="nav-item" id="nav-config" onclick="switchTab('perfil',this)">Configurações</div>
-    <div class="nav-item" onclick="if(confirm('Sair da conta?')){logout()}">Sair</div>
+    <div class="nav-item" onclick="logout()">Sair</div>
   </nav>
 
   <!-- RODAPE SIDEBAR -->
@@ -3151,6 +3151,57 @@ function switchTab(tab, el) {
 <script>
 // ─── STATE ────────────────────────────────────────────────────────────────────
 const API = '';
+
+(function() {
+  if (window.__fetchIntercepted) return;
+  window.__fetchIntercepted = true;
+
+  var AUTH_WHITELIST = [
+    '/api/auth/login',
+    '/api/auth/register',
+    '/api/auth/forgot-password',
+    '/api/auth/reset-password',
+    '/api/auth/verify-reset-token'
+  ];
+
+  var originalFetch = window.fetch.bind(window);
+  var _redirecting = false;
+
+  window.fetch = async function(input, init) {
+    var url = '';
+    try {
+      url = (typeof input === 'string') ? input : (input && input.url) || '';
+    } catch(e) { url = ''; }
+
+    var response = await originalFetch(input, init);
+
+    try {
+      var isInternal = url.startsWith('/') || url.startsWith(window.location.origin);
+      if (!isInternal) return response;
+
+      var isWhitelisted = AUTH_WHITELIST.some(function(p) { return url.indexOf(p) !== -1; });
+      if (isWhitelisted) return response;
+
+      if (response.status === 401 && !_redirecting) {
+        _redirecting = true;
+        try {
+          if (typeof toast === 'function') {
+            toast('Sua sessão expirou. Faça login novamente.', 'error');
+          }
+        } catch(e) {}
+        try { localStorage.removeItem('izylo_token'); } catch(e) {}
+        try { localStorage.removeItem('izylo_user'); } catch(e) {}
+        try { localStorage.removeItem('izylo_current_inspection'); } catch(e) {}
+        setTimeout(function() {
+          window.location.href = '/';
+        }, 1500);
+      }
+    } catch(e) {}
+
+    return response;
+  };
+})();
+
 let currentUser = null, currentToken = null, currentInspection = null;
 let pageHistory = [], signaturePads = {};
 let wizard = { step: 1, inspectionId: null, selectedRooms: [], realizador: 'imobiliária', tipo: '', mobiliado: false };
@@ -3190,7 +3241,7 @@ function showPage(id, title = null, addHistory = true) {
   }
 
   topbar.classList.add('visible');
-  btnLogout.style.display = (id === 'page-dashboard') ? 'flex' : 'none';
+  btnLogout.style.display = (id === 'page-auth') ? 'none' : 'flex';
 
   if (id === 'page-dashboard') {
     btnBack.classList.add('hidden');
@@ -3298,10 +3349,28 @@ function saveSession(r) {
   localStorage.setItem('izylo_user', JSON.stringify(r.user));
 }
 
-function logout() {
+async function logout() {
   if (!confirm('Deseja sair da sua conta?')) return;
-  currentToken = null; currentUser = null;
-  localStorage.removeItem('izylo_token'); localStorage.removeItem('izylo_user');
+
+  var _tok = currentToken || localStorage.getItem('izylo_token');
+  if (_tok) {
+    try {
+      await fetch('/api/auth/logout', {
+        method: 'POST',
+        headers: { 'Authorization': 'Bearer ' + _tok, 'Content-Type': 'application/json' }
+      });
+    } catch(e) { /* ignora — invalidação best-effort */ }
+  }
+
+  currentToken = null;
+  currentUser = null;
+
+  try { localStorage.removeItem('izylo_token'); } catch(e) {}
+  try { localStorage.removeItem('izylo_user'); } catch(e) {}
+  try { localStorage.removeItem('izylo_current_inspection'); } catch(e) {}
+
+  try { hardResetWizard(); } catch(e) {}
+
   pageHistory = [];
   showPage('page-auth');
 }
@@ -4171,24 +4240,104 @@ function formatDate(str) {
 }
 
 // ─── NEW INSPECTION WIZARD ────────────────────────────────────────────────────
-function showNewInspection() {
-  wizard = { step: 1, inspectionId: null, selectedRooms: [], realizador: 'imobiliária', tipo: '', mobiliado: false };
-  // Reset forms
-  ['wi-address','wi-area','wi-imob-name','wi-imob-cnpj','wi-imob-phone','wi-imob-address',
+function temDadosWizard() {
+  try {
+    if (window.wizard) {
+      if (wizard.isEditing) return true;
+      if (wizard.itensData && (Array.isArray(wizard.itensData) ? wizard.itensData.length > 0 : Object.keys(wizard.itensData).length > 0)) return true;
+      if (wizard.selectedRooms && wizard.selectedRooms.length > 0) return true;
+      if (wizard.inspectionId) return true;
+    }
+    if (window._fotoStore && Object.keys(window._fotoStore).length > 0) return true;
+    if (typeof _wiz6Ambientes !== 'undefined' && _wiz6Ambientes && _wiz6Ambientes.length > 0) return true;
+  } catch(e) {}
+  return false;
+}
+
+function hardResetWizard() {
+  try {
+    if (typeof _wiz6VideoPolling !== 'undefined' && _wiz6VideoPolling) {
+      clearInterval(_wiz6VideoPolling);
+    }
+  } catch(e) {}
+
+  wizard = {
+    step: 1,
+    inspectionId: null,
+    selectedRooms: [],
+    realizador: 'imobiliária',
+    tipo: '',
+    mobiliado: false,
+    isEditing: false,
+    editOrigin: null,
+    codigo: null,
+    rooms: [],
+    parties: [],
+    itensData: [],
+    propType: null,
+    customRooms: [],
+    tipoImovel: null,
+    propertyType: null,
+    currentAmbIdx: 0
+  };
+
+  try { _wizCasasCount = 0; } catch(e) {}
+  try { _wiz6Modo = 'foto'; } catch(e) {}
+  try { _wiz6AmbIdx = 0; } catch(e) {}
+  try { _wiz6Ambientes = []; } catch(e) {}
+  try { _wiz6AmbDone = {}; } catch(e) {}
+  try { _wiz6DragIdx = null; } catch(e) {}
+  try { _wiz6VideoJobId = null; } catch(e) {}
+  try { _wiz6VideoPolling = null; } catch(e) {}
+  try { _wiz6PollRetries = 0; } catch(e) {}
+
+  window._fotoStore = {};
+  window._wiz6Ambientes = [];
+  window._wiz6AmbientesFinal = null;
+  window._wiz6AmbientesSalvos = null;
+  window._wiz6PendingExtras = null;
+  window._videoFramesStore = {};
+  window._videoFramesSelecionados = {};
+  window._wiz7Locs = [];
+  window._wiz7Tens = [];
+  window._editSnapshot = null;
+
+  try { currentInspection = null; } catch(e) {}
+  try {
+    if (signaturePads) {
+      Object.keys(signaturePads).forEach(function(k) {
+        try { if (signaturePads[k] && signaturePads[k].clear) signaturePads[k].clear(); } catch(e) {}
+      });
+    }
+    signaturePads = {};
+  } catch(e) {}
+
+  try { localStorage.removeItem('izylo_current_inspection'); } catch(e) {}
+
+  ['wi-address','wi-area','wi-cep','wi-bairro','wi-cidade','wi-estado','wi-complemento','wi-prop-type',
+   'wi-imob-name','wi-imob-cnpj','wi-imob-phone','wi-imob-email','wi-imob-address',
    'wi-loc-name','wi-loc-cpf','wi-loc-rg','wi-loc-phone','wi-loc-email',
    'wi-locat-name','wi-locat-cpf','wi-locat-rg','wi-locat-phone','wi-locat-email',
    'wi-corr-name','wi-corr-creci','wi-corr-phone','wi-corr-email','wi-corr-cpf','wi-obs'
-  ].forEach(id => { const el = document.getElementById(id); if(el) el.value=''; });
+  ].forEach(function(id) { var el = document.getElementById(id); if(el) el.value=''; });
 
-  // Reset room checkboxes
-  document.querySelectorAll('.room-check-item').forEach(el => {
+  document.querySelectorAll('.room-check-item').forEach(function(el) {
     el.classList.remove('checked');
-    const box = el.querySelector('.check-box');
+    var box = el.querySelector('.check-box');
     if (box) { box.classList.remove('checked'); box.innerHTML = ''; }
   });
 
-  document.getElementById('wi-date').value = new Date().toISOString().split('T')[0];
-  document.getElementById('rooms-list').innerHTML = '';
+  try { document.getElementById('wi-date').value = new Date().toISOString().split('T')[0]; } catch(e) {}
+  try { document.getElementById('rooms-list').innerHTML = ''; } catch(e) {}
+
+  console.log('[hardResetWizard] State fully cleared');
+}
+
+function showNewInspection() {
+  if (temDadosWizard()) {
+    if (!confirm('Iniciar nova vistoria? Dados não salvos da vistoria atual serão perdidos.')) return;
+  }
+  hardResetWizard();
   gotoWStep(0);
   showPage('page-wizard', 'Nova Vistoria');
   syncWizSidebar();
