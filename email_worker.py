@@ -14,7 +14,7 @@ Defensivo: se RESEND_API_KEY ausente, loga e skip (nao crasha).
 """
 import os
 import json
-from tornado import ioloop, httpclient
+from tornado import ioloop, httpclient, gen
 
 from database import get_conn
 
@@ -163,6 +163,8 @@ async def _tick():
             await _process_one(row_dict, api_key, from_addr)
         except Exception as e:
             _log('process_one_error', id=row_dict.get('id'), err=str(e)[:200])
+        # Rate limit: Resend allows 5 req/s. 250ms gap keeps us at ~4 req/s (20% margin).
+        await gen.sleep(0.25)
 
 
 def start_email_worker():
