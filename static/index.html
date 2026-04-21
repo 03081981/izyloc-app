@@ -3356,7 +3356,7 @@ function handleAuthUrlParams() {
   const err = qs.get('verify_error');
   if (verified === 'true') {
     const bonus = qs.get('bonus') || 'R$ 5,00';
-    setTimeout(() => toast('E-mail verificado! ' + bonus + ' de bônus adicionados à sua conta.', 'success'), 400);
+    toast('E-mail verificado! ' + bonus + ' de bônus adicionados à sua conta.', 'success');
     if (currentToken) refreshMe();
   } else if (err) {
     const msgs = {
@@ -3364,7 +3364,7 @@ function handleAuthUrlParams() {
       'expired': 'Link de verificação expirado. Solicite um novo.',
       'already_used': 'Este link já foi usado.'
     };
-    setTimeout(() => toast(msgs[err] || 'Erro ao verificar e-mail.', 'error'), 400);
+    toast(msgs[err] || 'Erro ao verificar e-mail.', 'error');
   }
   if (verified || err) {
     const url = window.location.pathname + window.location.hash;
