@@ -539,6 +539,104 @@ class PasswordResetConfirmHandler(BaseHandler):
             conn.close()
 
 
+class EmailVerifyHandler(BaseHandler):
+    """
+    GET /verify-email?token=<token>
+    Valida o token de verificacao de email. Em sucesso:
+      - marca users.email_verified_at = NOW(), status='active'
+      - credita bonus de boas-vindas (settings.welcome_bonus_cents, fallback 500)
+      - insere linha em balance_transactions (type='bonus')
+      - marca email_verification_tokens.used_at = NOW()
+    Redireciona para SPA com ?verified=true&bonus=... em sucesso,
+    ou ?verify_error=<motivo> em falha.
+    """
+
+    def _redirect_error(self, reason):
+        self.redirect(f'/?verify_error={reason}')
+
+    def get(self):
+        vtoken = (self.get_argument('token', '') or '').strip()
+        if not vtoken:
+            return self._redirect_error('missing')
+
+        conn = get_conn()
+        try:
+            row = conn.execute(
+                'SELECT id, user_id, expires_at, used_at '
+                'FROM email_verification_tokens WHERE token=?',
+                (vtoken,)
+            ).fetchone()
+            if not row:
+                return self._redirect_error('invalid')
+
+            token_id = row['id']
+            user_id = row['user_id']
+            expires_at = row['expires_at']
+            used_at = row['used_at']
+
+            if used_at is not None:
+                print(f'[AUTH] verify_email_already_used user_id={user_id} '
+                      f'token_id={token_id}', flush=True)
+                return self._redirect_error('already_used')
+
+            if expires_at and expires_at < datetime.utcnow():
+                print(f'[AUTH] verify_email_expired user_id={user_id} '
+                      f'token_id={token_id}', flush=True)
+                return self._redirect_error('expired')
+
+            bonus_cents = 500
+            try:
+                srow = conn.execute(
+                    "SELECT value FROM settings WHERE key='welcome_bonus_cents'"
+                ).fetchone()
+                if srow and srow['value'] is not None:
+                    bonus_cents = int(srow['value'])
+            except Exception as _e:
+                print(f'[AUTH] welcome_bonus_cents read failed, fallback 500: {_e}',
+                      flush=True)
+
+            conn.execute(
+                "UPDATE users SET email_verified_at=NOW(), status='active', "
+                "balance_cents=balance_cents+?, updated_at=NOW() WHERE id=?",
+                (bonus_cents, user_id)
+            )
+            u = conn.execute(
+                'SELECT balance_cents FROM users WHERE id=?',
+                (user_id,)
+            ).fetchone()
+            balance_after = int(u['balance_cents']) if u else bonus_cents
+
+            conn.execute(
+                'INSERT INTO balance_transactions '
+                '(user_id, type, amount_cents, balance_after_cents, description) '
+                'VALUES (?, ?, ?, ?, ?)',
+                (user_id, 'bonus', bonus_cents, balance_after, 'Bonus de boas-vindas')
+            )
+            conn.execute(
+                'UPDATE email_verification_tokens SET used_at=NOW() WHERE id=?',
+                (token_id,)
+            )
+            conn.commit()
+
+            print(f'[AUTH] email_verified user_id={user_id} '
+                  f'bonus_cents={bonus_cents} new_balance={balance_after}',
+                  flush=True)
+
+            bonus_q = tornado.escape.url_escape(format_balance_brl(bonus_cents))
+            self.redirect(f'/?verified=true&bonus={bonus_q}')
+        except Exception as e:
+            try:
+                conn.rollback()
+            except Exception:
+                pass
+            print(f'[AUTH] email_verify_error: {e}', flush=True)
+            self._redirect_error('server_error')
+        finally:
+            try:
+                conn.close()
+            except Exception:
+                pass
+
 
 # ===========================================================================
 # ADMIN PANEL - Modulo separado, nao altera funcionalidades existentes
@@ -2249,6 +2347,8 @@ def make_app():
         (r'/laudo/bulk-delete', LaudoBulkDeleteHandler),
         (r'/laudo/([^/]+)', LaudoDeleteHandler),
         (r'/meus-laudos', MeusLaudosHandler),
+        # Email verification
+        (r'/verify-email', EmailVerifyHandler),
         # Frontend (SPA)
         (r'/(.*)', MainHandler),
     ], debug=True)
