@@ -1888,16 +1888,34 @@ window._openFotoModal = function(imgSrc) {
         <input class="form-input" id="reg-email" type="email" placeholder="seu@email.com"/>
       </div>
       <div class="form-group">
-        <label class="form-label">Empresa / Imobiliária</label>
+        <label class="form-label">Empresa / Imobiliária <span style="color:#999;font-weight:400">(opcional)</span></label>
         <input class="form-input" id="reg-company" type="text" placeholder="Nome da empresa"/>
       </div>
       <div class="form-group">
-        <label class="form-label">CRECI</label>
+        <label class="form-label">CRECI <span style="color:#999;font-weight:400">(opcional)</span></label>
         <input class="form-input" id="reg-creci" type="text" placeholder="Número do CRECI"/>
       </div>
       <div class="form-group">
+        <label class="form-label">Telefone <span style="color:#999;font-weight:400">(opcional)</span></label>
+        <input class="form-input" id="reg-phone" type="tel" placeholder="(11) 99999-9999" autocomplete="tel"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">CPF <span style="color:#999;font-weight:400">(opcional)</span></label>
+        <input class="form-input" id="reg-cpf" type="text" placeholder="000.000.000-00"/>
+      </div>
+      <div class="form-group">
         <label class="form-label">Senha</label>
-        <input class="form-input" id="reg-password" type="password" placeholder="Mínimo 8 caracteres"/>
+        <input class="form-input" id="reg-password" type="password" placeholder="Mínimo 8 caracteres" autocomplete="new-password"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Confirmar senha</label>
+        <input class="form-input" id="reg-password-confirm" type="password" placeholder="Repita a senha" autocomplete="new-password"/>
+      </div>
+      <div class="form-group" style="display:flex;align-items:flex-start;gap:10px;margin-top:4px">
+        <input type="checkbox" id="reg-terms" style="margin-top:3px;cursor:pointer"/>
+        <label for="reg-terms" style="font-size:var(--fs-sm);color:#555;cursor:pointer;line-height:1.4">
+          Li e aceito os <a href="#" style="color:#2d7dd2;text-decoration:underline">Termos de Uso</a> e a <a href="#" style="color:#2d7dd2;text-decoration:underline">Política de Privacidade</a>
+        </label>
       </div>
       <button class="btn btn-primary btn-full" onclick="doRegister()" style="margin-top:4px">Criar conta</button>
       <div class="auth-switch">
@@ -2038,10 +2056,19 @@ window._openFotoModal = function(imgSrc) {
     <div id="dash-tab-vistorias" class="dash-tab-content active">
 
       <!-- TOPBAR -->
+      <!-- Push 6: E-mail verification banner -->
+      <div id="verify-banner" style="display:none;background:#FEF3C7;border:1px solid #FCD34D;border-radius:8px;padding:12px 16px;margin-bottom:16px;align-items:center;gap:12px">
+        <div style="flex:1;font-size:14px;color:#92400E">
+          <strong>Confirme seu e-mail para ganhar R$ 5,00 de bônus.</strong>
+          Enviamos um link de verificação para o seu e-mail cadastrado.
+        </div>
+        <button onclick="hidePendingVerificationBanner()" style="padding:6px 12px;background:transparent;border:1px solid #92400E;color:#92400E;border-radius:6px;cursor:pointer;font-size:13px">Fechar</button>
+      </div>
       <div class="db-hero">
         <div class="db-hero-left">
           <div class="db-greeting" id="db-greeting">Bom dia!</div>
           <div class="db-subtitle" id="db-subtitle"></div>
+          <div id="db-balance-brl" class="db-balance-brl" style="margin-top:6px;font-size:13px;color:#555"></div>
 <script>
 (function(){
   var el = document.getElementById("db-subtitle");
@@ -3224,6 +3251,9 @@ document.addEventListener('DOMContentLoaded', () => {
   const usr = localStorage.getItem('izylo_user');
   if (tok && usr) {
     currentToken = tok; currentUser = JSON.parse(usr);
+  }
+  handleAuthUrlParams();
+  if (currentToken && currentUser) {
     showPage('page-dashboard'); loadDashboard();
   } else {
     showPage('page-auth');
@@ -3319,36 +3349,105 @@ function switchAuthTabByName(tab) {
   switchAuthTab(tab, tabs[idx]);
 }
 
+// Push 6: URL param handler for ?verified=true and ?verify_error=...
+function handleAuthUrlParams() {
+  const qs = new URLSearchParams(window.location.search);
+  const verified = qs.get('verified');
+  const err = qs.get('verify_error');
+  if (verified === 'true') {
+    const bonus = qs.get('bonus') || 'R$ 5,00';
+    setTimeout(() => toast('E-mail verificado! ' + bonus + ' de bônus adicionados à sua conta.', 'success'), 400);
+    if (currentToken) refreshMe();
+  } else if (err) {
+    const msgs = {
+      'invalid': 'Link de verificação inválido.',
+      'expired': 'Link de verificação expirado. Solicite um novo.',
+      'already_used': 'Este link já foi usado.'
+    };
+    setTimeout(() => toast(msgs[err] || 'Erro ao verificar e-mail.', 'error'), 400);
+  }
+  if (verified || err) {
+    const url = window.location.pathname + window.location.hash;
+    window.history.replaceState({}, '', url);
+  }
+}
+
+async function refreshMe() {
+  if (!currentToken) return;
+  const r = await api('GET', '/api/auth/me');
+  if (r.ok) {
+    const { ok, ...userData } = r;
+    currentUser = userData;
+    localStorage.setItem('izylo_user', JSON.stringify(userData));
+    if (document.getElementById('page-dashboard').classList.contains('active')) loadDashboard();
+  }
+}
+
+function showPendingVerificationBanner() {
+  const b = document.getElementById('verify-banner');
+  if (b) b.style.display = 'flex';
+}
+function hidePendingVerificationBanner() {
+  const b = document.getElementById('verify-banner');
+  if (b) b.style.display = 'none';
+}
+
 async function doLogin() {
   const email = document.getElementById('login-email').value.trim();
-  const password = document.getElementById('login-password').value;
-  if (!email || !password) return toast('Preencha e-mail e senha', 'error');
-  showLoading('Entrando...');
-  const r = await api('POST', '/api/auth/login', { email, password });
-  hideLoading();
-  if (!r.ok) return toast(r.error || 'E-mail ou senha incorretos', 'error');
-  saveSession(r);
-  showPage('page-dashboard', null, false);
-  loadDashboard();
+  const pwd = document.getElementById('login-password').value;
+  const errBox = document.getElementById('login-invalid');
+  const btn = document.querySelector('#form-login .btn-primary');
+  errBox.classList.remove('show'); errBox.textContent = '';
+  if (!email || !pwd) { errBox.textContent = 'Preencha e-mail e senha'; errBox.classList.add('show'); return; }
+  btn.disabled = true; btn.textContent = 'Entrando...';
+  try {
+    const r = await api('POST', '/api/auth/login', { email, password: pwd });
+    if (!r.ok) { errBox.textContent = r.error || 'E-mail ou senha incorretos'; errBox.classList.add('show'); return; }
+    saveSession(r);
+    showPage('page-dashboard', null, false);
+    loadDashboard();
+    if (r.user && r.user.status === 'pending_verification') showPendingVerificationBanner();
+  } finally {
+    btn.disabled = false; btn.textContent = 'Entrar';
+  }
 }
 
 async function doRegister() {
   const name = document.getElementById('reg-name').value.trim();
-  const company_name = document.getElementById('reg-company').value.trim();
   const email = document.getElementById('reg-email').value.trim();
+  const company_name = document.getElementById('reg-company').value.trim();
   const creci = document.getElementById('reg-creci').value.trim();
-  const password = document.getElementById('reg-password').value;
-  if (!name || !company_name || !email || !password)
-    return toast('Preencha todos os campos obrigatórios', 'error');
-  if (password.length < 6) return toast('Senha deve ter no mínimo 6 caracteres', 'error');
-  showLoading('Criando conta...');
-  const r = await api('POST', '/api/auth/register', { name, company_name, email, creci, password });
-  hideLoading();
-  if (!r.ok) return toast(r.error || 'Erro ao cadastrar', 'error');
-  saveSession(r);
-  showPage('page-dashboard', null, false);
-  loadDashboard();
-  toast('Conta criada! Bem-vindo ao izyLAUDO 🎉', 'success');
+  const phone = document.getElementById('reg-phone').value.trim();
+  const cpf = document.getElementById('reg-cpf').value.trim();
+  const pwd = document.getElementById('reg-password').value;
+  const pwd2 = document.getElementById('reg-password-confirm').value;
+  const terms = document.getElementById('reg-terms').checked;
+  const errBox = document.getElementById('reg-error');
+  const btn = document.querySelector('#form-register .btn-primary');
+  errBox.classList.remove('show'); errBox.textContent = '';
+  const fail = (msg) => { errBox.textContent = msg; errBox.classList.add('show'); };
+  if (!name || name.length < 3) return fail('Nome deve ter pelo menos 3 caracteres');
+  if (!email) return fail('E-mail é obrigatório');
+  if (!pwd || pwd.length < 8) return fail('Senha deve ter no mínimo 8 caracteres');
+  if (pwd !== pwd2) return fail('As senhas não coincidem');
+  if (!terms) return fail('É necessário aceitar os Termos de Uso');
+  btn.disabled = true; btn.textContent = 'Criando conta...';
+  try {
+    const body = { name, email, password: pwd, password_confirm: pwd2, terms_accepted: true };
+    if (company_name) body.company_name = company_name;
+    if (creci) body.creci = creci;
+    if (phone) body.phone = phone;
+    if (cpf) body.cpf = cpf;
+    const r = await api('POST', '/api/auth/register', body);
+    if (!r.ok) { fail(r.error || 'Erro ao cadastrar'); return; }
+    saveSession(r);
+    showPage('page-dashboard', null, false);
+    loadDashboard();
+    toast('Conta criada! Verifique seu e-mail para ganhar R$ 5,00 de bônus.', 'success');
+    showPendingVerificationBanner();
+  } finally {
+    btn.disabled = false; btn.textContent = 'Criar conta';
+  }
 }
 
 function saveSession(r) {
@@ -3393,6 +3492,23 @@ function switchDashTab(tab, btn) {
 
 async function loadDashboard() {
   if (!currentUser) return;
+
+  // Push 6: refresh user from /api/auth/me for latest balance + verification status
+  try {
+    const me = await api('GET', '/api/auth/me');
+    if (me.ok) {
+      const { ok, ...userData } = me;
+      currentUser = userData;
+      localStorage.setItem('izylo_user', JSON.stringify(userData));
+    }
+  } catch(e) {}
+  const balEl = document.getElementById('db-balance-brl');
+  if (balEl) balEl.textContent = currentUser.balance_formatted ? ('Saldo: ' + currentUser.balance_formatted) : '';
+  if (currentUser.email_verified === false || currentUser.status === 'pending_verification') {
+    showPendingVerificationBanner();
+  } else {
+    hidePendingVerificationBanner();
+  }
 
   // Perfil
   document.getElementById('profile-name').textContent = currentUser.name;
