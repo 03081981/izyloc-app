@@ -3326,8 +3326,9 @@ let toastTO;
 function toast(msg, type = '') {
   document.getElementById('toast-el')?.remove();
   const el = document.createElement('div');
-  el.id = 'toast-el'; el.className = `toast ${type}`; el.textContent = msg;
+  el.id = 'toast-el'; el.className = `toast-el ${type}`.trim(); el.textContent = msg;
   document.body.appendChild(el);
+  requestAnimationFrame(() => el.classList.add('show'));
   clearTimeout(toastTO); toastTO = setTimeout(() => el.remove(), 3500);
 }
 function showLoading(t='Aguarde...') {
