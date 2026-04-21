@@ -3245,7 +3245,6 @@ let wizard = { step: 1, inspectionId: null, selectedRooms: [], realizador: 'imob
 
 // ─── BOOT ─────────────────────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
-  try { sessionStorage.setItem('__trace_removeStack', JSON.stringify([])); var _origRemove = Element.prototype.remove; Element.prototype.remove = function() { if (this && this.id === 'toast-el') { var arr = JSON.parse(sessionStorage.getItem('__trace_removeStack') || '[]'); arr.push({ts: Date.now(), stack: (new Error()).stack.split('\n').slice(1, 8).join(' | ')}); sessionStorage.setItem('__trace_removeStack', JSON.stringify(arr)); } return _origRemove.apply(this, arguments); }; } catch(e) {} try { sessionStorage.setItem('__trace_bootremov', JSON.stringify([])); var mo = new MutationObserver(muts => { muts.forEach(m => { m.removedNodes.forEach(n => { if (n && n.id === 'toast-el') { var arr = JSON.parse(sessionStorage.getItem('__trace_bootremov') || '[]'); arr.push({ts: Date.now(), stack: (new Error()).stack.split('\n').slice(1,6).join(' | ')}); sessionStorage.setItem('__trace_bootremov', JSON.stringify(arr)); } }); }); }); mo.observe(document.body, {childList: true, subtree: true}); } catch(e) {}
   var cardPadrão = document.querySelector('[data-realiza].selected');
   if (cardPadrão) wizard.realizador = cardPadrão.dataset.realiza;
   const tok = localStorage.getItem('izylo_token');
@@ -3356,11 +3355,9 @@ function handleAuthUrlParams() {
   const qs = new URLSearchParams(window.location.search);
   const verified = qs.get('verified');
   const err = qs.get('verify_error');
-  try { sessionStorage.setItem('__trace_hap', JSON.stringify({verified, err, search: location.search, ts: Date.now()})); } catch(e) {}
   if (verified === 'true') {
     const bonus = qs.get('bonus') || 'R$ 5,00';
     toast('E-mail verificado! ' + bonus + ' de bônus adicionados à sua conta.', 'success');
-    try { setTimeout(() => { var el = document.getElementById('toast-el'); sessionStorage.setItem('__trace_toast_200', JSON.stringify({exists: !!el, text: el ? el.textContent : null, ts: Date.now()})); }, 200); } catch(e) {}
     if (currentToken) refreshMe();
   } else if (err) {
     const msgs = {
