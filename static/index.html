@@ -3324,6 +3324,7 @@ async function api(method, path, body = null, isMultipart = false) {
 // ─── TOAST & LOADING ──────────────────────────────────────────────────────────
 let toastTO;
 function toast(msg, type = '') {
+  try { var arr = JSON.parse(sessionStorage.getItem('__trace_toastcalls') || '[]'); arr.push({msg: msg, type: type, ts: Date.now(), stack: (new Error()).stack.split('\n').slice(1,4).join(' | ')}); sessionStorage.setItem('__trace_toastcalls', JSON.stringify(arr)); } catch(e) {}
   document.getElementById('toast-el')?.remove();
   const el = document.createElement('div');
   el.id = 'toast-el'; el.className = `toast-el ${type}`.trim(); el.textContent = msg;
