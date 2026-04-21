@@ -106,6 +106,10 @@ body {
 }
 @media (max-width: 768px) { #topbar { left: 0; } }
 #topbar.visible { display: flex; }
+.topbar-logo-small { display: none; font-weight: 900; }
+.topbar-logo-small .blue { color: #2d7dd2; }
+.topbar-logo-small .black { color: #1a2540; }
+@media (max-width: 768px) { .topbar-logo-small { display: inline; } }
 #btn-back {
   background: none; border: none; cursor: pointer;
   width: 36px; height: 36px;
@@ -3249,7 +3253,7 @@ function showPage(id, title = null, addHistory = true) {
 
   if (id === 'page-dashboard') {
     btnBack.classList.add('hidden');
-    titleEl.textContent = '';
+    titleEl.innerHTML = '<span class="topbar-logo-small"><span class="blue">izy</span><span class="black">LAUDO</span></span>';
   } else {
     btnBack.classList.remove('hidden');
     titleEl.textContent = title || '';
