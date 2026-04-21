@@ -4242,7 +4242,7 @@ function formatDate(str) {
 // ─── NEW INSPECTION WIZARD ────────────────────────────────────────────────────
 function temDadosWizard() {
   try {
-    if (window.wizard) {
+    if (typeof wizard !== 'undefined' && wizard) {
       if (wizard.isEditing) return true;
       if (wizard.itensData && (Array.isArray(wizard.itensData) ? wizard.itensData.length > 0 : Object.keys(wizard.itensData).length > 0)) return true;
       if (wizard.selectedRooms && wizard.selectedRooms.length > 0) return true;
