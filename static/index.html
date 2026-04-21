@@ -3328,7 +3328,7 @@ function toast(msg, type = '') {
   const el = document.createElement('div');
   el.id = 'toast-el'; el.className = `toast-el ${type}`.trim(); el.textContent = msg;
   document.body.appendChild(el);
-  setTimeout(() => el.classList.add('show'), 20);
+  requestAnimationFrame(() => el.classList.add('show'));
   clearTimeout(toastTO); toastTO = setTimeout(() => el.remove(), 3500);
 }
 function showLoading(t='Aguarde...') {
@@ -3355,9 +3355,11 @@ function handleAuthUrlParams() {
   const qs = new URLSearchParams(window.location.search);
   const verified = qs.get('verified');
   const err = qs.get('verify_error');
+  try { sessionStorage.setItem('__trace_hap', JSON.stringify({verified, err, search: location.search, ts: Date.now()})); } catch(e) {}
   if (verified === 'true') {
     const bonus = qs.get('bonus') || 'R$ 5,00';
     toast('E-mail verificado! ' + bonus + ' de bônus adicionados à sua conta.', 'success');
+    try { setTimeout(() => { var el = document.getElementById('toast-el'); sessionStorage.setItem('__trace_toast_200', JSON.stringify({exists: !!el, text: el ? el.textContent : null, ts: Date.now()})); }, 200); } catch(e) {}
     if (currentToken) refreshMe();
   } else if (err) {
     const msgs = {
