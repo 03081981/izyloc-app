@@ -2581,6 +2581,9 @@ def _ensure_status_column():
             "ALTER TABLE rooms ADD COLUMN IF NOT EXISTS general_condition TEXT",
             "ALTER TABLE rooms ADD COLUMN IF NOT EXISTS verificacoes_json TEXT",
             "ALTER TABLE inspections ADD COLUMN IF NOT EXISTS wizard_snapshot TEXT",
+            "ALTER TABLE balance_transactions ADD COLUMN IF NOT EXISTS id VARCHAR(64)",
+            "ALTER TABLE balance_transactions ADD COLUMN IF NOT EXISTS status VARCHAR(30) DEFAULT 'completed'",
+            "ALTER TABLE balance_transactions ADD COLUMN IF NOT EXISTS created_at TIMESTAMPTZ DEFAULT NOW()",
         ]
         for _s in _mig:
             try:
