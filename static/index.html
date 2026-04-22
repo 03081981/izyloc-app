@@ -1361,6 +1361,165 @@ canvas { display: block; }
 .modal-barra-fill-prem { background: linear-gradient(90deg, #4a1d96, #7c3aed); }
 .modal-barra-fill-err  { background: linear-gradient(90deg, #991b1b, #dc2626); }
 
+/* ===== Dashboard Card Redesign ===== */
+.db-card-novo {
+  background: linear-gradient(135deg, #1e3a5f 0%, #2d5a9e 100%);
+  border-radius: 14px;
+  padding: 20px 24px;
+  color: #fff;
+  margin-bottom: 20px;
+  box-sizing: border-box;
+}
+.db-card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.db-saldo-label {
+  font-size: 12px;
+  color: rgba(255,255,255,0.6);
+  margin-bottom: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.db-saldo-valor {
+  font-size: 28px;
+  font-weight: 600;
+  color: #fff;
+  line-height: 1;
+}
+.btn-comprar-mp {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #16a34a;
+  color: #fff;
+  border: none;
+  border-radius: 20px;
+  padding: 9px 14px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  align-self: center;
+  white-space: nowrap;
+  transition: all .15s ease;
+}
+.btn-comprar-mp:hover {
+  box-shadow: 0 4px 12px rgba(22,163,74,.4);
+  transform: translateY(-1px);
+}
+.btn-comprar-mp-badge {
+  background: #fff;
+  border-radius: 8px;
+  padding: 2px 7px;
+  display: flex;
+  align-items: center;
+  height: 18px;
+}
+.btn-comprar-mp-badge img,
+.btn-comprar-mp-badge svg {
+  height: 14px;
+  display: block;
+}
+.db-card-divider {
+  border: none;
+  border-top: 1px solid rgba(255,255,255,0.15);
+  margin: 0 0 16px 0;
+}
+.db-fotos-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+.db-foto-bloco {
+  background: rgba(255,255,255,0.08);
+  border-radius: 10px;
+  padding: 14px;
+}
+.db-foto-tipo {
+  font-size: 11px;
+  color: rgba(255,255,255,0.55);
+  margin-bottom: 6px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.db-badge-conv {
+  background: rgba(45,125,210,0.35);
+  color: #90c4f9;
+  border-radius: 4px;
+  padding: 2px 7px;
+  font-size: 10px;
+  font-weight: 600;
+}
+.db-badge-prem {
+  background: rgba(147,51,234,0.35);
+  color: #d8b4fe;
+  border-radius: 4px;
+  padding: 2px 7px;
+  font-size: 10px;
+  font-weight: 600;
+}
+.db-foto-num {
+  font-size: 22px;
+  font-weight: 600;
+  color: #fff;
+  line-height: 1;
+  margin-bottom: 3px;
+}
+.db-foto-sub {
+  font-size: 11px;
+  color: rgba(255,255,255,0.45);
+}
+.db-barra-wrap {
+  background: rgba(255,255,255,0.12);
+  border-radius: 4px;
+  height: 4px;
+  margin-top: 10px;
+  overflow: hidden;
+}
+.db-barra-fill-conv {
+  background: #90c4f9;
+  height: 100%;
+  border-radius: 4px;
+  transition: width .4s ease;
+}
+.db-barra-fill-prem {
+  background: #d8b4fe;
+  height: 100%;
+  border-radius: 4px;
+  transition: width .4s ease;
+}
+.db-card-bottom {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 16px;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+.db-card-bottom-info {
+  font-size: 12px;
+  color: rgba(255,255,255,0.5);
+}
+.db-card-bottom-info span {
+  color: rgba(255,255,255,0.85);
+  font-weight: 600;
+}
+.db-card-extrato-link {
+  font-size: 12px;
+  color: #90c4f9;
+  cursor: pointer;
+  text-decoration: underline;
+  background: none;
+  border: none;
+  padding: 0;
+}
+
 /* ===== Modal Comprar Créditos (Mercado Pago) ===== */
 .mp-modal-overlay {
   position: fixed; inset: 0;
