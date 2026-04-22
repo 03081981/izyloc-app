@@ -2494,7 +2494,6 @@ window._openFotoModal = function(imgSrc) {
           <div class="db-greeting" id="db-greeting">Bom dia!</div>
           <div class="db-subtitle" id="db-subtitle"></div>
           <div id="db-balance-brl" class="db-balance-brl" style="margin-top:6px;font-size:13px;color:#555"></div>
-    <button type="button" id="btn-comprar-creditos" class="btn-comprar-creditos" onclick="abrirModalComprarCreditos()">+ Comprar créditos</button>
 <script>
 (function(){
   var el = document.getElementById("db-subtitle");
@@ -2515,27 +2514,53 @@ window._openFotoModal = function(imgSrc) {
         <button class="db-btn-nova" onclick="showNewInspection()">+ Nova vistoria</button>
       </div>
 
-      <!-- BANNER CREDITOS -->
-      <div class="db-créditos-banner">
-        <div class="db-cred-left">
-          <div class="db-cred-label">&#x1F4F8; Saldo de fotos disponiveis</div>
-          <div class="db-cred-count">
-            <span class="db-cred-num" id="db-saldo-display">--</span>
-            <span class="db-cred-unit">fotos restantes</span>
+      <!-- ===== Dashboard Card Redesenhado ===== -->
+      <div class="db-card-novo">
+        <div class="db-card-top">
+          <div>
+            <div class="db-saldo-label">Saldo disponível</div>
+            <div class="db-saldo-valor" id="db-saldo-valor">R$ 0,00</div>
           </div>
-          <div class="db-cred-sub">Cada foto analisada pela IA consome 1 crédito &middot; <span id="db-preco-display">R$ 0,50</span></div>
-          <div class="db-cred-bar-wrap">
-            <div class="db-cred-bar-bg"><div class="db-cred-bar-fill" id="db-cred-bar-fill"></div></div>
-            <div class="db-cred-bar-label">
-              <span id="db-cred-usadas">-- usadas</span>
-              <span id="db-cred-restantes">-- restantes</span>
+          <button type="button" class="btn-comprar-mp" onclick="abrirModalComprarCreditos()">
+            + Comprar créditos
+            <span class="btn-comprar-mp-badge">
+              <img src="/static/mp-logo.svg" alt="Mercado Pago" onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
+              <span style="display:none;font-size:10px;font-weight:700;color:#009ee3">MP</span>
+            </span>
+          </button>
+        </div>
+
+        <hr class="db-card-divider">
+
+        <div class="db-fotos-grid">
+          <div class="db-foto-bloco">
+            <div class="db-foto-tipo">
+              <span class="db-badge-conv">Convencional</span>
+              <span style="color:rgba(255,255,255,0.4)">R$ 0,50/foto</span>
+            </div>
+            <div class="db-foto-num" id="db-fotos-conv">--</div>
+            <div class="db-foto-sub">fotos analisadas este mês</div>
+            <div class="db-barra-wrap">
+              <div class="db-barra-fill-conv" id="db-barra-conv" style="width:0%"></div>
+            </div>
+          </div>
+
+          <div class="db-foto-bloco">
+            <div class="db-foto-tipo">
+              <span class="db-badge-prem">Premium</span>
+              <span style="color:rgba(255,255,255,0.4)">R$ 0,90/foto</span>
+            </div>
+            <div class="db-foto-num" id="db-fotos-prem">--</div>
+            <div class="db-foto-sub">fotos analisadas este mês</div>
+            <div class="db-barra-wrap">
+              <div class="db-barra-fill-prem" id="db-barra-prem" style="width:0%"></div>
             </div>
           </div>
         </div>
-        <div class="db-cred-right">
-          <button class="db-btn-adicionar" onclick="showRecarga()">+ Adicionar créditos <span class="db-mp-badge">Mercado Pago</span></button>
-          <button class="db-btn-extrato" onclick="showExtrato()">&#x1F4CB; Ver extrato de uso</button>
-          <div class="db-custo-info">20 fotos R$ 10,00 &middot; 50 fotos R$ 25,00 &middot; 100 fotos R$ 50,00 &middot; 200 fotos R$ 100,00</div>
+
+        <div class="db-card-bottom">
+          <div class="db-card-bottom-info">Total gasto este mês: <span id="db-total-mes">R$ 0,00</span></div>
+          <button type="button" class="db-card-extrato-link" onclick="switchTab('extrato', this)">Ver extrato completo →</button>
         </div>
       </div>
 
@@ -4164,6 +4189,32 @@ async function confirmarAnalise(tipo, fotosCount, onConfirm) {
   ov.style.display = 'flex';
 }
 
+function atualizaCardDashboard() {
+  if (!currentUser) return;
+  var saldoEl = document.getElementById('db-saldo-valor');
+  if (saldoEl) {
+    var cents = currentUser.balance_cents || 0;
+    saldoEl.textContent = 'R$ ' + (cents / 100).toFixed(2).replace('.', ',');
+  }
+  var conv = currentUser.fotos_usadas_conv_mes || 0;
+  var prem = currentUser.fotos_usadas_prem_mes || 0;
+  var totalFotos = conv + prem || 1;
+  var convEl = document.getElementById('db-fotos-conv');
+  var premEl = document.getElementById('db-fotos-prem');
+  var barraConv = document.getElementById('db-barra-conv');
+  var barraPrem = document.getElementById('db-barra-prem');
+  var totalEl = document.getElementById('db-total-mes');
+  if (convEl) convEl.textContent = conv;
+  if (premEl) premEl.textContent = prem;
+  var maxBar = Math.max(totalFotos, 10);
+  if (barraConv) barraConv.style.width = Math.min((conv / maxBar) * 100, 100) + '%';
+  if (barraPrem) barraPrem.style.width = Math.min((prem / maxBar) * 100, 100) + '%';
+  if (totalEl) {
+    var totalCents = (conv * 50) + (prem * 90);
+    totalEl.textContent = 'R$ ' + (totalCents / 100).toFixed(2).replace('.', ',');
+  }
+}
+
 async function loadDashboard() {
   if (!currentUser) return;
 
@@ -4181,6 +4232,7 @@ async function loadDashboard() {
   } catch(e) {}
   const balEl = document.getElementById('db-balance-brl');
   if (balEl) balEl.textContent = currentUser.balance_formatted ? ('Saldo: ' + currentUser.balance_formatted) : '';
+  try { atualizaCardDashboard(); } catch(e) { console.warn('atualizaCardDashboard falhou', e); }
   if (currentUser.email_verified === false || currentUser.status === 'pending_verification') {
     showPendingVerificationBanner();
   } else {
