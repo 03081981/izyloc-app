@@ -10495,5 +10495,220 @@ function wiz6Concluir() {
   <div class="modal-analise-box" id="modal-analise-box"></div>
 </div>
 
+<!-- ===== Modal Comprar Créditos ===== -->
+<div id="mp-modal-overlay" class="mp-modal-overlay" onclick="if(event.target===this)fecharModalComprarCreditos()">
+  <div class="mp-modal-box" role="dialog" aria-labelledby="mp-modal-titulo">
+    <div class="mp-modal-header">
+      <span>💳</span>
+      <span id="mp-modal-titulo">Comprar créditos</span>
+    </div>
+    <div class="mp-modal-body">
+      <p>Escolha um pacote ou digite o valor desejado. O pagamento é processado pelo Mercado Pago.</p>
+
+      <div class="mp-pacotes" id="mp-pacotes-container">
+        <div class="mp-pacote" data-valor="1000" onclick="selecionarPacote(this,1000)">
+          <div class="mp-pacote-valor">R$ 10</div>
+          <div class="mp-pacote-desc">~20 análises Conv.</div>
+        </div>
+        <div class="mp-pacote" data-valor="2500" onclick="selecionarPacote(this,2500)">
+          <div class="mp-pacote-valor">R$ 25</div>
+          <div class="mp-pacote-desc">~50 análises Conv.</div>
+        </div>
+        <div class="mp-pacote" data-valor="5000" onclick="selecionarPacote(this,5000)">
+          <div class="mp-pacote-valor">R$ 50</div>
+          <div class="mp-pacote-desc">~100 análises Conv.</div>
+        </div>
+        <div class="mp-pacote" data-valor="10000" onclick="selecionarPacote(this,10000)">
+          <div class="mp-pacote-valor">R$ 100</div>
+          <div class="mp-pacote-desc">~200 análises Conv.</div>
+        </div>
+      </div>
+
+      <div class="mp-livre">
+        <label class="mp-livre-label" for="mp-valor-livre">Ou digite outro valor:</label>
+        <input type="text" id="mp-valor-livre" class="mp-livre-input"
+               placeholder="R$ 0,00" inputmode="decimal"
+               oninput="onValorLivreChange(this)" />
+        <div class="mp-livre-hint">Mínimo R$ 5,00 &middot; Máximo R$ 5.000,00</div>
+      </div>
+
+      <div class="mp-resumo" id="mp-resumo" style="display:none">
+        <div class="mp-resumo-line mp-resumo-total">
+          <span>Total a pagar:</span>
+          <span id="mp-resumo-valor">R$ 0,00</span>
+        </div>
+      </div>
+
+      <div class="mp-formas">
+        <span>💳 Cartão</span>
+        <span>📱 Pix</span>
+        <span>🔒 Seguro</span>
+      </div>
+    </div>
+    <div class="mp-modal-actions">
+      <button type="button" class="mp-btn mp-btn-cancel" onclick="fecharModalComprarCreditos()">Cancelar</button>
+      <button type="button" id="mp-btn-pagar" class="mp-btn mp-btn-pay" disabled onclick="iniciarPagamentoMP()">
+        Continuar
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== Overlay de espera (retorno do MP) ===== -->
+<div id="mp-wait-overlay" class="mp-wait-overlay">
+  <div class="mp-wait-spinner"></div>
+  <div class="mp-wait-title" id="mp-wait-title">Processando pagamento...</div>
+  <div class="mp-wait-desc" id="mp-wait-desc">Aguarde enquanto confirmamos seu pagamento.</div>
+</div>
+
+<script>
+/* ========== Modal Comprar Créditos - Mercado Pago ========== */
+let _mpValorSelecionadoCents = 0;
+
+function abrirModalComprarCreditos() {
+  const ov = document.getElementById('mp-modal-overlay');
+  if (!ov) return;
+  _mpValorSelecionadoCents = 0;
+  document.querySelectorAll('#mp-pacotes-container .mp-pacote').forEach(el => el.classList.remove('selected'));
+  const inp = document.getElementById('mp-valor-livre');
+  if (inp) inp.value = '';
+  _mpAtualizarResumo();
+  ov.classList.add('open');
+}
+
+function fecharModalComprarCreditos() {
+  const ov = document.getElementById('mp-modal-overlay');
+  if (ov) ov.classList.remove('open');
+}
+
+function selecionarPacote(el, valorCents) {
+  document.querySelectorAll('#mp-pacotes-container .mp-pacote').forEach(e => e.classList.remove('selected'));
+  el.classList.add('selected');
+  _mpValorSelecionadoCents = valorCents;
+  const inp = document.getElementById('mp-valor-livre');
+  if (inp) inp.value = '';
+  _mpAtualizarResumo();
+}
+
+function onValorLivreChange(input) {
+  const digits = input.value.replace(/\D/g, '');
+  if (!digits) {
+    input.value = '';
+    _mpValorSelecionadoCents = 0;
+    document.querySelectorAll('#mp-pacotes-container .mp-pacote').forEach(e => e.classList.remove('selected'));
+    _mpAtualizarResumo();
+    return;
+  }
+  const cents = parseInt(digits, 10);
+  input.value = 'R$ ' + (cents / 100).toFixed(2).replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+  _mpValorSelecionadoCents = cents;
+  document.querySelectorAll('#mp-pacotes-container .mp-pacote').forEach(e => e.classList.remove('selected'));
+  _mpAtualizarResumo();
+}
+
+function _mpAtualizarResumo() {
+  const resumo = document.getElementById('mp-resumo');
+  const valor = document.getElementById('mp-resumo-valor');
+  const btn = document.getElementById('mp-btn-pagar');
+  const cents = _mpValorSelecionadoCents;
+  const valido = cents >= 500 && cents <= 500000;
+  if (cents > 0) {
+    resumo.style.display = 'block';
+    valor.textContent = 'R$ ' + (cents/100).toFixed(2).replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+  } else {
+    resumo.style.display = 'none';
+  }
+  btn.disabled = !valido;
+  btn.textContent = valido ? 'Pagar ' + (cents/100).toFixed(2).replace('.',',') + ' com Mercado Pago' : 'Continuar';
+}
+
+async function iniciarPagamentoMP() {
+  const cents = _mpValorSelecionadoCents;
+  if (cents < 500 || cents > 500000) return;
+
+  const btn = document.getElementById('mp-btn-pagar');
+  btn.disabled = true;
+  btn.textContent = 'Gerando pagamento...';
+
+  try {
+    const r = await api('POST', '/api/payments/create-preference', { amount_cents: cents });
+    if (r && r.ok && r.init_point) {
+      try { sessionStorage.setItem('mp_last_tx', r.transaction_id || ''); } catch(e){}
+      window.location.href = r.init_point;
+    } else {
+      showToast((r && r.error) || 'Erro ao criar pagamento', 'error');
+      btn.disabled = false;
+      _mpAtualizarResumo();
+    }
+  } catch (e) {
+    showToast('Erro ao criar pagamento: ' + (e.message || e), 'error');
+    btn.disabled = false;
+    _mpAtualizarResumo();
+  }
+}
+
+/* ========== Retorno do Mercado Pago (polling) ========== */
+function _mpVerificarRetorno() {
+  const params = new URLSearchParams(window.location.search);
+  const payment = params.get('payment');
+  const tx = params.get('tx') || (function(){ try { return sessionStorage.getItem('mp_last_tx') || ''; } catch(e){ return ''; } })();
+  if (!payment || !tx) return;
+
+  try { history.replaceState({}, '', window.location.pathname); } catch(e){}
+  try { sessionStorage.removeItem('mp_last_tx'); } catch(e){}
+
+  const overlay = document.getElementById('mp-wait-overlay');
+  const title = document.getElementById('mp-wait-title');
+  const desc = document.getElementById('mp-wait-desc');
+  if (!overlay) return;
+
+  if (payment === 'failure') {
+    showToast('Pagamento não concluído. Tente novamente.', 'error');
+    return;
+  }
+
+  overlay.classList.add('open');
+  title.textContent = payment === 'success' ? 'Confirmando pagamento...' : 'Pagamento pendente...';
+  desc.textContent = 'Aguarde alguns segundos enquanto processamos.';
+
+  let tentativas = 0;
+  const maxTentativas = 15;
+  const interval = setInterval(async () => {
+    tentativas++;
+    try {
+      const r = await api('GET', '/api/payments/status/' + encodeURIComponent(tx));
+      if (r && r.ok) {
+        if (r.status === 'completed') {
+          clearInterval(interval);
+          overlay.classList.remove('open');
+          try { await loadMe(); } catch(e){}
+          try { if (typeof atualizaDashboardSaldo === 'function') atualizaDashboardSaldo(); } catch(e){}
+          showToast('Créditos adicionados com sucesso!', 'success');
+          return;
+        }
+        if (r.status === 'failed') {
+          clearInterval(interval);
+          overlay.classList.remove('open');
+          showToast('Pagamento recusado.', 'error');
+          return;
+        }
+      }
+      if (tentativas >= maxTentativas) {
+        clearInterval(interval);
+        overlay.classList.remove('open');
+        showToast('O pagamento está demorando. Quando confirmar, seu saldo será atualizado.', 'info');
+      }
+    } catch(e) {
+      console.error('status check error', e);
+    }
+  }, 2000);
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', _mpVerificarRetorno);
+} else {
+  _mpVerificarRetorno();
+}
+</script>
 </body>
 </html>
