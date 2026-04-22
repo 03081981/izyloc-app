@@ -1539,6 +1539,27 @@ canvas { display: block; }
   #wstep-1 [style*="grid-template-columns: 1fr 1fr"]{grid-template-columns:1fr!important}
   #wstep-0 .tipo-cards{grid-template-columns:1fr!important}
   #wstep-quem [style*="grid-template-columns:1fr 1fr"]{grid-template-columns:1fr!important}
+
+  /* Wizard nav footer: buttons shrink para caber o "Etapa X de 8" no mobile */
+  div[style*="justify-content:space-between"][style*="padding:16px 20px"] {
+    padding: 10px 12px !important;
+    gap: 8px;
+  }
+  div[style*="justify-content:space-between"][style*="padding:16px 20px"] > button {
+    padding: 8px 12px !important;
+    font-size: var(--fs-xs) !important;
+    font-weight: var(--fw-semibold) !important;
+    box-shadow: none !important;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  div[style*="justify-content:space-between"][style*="padding:16px 20px"] > span {
+    font-size: 11px !important;
+    white-space: nowrap;
+    flex: 0 0 auto;
+    padding: 0 2px;
+    color: #5a6a7e !important;
+  }
 }
   /* === Ambientes wstep-3 (counter-row) === */
   .counter-row { display: flex; align-items: center; justify-content: space-between; padding: 13px 16px; border: 1.5px solid #dce3ed; border-radius: 12px; margin-bottom: 8px; background: #fff; transition: all 0.15s; }
