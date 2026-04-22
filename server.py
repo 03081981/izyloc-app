@@ -101,25 +101,50 @@ def generate_verification_token():
 
 def enqueue_verification_email(conn, user_id, to_email, name, vtoken):
     """Enfileira e-mail de verificacao na email_queue."""
-    verify_url = f'https://izyloc-app-production.up.railway.app/verify-email?token={vtoken}'
-    subject = 'Confirme seu e-mail - izyLAUDO'
-    body_html = (
-        f'<p>Ol\u00e1 {name},</p>'
-        f'<p>Obrigado por se cadastrar no izyLAUDO.</p>'
-        f'<p>Para confirmar seu e-mail, clique no link abaixo:</p>'
-        f'<p><a href="{verify_url}">{verify_url}</a></p>'
-        f'<p>Este link expira em 24 horas.</p>'
-        f'<p>Se voc\u00ea n\u00e3o solicitou este cadastro, ignore este e-mail.</p>'
-        f'<p>Atenciosamente,<br>Equipe izyLAUDO</p>'
-    )
-    body_text = (
-        f'Ol\u00e1 {name},\n\n'
-        f'Obrigado por se cadastrar no izyLAUDO.\n\n'
-        f'Para confirmar seu e-mail, acesse o link abaixo:\n{verify_url}\n\n'
-        f'Este link expira em 24 horas.\n\n'
-        f'Se voc\u00ea n\u00e3o solicitou este cadastro, ignore este e-mail.\n\n'
-        f'Atenciosamente,\nEquipe izyLAUDO'
-    )
+    verify_link = f'https://izyloc-app-production.up.railway.app/verify-email?token={vtoken}'
+    subject = 'Confirme seu e-mail e ganhe R$ 5,00 para testar o izyLAUDO!'
+    body_html = f'''<!DOCTYPE html>
+<html><body style="font-family:Arial,sans-serif;max-width:600px;
+margin:0 auto;padding:20px;color:#1a2540">
+<h2 style="color:#1e3a5f">Ol\u00e1, {name}!</h2>
+<p>Seja bem-vindo ao <strong>izyLAUDO</strong> \u2014 a nova forma de
+fazer vistorias imobili\u00e1rias com intelig\u00eancia artificial.</p>
+<p>Voc\u00ea est\u00e1 a um clique de come\u00e7ar.<br>
+Confirme seu e-mail agora e receba
+<strong>R$ 5,00 de cr\u00e9dito gr\u00e1tis</strong> para testar a plataforma.</p>
+<p style="text-align:center;margin:30px 0">
+<a href="{verify_link}" style="background:#16a34a;color:#fff;
+padding:14px 28px;border-radius:8px;text-decoration:none;
+font-weight:bold">\U0001F7E2 Confirmar e-mail e ganhar R$ 5,00</a></p>
+<p>Com o izyLAUDO, voc\u00ea economiza tempo, padroniza seus laudos
+e moderniza sua opera\u00e7\u00e3o.</p>
+<p><strong>Quem testa uma vez, entende por que n\u00e3o faz sentido
+voltar ao Word. \U0001F604</strong></p>
+<p>\u23F1\uFE0F Este link expira em <strong>24 horas</strong>.</p>
+<br>
+<p>Atenciosamente,<br><strong>Equipe izyLAUDO</strong></p>
+<hr style="border:none;border-top:1px solid #e2e8f0;margin:30px 0">
+<p style="color:#999;font-size:12px;text-align:center">
+izyLAUDO \u2014 Vistorias Imobili\u00e1rias com IA</p>
+</body></html>'''
+    body_text = f'''Ol\u00e1, {name}!
+
+Seja bem-vindo ao izyLAUDO \u2014 a nova forma de fazer vistorias
+imobili\u00e1rias com intelig\u00eancia artificial.
+
+Confirme seu e-mail agora e receba R$ 5,00 de cr\u00e9dito gr\u00e1tis
+para testar a plataforma:
+{verify_link}
+
+Com o izyLAUDO, voc\u00ea economiza tempo, padroniza seus laudos
+e moderniza sua opera\u00e7\u00e3o.
+
+Quem testa uma vez, entende por que n\u00e3o faz sentido voltar ao Word.
+
+Este link expira em 24 horas.
+
+Atenciosamente,
+Equipe izyLAUDO'''
     conn.execute(
         'INSERT INTO email_queue (user_id, to_email, template, subject, body_html, body_text, status) '
         "VALUES (?, ?, ?, ?, ?, ?, 'pending')",
