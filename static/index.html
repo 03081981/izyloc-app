@@ -2519,8 +2519,7 @@ window._openFotoModal = function(imgSrc) {
           <button type="button" class="btn-comprar-mp" onclick="abrirModalComprarCreditos()">
             + Comprar créditos
             <span class="btn-comprar-mp-badge">
-              <img src="/static/mp-logo.svg" alt="Mercado Pago" onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
-              <span style="display:none;font-size:10px;font-weight:700;color:#009ee3">MP</span>
+              <img src="/static/mp-logo-oficial.jpg" alt="Mercado Pago">
             </span>
           </button>
         </div>
@@ -10705,8 +10704,11 @@ function wiz6Concluir() {
 <div id="mp-modal-overlay" class="mp-modal-overlay" onclick="if(event.target===this)fecharModalComprarCreditos()">
   <div class="mp-modal-box" role="dialog" aria-labelledby="mp-modal-titulo">
     <div class="mp-modal-header">
-      <span>💳</span>
-      <span id="mp-modal-titulo">Comprar créditos</span>
+      <img src="/static/mp-logo-oficial.jpg" alt="Mercado Pago" style="height:32px;border-radius:6px;padding:4px 8px;background:#fff;">
+      <div>
+        <div style="font-size:18px;font-weight:700;color:#fff;" id="mp-modal-titulo">Comprar créditos</div>
+        <div style="font-size:12px;color:rgba(255,255,255,0.85);margin-top:2px;">Pagamento seguro via Mercado Pago</div>
+      </div>
     </div>
     <div class="mp-modal-body">
       <p>Escolha um pacote ou digite o valor desejado. O pagamento é processado pelo Mercado Pago.</p>
