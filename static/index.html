@@ -1981,7 +1981,7 @@ window._openFotoModal = function(imgSrc) {
       </div>
       <div class="reset-title" style="text-align:center">Senha redefinida!</div>
       <div class="reset-sub" style="text-align:center">Sua senha foi alterada com sucesso.</div>
-      <button class="btn btn-primary btn-full" onclick="showPage('auth')">Ir para o login</button>
+      <button class="btn btn-primary btn-full" onclick="showPage('page-auth'); document.getElementById('form-login').classList.add('show'); document.getElementById('form-forgot').classList.remove('show'); document.getElementById('form-register').classList.remove('show'); document.getElementById('reset-success').classList.remove('show');">Ir para o login</button>
     </div>
   </div>
 </div>
@@ -3351,10 +3351,13 @@ function switchAuthTabByName(tab) {
 }
 
 // Push 6: URL param handler for ?verified=true and ?verify_error=...
+let _resetToken = null;
+
 function handleAuthUrlParams() {
   const qs = new URLSearchParams(window.location.search);
   const verified = qs.get('verified');
   const err = qs.get('verify_error');
+  const resetToken = qs.get('reset_token');
   if (verified === 'true') {
     const bonus = qs.get('bonus') || 'R$ 5,00';
     setTimeout(() => toast('E-mail verificado! ' + bonus + ' de bônus adicionados à sua conta.', 'success'), 400);
@@ -3366,6 +3369,38 @@ function handleAuthUrlParams() {
       'already_used': 'Este link já foi usado.'
     };
     toast(msgs[err] || 'Erro ao verificar e-mail.', 'error');
+  } else if (resetToken) {
+    _resetToken = resetToken;
+    // Limpa URL imediatamente para não vazar o token no histórico/back-button
+    window.history.replaceState({}, '', window.location.pathname);
+    // Vai pra page-reset e mostra o estado "checking"
+    showPage('page-reset');
+    const $checking = document.getElementById('reset-checking');
+    const $linkBox  = document.getElementById('reset-link-box');
+    const $form     = document.getElementById('reset-form');
+    const $success  = document.getElementById('reset-success');
+    $checking.classList.add('show');
+    $linkBox.classList.remove('show');
+    $form.classList.remove('show');
+    $success.classList.remove('show');
+    api('GET', '/api/auth/verify-reset-token?token=' + encodeURIComponent(resetToken))
+      .then(r => {
+        $checking.classList.remove('show');
+        if (r.ok) {
+          const emailDisplay = document.getElementById('reset-email-display');
+          if (emailDisplay) emailDisplay.textContent = r.email || '';
+          $linkBox.classList.add('show');
+          $form.classList.add('show');
+        } else {
+          _resetToken = null;
+          toast(r.error || 'Link inválido ou expirado. Solicite um novo.', 'error');
+          showPage('page-auth');
+          document.getElementById('form-login').classList.add('show');
+          document.getElementById('form-register').classList.remove('show');
+          document.getElementById('form-forgot').classList.remove('show');
+        }
+      });
+    return;
   }
   if (verified || err) {
     const url = window.location.pathname + window.location.hash;
@@ -3479,6 +3514,38 @@ async function doForgotPassword() {
       btn.disabled = false;
       btn.textContent = 'Enviar link';
     }
+  }
+}
+
+async function doResetPassword() {
+  const pwd  = document.getElementById('reset-new-password').value;
+  const pwd2 = document.getElementById('reset-confirm-password').value;
+  const errBox = document.getElementById('reset-error-msg');
+  const btn = document.querySelector('#reset-form .btn-primary');
+  errBox.classList.remove('show'); errBox.textContent = '';
+  const fail = (msg) => { errBox.textContent = msg; errBox.classList.add('show'); };
+  if (!_resetToken) return fail('Sessão inválida. Solicite um novo link.');
+  if (!pwd || pwd.length < 8) return fail('Senha deve ter no mínimo 8 caracteres');
+  if (pwd !== pwd2) return fail('As senhas não coincidem');
+  btn.disabled = true;
+  const originalText = btn.textContent;
+  btn.textContent = 'Salvando...';
+  try {
+    const r = await api('POST', '/api/auth/reset-password', {
+      token: _resetToken,
+      new_password: pwd
+    });
+    if (r.ok) {
+      _resetToken = null;
+      document.getElementById('reset-link-box').classList.remove('show');
+      document.getElementById('reset-form').classList.remove('show');
+      document.getElementById('reset-success').classList.add('show');
+    } else {
+      fail(r.error || 'Erro ao redefinir senha.');
+    }
+  } finally {
+    btn.disabled = false;
+    btn.textContent = originalText;
   }
 }
 
