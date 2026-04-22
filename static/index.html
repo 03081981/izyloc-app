@@ -3357,8 +3357,8 @@ function handleAuthUrlParams() {
   const err = qs.get('verify_error');
   if (verified === 'true') {
     const bonus = qs.get('bonus') || 'R$ 5,00';
-    toast('E-mail verificado! ' + bonus + ' de bônus adicionados à sua conta.', 'success');
-    if (currentToken) refreshMe();
+    setTimeout(() => toast('E-mail verificado! ' + bonus + ' de bônus adicionados à sua conta.', 'success'), 400);
+    setTimeout(() => window.location.href = '/', 2000);
   } else if (err) {
     const msgs = {
       'invalid': 'Link de verificação inválido.',
