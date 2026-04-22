@@ -3252,8 +3252,12 @@ document.addEventListener('DOMContentLoaded', () => {
   if (tok && usr) {
     currentToken = tok; currentUser = JSON.parse(usr);
   }
+  // Captura reset_token ANTES de handleAuthUrlParams (que limpa a URL).
+  const _bootHasResetToken = !!new URLSearchParams(location.search).get('reset_token');
   handleAuthUrlParams();
-  if (currentToken && currentUser) {
+  if (_bootHasResetToken) {
+    // handleAuthUrlParams ja navegou para page-reset; nao sobrescrever.
+  } else if (currentToken && currentUser) {
     showPage('page-dashboard'); loadDashboard();
   } else {
     showPage('page-auth');
