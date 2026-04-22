@@ -1866,7 +1866,7 @@ window._openFotoModal = function(imgSrc) {
         <input class="form-input" id="login-password" type="password" placeholder="Sua senha" autocomplete="current-password"/>
       </div>
       <div style="text-align:right;margin-bottom:20px">
-        <button class="auth-link" onclick="showForgotForm()">Esqueceu a senha?</button>
+        <button class="auth-link" onclick="showForgotForm(true)">Esqueceu a senha?</button>
       </div>
       <button class="btn btn-primary btn-full" onclick="doLogin()">Entrar</button>
       <div class="auth-switch">
@@ -3448,6 +3448,37 @@ async function doRegister() {
     showPendingVerificationBanner();
   } finally {
     btn.disabled = false; btn.textContent = 'Criar conta';
+  }
+}
+
+function showForgotForm(show) {
+  document.getElementById('form-login').classList.toggle('show', !show);
+  document.getElementById('form-forgot').classList.toggle('show', !!show);
+  if (!show) {
+    document.getElementById('forgot-email').value = '';
+    document.getElementById('forgot-success').style.display = 'none';
+  }
+}
+
+async function doForgotPassword() {
+  const email = document.getElementById('forgot-email').value.trim();
+  const btn = document.querySelector('#form-forgot .btn-primary');
+  const success = document.getElementById('forgot-success');
+  if (!email) { toast('Informe seu e-mail', 'error'); return; }
+  btn.disabled = true; btn.textContent = 'Enviando...';
+  try {
+    const r = await api('POST', '/api/auth/forgot-password', { email });
+    if (r.ok) {
+      success.style.display = 'block';
+      btn.style.display = 'none';
+    } else {
+      toast(r.error || 'Erro ao enviar. Tente novamente.', 'error');
+    }
+  } finally {
+    if (btn.style.display !== 'none') {
+      btn.disabled = false;
+      btn.textContent = 'Enviar link';
+    }
   }
 }
 
