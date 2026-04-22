@@ -466,7 +466,42 @@ class PasswordResetRequestHandler(BaseHandler):
             conn.commit()
             base_url = self.request.full_url().split('/api/')[0]
             reset_link = base_url + '/?reset_token=' + token
-            self.ok({'ok': True, 'reset_link': reset_link})
+            subject = 'Redefinir senha - izyLAUDO'
+            body_html = (
+                '<html><body style="font-family:Arial,sans-serif;'
+                'max-width:600px;margin:0 auto;padding:20px">'
+                '<h2 style="color:#1e3a5f">Redefinir senha</h2>'
+                '<p>Ola! Recebemos uma solicitacao para redefinir '
+                'a senha da sua conta izyLAUDO.</p>'
+                '<p>Clique no botao abaixo para criar uma nova senha:</p>'
+                '<p style="text-align:center;margin:30px 0">'
+                f'<a href="{reset_link}" style="background:#2d7dd2;'
+                'color:#fff;padding:14px 28px;border-radius:8px;'
+                'text-decoration:none;font-weight:bold">'
+                'Redefinir Senha</a></p>'
+                '<p style="color:#666;font-size:13px">'
+                f'Ou copie: {reset_link}</p>'
+                '<p style="color:#666;font-size:13px">'
+                'Este link expira em 30 minutos.</p>'
+                '<p style="color:#999;font-size:12px">'
+                'Se voce nao solicitou, ignore este email.</p>'
+                '</body></html>'
+            )
+            body_text = (
+                'Redefinir senha - izyLAUDO\n\n'
+                'Clique no link para criar uma nova senha:\n'
+                f'{reset_link}\n\n'
+                'O link expira em 30 minutos.\n\n'
+                'Se voce nao solicitou, ignore este email.'
+            )
+            conn.execute(
+                'INSERT INTO email_queue '
+                '(user_id, to_email, template, subject, body_html, body_text, status) '
+                "VALUES (?, ?, 'password_reset', ?, ?, ?, 'pending')",
+                (user['id'], user['email'], subject, body_html, body_text)
+            )
+            conn.commit()
+            self.ok({'ok': True})
         finally:
             conn.close()
 
