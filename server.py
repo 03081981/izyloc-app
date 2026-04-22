@@ -851,11 +851,11 @@ class CreatePaymentPreferenceHandler(BaseHandler):
             tx_id = str(uuid.uuid4())
             conn.execute(
                 '''INSERT INTO balance_transactions
-                   (id, user_id, type, amount_cents, balance_after_cents, description, status, created_at)
+                   (user_id, type, amount_cents, balance_after_cents, description, status, created_at, tx_ref)
                    VALUES (?, ?, ?, ?, ?, ?, ?, ?)''',
-                (tx_id, user_id, 'credit_purchase', amount_cents, 0,
+                (user_id, 'credit_purchase', amount_cents, 0,
                  f'Compra de creditos R$ {amount_brl:.2f}'.replace('.', ','),
-                 'pending', now)
+                 'pending', now, tx_id)
             )
             conn.commit()
 
@@ -888,7 +888,7 @@ class CreatePaymentPreferenceHandler(BaseHandler):
             if status not in (200, 201):
                 print(f'[MP] Erro ao criar preferencia: status={status} resp={resp}', flush=True)
                 conn.execute(
-                    "UPDATE balance_transactions SET status=? WHERE id=?",
+                    "UPDATE balance_transactions SET status=? WHERE tx_ref=?",
                     ('failed', tx_id)
                 )
                 conn.commit()
@@ -900,7 +900,7 @@ class CreatePaymentPreferenceHandler(BaseHandler):
             init_point = resp.get('init_point', '')
 
             conn.execute(
-                "UPDATE balance_transactions SET description=? WHERE id=?",
+                "UPDATE balance_transactions SET description=? WHERE tx_ref=?",
                 (f'Compra de creditos R$ {amount_brl:.2f}|mp:{preference_id}'.replace('.', ','), tx_id)
             )
             conn.commit()
@@ -972,7 +972,7 @@ class PaymentWebhookHandler(BaseHandler):
         conn = get_conn()
         try:
             row = conn.execute(
-                "SELECT id, user_id, amount_cents, status FROM balance_transactions WHERE id=?",
+                "SELECT id, user_id, amount_cents, status FROM balance_transactions WHERE tx_ref=?",
                 (external_reference,)
             ).fetchone()
 
@@ -1064,7 +1064,7 @@ class PaymentStatusHandler(BaseHandler):
         try:
             row = conn.execute(
                 """SELECT id, user_id, type, amount_cents, balance_after_cents, status, created_at
-                   FROM balance_transactions WHERE id=?""",
+                   FROM balance_transactions WHERE tx_ref=?""",
                 (tx_id,)
             ).fetchone()
 
@@ -2581,9 +2581,10 @@ def _ensure_status_column():
             "ALTER TABLE rooms ADD COLUMN IF NOT EXISTS general_condition TEXT",
             "ALTER TABLE rooms ADD COLUMN IF NOT EXISTS verificacoes_json TEXT",
             "ALTER TABLE inspections ADD COLUMN IF NOT EXISTS wizard_snapshot TEXT",
-            "ALTER TABLE balance_transactions ADD COLUMN IF NOT EXISTS id VARCHAR(64)",
             "ALTER TABLE balance_transactions ADD COLUMN IF NOT EXISTS status VARCHAR(30) DEFAULT 'completed'",
             "ALTER TABLE balance_transactions ADD COLUMN IF NOT EXISTS created_at TIMESTAMPTZ DEFAULT NOW()",
+            "ALTER TABLE balance_transactions ADD COLUMN IF NOT EXISTS tx_ref VARCHAR(64)",
+            "CREATE INDEX IF NOT EXISTS idx_balance_tx_ref ON balance_transactions(tx_ref)",
         ]
         for _s in _mig:
             try:
