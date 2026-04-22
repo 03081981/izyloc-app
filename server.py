@@ -1799,6 +1799,10 @@ class RoomItemHandler(BaseHandler):
 class AnalyzePhotoHandler(BaseHandler):
     def post(self):
         try:
+            user = self.require_auth()
+            if not user:
+                return
+
             data = tornado.escape.json_decode(self.request.body)
             image_b64 = data.get("image", "")
             room_name = data.get("ambiente", "Ambiente")
@@ -1813,11 +1817,112 @@ class AnalyzePhotoHandler(BaseHandler):
                 self.write({"error": "Imagem nao enviada"})
                 return
 
+            # === DEBITO AUTOMATICO ANTES DE CHAMAR A IA ===
+            user_id = user['user_id']
+            if tipo_analise == 'premium':
+                price_key = 'price_per_photo_premium_cents'
+                default_price = 90
+            else:
+                price_key = 'price_per_photo_convencional_cents'
+                default_price = 50
+
+            conn = get_conn()
+            new_balance = None
+            price_cents = default_price
+            try:
+                srow = conn.execute(
+                    "SELECT value FROM settings WHERE key=?",
+                    (price_key,)
+                ).fetchone()
+                if srow and srow.get('value') is not None:
+                    try:
+                        price_cents = int(srow['value'])
+                    except Exception:
+                        price_cents = default_price
+
+                urow = conn.execute(
+                    "SELECT balance_cents FROM users WHERE id=?",
+                    (user_id,)
+                ).fetchone()
+                balance_cents = int(urow['balance_cents']) if urow and urow.get('balance_cents') is not None else 0
+
+                if balance_cents < price_cents:
+                    self.set_status(402)
+                    self.write({
+                        'ok': False,
+                        'error': 'Saldo insuficiente. Adicione creditos para continuar.',
+                        'code': 'insufficient_balance',
+                        'balance_cents': balance_cents,
+                        'price_cents': price_cents,
+                    })
+                    conn.close()
+                    return
+
+                new_balance = balance_cents - price_cents
+                upd = conn.execute(
+                    "UPDATE users SET balance_cents=?, updated_at=NOW() "
+                    "WHERE id=? AND balance_cents>=?",
+                    (new_balance, user_id, price_cents)
+                )
+                if upd.rowcount == 0:
+                    # Race condition: saldo mudou entre SELECT e UPDATE
+                    self.set_status(402)
+                    self.write({
+                        'ok': False,
+                        'error': 'Saldo insuficiente. Adicione creditos para continuar.',
+                        'code': 'insufficient_balance',
+                    })
+                    conn.close()
+                    return
+
+                descricao = ('Analise IA Premium - 1 foto'
+                             if tipo_analise == 'premium'
+                             else 'Analise IA Convencional - 1 foto')
+                conn.execute(
+                    "INSERT INTO balance_transactions "
+                    "(user_id, type, amount_cents, balance_after_cents, "
+                    " description, status, analysis_type, photos_count) "
+                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+                    (user_id, 'analysis_debit', -price_cents, new_balance,
+                     descricao, 'completed', tipo_analise, 1)
+                )
+                conn.commit()
+                print(f"[BILLING] debit user={user_id} tipo={tipo_analise} "
+                      f"cents={price_cents} new_balance={new_balance}",
+                      flush=True)
+            except Exception as _e:
+                try:
+                    conn.rollback()
+                except Exception:
+                    pass
+                print(f"[BILLING] ERROR user={user_id} tipo={tipo_analise}: "
+                      f"{_e}", flush=True)
+                self.set_status(500)
+                self.write({
+                    'ok': False,
+                    'error': 'Falha ao debitar saldo. Tente novamente.',
+                    'code': 'billing_error',
+                })
+                try:
+                    conn.close()
+                except Exception:
+                    pass
+                return
+            finally:
+                try:
+                    conn.close()
+                except Exception:
+                    pass
+            # === FIM DEBITO AUTOMATICO ===
+
             # Remove data URL prefix if present
             if "," in image_b64:
                 image_b64 = image_b64.split(",", 1)[1]
 
             result = analyze_image(image_b64, room_name, modo, mime_type, tipo_analise=tipo_analise)
+            if isinstance(result, dict):
+                result['balance_after_cents'] = new_balance
+                result['debited_cents'] = price_cents
             self.write(result)
 
         except Exception as e:
