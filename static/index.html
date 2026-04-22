@@ -1518,6 +1518,15 @@ canvas { display: block; }
   transition: all .15s;
 }
 .btn-wiz-voltar:hover { border-color: #aaa; color: var(--text); }
+
+/* Push 14: mobile 2-botoes (Camera + Galeria) para upload de foto */
+.foto-mobile-only { display: none; }
+
+@media (max-width: 768px) {
+  .foto-desktop-only { display: none !important; }
+  .foto-mobile-only { display: flex !important; }
+}
+
 @media (max-width: 768px) {
   .realiza-cards { grid-template-columns: 1fr !important; }
   .wiz-main-wrapper { margin-left: 0 !important; }
@@ -7940,12 +7949,24 @@ function wiz6RenderAmbCard(idx) {
   });
 
   var htmlBtnFoto =
-    '<label style="display:flex;flex-direction:column;align-items:center;justify-content:center;aspect-ratio:4/3;border:2px dashed #bfdbfe;border-radius:8px;cursor:pointer;background:#f8fbff">' +
+    '<label class="foto-desktop-only" style="display:flex;flex-direction:column;align-items:center;justify-content:center;aspect-ratio:4/3;border:2px dashed #bfdbfe;border-radius:8px;cursor:pointer;background:#f8fbff">' +
       '<svg width="28" height="28" viewBox="0 0 24 24" fill="none"><rect x="3" y="6" width="18" height="14" rx="2" fill="#dbeafe" stroke="#2d7dd2" stroke-width="1.5"/><circle cx="12" cy="13" r="4" fill="#93c5fd" stroke="#2d7dd2" stroke-width="1"/><circle cx="17" cy="9" r="1" fill="#2d7dd2"/></svg>' +
       '<span style="font-size: var(--fs-xxs);color:#2d7dd2;font-weight: var(--fw-semibold);margin-top:6px">+ Foto</span>' +
       '<span style="font-size:9px;color:#8898aa;margin-top:2px">vertical</span>' +
       '<input type="file" accept="image/*" multiple style="display:none" onchange="wiz6AddFotos(this,' + idx + ')">' +
-    '</label>';
+    '</label>' +
+    '<div class="foto-mobile-only" style="flex-direction:row;aspect-ratio:4/3;gap:6px">' +
+      '<label style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;border:2px dashed #bfdbfe;border-radius:8px;cursor:pointer;background:#f8fbff;padding:4px">' +
+        '<span style="font-size:22px">\ud83d\udcf7</span>' +
+        '<span style="font-size:10px;color:#2d7dd2;font-weight:600;margin-top:3px;text-align:center">C\u00e2mera</span>' +
+        '<input type="file" accept="image/*" capture="environment" multiple style="display:none" onchange="wiz6AddFotos(this,' + idx + ')">' +
+      '</label>' +
+      '<label style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;border:2px dashed #bfdbfe;border-radius:8px;cursor:pointer;background:#f8fbff;padding:4px">' +
+        '<span style="font-size:22px">\ud83d\uddbc\ufe0f</span>' +
+        '<span style="font-size:10px;color:#2d7dd2;font-weight:600;margin-top:3px;text-align:center">Galeria</span>' +
+        '<input type="file" accept="image/*" multiple style="display:none" onchange="wiz6AddFotos(this,' + idx + ')">' +
+      '</label>' +
+    '</div>';
 
   var htmlTestes = '';
   testes.forEach(function(t) {
@@ -7997,11 +8018,21 @@ function wiz6RenderAmbCard(idx) {
     (fotos.length > 0
       ? '<div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:10px;padding:14px;margin-bottom:14px;text-align:center">' +
           '<div style="font-size: var(--fs-sm);color:#166534;font-weight: var(--fw-semibold);margin-bottom:8px">' + fotos.length + ' foto' + (fotos.length!==1?'s':'') + ' prontas para an&aacute;lise</div>' +
-          '<div style="display:flex;gap:8px;justify-content:center">' +
-            '<label style="padding:10px 18px;background:#fff;color:#2d7dd2;border:1px solid #2d7dd2;border-radius:8px;font-size: var(--fs-xs);font-weight: var(--fw-medium);cursor:pointer">' +
+          '<div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap">' +
+            '<label class="foto-desktop-only" style="padding:10px 18px;background:#fff;color:#2d7dd2;border:1px solid #2d7dd2;border-radius:8px;font-size: var(--fs-xs);font-weight: var(--fw-medium);cursor:pointer">' +
               '+ Adicionar mais fotos' +
               '<input type="file" accept="image/*" multiple style="display:none" onchange="wiz6AddFotos(this,' + idx + ')">' +
             '</label>' +
+            '<div class="foto-mobile-only" style="gap:6px;flex-wrap:wrap">' +
+              '<label style="padding:8px 12px;background:#fff;color:#2d7dd2;border:1px solid #2d7dd2;border-radius:8px;font-size:11px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:4px">' +
+                '\ud83d\udcf7 C\u00e2mera' +
+                '<input type="file" accept="image/*" capture="environment" multiple style="display:none" onchange="wiz6AddFotos(this,' + idx + ')">' +
+              '</label>' +
+              '<label style="padding:8px 12px;background:#fff;color:#2d7dd2;border:1px solid #2d7dd2;border-radius:8px;font-size:11px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:4px">' +
+                '\ud83d\uddbc\ufe0f Galeria' +
+                '<input type="file" accept="image/*" multiple style="display:none" onchange="wiz6AddFotos(this,' + idx + ')">' +
+              '</label>' +
+            '</div>' +
             '<button id="btnConv_' + idx + '" onclick="wiz6AnalisarBatch(' + idx + ', \'convencional\')" style="padding:10px 24px;background:#2d7dd2;color:#fff;border:none;border-radius:8px;font-size: var(--fs-sm);font-weight: var(--fw-bold);cursor:pointer;margin-right:8px">' +
               (jaAnalisou ? '\ud83d\udd04 Re-analisar com IA' : '\ud83e\udd16 Analisar com IA') +
             '</button>' +
@@ -8019,10 +8050,20 @@ function wiz6RenderAmbCard(idx) {
           '<div style="font-size: var(--fs-xxs);font-weight: var(--fw-semibold);color:#2d7dd2;letter-spacing:0.5px;margin-bottom:8px">\ud83e\udd16 DESCRI\u00c7\u00c3O DA IA &mdash; ' + nome.toUpperCase() + '</div>' +
           '<textarea id="wiz6-resumo-edit-' + idx + '" onchange="wiz6SalvarResumoEditado(' + idx + ',this.value)" style="width:100%;font-size: var(--fs-xs);color:#1a2540;line-height:1.8;border:0.5px solid #e2e8f0;border-radius:8px;padding:10px;resize:none;font-family:inherit;min-height:120px;background:#fafbfc;field-sizing:content;overflow:hidden">' + resumo + '</textarea>' +
           '<div style="margin-top:10px;padding-top:10px;border-top:0.5px solid #e2e8f0">' +
-            '<label style="padding:7px 14px;background:#fff;color:#2d7dd2;border:1px solid #2d7dd2;border-radius:7px;font-size: var(--fs-xxs);font-weight: var(--fw-medium);cursor:pointer">' +
+            '<label class="foto-desktop-only" style="padding:7px 14px;background:#fff;color:#2d7dd2;border:1px solid #2d7dd2;border-radius:7px;font-size: var(--fs-xxs);font-weight: var(--fw-medium);cursor:pointer">' +
               '+ Adicionar mais fotos' +
               '<input type="file" accept="image/*" multiple style="display:none" onchange="wiz6AddFotos(this,' + idx + ')">' +
             '</label>' +
+            '<div class="foto-mobile-only" style="gap:6px;flex-wrap:wrap">' +
+              '<label style="padding:6px 10px;background:#fff;color:#2d7dd2;border:1px solid #2d7dd2;border-radius:7px;font-size:11px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:4px">' +
+                '\ud83d\udcf7 C\u00e2mera' +
+                '<input type="file" accept="image/*" capture="environment" multiple style="display:none" onchange="wiz6AddFotos(this,' + idx + ')">' +
+              '</label>' +
+              '<label style="padding:6px 10px;background:#fff;color:#2d7dd2;border:1px solid #2d7dd2;border-radius:7px;font-size:11px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:4px">' +
+                '\ud83d\uddbc\ufe0f Galeria' +
+                '<input type="file" accept="image/*" multiple style="display:none" onchange="wiz6AddFotos(this,' + idx + ')">' +
+              '</label>' +
+            '</div>' +
             '<span style="font-size: var(--fs-tiny);color:#8898aa;margin-left:10px">Novas fotos ser&atilde;o cobradas</span>' +
           '</div>'
       : '') +
@@ -8742,12 +8783,24 @@ function wiz6BuildSuiteHtml(idx) {
     });
 
     var htmlBtnFoto =
-      '<label style="display:flex;flex-direction:column;align-items:center;justify-content:center;aspect-ratio:4/3;border:2px dashed #bfdbfe;border-radius:8px;cursor:pointer;background:#f8fbff">' +
+      '<label class="foto-desktop-only" style="display:flex;flex-direction:column;align-items:center;justify-content:center;aspect-ratio:4/3;border:2px dashed #bfdbfe;border-radius:8px;cursor:pointer;background:#f8fbff">' +
         '<svg width="28" height="28" viewBox="0 0 24 24" fill="none"><rect x="3" y="6" width="18" height="14" rx="2" fill="#dbeafe" stroke="#2d7dd2" stroke-width="1.5"/><circle cx="12" cy="13" r="4" fill="#93c5fd" stroke="#2d7dd2" stroke-width="1"/><circle cx="17" cy="9" r="1" fill="#2d7dd2"/></svg>' +
         '<span style="font-size: var(--fs-xxs);color:#2d7dd2;font-weight: var(--fw-semibold);margin-top:6px">+ Foto</span>' +
         '<span style="font-size:9px;color:#8898aa;margin-top:2px">vertical</span>' +
         '<input type="file" accept="image/*" multiple style="display:none" onchange="wiz6AddFotosSub(this,' + idx + ',\'' + subNome.replace(/'/g,"\\\'") + '\')">' +
-      '</label>';
+      '</label>' +
+      '<div class="foto-mobile-only" style="flex-direction:row;aspect-ratio:4/3;gap:6px">' +
+        '<label style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;border:2px dashed #bfdbfe;border-radius:8px;cursor:pointer;background:#f8fbff;padding:4px">' +
+          '<span style="font-size:22px">\ud83d\udcf7</span>' +
+          '<span style="font-size:10px;color:#2d7dd2;font-weight:600;margin-top:3px;text-align:center">C\u00e2mera</span>' +
+          '<input type="file" accept="image/*" capture="environment" multiple style="display:none" onchange="wiz6AddFotosSub(this,' + idx + ',\'' + subNome.replace(/'/g,"\\\'") + '\')">' +
+        '</label>' +
+        '<label style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;border:2px dashed #bfdbfe;border-radius:8px;cursor:pointer;background:#f8fbff;padding:4px">' +
+          '<span style="font-size:22px">\ud83d\uddbc\ufe0f</span>' +
+          '<span style="font-size:10px;color:#2d7dd2;font-weight:600;margin-top:3px;text-align:center">Galeria</span>' +
+          '<input type="file" accept="image/*" multiple style="display:none" onchange="wiz6AddFotosSub(this,' + idx + ',\'' + subNome.replace(/'/g,"\\\'") + '\')">' +
+        '</label>' +
+      '</div>';
 
     h += '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px">';
     h += htmlFotos;
@@ -8758,11 +8811,21 @@ function wiz6BuildSuiteHtml(idx) {
     if (fotos.length > 0) {
       h += '<div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:10px;padding:14px;margin-bottom:14px;text-align:center">';
       h += '<div style="font-size: var(--fs-sm);color:#166534;font-weight: var(--fw-semibold);margin-bottom:8px">' + fotos.length + ' foto' + (fotos.length!==1?'s':'') + ' prontas para an\u00e1lise</div>';
-      h += '<div style="display:flex;gap:8px;justify-content:center">';
-      h += '<label style="padding:10px 18px;background:#fff;color:#2d7dd2;border:1px solid #2d7dd2;border-radius:8px;font-size: var(--fs-xs);font-weight: var(--fw-medium);cursor:pointer">';
+      h += '<div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap">';
+      h += '<label class="foto-desktop-only" style="padding:10px 18px;background:#fff;color:#2d7dd2;border:1px solid #2d7dd2;border-radius:8px;font-size: var(--fs-xs);font-weight: var(--fw-medium);cursor:pointer">';
       h += '+ Adicionar mais fotos';
       h += '<input type="file" accept="image/*" multiple style="display:none" onchange="wiz6AddFotosSub(this,' + idx + ',\'' + subNome.replace(/'/g,"\\\'") + '\')">';
       h += '</label>';
+      h += '<div class="foto-mobile-only" style="gap:6px;flex-wrap:wrap">';
+      h += '<label style="padding:8px 12px;background:#fff;color:#2d7dd2;border:1px solid #2d7dd2;border-radius:8px;font-size:11px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:4px">';
+      h += '\ud83d\udcf7 C\u00e2mera';
+      h += '<input type="file" accept="image/*" capture="environment" multiple style="display:none" onchange="wiz6AddFotosSub(this,' + idx + ',\'' + subNome.replace(/'/g,"\\\'") + '\')">';
+      h += '</label>';
+      h += '<label style="padding:8px 12px;background:#fff;color:#2d7dd2;border:1px solid #2d7dd2;border-radius:8px;font-size:11px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:4px">';
+      h += '\ud83d\uddbc\ufe0f Galeria';
+      h += '<input type="file" accept="image/*" multiple style="display:none" onchange="wiz6AddFotosSub(this,' + idx + ',\'' + subNome.replace(/'/g,"\\\'") + '\')">';
+      h += '</label>';
+      h += '</div>';
       h += '<button onclick="wiz6AnalisarBatchSub(' + idx + ',\'' + subNome.replace(/'/g,"\\\'") + '\',' + si + ')" style="padding:10px 24px;background:#2d7dd2;color:#fff;border:none;border-radius:8px;font-size: var(--fs-sm);font-weight: var(--fw-bold);cursor:pointer">';
       h += jaAnalisou ? '\ud83d\udd04 Re-analisar com IA' : '\ud83e\udd16 Analisar com IA';
       h += '</button></div></div>';
@@ -8777,10 +8840,20 @@ function wiz6BuildSuiteHtml(idx) {
       h += '<div style="font-size: var(--fs-xxs);font-weight: var(--fw-semibold);color:#2d7dd2;letter-spacing:0.5px;margin-bottom:8px">\ud83e\udd16 DESCRI\u00c7\u00c3O DA IA \u2014 ' + subNome.toUpperCase() + '</div>';
       h += '<textarea onblur="wiz6SalvarResumoSub(' + idx + ',\'' + subNome.replace(/'/g,"\\\'") + '\',this.value)" style="width:100%;font-size: var(--fs-xs);color:#1a2540;line-height:1.8;border:0.5px solid #e2e8f0;border-radius:8px;padding:10px;resize:none;font-family:inherit;min-height:120px;background:#fafbfc;field-sizing:content;overflow:hidden;box-sizing:border-box">' + (resumo || '').replace(/</g,'&lt;').replace(/>/g,'&gt;') + '</textarea>';
       h += '<div style="margin-top:10px;padding-top:10px;border-top:0.5px solid #e2e8f0">';
-      h += '<label style="padding:7px 14px;background:#fff;color:#2d7dd2;border:1px solid #2d7dd2;border-radius:7px;font-size: var(--fs-xxs);font-weight: var(--fw-medium);cursor:pointer">';
+      h += '<label class="foto-desktop-only" style="padding:7px 14px;background:#fff;color:#2d7dd2;border:1px solid #2d7dd2;border-radius:7px;font-size: var(--fs-xxs);font-weight: var(--fw-medium);cursor:pointer">';
       h += '+ Adicionar mais fotos';
       h += '<input type="file" accept="image/*" multiple style="display:none" onchange="wiz6AddFotosSub(this,' + idx + ',\'' + subNome.replace(/'/g,"\\\'") + '\')">';
       h += '</label>';
+      h += '<div class="foto-mobile-only" style="gap:6px;flex-wrap:wrap">';
+      h += '<label style="padding:6px 10px;background:#fff;color:#2d7dd2;border:1px solid #2d7dd2;border-radius:7px;font-size:11px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:4px">';
+      h += '\ud83d\udcf7 C\u00e2mera';
+      h += '<input type="file" accept="image/*" capture="environment" multiple style="display:none" onchange="wiz6AddFotosSub(this,' + idx + ',\'' + subNome.replace(/'/g,"\\\'") + '\')">';
+      h += '</label>';
+      h += '<label style="padding:6px 10px;background:#fff;color:#2d7dd2;border:1px solid #2d7dd2;border-radius:7px;font-size:11px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:4px">';
+      h += '\ud83d\uddbc\ufe0f Galeria';
+      h += '<input type="file" accept="image/*" multiple style="display:none" onchange="wiz6AddFotosSub(this,' + idx + ',\'' + subNome.replace(/'/g,"\\\'") + '\')">';
+      h += '</label>';
+      h += '</div>';
       h += '<span style="font-size: var(--fs-tiny);color:#8898aa;margin-left:10px">Novas fotos ser\u00e3o cobradas</span>';
       h += '</div></div>';
     }
