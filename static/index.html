@@ -7092,11 +7092,26 @@ if (!window._fotoStore) window._fotoStore = {};
         var imOld = rowEl.querySelector('.ia-mini'); if (imOld && imOld !== iaMini) imOld.style.display = 'none';
         var fLabel = rowEl.querySelector('.foto-obrig-label'); if (fLabel) fLabel.style.display = 'none';
       }
+      var _tok_ap = (typeof localStorage !== 'undefined') ? (localStorage.getItem('izylo_token') || '') : '';
       fetch('/api/analyze-photo', {
         method: 'POST',
-        headers: {'Content-Type': 'application/json'},
+        headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer ' + _tok_ap},
         body: JSON.stringify({image: dataUrl, item: item, ambiente: amb, tipo_analise: 'convencional'})
-      }).then(function(r) { return r.json(); }).then(function(d) {
+      }).then(function(r) { return r.json().then(function(d){ d.__httpStatus = r.status; return d; }); }).then(function(d) {
+        if (d && d.code === 'insufficient_balance') {
+          badge.textContent = '\u26A0 Saldo insuficiente';
+          badge.style.background = '#fde8e8';
+          badge.style.color = '#c62828';
+          desc.textContent = 'Adicione creditos para continuar.';
+          desc.style.color = '#991b1b';
+          if (typeof showToast === 'function') {
+            showToast('Saldo insuficiente. Adicione creditos para continuar.', 'error');
+          }
+          setTimeout(function(){
+            if (typeof abrirModalComprarCreditos === 'function') abrirModalComprarCreditos();
+          }, 1500);
+          return;
+        }
         var estado = d.estado || 'Bom';
         badge.textContent = '\u2713 IA: ' + estado;
         badge.style.background = estado === 'Ruim' ? '#fde8e8' : estado === 'Regular' ? '#fff8e8' : '#e8f4eb';
@@ -7105,6 +7120,14 @@ if (!window._fotoStore) window._fotoStore = {};
         desc.style.color = '#1e3a5f';
         if (!window._fotoStore[amb]) window._fotoStore[amb] = [];
         window._fotoStore[amb].push({src: dataUrl, item: item, estado: estado, desc: (d.description||'').replace(/\n/g,' ').trim()});
+        // Atualiza saldo no sidebar se o servidor retornou o novo valor
+        if (typeof d.balance_after_cents === 'number') {
+          var ns = document.getElementById('nav-saldo-fotos');
+          if (ns) {
+            var reais = (d.balance_after_cents / 100).toFixed(2).replace('.', ',');
+            ns.textContent = 'R$ ' + reais;
+          }
+        }
       }).catch(function() {
         badge.textContent = '\u26A0 IA indispon&iacute;vel';
         badge.style.background = '#e2e8f0';
@@ -10774,6 +10797,35 @@ function wiz6Concluir() {
 </div>
 
 <script>
+/* ========== Toast helper (global) ========== */
+if (typeof window.showToast !== 'function') {
+  window.showToast = function(msg, type) {
+    try {
+      var host = document.getElementById('__izy_toast_host');
+      if (!host) {
+        host = document.createElement('div');
+        host.id = '__izy_toast_host';
+        host.style.cssText = 'position:fixed;top:20px;left:50%;transform:translateX(-50%);z-index:99999;display:flex;flex-direction:column;gap:8px;pointer-events:none;';
+        document.body.appendChild(host);
+      }
+      var t = document.createElement('div');
+      var bg = '#1e3a5f', bd = '#0f172a';
+      if (type === 'error')   { bg = '#dc2626'; bd = '#991b1b'; }
+      if (type === 'success') { bg = '#16a34a'; bd = '#166534'; }
+      if (type === 'warning') { bg = '#f59e0b'; bd = '#b45309'; }
+      t.style.cssText = 'background:' + bg + ';color:#fff;padding:12px 18px;border-radius:10px;box-shadow:0 10px 30px rgba(0,0,0,0.25);border-left:4px solid ' + bd + ';font-size:14px;font-weight:600;max-width:420px;pointer-events:auto;opacity:0;transform:translateY(-8px);transition:all .25s ease;';
+      t.textContent = String(msg || '');
+      host.appendChild(t);
+      requestAnimationFrame(function(){ t.style.opacity = '1'; t.style.transform = 'translateY(0)'; });
+      setTimeout(function(){
+        t.style.opacity = '0';
+        t.style.transform = 'translateY(-8px)';
+        setTimeout(function(){ try { host.removeChild(t); } catch(e){} }, 260);
+      }, 4200);
+    } catch(e) { /* silent */ }
+  };
+}
+
 /* ========== Modal Comprar Créditos - Mercado Pago ========== */
 let _mpValorSelecionadoCents = 0;
 
