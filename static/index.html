@@ -1293,6 +1293,120 @@ canvas { display: block; }
   display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px;
 }
 
+/* ─── MODAL CUSTOMIZADO DE ANALISE (Push 16) ─── */
+.modal-analise-overlay {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,.55); z-index: 600;
+  align-items: center; justify-content: center;
+  padding: 20px; backdrop-filter: blur(3px);
+}
+.modal-analise-box {
+  background: #fff; border-radius: 14px;
+  width: 100%; max-width: 460px;
+  box-shadow: 0 20px 50px rgba(0,0,0,.25);
+  overflow: hidden;
+  animation: modalIn .2s ease-out;
+}
+.modal-header-conv {
+  background: linear-gradient(135deg, #1e3a5f 0%, #2d7dd2 100%);
+  color: #fff; padding: 20px 24px;
+  font-size: var(--fs-h6); font-weight: var(--fw-bold);
+  display: flex; align-items: center; gap: 10px;
+}
+.modal-header-prem {
+  background: linear-gradient(135deg, #4a1d96 0%, #7c3aed 100%);
+  color: #fff; padding: 20px 24px;
+  font-size: var(--fs-h6); font-weight: var(--fw-bold);
+  display: flex; align-items: center; gap: 10px;
+}
+.modal-header-err {
+  background: linear-gradient(135deg, #991b1b 0%, #dc2626 100%);
+  color: #fff; padding: 20px 24px;
+  font-size: var(--fs-h6); font-weight: var(--fw-bold);
+  display: flex; align-items: center; gap: 10px;
+}
+.modal-body { padding: 20px 24px; }
+.modal-custo-box {
+  background: #f8fafc; border: 1px solid #e2e8f0;
+  border-radius: 10px; padding: 14px 16px; margin-bottom: 14px;
+}
+.modal-custo-line {
+  display: flex; justify-content: space-between; align-items: center;
+  font-size: var(--fs-sm); color: #334155; margin-bottom: 6px;
+}
+.modal-custo-line:last-child { margin-bottom: 0; }
+.modal-custo-total {
+  font-weight: var(--fw-bold); color: #0f172a;
+  font-size: var(--fs-body); padding-top: 8px;
+  margin-top: 6px; border-top: 1px solid #e2e8f0;
+}
+.modal-saldo-box {
+  background: #fff; border: 1px solid #e2e8f0;
+  border-radius: 10px; padding: 14px 16px; margin-bottom: 16px;
+}
+.modal-saldo-line {
+  display: flex; justify-content: space-between; align-items: center;
+  font-size: var(--fs-sm); color: #475569; margin-bottom: 8px;
+}
+.modal-saldo-line:last-child { margin-bottom: 0; }
+.modal-barra-bg {
+  height: 6px; background: #e2e8f0; border-radius: 3px;
+  overflow: hidden; margin-top: 4px;
+}
+.modal-barra-fill {
+  height: 100%; border-radius: 3px;
+  transition: width .3s ease;
+}
+.modal-barra-fill-conv { background: linear-gradient(90deg, #1e3a5f, #2d7dd2); }
+.modal-barra-fill-prem { background: linear-gradient(90deg, #4a1d96, #7c3aed); }
+.modal-barra-fill-err  { background: linear-gradient(90deg, #991b1b, #dc2626); }
+.modal-err-msg {
+  background: #fef2f2; border: 1px solid #fecaca;
+  color: #991b1b; border-radius: 10px;
+  padding: 12px 14px; margin-bottom: 16px;
+  font-size: var(--fs-sm); line-height: 1.5;
+}
+.modal-btns {
+  display: flex; gap: 10px; justify-content: flex-end;
+  padding: 0 24px 20px 24px;
+}
+.modal-btn-cancel {
+  padding: 10px 18px; background: #fff;
+  border: 1px solid #d1d5db; color: #334155;
+  border-radius: 8px; font-size: var(--fs-sm);
+  font-weight: var(--fw-semibold); cursor: pointer;
+}
+.modal-btn-cancel:hover { background: #f8fafc; }
+.modal-btn-ok-conv {
+  padding: 10px 20px; background: linear-gradient(135deg, #1e3a5f 0%, #2d7dd2 100%);
+  color: #fff; border: none; border-radius: 8px;
+  font-size: var(--fs-sm); font-weight: var(--fw-bold); cursor: pointer;
+  box-shadow: 0 2px 6px rgba(45,125,210,.3);
+}
+.modal-btn-ok-prem {
+  padding: 10px 20px; background: linear-gradient(135deg, #4a1d96 0%, #7c3aed 100%);
+  color: #fff; border: none; border-radius: 8px;
+  font-size: var(--fs-sm); font-weight: var(--fw-bold); cursor: pointer;
+  box-shadow: 0 2px 6px rgba(124,58,237,.3);
+}
+.modal-btn-credits {
+  padding: 10px 20px; background: linear-gradient(135deg, #991b1b 0%, #dc2626 100%);
+  color: #fff; border: none; border-radius: 8px;
+  font-size: var(--fs-sm); font-weight: var(--fw-bold); cursor: pointer;
+  box-shadow: 0 2px 6px rgba(220,38,38,.3);
+}
+@media (max-width: 768px) {
+  .modal-analise-box { max-width: 100%; }
+  .modal-header-conv, .modal-header-prem, .modal-header-err {
+    font-size: var(--fs-body); padding: 16px 18px;
+  }
+  .modal-body { padding: 16px 18px; }
+  .modal-btns { padding: 0 18px 16px 18px; flex-wrap: wrap; }
+  .modal-btn-cancel, .modal-btn-ok-conv, .modal-btn-ok-prem, .modal-btn-credits {
+    flex: 1; min-width: 120px;
+  }
+}
+
 /* ─── LOADING OVERLAY ─── */
 .loading-overlay {
   position: fixed; inset: 0;
@@ -3656,18 +3770,34 @@ function format_balance_brl_js(cents) {
     .replace(/\B(?=(\d{3})+(?!\d))/g, '.');
 }
 
+function fecharModalAnalise() {
+  var ov = document.getElementById('modal-analise-overlay');
+  if (ov) { ov.style.display = 'none'; ov.classList.remove('open'); }
+  window._modalAnaliseOnConfirm = null;
+}
+
+function _modalAnaliseConfirmar() {
+  var fn = window._modalAnaliseOnConfirm;
+  fecharModalAnalise();
+  if (typeof fn === 'function') {
+    try { fn(); } catch(e) { console.error(e); }
+  }
+}
+
+function _modalAnaliseIrParaCreditos() {
+  fecharModalAnalise();
+  try { if (typeof showPage === 'function') showPage('page-credits'); } catch(e) {}
+}
+
 async function confirmarAnalise(tipo, fotosCount, onConfirm) {
   // Defesa extra: refresh de precos antes de exibir modal
   await loadPrices();
 
   var n = Math.max(1, parseInt(fotosCount, 10) || 1);
-  var custoUnit = (tipo === 'premium')
-    ? window._prices.premium_cents
-    : window._prices.convencional_cents;
-  var precoUnitBrl = (tipo === 'premium')
-    ? window._prices.premium_brl
-    : window._prices.convencional_brl;
-  var label = (tipo === 'premium') ? '\u2b50 IA Premium' : 'IA Convencional';
+  var isPrem = (tipo === 'premium');
+  var custoUnit = isPrem ? window._prices.premium_cents : window._prices.convencional_cents;
+  var precoUnitBrl = isPrem ? window._prices.premium_brl : window._prices.convencional_brl;
+  var label = isPrem ? '\u2b50 IA Premium' : '\ud83e\udd16 IA Convencional';
 
   var saldoAtual = (currentUser && typeof currentUser.balance_cents === 'number')
     ? currentUser.balance_cents : 0;
@@ -3676,26 +3806,83 @@ async function confirmarAnalise(tipo, fotosCount, onConfirm) {
   var custoTotal = custoUnit * n;
   var custoTotalBrl = format_balance_brl_js(custoTotal);
 
-  if (saldoAtual < custoTotal) {
-    alert(
-      'Saldo insuficiente. Voc\u00ea tem ' + saldoAtualBrl +
-      ' mas a an\u00e1lise custa ' + custoTotalBrl +
-      '. Adicione cr\u00e9ditos para continuar.'
-    );
+  var ov = document.getElementById('modal-analise-overlay');
+  var box = document.getElementById('modal-analise-box');
+  if (!ov || !box) {
+    // Fallback: se por algum motivo o overlay nao existir, usar confirm nativo
+    if (saldoAtual < custoTotal) {
+      alert('Saldo insuficiente. Voc\u00ea tem ' + saldoAtualBrl +
+        ' mas a an\u00e1lise custa ' + custoTotalBrl +
+        '. Adicione cr\u00e9ditos para continuar.');
+      return;
+    }
+    if (confirm('Confirmar an\u00e1lise ' + label + '?\nCusto: ' + custoTotalBrl) &&
+        typeof onConfirm === 'function') onConfirm();
     return;
   }
 
-  var saldoApos = format_balance_brl_js(Math.max(0, saldoAtual - custoTotal));
-  var msg =
-    'Confirmar an\u00e1lise ' + label + '\n\n' +
-    'Custo por foto: ' + precoUnitBrl + '\n' +
-    'Fotos: ' + n + '\n' +
-    'Custo total: ' + custoTotalBrl + '\n' +
-    'Saldo atual: ' + saldoAtualBrl + '\n' +
-    'Saldo ap\u00f3s: ' + saldoApos + '\n\n' +
-    'Deseja continuar?';
+  // -------- Variante SALDO INSUFICIENTE --------
+  if (saldoAtual < custoTotal) {
+    var faltaCents = custoTotal - saldoAtual;
+    var faltaBrl = format_balance_brl_js(faltaCents);
+    var pctErr = custoTotal > 0 ? Math.min(100, Math.max(0, (saldoAtual / custoTotal) * 100)) : 0;
+    box.innerHTML =
+      '<div class="modal-header-err">\u26a0\ufe0f Saldo insuficiente</div>' +
+      '<div class="modal-body">' +
+        '<div class="modal-err-msg">' +
+          'Voc\u00ea n\u00e3o tem cr\u00e9ditos suficientes para esta an\u00e1lise.' +
+        '</div>' +
+        '<div class="modal-custo-box">' +
+          '<div class="modal-custo-line"><span>An\u00e1lise:</span><span><strong>' + label + '</strong></span></div>' +
+          '<div class="modal-custo-line"><span>Pre\u00e7o por foto:</span><span>' + precoUnitBrl + '</span></div>' +
+          '<div class="modal-custo-line"><span>Fotos:</span><span>' + n + '</span></div>' +
+          '<div class="modal-custo-line modal-custo-total"><span>Custo total:</span><span>' + custoTotalBrl + '</span></div>' +
+        '</div>' +
+        '<div class="modal-saldo-box">' +
+          '<div class="modal-saldo-line"><span>Saldo atual:</span><span><strong>' + saldoAtualBrl + '</strong></span></div>' +
+          '<div class="modal-saldo-line"><span>Falta:</span><span style="color:#b91c1c;font-weight:var(--fw-bold)">' + faltaBrl + '</span></div>' +
+          '<div class="modal-barra-bg"><div class="modal-barra-fill modal-barra-fill-err" style="width:' + pctErr.toFixed(1) + '%"></div></div>' +
+        '</div>' +
+      '</div>' +
+      '<div class="modal-btns">' +
+        '<button class="modal-btn-cancel" onclick="fecharModalAnalise()">Fechar</button>' +
+        '<button class="modal-btn-credits" onclick="_modalAnaliseIrParaCreditos()">Adicionar cr\u00e9ditos</button>' +
+      '</div>';
+    window._modalAnaliseOnConfirm = null;
+    ov.style.display = 'flex';
+    return;
+  }
 
-  if (confirm(msg) && typeof onConfirm === 'function') onConfirm();
+  // -------- Variante NORMAL (conv ou prem) --------
+  var saldoAposCents = Math.max(0, saldoAtual - custoTotal);
+  var saldoAposBrl = format_balance_brl_js(saldoAposCents);
+  var pct = saldoAtual > 0 ? Math.max(0, Math.min(100, (custoTotal / saldoAtual) * 100)) : 100;
+  var headerCls = isPrem ? 'modal-header-prem' : 'modal-header-conv';
+  var barraCls = isPrem ? 'modal-barra-fill-prem' : 'modal-barra-fill-conv';
+  var btnCls = isPrem ? 'modal-btn-ok-prem' : 'modal-btn-ok-conv';
+  var btnTxt = isPrem ? 'Confirmar an\u00e1lise Premium' : 'Confirmar an\u00e1lise';
+
+  box.innerHTML =
+    '<div class="' + headerCls + '">' + label + '</div>' +
+    '<div class="modal-body">' +
+      '<div class="modal-custo-box">' +
+        '<div class="modal-custo-line"><span>Pre\u00e7o por foto:</span><span>' + precoUnitBrl + '</span></div>' +
+        '<div class="modal-custo-line"><span>Fotos:</span><span>' + n + '</span></div>' +
+        '<div class="modal-custo-line modal-custo-total"><span>Custo total:</span><span>' + custoTotalBrl + '</span></div>' +
+      '</div>' +
+      '<div class="modal-saldo-box">' +
+        '<div class="modal-saldo-line"><span>Saldo atual:</span><span><strong>' + saldoAtualBrl + '</strong></span></div>' +
+        '<div class="modal-saldo-line"><span>Saldo ap\u00f3s:</span><span><strong>' + saldoAposBrl + '</strong></span></div>' +
+        '<div class="modal-barra-bg"><div class="modal-barra-fill ' + barraCls + '" style="width:' + pct.toFixed(1) + '%"></div></div>' +
+      '</div>' +
+    '</div>' +
+    '<div class="modal-btns">' +
+      '<button class="modal-btn-cancel" onclick="fecharModalAnalise()">Cancelar</button>' +
+      '<button class="' + btnCls + '" onclick="_modalAnaliseConfirmar()">' + btnTxt + '</button>' +
+    '</div>';
+
+  window._modalAnaliseOnConfirm = (typeof onConfirm === 'function') ? onConfirm : null;
+  ov.style.display = 'flex';
 }
 
 async function loadDashboard() {
@@ -8108,10 +8295,10 @@ function wiz6RenderAmbCard(idx) {
                 '<input type="file" accept="image/*" multiple style="display:none" onchange="wiz6AddFotos(this,' + idx + ')">' +
               '</label>' +
             '</div>' +
-            '<button id="btnConv_' + idx + '" onclick="confirmarAnalise(\'convencional\',' + fotos.length + ',function(){wiz6AnalisarBatch(' + idx + ',\'convencional\');})" style="padding:10px 24px;background:#2d7dd2;color:#fff;border:none;border-radius:8px;font-size: var(--fs-sm);font-weight: var(--fw-bold);cursor:pointer;margin-right:8px">' +
+            '<button id="btnConv_' + idx + '" onclick="confirmarAnalise(\'convencional\',' + fotos.length + ',function(){wiz6AnalisarBatch(' + idx + ',\'convencional\');}).catch(console.error)" style="padding:10px 24px;background:#2d7dd2;color:#fff;border:none;border-radius:8px;font-size: var(--fs-sm);font-weight: var(--fw-bold);cursor:pointer;margin-right:8px">' +
               (jaAnalisou ? '\ud83d\udd04 Re-analisar com IA' : '\ud83e\udd16 Analisar com IA') +
             '</button>' +
-            '<button id="btnPrem_' + idx + '" onclick="confirmarAnalise(\'premium\',' + fotos.length + ',function(){wiz6AnalisarBatch(' + idx + ',\'premium\');})" style="padding:10px 24px;background:#9333ea;color:#fff;border:none;border-radius:8px;font-size: var(--fs-sm);font-weight: var(--fw-bold);cursor:pointer">' +
+            '<button id="btnPrem_' + idx + '" onclick="confirmarAnalise(\'premium\',' + fotos.length + ',function(){wiz6AnalisarBatch(' + idx + ',\'premium\');}).catch(console.error)" style="padding:10px 24px;background:#9333ea;color:#fff;border:none;border-radius:8px;font-size: var(--fs-sm);font-weight: var(--fw-bold);cursor:pointer">' +
               '\u2b50 ' + (jaAnalisou ? 'Re-analisar com IA PREMIUM' : 'Analisar com IA PREMIUM') +
             '</button>' +
           '</div>' +
@@ -8901,7 +9088,7 @@ function wiz6BuildSuiteHtml(idx) {
       h += '<input type="file" accept="image/*" multiple style="display:none" onchange="wiz6AddFotosSub(this,' + idx + ',\'' + subNome.replace(/'/g,"\\\'") + '\')">';
       h += '</label>';
       h += '</div>';
-      h += '<button onclick="confirmarAnalise(\'convencional\',' + fotos.length + ',function(){wiz6AnalisarBatchSub(' + idx + ',\'' + subNome.replace(/'/g,"\\\'") + '\',' + si + ');})" style="padding:10px 24px;background:#2d7dd2;color:#fff;border:none;border-radius:8px;font-size: var(--fs-sm);font-weight: var(--fw-bold);cursor:pointer">';
+      h += '<button onclick="confirmarAnalise(\'convencional\',' + fotos.length + ',function(){wiz6AnalisarBatchSub(' + idx + ',\'' + subNome.replace(/'/g,"\\\'") + '\',' + si + ');}).catch(console.error)" style="padding:10px 24px;background:#2d7dd2;color:#fff;border:none;border-radius:8px;font-size: var(--fs-sm);font-weight: var(--fw-bold);cursor:pointer">';
       h += jaAnalisou ? '\ud83d\udd04 Re-analisar com IA' : '\ud83e\udd16 Analisar com IA';
       h += '</button></div></div>';
     }
@@ -9287,7 +9474,7 @@ function _wiz6RenderSubsBlock(ambIdx, dados) {
       h += '<div style="display:flex;gap:8px;justify-content:center;align-items:center">';
       h += '<label style="display:flex;align-items:center;gap:6px;padding:7px 12px;border:0.5px solid #e2e8f0;border-radius:7px;background:#fff;font-size: var(--fs-xxs);color:#8898aa;cursor:pointer">+ Adicionar mais fotos<input type="file" accept="image/*" multiple style="display:none" onchange="wiz6AddFotosSub(this,' + ambIdx + ',\'' + subNome.replace(/'/g,"\\\'") + '\')">';
       h += '</label>';
-      h += '<div style="display:flex;gap:8px;flex-wrap:wrap">' + '<button onclick="confirmarAnalise(\'convencional\',' + fotos.length + ',function(){wiz6AnalisarSub(' + ambIdx + ',\'' + subNome.replace(/'/g,"\\\'") + '\',\'convencional\');})" style="background:#2d7dd2;color:#fff;border:none;border-radius:7px;padding:7px 14px;font-size: var(--fs-xxs);font-weight: var(--fw-semibold);cursor:pointer">' + (sd.jaAnalisou ? '\ud83d\udd04 Re-analisar com IA' : '\ud83e\udd16 Analisar com IA') + '</button>' + '<button onclick="confirmarAnalise(\'premium\',' + fotos.length + ',function(){wiz6AnalisarSub(' + ambIdx + ',\'' + subNome.replace(/'/g,"\\\'") + '\',\'premium\');})" style="background:#9333ea;color:#fff;border:none;border-radius:7px;padding:7px 14px;font-size: var(--fs-xxs);font-weight: var(--fw-semibold);cursor:pointer">' + (sd.jaAnalisou ? '\ud83d\udd04 Re-analisar com IA PREMIUM' : '\ud83e\udd16 Analisar com IA PREMIUM') + '</button>' + '</div>';
+      h += '<div style="display:flex;gap:8px;flex-wrap:wrap">' + '<button onclick="confirmarAnalise(\'convencional\',' + fotos.length + ',function(){wiz6AnalisarSub(' + ambIdx + ',\'' + subNome.replace(/'/g,"\\\'") + '\',\'convencional\');}).catch(console.error)" style="background:#2d7dd2;color:#fff;border:none;border-radius:7px;padding:7px 14px;font-size: var(--fs-xxs);font-weight: var(--fw-semibold);cursor:pointer">' + (sd.jaAnalisou ? '\ud83d\udd04 Re-analisar com IA' : '\ud83e\udd16 Analisar com IA') + '</button>' + '<button onclick="confirmarAnalise(\'premium\',' + fotos.length + ',function(){wiz6AnalisarSub(' + ambIdx + ',\'' + subNome.replace(/'/g,"\\\'") + '\',\'premium\');}).catch(console.error)" style="background:#9333ea;color:#fff;border:none;border-radius:7px;padding:7px 14px;font-size: var(--fs-xxs);font-weight: var(--fw-semibold);cursor:pointer">' + (sd.jaAnalisou ? '\ud83d\udd04 Re-analisar com IA PREMIUM' : '\ud83e\udd16 Analisar com IA PREMIUM') + '</button>' + '</div>';
       h += '</div>';
       h += '<div id="wiz6-ai-status-sub-' + ambIdx + '-' + _subSi + '" style="display:none;background:#eef4ff;border-left:3px solid #2d7dd2;border-radius:0 8px 8px 0;padding:12px 14px;margin-bottom:14px;font-size: var(--fs-xs);color:#185fa5;line-height:1.6"></div>';
       h += '</div>';
@@ -10181,6 +10368,11 @@ function wiz6Concluir() {
       <button id="mexcluir-btn" onclick="_mlConfirmExcluir()" disabled style="padding:8px 14px;background:#dc2626;color:#fff;border:none;border-radius:8px;cursor:not-allowed;font-size: var(--fs-sm);font-weight: var(--fw-semibold);opacity:0.5;">Excluir definitivamente</button>
     </div>
   </div>
+</div>
+
+<!-- Push 16: modal customizado de analise IA -->
+<div id="modal-analise-overlay" class="modal-analise-overlay" style="display:none">
+  <div class="modal-analise-box" id="modal-analise-box"></div>
 </div>
 
 </body>
