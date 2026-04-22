@@ -1412,10 +1412,15 @@ canvas { display: block; }
   box-shadow: 0 4px 12px rgba(0,158,227,.2);
 }
 .btn-comprar-mp-badge {
-  display: flex;
+  display: inline-flex;
   align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  line-height: 0;
 }
-.btn-comprar-mp-badge img {
+.btn-comprar-mp-badge svg {
+  width: 22px;
   height: 22px;
   display: block;
 }
@@ -2518,8 +2523,12 @@ window._openFotoModal = function(imgSrc) {
           </div>
           <button type="button" class="btn-comprar-mp" onclick="abrirModalComprarCreditos()">
             + Comprar créditos
-            <span class="btn-comprar-mp-badge">
-              <img src="/static/mp-logo-oficial.jpg" alt="Mercado Pago">
+            <span class="btn-comprar-mp-badge" aria-label="Mercado Pago">
+              <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Mercado Pago">
+                <circle cx="30" cy="30" r="28" fill="#009ee3"/>
+                <circle cx="30" cy="30" r="20" fill="#fff"/>
+                <path d="M20 31 Q25 23 30 28 Q35 23 40 31 Q35 37 30 33 Q25 37 20 31 Z" fill="#009ee3"/>
+              </svg>
             </span>
           </button>
         </div>
@@ -10704,7 +10713,13 @@ function wiz6Concluir() {
 <div id="mp-modal-overlay" class="mp-modal-overlay" onclick="if(event.target===this)fecharModalComprarCreditos()">
   <div class="mp-modal-box" role="dialog" aria-labelledby="mp-modal-titulo">
     <div class="mp-modal-header">
-      <img src="/static/mp-logo-oficial.jpg" alt="Mercado Pago" style="height:32px;border-radius:6px;padding:4px 8px;background:#fff;">
+      <span aria-label="Mercado Pago" style="display:inline-flex;align-items:center;justify-content:center;height:40px;width:40px;border-radius:50%;background:#fff;">
+        <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Mercado Pago" style="width:32px;height:32px;display:block;">
+          <circle cx="30" cy="30" r="28" fill="#009ee3"/>
+          <circle cx="30" cy="30" r="20" fill="#fff"/>
+          <path d="M20 31 Q25 23 30 28 Q35 23 40 31 Q35 37 30 33 Q25 37 20 31 Z" fill="#009ee3"/>
+        </svg>
+      </span>
       <div>
         <div style="font-size:18px;font-weight:700;color:#fff;" id="mp-modal-titulo">Comprar créditos</div>
         <div style="font-size:12px;color:rgba(255,255,255,0.85);margin-top:2px;">Pagamento seguro via Mercado Pago</div>
