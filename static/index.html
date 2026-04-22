@@ -4086,7 +4086,15 @@ function _modalAnaliseConfirmar() {
 
 function _modalAnaliseIrParaCreditos() {
   fecharModalAnalise();
-  try { if (typeof showPage === 'function') showPage('page-credits'); } catch(e) {}
+  // Open the Mercado Pago buy-credits modal directly — a small delay
+  // prevents the close animation from racing the open animation.
+  setTimeout(function(){
+    if (typeof abrirModalComprarCreditos === 'function') {
+      abrirModalComprarCreditos();
+    } else if (typeof showPage === 'function') {
+      showPage('page-dashboard');
+    }
+  }, 150);
 }
 
 async function confirmarAnalise(tipo, fotosCount, onConfirm) {
