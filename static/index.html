@@ -3626,8 +3626,83 @@ function switchDashTab(tab, btn) {
   document.getElementById(`dash-tab-${tab}`).style.display = 'block';
 }
 
+// ─── Push 15: Confirmacao de analise IA com preco dinamico ───────────────────
+window._prices = {
+  convencional_cents: 50,
+  premium_cents: 90,
+  convencional_brl: 'R$ 0,50',
+  premium_brl: 'R$ 0,90'
+};
+
+async function loadPrices() {
+  try {
+    const r = await api('GET', '/api/settings/prices');
+    if (r && r.ok) {
+      window._prices = {
+        convencional_cents: r.convencional_cents,
+        premium_cents: r.premium_cents,
+        convencional_brl: r.convencional_brl,
+        premium_brl: r.premium_brl
+      };
+    }
+  } catch(e) { /* fallback silencioso: mantem defaults */ }
+}
+
+function format_balance_brl_js(cents) {
+  if (cents == null) cents = 0;
+  if (cents < 0) cents = 0;
+  return 'R$ ' + (cents/100).toFixed(2)
+    .replace('.', ',')
+    .replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+}
+
+async function confirmarAnalise(tipo, fotosCount, onConfirm) {
+  // Defesa extra: refresh de precos antes de exibir modal
+  await loadPrices();
+
+  var n = Math.max(1, parseInt(fotosCount, 10) || 1);
+  var custoUnit = (tipo === 'premium')
+    ? window._prices.premium_cents
+    : window._prices.convencional_cents;
+  var precoUnitBrl = (tipo === 'premium')
+    ? window._prices.premium_brl
+    : window._prices.convencional_brl;
+  var label = (tipo === 'premium') ? '\u2b50 IA Premium' : 'IA Convencional';
+
+  var saldoAtual = (currentUser && typeof currentUser.balance_cents === 'number')
+    ? currentUser.balance_cents : 0;
+  var saldoAtualBrl = (currentUser && currentUser.balance_formatted)
+    ? currentUser.balance_formatted : format_balance_brl_js(saldoAtual);
+  var custoTotal = custoUnit * n;
+  var custoTotalBrl = format_balance_brl_js(custoTotal);
+
+  if (saldoAtual < custoTotal) {
+    alert(
+      'Saldo insuficiente. Voc\u00ea tem ' + saldoAtualBrl +
+      ' mas a an\u00e1lise custa ' + custoTotalBrl +
+      '. Adicione cr\u00e9ditos para continuar.'
+    );
+    return;
+  }
+
+  var saldoApos = format_balance_brl_js(Math.max(0, saldoAtual - custoTotal));
+  var msg =
+    'Confirmar an\u00e1lise ' + label + '\n\n' +
+    'Custo por foto: ' + precoUnitBrl + '\n' +
+    'Fotos: ' + n + '\n' +
+    'Custo total: ' + custoTotalBrl + '\n' +
+    'Saldo atual: ' + saldoAtualBrl + '\n' +
+    'Saldo ap\u00f3s: ' + saldoApos + '\n\n' +
+    'Deseja continuar?';
+
+  if (confirm(msg) && typeof onConfirm === 'function') onConfirm();
+}
+
 async function loadDashboard() {
   if (!currentUser) return;
+
+  // Push 15: carregar precos atualizados (fire-and-forget, nao bloqueia)
+  loadPrices();
 
   // Push 6: refresh user from /api/auth/me for latest balance + verification status
   try {
@@ -8033,10 +8108,10 @@ function wiz6RenderAmbCard(idx) {
                 '<input type="file" accept="image/*" multiple style="display:none" onchange="wiz6AddFotos(this,' + idx + ')">' +
               '</label>' +
             '</div>' +
-            '<button id="btnConv_' + idx + '" onclick="wiz6AnalisarBatch(' + idx + ', \'convencional\')" style="padding:10px 24px;background:#2d7dd2;color:#fff;border:none;border-radius:8px;font-size: var(--fs-sm);font-weight: var(--fw-bold);cursor:pointer;margin-right:8px">' +
+            '<button id="btnConv_' + idx + '" onclick="confirmarAnalise(\'convencional\',' + fotos.length + ',function(){wiz6AnalisarBatch(' + idx + ',\'convencional\');})" style="padding:10px 24px;background:#2d7dd2;color:#fff;border:none;border-radius:8px;font-size: var(--fs-sm);font-weight: var(--fw-bold);cursor:pointer;margin-right:8px">' +
               (jaAnalisou ? '\ud83d\udd04 Re-analisar com IA' : '\ud83e\udd16 Analisar com IA') +
             '</button>' +
-            '<button id="btnPrem_' + idx + '" onclick="wiz6AnalisarBatch(' + idx + ', \'premium\')" style="padding:10px 24px;background:#9333ea;color:#fff;border:none;border-radius:8px;font-size: var(--fs-sm);font-weight: var(--fw-bold);cursor:pointer">' +
+            '<button id="btnPrem_' + idx + '" onclick="confirmarAnalise(\'premium\',' + fotos.length + ',function(){wiz6AnalisarBatch(' + idx + ',\'premium\');})" style="padding:10px 24px;background:#9333ea;color:#fff;border:none;border-radius:8px;font-size: var(--fs-sm);font-weight: var(--fw-bold);cursor:pointer">' +
               '\u2b50 ' + (jaAnalisou ? 'Re-analisar com IA PREMIUM' : 'Analisar com IA PREMIUM') +
             '</button>' +
           '</div>' +
@@ -8826,7 +8901,7 @@ function wiz6BuildSuiteHtml(idx) {
       h += '<input type="file" accept="image/*" multiple style="display:none" onchange="wiz6AddFotosSub(this,' + idx + ',\'' + subNome.replace(/'/g,"\\\'") + '\')">';
       h += '</label>';
       h += '</div>';
-      h += '<button onclick="wiz6AnalisarBatchSub(' + idx + ',\'' + subNome.replace(/'/g,"\\\'") + '\',' + si + ')" style="padding:10px 24px;background:#2d7dd2;color:#fff;border:none;border-radius:8px;font-size: var(--fs-sm);font-weight: var(--fw-bold);cursor:pointer">';
+      h += '<button onclick="confirmarAnalise(\'convencional\',' + fotos.length + ',function(){wiz6AnalisarBatchSub(' + idx + ',\'' + subNome.replace(/'/g,"\\\'") + '\',' + si + ');})" style="padding:10px 24px;background:#2d7dd2;color:#fff;border:none;border-radius:8px;font-size: var(--fs-sm);font-weight: var(--fw-bold);cursor:pointer">';
       h += jaAnalisou ? '\ud83d\udd04 Re-analisar com IA' : '\ud83e\udd16 Analisar com IA';
       h += '</button></div></div>';
     }
@@ -9212,7 +9287,7 @@ function _wiz6RenderSubsBlock(ambIdx, dados) {
       h += '<div style="display:flex;gap:8px;justify-content:center;align-items:center">';
       h += '<label style="display:flex;align-items:center;gap:6px;padding:7px 12px;border:0.5px solid #e2e8f0;border-radius:7px;background:#fff;font-size: var(--fs-xxs);color:#8898aa;cursor:pointer">+ Adicionar mais fotos<input type="file" accept="image/*" multiple style="display:none" onchange="wiz6AddFotosSub(this,' + ambIdx + ',\'' + subNome.replace(/'/g,"\\\'") + '\')">';
       h += '</label>';
-      h += '<div style="display:flex;gap:8px;flex-wrap:wrap">' + '<button onclick="wiz6AnalisarSub(' + ambIdx + ',\'' + subNome.replace(/'/g,"\\\'") + '\',\'convencional\')" style="background:#2d7dd2;color:#fff;border:none;border-radius:7px;padding:7px 14px;font-size: var(--fs-xxs);font-weight: var(--fw-semibold);cursor:pointer">' + (sd.jaAnalisou ? '\ud83d\udd04 Re-analisar com IA' : '\ud83e\udd16 Analisar com IA') + '</button>' + '<button onclick="wiz6AnalisarSub(' + ambIdx + ',\'' + subNome.replace(/'/g,"\\\'") + '\',\'premium\')" style="background:#9333ea;color:#fff;border:none;border-radius:7px;padding:7px 14px;font-size: var(--fs-xxs);font-weight: var(--fw-semibold);cursor:pointer">' + (sd.jaAnalisou ? '\ud83d\udd04 Re-analisar com IA PREMIUM' : '\ud83e\udd16 Analisar com IA PREMIUM') + '</button>' + '</div>';
+      h += '<div style="display:flex;gap:8px;flex-wrap:wrap">' + '<button onclick="confirmarAnalise(\'convencional\',' + fotos.length + ',function(){wiz6AnalisarSub(' + ambIdx + ',\'' + subNome.replace(/'/g,"\\\'") + '\',\'convencional\');})" style="background:#2d7dd2;color:#fff;border:none;border-radius:7px;padding:7px 14px;font-size: var(--fs-xxs);font-weight: var(--fw-semibold);cursor:pointer">' + (sd.jaAnalisou ? '\ud83d\udd04 Re-analisar com IA' : '\ud83e\udd16 Analisar com IA') + '</button>' + '<button onclick="confirmarAnalise(\'premium\',' + fotos.length + ',function(){wiz6AnalisarSub(' + ambIdx + ',\'' + subNome.replace(/'/g,"\\\'") + '\',\'premium\');})" style="background:#9333ea;color:#fff;border:none;border-radius:7px;padding:7px 14px;font-size: var(--fs-xxs);font-weight: var(--fw-semibold);cursor:pointer">' + (sd.jaAnalisou ? '\ud83d\udd04 Re-analisar com IA PREMIUM' : '\ud83e\udd16 Analisar com IA PREMIUM') + '</button>' + '</div>';
       h += '</div>';
       h += '<div id="wiz6-ai-status-sub-' + ambIdx + '-' + _subSi + '" style="display:none;background:#eef4ff;border-left:3px solid #2d7dd2;border-radius:0 8px 8px 0;padding:12px 14px;margin-bottom:14px;font-size: var(--fs-xs);color:#185fa5;line-height:1.6"></div>';
       h += '</div>';

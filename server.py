@@ -740,6 +740,38 @@ class AdminPageHandler(tornado.web.RequestHandler):
             self.write('Admin panel not found')
 
 
+class SettingsPricesHandler(BaseHandler):
+    """Push 15: endpoint publico para preco por foto (convencional/premium).
+
+    Lido da tabela settings; fallback para 50/90 cents se ausente. Usado pelo
+    frontend para exibir modal de confirmacao antes de disparar analise IA.
+    """
+    def get(self):
+        conn = get_conn()
+        try:
+            rows = conn.execute(
+                "SELECT key, value FROM settings WHERE key IN "
+                "('price_per_photo_convencional_cents', "
+                "'price_per_photo_premium_cents')"
+            ).fetchall()
+            prices = {}
+            for r in rows:
+                try:
+                    prices[r['key']] = int(r['value'])
+                except (TypeError, ValueError):
+                    continue
+            conv_cents = prices.get('price_per_photo_convencional_cents', 50)
+            prem_cents = prices.get('price_per_photo_premium_cents', 90)
+            self.ok({
+                'convencional_cents': conv_cents,
+                'premium_cents': prem_cents,
+                'convencional_brl': format_balance_brl(conv_cents),
+                'premium_brl': format_balance_brl(prem_cents),
+            })
+        finally:
+            conn.close()
+
+
 class AdminLoginHandler(BaseHandler):
     def post(self):
         try:
@@ -2367,6 +2399,8 @@ def make_app():
         (r'/api/auth/forgot-password', PasswordResetRequestHandler),
         (r'/api/auth/verify-reset-token', PasswordResetVerifyHandler),
         (r'/api/auth/reset-password', PasswordResetConfirmHandler),
+        # Push 15: public pricing endpoint
+        (r'/api/settings/prices', SettingsPricesHandler),
         # Admin panel
         (r'/admin', AdminPageHandler),
         (r'/api/admin/login', AdminLoginHandler),
