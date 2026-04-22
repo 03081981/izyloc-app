@@ -1,7 +1,7 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 60">
-  <ellipse cx="30" cy="30" rx="28" ry="28" fill="#009ee3"/>
-  <ellipse cx="30" cy="30" rx="20" ry="20" fill="#fff"/>
-  <path d="M20 31 Q25 23 30 28 Q35 23 40 31 Q35 37 30 33 Q25 37 20 31Z" fill="#009ee3"/>
-  <text x="68" y="25" font-family="Arial,sans-serif" font-size="16" font-weight="700" fill="#2d3436">mercado</text>
-  <text x="68" y="46" font-family="Arial,sans-serif" font-size="16" font-weight="700" fill="#009ee3">pago</text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 64">
+  <circle cx="32" cy="32" r="28" fill="#009ee3"/>
+  <circle cx="32" cy="32" r="20" fill="#fff"/>
+  <path d="M22 32 Q27 24 32 29 Q37 24 42 32 Q37 38 32 34 Q27 38 22 32 Z" fill="#009ee3"/>
+  <text x="70" y="30" font-family="Arial, Helvetica, sans-serif" font-size="20" font-weight="900" fill="#1e2b47" letter-spacing="-0.5">mercado</text>
+  <text x="70" y="54" font-family="Arial, Helvetica, sans-serif" font-size="20" font-weight="900" fill="#009ee3" letter-spacing="-0.5">pago</text>
 </svg>
