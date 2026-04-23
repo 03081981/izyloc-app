@@ -4199,9 +4199,20 @@ async function confirmarAnalise(tipo, fotosCount, onConfirm) {
   var btnCls = isPrem ? 'modal-btn-ok-prem' : 'modal-btn-ok-conv';
   var btnTxt = isPrem ? 'Confirmar an\u00e1lise Premium' : 'Confirmar an\u00e1lise';
 
+  var numFotos = n;
+  var avisoHtml =
+    '<div class="modal-aviso-fotos' + (numFotos < 4 ? ' visivel' : '') + '" id="modal-aviso-fotos">' +
+      '<span class="modal-aviso-fotos-icone">\ud83d\udca1</span>' +
+      '<div class="modal-aviso-fotos-texto">' +
+        '<strong>Laudo pode ficar gen\u00e9rico</strong>' +
+        'Com menos de 4 fotos a IA gera descri\u00e7\u00f5es mais gen\u00e9ricas. Adicione mais fotos para um laudo mais detalhado.' +
+      '</div>' +
+    '</div>';
+
   box.innerHTML =
     '<div class="' + headerCls + '">' + label + '</div>' +
     '<div class="modal-body">' +
+      avisoHtml +
       '<div class="modal-custo-box">' +
         '<div class="modal-custo-line"><span>Pre\u00e7o por foto:</span><span>' + precoUnitBrl + '</span></div>' +
         '<div class="modal-custo-line"><span>Fotos:</span><span>' + n + '</span></div>' +
@@ -4217,6 +4228,16 @@ async function confirmarAnalise(tipo, fotosCount, onConfirm) {
       '<button class="modal-btn-cancel" onclick="fecharModalAnalise()">Cancelar</button>' +
       '<button class="' + btnCls + '" onclick="_modalAnaliseConfirmar()">' + btnTxt + '</button>' +
     '</div>';
+
+  // Toggle explicito do aviso (reforca estado caso o markup seja reaproveitado)
+  var avisoEl = document.getElementById('modal-aviso-fotos');
+  if (avisoEl) {
+    if (numFotos < 4) {
+      avisoEl.classList.add('visivel');
+    } else {
+      avisoEl.classList.remove('visivel');
+    }
+  }
 
   window._modalAnaliseOnConfirm = (typeof onConfirm === 'function') ? onConfirm : null;
   ov.style.display = 'flex';
