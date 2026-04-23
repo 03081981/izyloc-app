@@ -2509,7 +2509,7 @@ window._openFotoModal = function(imgSrc) {
 
     <div class="nav-divider"></div>
     <div class="nav-section-label">Conta</div>
-    <div class="nav-item" id="nav-config" onclick="switchTab('perfil',this)">Configurações</div>
+    <div class="nav-item" id="nav-config" onclick="showPage('page-dashboard'); switchTab('perfil',this);">Configurações</div>
     <div class="nav-item" onclick="logout()">Sair</div>
   </nav>
 
@@ -3586,7 +3586,7 @@ window._openFotoModal = function(imgSrc) {
 
     <div class="nav-divider"></div>
     <div class="nav-section-label">Conta</div>
-    <div class="nav-item" id="nav-config" onclick="switchTab('perfil',this)">Configurações</div>
+    <div class="nav-item" id="nav-config" onclick="showPage('page-dashboard'); switchTab('perfil',this);">Configurações</div>
     <div class="nav-item" onclick="logout()">Sair</div>
   </nav>
 
@@ -3644,7 +3644,7 @@ window._openFotoModal = function(imgSrc) {
 
     <div class="nav-divider"></div>
     <div class="nav-section-label">Conta</div>
-    <div class="nav-item" id="nav-config" onclick="switchTab('perfil',this)">Configurações</div>
+    <div class="nav-item" id="nav-config" onclick="showPage('page-dashboard'); switchTab('perfil',this);">Configurações</div>
     <div class="nav-item" onclick="logout()">Sair</div>
   </nav>
 
@@ -3696,6 +3696,10 @@ window._openFotoModal = function(imgSrc) {
 <script>
 // ── switchTab: sidebar navigation helper ──
 function switchTab(tab, el) {
+  // Garante que estamos no page-dashboard para as abas internas (tab-content)
+  if (typeof showPage === 'function') {
+    try { showPage('page-dashboard'); } catch(e){}
+  }
   document.querySelectorAll('.dash-tab-content').forEach(function(t) {
     t.classList.remove('active');
   });
@@ -3706,9 +3710,16 @@ function switchTab(tab, el) {
   var titles = {vistorias:'Dashboard', estatisticas:'Fotos e consumo', perfil:'Configurações'};
   var tt = document.getElementById('dash-topbar-title');
   if (tt) tt.textContent = titles[tab] || 'Dashboard';
-  // Ao abrir Configuracoes, carregar o perfil do usuario
-  if (tab === 'perfil' && typeof carregarConfiguracoes === 'function') {
-    try { carregarConfiguracoes(); } catch(e){}
+  // Ao abrir Configuracoes, carregar o perfil do usuario (com retry para cobrir race de load)
+  if (tab === 'perfil') {
+    var _tryLoad = function(attempt) {
+      if (typeof carregarConfiguracoes === 'function') {
+        try { carregarConfiguracoes(); } catch(e) { console.warn('carregarConfiguracoes:', e); }
+      } else if (attempt < 5) {
+        setTimeout(function(){ _tryLoad(attempt + 1); }, 100);
+      }
+    };
+    _tryLoad(0);
   }
 }
 
