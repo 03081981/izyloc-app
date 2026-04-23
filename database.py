@@ -456,5 +456,8 @@ def init_db():
     c.execute("CREATE INDEX IF NOT EXISTS idx_corretores_user ON corretores(user_id)")
     raw.commit()
 
+    # Migration: adicionar coluna email (idempotente)
+    _run_migration(c, raw, "ALTER TABLE corretores ADD COLUMN IF NOT EXISTS email VARCHAR(200)")
+
     raw.close()
     print("✅ Banco de dados PostgreSQL inicializado com sucesso")

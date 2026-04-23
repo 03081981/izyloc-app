@@ -2896,7 +2896,7 @@ class ConfigCorretoresHandler(BaseHandler):
         conn = get_conn()
         try:
             rows = conn.execute(
-                "SELECT id, nome, creci, cpf FROM corretores "
+                "SELECT id, nome, creci, cpf, email FROM corretores "
                 "WHERE user_id=? AND ativo=TRUE ORDER BY nome",
                 (user_id,)
             ).fetchall()
@@ -2913,6 +2913,7 @@ class ConfigCorretoresHandler(BaseHandler):
         nome = (data.get('nome') or '').strip()
         creci = (data.get('creci') or '').strip()
         cpf = (data.get('cpf') or '').strip()
+        email = (data.get('email') or '').strip()
         if not nome:
             self.err('Nome e obrigatorio', 400)
             return
@@ -2923,9 +2924,10 @@ class ConfigCorretoresHandler(BaseHandler):
         conn = get_conn()
         try:
             conn.execute(
-                "INSERT INTO corretores (id, user_id, nome, creci, cpf) "
-                "VALUES (?, ?, ?, ?, ?)",
-                (str(uuid.uuid4()), user_id, nome, creci or None, cpf or None)
+                "INSERT INTO corretores (id, user_id, nome, creci, cpf, email) "
+                "VALUES (?, ?, ?, ?, ?, ?)",
+                (str(uuid.uuid4()), user_id, nome,
+                 creci or None, cpf or None, email or None)
             )
             conn.commit()
             self.ok({'saved': True})
@@ -2948,6 +2950,35 @@ class ConfigCorretorDeleteHandler(BaseHandler):
             )
             conn.commit()
             self.ok({'deleted': True})
+        finally:
+            conn.close()
+
+    def patch(self, corretor_id):
+        user = self.require_auth()
+        if not user:
+            return
+        user_id = user['user_id']
+        data = self.json_body()
+        nome = (data.get('nome') or '').strip()
+        creci = (data.get('creci') or '').strip()
+        cpf = (data.get('cpf') or '').strip()
+        email = (data.get('email') or '').strip()
+        if not nome:
+            self.err('Nome e obrigatorio', 400)
+            return
+        if not creci and not cpf:
+            self.err('Informe o CRECI ou o CPF', 400)
+            return
+        conn = get_conn()
+        try:
+            conn.execute(
+                "UPDATE corretores SET nome=?, creci=?, cpf=?, email=? "
+                "WHERE id=? AND user_id=? AND ativo=TRUE",
+                (nome, creci or None, cpf or None, email or None,
+                 corretor_id, user_id)
+            )
+            conn.commit()
+            self.ok({'saved': True})
         finally:
             conn.close()
 
