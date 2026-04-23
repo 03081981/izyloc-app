@@ -3140,14 +3140,47 @@ class DeleteAccountHandler(BaseHandler):
         user_id = user['user_id']
         conn = get_conn()
         try:
-            # Remover em ordem: dados derivados antes do usuario
-            conn.execute("DELETE FROM corretores WHERE user_id=?", (user_id,))
-            conn.execute("DELETE FROM user_profile_config WHERE user_id=?", (user_id,))
-            conn.execute("DELETE FROM users WHERE id=?", (user_id,))
+            # 1. inspections => cascade deleta rooms, room_items,
+            #    item_photos, signatures
+            conn.execute(
+                "DELETE FROM inspections WHERE user_id=?",
+                (user_id,)
+            )
+            # 2. config e corretores
+            conn.execute(
+                "DELETE FROM corretores WHERE user_id=?",
+                (user_id,)
+            )
+            conn.execute(
+                "DELETE FROM user_profile_config WHERE user_id=?",
+                (user_id,)
+            )
+            # 3. users => cascade deleta sessions, tokens,
+            #    balance_transactions, user_plans, usage_logs,
+            #    email_verification_tokens, password_reset_tokens
+            conn.execute(
+                "DELETE FROM users WHERE id=?",
+                (user_id,)
+            )
             conn.commit()
+            print(f'[DELETE_ACCOUNT] OK user={user_id}', flush=True)
             self.ok({'deleted': True})
+        except Exception as e:
+            try:
+                conn.rollback()
+            except Exception:
+                pass
+            print(f'[DELETE_ACCOUNT] ERROR user={user_id}: {e}', flush=True)
+            self.set_status(500)
+            self.write({
+                'ok': False,
+                'error': 'Falha ao excluir conta. Tente novamente.',
+            })
         finally:
-            conn.close()
+            try:
+                conn.close()
+            except Exception:
+                pass
 
 
 def make_app():
