@@ -3809,7 +3809,7 @@ window._openFotoModal = function(imgSrc) {
         <div style="font-size: var(--fs-sm);color:#64748b;margin-bottom:20px">Revise o documento e escolha uma opção abaixo</div>
         <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
           <button class="btn-wiz-next" style="min-width:180px" onclick="generatePDF()">Baixar PDF</button>
-          <button id="btn-enviar-autentique" class="btn-wiz-next" style="min-width:180px;background:#7c3aed" onclick="enviarParaAutentique()">Enviar para Autentique</button>
+          <button type="button" id="btn-enviar-autentique" tabindex="-1" class="btn-wiz-next" style="min-width:180px;background:#7c3aed" onclick="event.preventDefault();event.stopPropagation();window._autentiqueCliqueExplicito=true;enviarParaAutentique();return false;">Enviar para Autentique</button>
         </div>
         <div id="autentique-status-container"></div>
       </div>
@@ -12139,6 +12139,15 @@ document.addEventListener('keydown', function(e) {
 
 /* ========== Autentique ========== */
 async function enviarParaAutentique() {
+  // Proteção: só executa se chamada por clique humano explícito (flag
+  // setada no onclick do botão). Qualquer chamada programática é ignorada.
+  if (!window._autentiqueCliqueExplicito) {
+    console.warn('[AUTENTIQUE] chamada sem clique explícito — ignorada');
+    return;
+  }
+  // Consome a flag para impedir reuso acidental no mesmo carregamento
+  window._autentiqueCliqueExplicito = false;
+
   var inspId = (typeof wizard !== 'undefined' && wizard)
     ? (wizard.inspection_id || wizard.inspectionId || wizard.id) : null;
   if (!inspId) {
