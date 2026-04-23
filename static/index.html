@@ -11159,7 +11159,24 @@ function wiz6Concluir() {
 })();
 // ========== FIM ETAPA 6 ==========
 </script>
-<button class="db-help-btn" onclick="showManual()" title="Manual do usuário">?</button>
+<!-- Overlay ajuda contextual -->
+<div id="ajuda-overlay" onclick="fecharAjuda()"></div>
+
+<!-- Painel de ajuda contextual -->
+<div id="ajuda-panel">
+  <div class="ajuda-header">
+    <p class="ajuda-header-title">💡 Ajuda — izyLAUDO</p>
+    <button type="button" class="ajuda-header-close" onclick="fecharAjuda()">✕ fechar</button>
+  </div>
+  <div class="ajuda-context" id="ajuda-context-label">📍 Carregando...</div>
+  <div class="ajuda-body" id="ajuda-body-content"></div>
+  <div class="ajuda-footer">
+    <button type="button" class="ajuda-nav" onclick="navAjuda(-1)">← anterior</button>
+    <button type="button" class="ajuda-nav" onclick="navAjuda(1)">próxima →</button>
+  </div>
+</div>
+
+<button class="db-help-btn" onclick="abrirAjuda()" title="Ajuda contextual">?</button>
 
 <!-- MODAL COMO FUNCIONA -->
 <div id="modal-como-funciona" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;z-index:9999;background:rgba(0,0,0,0.5);align-items:flex-end;justify-content:center">
@@ -11860,6 +11877,224 @@ function onSelectCorretor(sel) {
   var elEmail = document.getElementById('wi-corr-email');
   if (elEmail) elEmail.value = email;
 }
+
+/* ========== Sistema de Ajuda Contextual ========== */
+
+var AJUDA_CONTEUDOS = [
+  {
+    id: 'dashboard',
+    contexto: '\ud83d\udccd Voc\u00ea est\u00e1 em: Painel principal',
+    html:
+      '<p class="ajuda-desc">Aqui voc\u00ea tem uma vis\u00e3o completa da sua conta. O card azul mostra seu saldo dispon\u00edvel, quantas fotos foram analisadas no m\u00eas (Convencional e Premium) e o total gasto.</p>' +
+      '<div class="ajuda-tip"><strong>\ud83d\udcb3 Como recarregar cr\u00e9ditos</strong>' +
+      'Clique em <b>"+ Comprar cr\u00e9ditos"</b>. O pagamento \u00e9 processado pelo <b>Mercado Pago</b> com total seguran\u00e7a \u2014 aceita <b>Pix</b> (aprova\u00e7\u00e3o na hora) e <b>cart\u00e3o de cr\u00e9dito</b>. M\u00ednimo de R$ 5,00 por recarga.</div>' +
+      '<div class="ajuda-next"><strong>O que voc\u00ea encontra aqui</strong>' +
+      'Criar nova vistoria \u00b7 Comprar cr\u00e9ditos \u00b7 Ver laudos em andamento \u00b7 Consultar fotos usadas no m\u00eas \u00b7 Acessar extrato de uso \u00b7 Acessar Configura\u00e7\u00f5es da conta</div>'
+  },
+  {
+    id: 'configuracoes',
+    contexto: '\ud83d\udccd Voc\u00ea est\u00e1 em: Configura\u00e7\u00f5es',
+    html:
+      '<p class="ajuda-desc">Configure os dados que aparecem automaticamente em todos os seus laudos \u2014 feito uma vez, nunca mais precisa repetir.</p>' +
+      '<div class="ajuda-tip"><strong>\ud83d\udca1 Como aproveitar ao m\u00e1ximo</strong>' +
+      'Se voc\u00ea \u00e9 <b>imobili\u00e1ria</b>, cadastre o perfil da empresa e os corretores da equipe. Na hora de criar um laudo, basta selecionar o corretor na lista \u2014 CPF, CRECI e email preenchem automaticamente na etapa 4, e os dados da imobili\u00e1ria j\u00e1 aparecem pr\u00e9-preenchidos.<br><br>' +
+      'Se \u00e9 <b>corretor aut\u00f4nomo</b>, cadastre seus dados pessoais. Se \u00e9 <b>propriet\u00e1rio</b>, cadastre nome, CPF e contato.</div>' +
+      '<div class="ajuda-next"><strong>O que voc\u00ea encontra aqui</strong>' +
+      'Perfil da empresa \u00b7 Cadastro e edi\u00e7\u00e3o de corretores (nome, CRECI ou CPF, email) \u00b7 Alterar tipo de perfil \u00b7 Excluir conta</div>'
+  },
+  {
+    id: 'meus-laudos',
+    contexto: '\ud83d\udccd Voc\u00ea est\u00e1 em: Meus laudos',
+    html:
+      '<p class="ajuda-desc">Aqui ficam todos os laudos criados na sua conta \u2014 em andamento e conclu\u00eddos.</p>' +
+      '<div class="ajuda-tip"><strong>\u270f\ufe0f Edi\u00e7\u00e3o de laudos</strong>' +
+      'Laudos <b>em andamento</b> podem ser editados a qualquer momento. Laudos <b>conclu\u00eddos</b> tamb\u00e9m podem ser editados, <b>exceto os que j\u00e1 foram enviados para assinatura pelo Autentique</b> \u2014 ap\u00f3s assinados, o documento \u00e9 bloqueado permanentemente.</div>' +
+      '<div class="ajuda-next"><strong>O que voc\u00ea encontra aqui</strong>' +
+      'Lista de todos os laudos \u00b7 Filtros por tipo (Entrada, Sa\u00edda, Temporada) \u00b7 Editar \u00b7 Baixar PDF \u00b7 Excluir \u00b7 Busca por endere\u00e7o ou c\u00f3digo</div>'
+  },
+  {
+    id: 'extrato',
+    contexto: '\ud83d\udccd Voc\u00ea est\u00e1 em: Extrato de uso',
+    html:
+      '<p class="ajuda-desc">Hist\u00f3rico completo de todas as movimenta\u00e7\u00f5es da sua conta \u2014 recargas e d\u00e9bitos por an\u00e1lise de fotos.</p>' +
+      '<div class="ajuda-tip"><strong>\ud83d\udcca O que voc\u00ea v\u00ea aqui</strong>' +
+      'Cada linha mostra a data, o tipo de opera\u00e7\u00e3o (recarga ou an\u00e1lise), a quantidade de fotos, o valor cobrado e o saldo ap\u00f3s a opera\u00e7\u00e3o. Use o extrato para conferir se todas as an\u00e1lises foram cobradas corretamente.</div>' +
+      '<div class="ajuda-next"><strong>Detalhes do extrato</strong>' +
+      'Hist\u00f3rico de recargas via Mercado Pago \u00b7 D\u00e9bitos por an\u00e1lise (convencional e premium) \u00b7 Data e hor\u00e1rio \u00b7 Saldo ap\u00f3s cada movimenta\u00e7\u00e3o</div>'
+  },
+  {
+    id: 'etapa1',
+    contexto: '\ud83d\udccd Etapa 1 de 8 \u2014 Tipo de vistoria',
+    html:
+      '<p class="ajuda-desc">O tipo de vistoria define o modelo do laudo, os campos de assinatura e o que ser\u00e1 comparado.</p>' +
+      '<div class="ajuda-tip"><strong>Qual tipo escolher?</strong>' +
+      '<b>Entrada</b> \u2014 registra o estado inicial do im\u00f3vel no in\u00edcio da loca\u00e7\u00e3o. \u00c9 o documento base para futuras compara\u00e7\u00f5es.<br><br>' +
+      '<b>Sa\u00edda</b> \u2014 compara o estado atual com a vistoria de entrada, identificando danos ou altera\u00e7\u00f5es.<br><br>' +
+      '<b>Temporada</b> \u2014 usada em loca\u00e7\u00f5es de curta dura\u00e7\u00e3o, com registro de check-in e check-out.</div>' +
+      '<div class="ajuda-next"><strong>Pr\u00f3xima etapa</strong>Etapa 2 \u2014 Definir quem realiza a vistoria</div>'
+  },
+  {
+    id: 'etapa2',
+    contexto: '\ud83d\udccd Etapa 2 de 8 \u2014 Quem realiza',
+    html:
+      '<p class="ajuda-desc">Essa escolha define quais campos aparecem na etapa 4 e o modelo de assinatura do laudo. Cada tipo de usu\u00e1rio tem seu laudo j\u00e1 configurado para a sua situa\u00e7\u00e3o espec\u00edfica.</p>' +
+      '<div class="ajuda-tip"><strong>Qual escolher?</strong>' +
+      '<b>Imobili\u00e1ria / Corretor</b> \u2014 o laudo ter\u00e1 campos para o corretor avaliador e a imobili\u00e1ria. Se voc\u00ea cadastrou esses dados em Configura\u00e7\u00f5es, aparecem pr\u00e9-preenchidos automaticamente.<br><br>' +
+      '<b>Propriet\u00e1rio direto</b> \u2014 laudo mais simples, sem campos de corretor. Ideal para quem vistoria o pr\u00f3prio im\u00f3vel.</div>' +
+      '<div class="ajuda-next"><strong>Pr\u00f3xima etapa</strong>Etapa 3 \u2014 Preencher os dados do im\u00f3vel</div>'
+  },
+  {
+    id: 'etapa3',
+    contexto: '\ud83d\udccd Etapa 3 de 8 \u2014 Dados do im\u00f3vel',
+    html:
+      '<p class="ajuda-desc">Preencha as informa\u00e7\u00f5es do im\u00f3vel vistoriado. Esses dados aparecem no cabe\u00e7alho do laudo.</p>' +
+      '<div class="ajuda-tip"><strong>\ud83d\udca1 CEP autom\u00e1tico</strong>' +
+      'Digite o CEP e clique em <b>"Buscar CEP"</b> \u2014 o endere\u00e7o completo \u00e9 preenchido automaticamente. Informe n\u00famero e complemento manualmente.</div>' +
+      '<div class="ajuda-alert"><strong>\u26a0\ufe0f Aten\u00e7\u00e3o \u2014 Im\u00f3vel mobiliado</strong>' +
+      'Ative <b>"Im\u00f3vel mobiliado"</b> APENAS se o im\u00f3vel for <b>100% mobiliado</b> \u2014 entregue completo com m\u00f3veis, roupas de cama, toalhas, talheres, copos e utens\u00edlios dom\u00e9sticos. Nesse caso a etapa 6 exibe uma lista completa para registro individual.<br><br>' +
+      '<b>Se o im\u00f3vel tiver apenas alguns equipamentos</b> (geladeira, fog\u00e3o, mesas, cadeiras), <b>N\u00c3O ative este bot\u00e3o</b> \u2014 a IA j\u00e1 identifica e descreve esses itens automaticamente pelas fotos.</div>' +
+      '<div class="ajuda-next"><strong>Pr\u00f3xima etapa</strong>Etapa 4 \u2014 Cadastrar as partes envolvidas</div>'
+  },
+  {
+    id: 'etapa4',
+    contexto: '\ud83d\udccd Etapa 4 de 8 \u2014 Partes envolvidas',
+    html:
+      '<p class="ajuda-desc">Cadastre todos os envolvidos na vistoria. Voc\u00ea pode adicionar m\u00faltiplos locadores e locat\u00e1rios clicando em <b>"+ Adicionar outro"</b>.</p>' +
+      '<div class="ajuda-tip"><strong>\ud83d\udca1 Preenchimento autom\u00e1tico</strong>' +
+      'Se voc\u00ea \u00e9 imobili\u00e1ria e cadastrou corretores em <b>Configura\u00e7\u00f5es</b>, selecione o nome no dropdown \u2014 CPF, CRECI e email preenchem automaticamente. Os dados da imobili\u00e1ria tamb\u00e9m j\u00e1 aparecem pr\u00e9-preenchidos.<br><br>' +
+      'Para adicionar a imobili\u00e1ria ao laudo, clique em <b>"+ Adicionar imobili\u00e1ria"</b> no final da p\u00e1gina.</div>' +
+      '<div class="ajuda-next"><strong>Pr\u00f3xima etapa</strong>Etapa 5 \u2014 Selecionar os ambientes do im\u00f3vel</div>'
+  },
+  {
+    id: 'etapa5',
+    contexto: '\ud83d\udccd Etapa 5 de 8 \u2014 Ambientes',
+    html:
+      '<p class="ajuda-desc">Selecione todos os ambientes que existem no im\u00f3vel. A IA vai descrever cada um automaticamente com base nas fotos da pr\u00f3xima etapa.</p>' +
+      '<div class="ajuda-tip"><strong>\ud83d\udca1 Como selecionar</strong>' +
+      'Use os bot\u00f5es <b>+</b> e <b>\u2013</b> para definir a quantidade de cada ambiente (ex: 2 dormit\u00f3rios, 1 banheiro social). Clique em <b>"+ Outro ambiente"</b> para adicionar ambientes personalizados.<br><br>' +
+      'N\u00e3o esque\u00e7a de incluir \u00e1reas externas, garagem e \u00e1reas de servi\u00e7o se existirem.</div>' +
+      '<div class="ajuda-next"><strong>Pr\u00f3xima etapa</strong>Etapa 6 \u2014 Fotografar ou fazer upload das fotos de cada ambiente</div>'
+  },
+  {
+    id: 'etapa6',
+    contexto: '\ud83d\udccd Etapa 6 de 8 \u2014 Fotos dos ambientes',
+    html:
+      '<p class="ajuda-desc">Essa \u00e9 a etapa mais importante. Fotografe ou fa\u00e7a upload das fotos \u2014 a IA analisa e descreve automaticamente paredes, pisos, teto, m\u00f3veis e equipamentos.</p>' +
+      '<div class="ajuda-tip"><strong>\ud83d\udcf8 Como fotografar bem</strong>' +
+      'Tire no m\u00ednimo <b>4 fotos por ambiente</b>. Fotografe em sequ\u00eancia:<br>' +
+      '1. <b>Vis\u00e3o geral</b> do ambiente<br>' +
+      '2. <b>Piso</b> \u2014 agache e fotografe de frente<br>' +
+      '3. <b>Teto</b> \u2014 aponte a c\u00e2mera para cima<br>' +
+      '4. <b>Paredes</b> \u2014 cada parede separada<br>' +
+      '5. <b>Defeitos ou marcas</b> \u2014 aproxime e use zoom<br>' +
+      '6. <b>Equipamentos</b> \u2014 fotografe a plaqueta de identifica\u00e7\u00e3o</div>' +
+      '<div class="ajuda-tip"><strong>\ud83d\udcf1 Celular \u00b7 \ud83d\udda5\ufe0f Computador</strong>' +
+      'No <b>celular</b>: fotografe diretamente pela c\u00e2mera do dispositivo.<br>' +
+      'No <b>computador</b>: fa\u00e7a upload das fotos j\u00e1 tiradas.<br><br>' +
+      'Se o im\u00f3vel for <b>mobiliado ou de temporada</b>, o sistema exibe itens espec\u00edficos de mob\u00edlia para registro individual.</div>' +
+      '<div class="ajuda-next"><strong>Pr\u00f3xima etapa</strong>Etapa 7 \u2014 Revisar o laudo gerado pela IA</div>'
+  },
+  {
+    id: 'etapa7',
+    contexto: '\ud83d\udccd Etapa 7 de 8 \u2014 Revis\u00e3o',
+    html:
+      '<p class="ajuda-desc">A IA j\u00e1 gerou as descri\u00e7\u00f5es de todos os ambientes. Agora revise, corrija e complemente antes de gerar o PDF final.</p>' +
+      '<div class="ajuda-tip"><strong>\u270f\ufe0f Como revisar</strong>' +
+      'Leia com aten\u00e7\u00e3o cada descri\u00e7\u00e3o. Voc\u00ea pode <b>editar qualquer texto</b> diretamente \u2014 clique no campo e corrija. Se a IA n\u00e3o identificou algum item importante, adicione manualmente. Verifique tamb\u00e9m os dados das partes envolvidas.</div>' +
+      '<div class="ajuda-alert"><strong>\u26a0\ufe0f Aten\u00e7\u00e3o</strong>' +
+      'Essa \u00e9 sua \u00faltima chance de ajustar o laudo antes de gerar o PDF. Ap\u00f3s enviar para assinatura pelo Autentique, o documento n\u00e3o poder\u00e1 mais ser editado.</div>' +
+      '<div class="ajuda-next"><strong>Pr\u00f3xima etapa</strong>Etapa 8 \u2014 Gerar e baixar o PDF com validade jur\u00eddica</div>'
+  },
+  {
+    id: 'etapa8',
+    contexto: '\ud83d\udccd Etapa 8 de 8 \u2014 Laudo pronto',
+    html:
+      '<p class="ajuda-desc">Seu laudo est\u00e1 pronto! O PDF gerado tem validade jur\u00eddica e pode ser usado em processos de loca\u00e7\u00e3o, renova\u00e7\u00e3o ou devolu\u00e7\u00e3o de im\u00f3vel.</p>' +
+      '<div class="ajuda-tip"><strong>\ud83d\udcc4 O que fazer com o laudo</strong>' +
+      'Clique em <b>"Baixar PDF"</b> para salvar e compartilhar por WhatsApp ou email.<br><br>' +
+      'Ou envie diretamente para assinatura digital pelo <b>Autentique</b> \u2014 as partes recebem por email e assinam com validade jur\u00eddica. Ap\u00f3s assinado, o laudo \u00e9 bloqueado e n\u00e3o pode mais ser editado.</div>' +
+      '<div class="ajuda-next"><strong>O que voc\u00ea pode fazer</strong>' +
+      'Baixar o PDF \u00b7 Compartilhar por WhatsApp ou email \u00b7 Enviar para assinatura pelo Autentique \u00b7 Voltar para editar (antes de assinar) \u00b7 Criar uma nova vistoria</div>'
+  }
+];
+
+var _ajudaIndex = 0;
+
+function _getAjudaIndexAtual() {
+  try {
+    // Wizard ativo? Prioridade máxima
+    var pgWizard = document.getElementById('page-wizard');
+    if (pgWizard && pgWizard.classList.contains('active')
+        && typeof wizard !== 'undefined' && wizard && typeof wizard.step === 'number') {
+      var stepMap = {0:'etapa1',1:'etapa2',2:'etapa3',3:'etapa4',4:'etapa5',5:'etapa6',6:'etapa7',7:'etapa8'};
+      var stepId = stepMap[wizard.step] || 'etapa1';
+      var idx = AJUDA_CONTEUDOS.findIndex(function(c){ return c.id === stepId; });
+      if (idx !== -1) return idx;
+    }
+    // Página Meus Laudos?
+    var pgML = document.getElementById('page-meus-laudos');
+    if (pgML && pgML.classList.contains('active')) {
+      var idx = AJUDA_CONTEUDOS.findIndex(function(c){ return c.id === 'meus-laudos'; });
+      if (idx !== -1) return idx;
+    }
+    // Dashboard → qual aba interna?
+    var tabPerfil = document.getElementById('dash-tab-perfil');
+    if (tabPerfil && tabPerfil.classList.contains('active')) {
+      var idx = AJUDA_CONTEUDOS.findIndex(function(c){ return c.id === 'configuracoes'; });
+      if (idx !== -1) return idx;
+    }
+    var tabEstat = document.getElementById('dash-tab-estatisticas');
+    if (tabEstat && tabEstat.classList.contains('active')) {
+      var idx = AJUDA_CONTEUDOS.findIndex(function(c){ return c.id === 'extrato'; });
+      if (idx !== -1) return idx;
+    }
+  } catch(e) {
+    console.warn('_getAjudaIndexAtual:', e);
+  }
+  // Default: dashboard
+  var defIdx = AJUDA_CONTEUDOS.findIndex(function(c){ return c.id === 'dashboard'; });
+  return defIdx === -1 ? 0 : defIdx;
+}
+
+function _renderAjuda(index) {
+  var conteudo = AJUDA_CONTEUDOS[index];
+  if (!conteudo) return;
+  var ctxEl = document.getElementById('ajuda-context-label');
+  var bodyEl = document.getElementById('ajuda-body-content');
+  if (ctxEl) ctxEl.textContent = conteudo.contexto;
+  if (bodyEl) bodyEl.innerHTML = conteudo.html;
+  _ajudaIndex = index;
+}
+
+function abrirAjuda() {
+  _ajudaIndex = _getAjudaIndexAtual();
+  _renderAjuda(_ajudaIndex);
+  var ov = document.getElementById('ajuda-overlay');
+  var pn = document.getElementById('ajuda-panel');
+  if (ov) ov.classList.add('visivel');
+  if (pn) pn.classList.add('visivel');
+}
+
+function fecharAjuda() {
+  var ov = document.getElementById('ajuda-overlay');
+  var pn = document.getElementById('ajuda-panel');
+  if (ov) ov.classList.remove('visivel');
+  if (pn) pn.classList.remove('visivel');
+}
+
+function navAjuda(dir) {
+  var n = AJUDA_CONTEUDOS.length;
+  var next = (_ajudaIndex + dir + n) % n;
+  _renderAjuda(next);
+}
+
+// ESC fecha o painel
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') {
+    var pn = document.getElementById('ajuda-panel');
+    if (pn && pn.classList.contains('visivel')) fecharAjuda();
+  }
+});
 </script>
 </body>
 </html>
