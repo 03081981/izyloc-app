@@ -3382,6 +3382,10 @@ window._openFotoModal = function(imgSrc) {
         <input id="wi-imob-cnpj" type="text" placeholder="00.000.000/0001-00" style="border:0.5px solid #e2e8f0;border-radius:8px;padding:9px 12px;font-size: var(--fs-sm);color:#1a2540;font-family:inherit;background:#fff;outline:none"/>
       </div>
       <div style="display:flex;flex-direction:column;gap:4px">
+        <label style="font-size: var(--fs-xs);font-weight: var(--fw-semibold);color:#4a5568">CRECI da imobiliária</label>
+        <input id="wi-imob-creci" type="text" placeholder="CRECI-SP 12345-J" style="border:0.5px solid #e2e8f0;border-radius:8px;padding:9px 12px;font-size: var(--fs-sm);color:#1a2540;font-family:inherit;background:#fff;outline:none"/>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:4px">
         <label style="font-size: var(--fs-xs);font-weight: var(--fw-semibold);color:#4a5568">Telefone</label>
         <input id="wi-imob-phone" type="tel" placeholder="Telefone (opcional)" style="border:0.5px solid #e2e8f0;border-radius:8px;padding:9px 12px;font-size: var(--fs-sm);color:#1a2540;font-family:inherit;background:#fff;outline:none"/>
       </div>
@@ -6432,7 +6436,10 @@ window.addEventListener('resize', () => {
         gotoWStep(next);
         if (next === 2) wiz4AtualizarLabelsTemporada();
         if (next === 3) {
-if (typeof initAmbientes === 'function') initAmbientes();
+          if (typeof initAmbientes === 'function') initAmbientes();
+          if (typeof preencherEtapa4ComConfiguracoes === 'function') {
+            try { preencherEtapa4ComConfiguracoes(); } catch(e){ console.warn('preencherEtapa4:', e); }
+          }
         }
         if (next === 5 && typeof initItensEtapa === 'function') initItensEtapa();
         if (next === 6 && typeof window.initRevisao === 'function') window.initRevisao();
@@ -11385,6 +11392,69 @@ async function excluirConta() {
     setTimeout(function(){ window.location.href = '/'; }, 2000);
   } else {
     showToast('Erro ao excluir conta', 'error');
+  }
+}
+
+/* ========== Pré-preenchimento da Etapa 4 (Partes envolvidas) ========== */
+function _setIfEmpty(id, value) {
+  if (!value) return;
+  var el = document.getElementById(id);
+  if (el && !el.value) el.value = value;
+}
+
+async function preencherEtapa4ComConfiguracoes() {
+  try {
+    var perfil = await api('GET', '/api/config/profile');
+    if (!perfil || !perfil.ok || !perfil.tipo_perfil) return;
+
+    var realizador = (typeof wizard !== 'undefined' && wizard && wizard.realizador) ? wizard.realizador : 'imobiliária';
+
+    if (perfil.tipo_perfil === 'imobiliaria' && realizador === 'imobiliária') {
+      // Expandir bloco da imobiliária automaticamente se tiver dados
+      if (perfil.nome_imobiliaria) {
+        var btnImob = document.getElementById('btn-add-imob');
+        var imobExpand = document.getElementById('imob-expand');
+        if (btnImob) btnImob.style.display = 'none';
+        if (imobExpand) imobExpand.style.display = 'block';
+        _setIfEmpty('wi-imob-name', perfil.nome_imobiliaria);
+        _setIfEmpty('wi-imob-cnpj', perfil.cnpj);
+        _setIfEmpty('wi-imob-creci', perfil.creci_imobiliaria);
+        _setIfEmpty('wi-imob-phone', perfil.telefone);
+        _setIfEmpty('wi-imob-email', perfil.email_contato);
+      }
+
+      // Popular dropdown / pré-preencher corretor quando há corretores cadastrados
+      var res = await api('GET', '/api/config/corretores');
+      var corretores = (res && res.corretores) || [];
+      _popularDropdownCorretores(corretores);
+
+    } else if (perfil.tipo_perfil === 'corretor' && realizador === 'imobiliária') {
+      // Corretor autônomo: preenche seus próprios dados no bloco corretor
+      _setIfEmpty('wi-corr-name', perfil.nome);
+      _setIfEmpty('wi-corr-creci', perfil.creci || '');
+      _setIfEmpty('wi-corr-cpf', perfil.cpf || '');
+      _setIfEmpty('wi-corr-phone', perfil.telefone);
+      _setIfEmpty('wi-corr-email', perfil.email_contato);
+
+    } else if (perfil.tipo_perfil === 'proprietario') {
+      // Proprietário: preenche como locador 1
+      _setIfEmpty('loc-name-0', perfil.nome);
+      _setIfEmpty('loc-cpf-0', perfil.cpf);
+      _setIfEmpty('loc-phone-0', perfil.telefone);
+      _setIfEmpty('loc-email-0', perfil.email_contato);
+    }
+  } catch(e) {
+    console.warn('preencherEtapa4ComConfiguracoes:', e);
+  }
+}
+
+function _popularDropdownCorretores(corretores) {
+  // Default no-op; real implementation ligada ao dropdown é sobrescrita no commit 3.
+  if (!corretores || corretores.length === 0) return;
+  if (corretores.length === 1) {
+    _setIfEmpty('wi-corr-name', corretores[0].nome);
+    _setIfEmpty('wi-corr-creci', corretores[0].creci || '');
+    _setIfEmpty('wi-corr-cpf', corretores[0].cpf || '');
   }
 }
 </script>
