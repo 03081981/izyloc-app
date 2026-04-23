@@ -9892,9 +9892,10 @@ function wiz6AnalisarBatchSub(idx, subNome, si, modo = 'convencional') {
   var imagens = fotosParaIA.map(function(f) {
     return {base64: f.base64, mime_type: f.mime || 'image/jpeg'};
   });
+  var _tok_ab_sub = (typeof localStorage !== 'undefined') ? (localStorage.getItem('izylo_token') || '') : '';
   fetch('/api/analisar-batch', {
     method: 'POST',
-    headers: {'Content-Type': 'application/json'},
+    headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer ' + _tok_ab_sub},
     body: JSON.stringify({
       imagens: imagens,
       ambiente: subNome,
@@ -9902,13 +9903,25 @@ function wiz6AnalisarBatchSub(idx, subNome, si, modo = 'convencional') {
       tipo_analise: modo
     })
   })
-  .then(function(resp) { return resp.json(); })
+  .then(function(resp) { return resp.json().then(function(d){ d.__httpStatus = resp.status; return d; }); })
   .then(function(dados) {
+    if (dados && dados.code === 'insufficient_balance') {
+      if (typeof showToast === 'function') {
+        showToast('Saldo insuficiente para analisar ' + imagens.length + ' foto(s). Adicione creditos.', 'error');
+      }
+      setTimeout(function(){
+        if (typeof abrirModalComprarCreditos === 'function') abrirModalComprarCreditos();
+      }, 1500);
+      sd.jaAnalisou = false;
+      wiz6RenderAmbCard(_wiz6AmbIdx);
+      return;
+    }
     sd.resumo = dados.resumo || '';
     sd.jaAnalisou = true;
     sd.estado_geral = dados.estado_geral || 'Bom';
     wiz6RenderAmbCard(_wiz6AmbIdx);
     wiz6AtualizarProgress();
+    if (typeof wiz6DescontarCréditos === 'function') wiz6DescontarCréditos(imagens.length, modo);
   })
   .catch(function(err) {
     console.error('Erro batch sub:', err);
@@ -10297,9 +10310,10 @@ function wiz6AnalisarBatch(ambIdx, modo = 'convencional') {
       var imagens = fotosParaIA.map(function(f) {
         return {base64: f.base64, mime_type: f.mime || 'image/jpeg'};
       });
+      var _tok_ab_main = (typeof localStorage !== 'undefined') ? (localStorage.getItem('izylo_token') || '') : '';
       fetch('/api/analisar-batch', {
     method: 'POST',
-    headers: {'Content-Type': 'application/json'},
+    headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer ' + _tok_ab_main},
     body: JSON.stringify({
       imagens: imagens,
       ambiente: nome,
@@ -10307,13 +10321,30 @@ function wiz6AnalisarBatch(ambIdx, modo = 'convencional') {
       tipo_analise: modo
     })
   })
-  .then(function(resp) { return resp.json(); })
+  .then(function(resp) { return resp.json().then(function(d){ d.__httpStatus = resp.status; return d; }); })
   .then(function(dados) {
+    if (dados && dados.code === 'insufficient_balance') {
+      if (!wizard.itensData[ambIdx]) wizard.itensData[ambIdx] = {};
+      wizard.itensData[ambIdx].jaAnalisou = false;
+      if (statusEl) {
+        statusEl.innerHTML = '\u26a0 Saldo insuficiente';
+        statusEl.style.background = '#fef2f2';
+        statusEl.style.color = '#991b1b';
+      }
+      if (typeof showToast === 'function') {
+        showToast('Saldo insuficiente para analisar ' + fotos.length + ' foto(s). Adicione creditos.', 'error');
+      }
+      setTimeout(function(){
+        if (typeof abrirModalComprarCreditos === 'function') abrirModalComprarCreditos();
+      }, 1500);
+      wiz6RenderAmbCard(ambIdx);
+      return;
+    }
     if (!wizard.itensData[ambIdx]) wizard.itensData[ambIdx] = {};
     wizard.itensData[ambIdx].resumo = dados.resumo || '';
     wizard.itensData[ambIdx].jaAnalisou = true;
     wizard.itensData[ambIdx].estado_geral = dados.estado_geral || 'Bom';
-    wiz6DescontarCréditos(fotos.length);
+    wiz6DescontarCréditos(fotos.length, modo);
     wiz6RenderAmbCard(ambIdx);
     wiz6AtualizarProgress();
 
@@ -10526,9 +10557,10 @@ function wiz6ProxAmb() {
     var descricoes = fotos.map(function(f) {
       return {item: f.item, descrição: f.descrição, estado: f.estado};
     });
+    var _tok_cons = (typeof localStorage !== 'undefined') ? (localStorage.getItem('izylo_token') || '') : '';
     fetch('/api/consolidar-ambiente', {
       method: 'POST',
-      headers: {'Content-Type': 'application/json'},
+      headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer ' + _tok_cons},
       body: JSON.stringify({ambiente: nome, descricoes: descricoes, tipo_analise: 'convencional'})
     })
     .then(function(resp) { return resp.json(); })
@@ -10887,10 +10919,37 @@ function _wiz6EstadoClass(estado) {
   return 'estado-pendente';
 }
 
-function wiz6DescontarCréditos(qtd, tipo) {
-  var preco = tipo === 'video' ? 0.90 : 0.50;
-  console.log('Créditos usados:', qtd, tipo, '= R$', (qtd * preco).toFixed(2));
-  // TODO: conectar ao sistema de créditos do Mercado Pago
+async function wiz6DescontarCréditos(qtd, tipo) {
+  // O débito real acontece no backend (AnalisarBatchHandler). Aqui só atualizamos
+  // o saldo exibido no cliente via /api/auth/me após a análise ter sido processada.
+  try {
+    var me = null;
+    if (typeof api === 'function') {
+      me = await api('GET', '/api/auth/me');
+    } else {
+      var tk = (typeof localStorage !== 'undefined') ? (localStorage.getItem('izylo_token') || '') : '';
+      var r = await fetch('/api/auth/me', {headers: {'Authorization': 'Bearer ' + tk}});
+      me = await r.json();
+    }
+    if (me && typeof me.balance_cents === 'number') {
+      if (typeof currentUser !== 'undefined' && currentUser) {
+        currentUser.balance_cents = me.balance_cents;
+        currentUser.balance_formatted = me.balance_formatted || currentUser.balance_formatted;
+      }
+      var saldoBrl = 'R$ ' + (me.balance_cents / 100).toFixed(2).replace('.', ',');
+      ['db-saldo-valor','db-balance-brl'].forEach(function(id){
+        var el = document.getElementById(id);
+        if (el) {
+          if (id === 'db-balance-brl') el.textContent = 'Saldo: ' + saldoBrl;
+          else el.textContent = saldoBrl;
+        }
+      });
+      // Atualizar tambem a label de fotos restantes na sidebar, se existir
+      try { if (typeof atualizaCardDashboard === 'function') atualizaCardDashboard(); } catch(e){}
+    }
+  } catch(e) {
+    console.warn('wiz6DescontarCréditos: erro ao atualizar saldo', e);
+  }
 }
 
 // ── CONCLUIR VISTORIA ────────────────────────────────────
