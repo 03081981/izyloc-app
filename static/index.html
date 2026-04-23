@@ -2369,6 +2369,156 @@ textarea.obs-geral{width:100%;background:#f8fafc;border:.5px solid #dce3ed;borde
   font-family: inherit;
 }
 #wi-corr-select-wrap select:focus { border-color: #2d7dd2; box-shadow: 0 0 0 3px rgba(45,125,210,0.12); }
+
+/* ===== Ajuda Contextual ===== */
+#ajuda-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.3);
+  z-index: 9990;
+}
+#ajuda-overlay.visivel { display: block; }
+
+#ajuda-panel {
+  position: fixed;
+  top: 50%;
+  right: 24px;
+  transform: translateY(-50%);
+  width: 320px;
+  background: #fff;
+  border-radius: 16px;
+  overflow: hidden;
+  z-index: 9991;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+  display: none;
+  flex-direction: column;
+  max-height: 85vh;
+}
+#ajuda-panel.visivel { display: flex; }
+.ajuda-header {
+  background: #1e3a5f;
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+}
+.ajuda-header-title {
+  color: #fff;
+  font-size: 14px;
+  font-weight: 500;
+  margin: 0;
+}
+.ajuda-header-close {
+  background: rgba(255,255,255,0.15);
+  border: none;
+  color: #fff;
+  border-radius: 6px;
+  padding: 4px 10px;
+  font-size: 12px;
+  cursor: pointer;
+}
+.ajuda-context {
+  background: #f0f7ff;
+  border-bottom: 0.5px solid #e2e8f0;
+  padding: 8px 16px;
+  font-size: 11px;
+  color: #2d7dd2;
+  font-weight: 500;
+  flex-shrink: 0;
+}
+.ajuda-body {
+  padding: 16px;
+  overflow-y: auto;
+  flex: 1;
+}
+.ajuda-desc {
+  font-size: 13px;
+  color: #334155;
+  line-height: 1.6;
+  margin: 0 0 14px;
+}
+.ajuda-tip {
+  background: #fefce8;
+  border: 0.5px solid #fde047;
+  border-radius: 10px;
+  padding: 12px 14px;
+  font-size: 12px;
+  color: #854d0e;
+  margin-bottom: 12px;
+  line-height: 1.6;
+}
+.ajuda-tip strong {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 4px;
+  color: #713f12;
+}
+.ajuda-alert {
+  background: #fff7ed;
+  border: 0.5px solid #fed7aa;
+  border-radius: 10px;
+  padding: 12px 14px;
+  font-size: 12px;
+  color: #9a3412;
+  margin-bottom: 12px;
+  line-height: 1.6;
+}
+.ajuda-alert strong {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+.ajuda-next {
+  background: #f8fafc;
+  border: 0.5px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 12px 14px;
+  font-size: 12px;
+  color: #475569;
+  line-height: 1.6;
+}
+.ajuda-next strong {
+  display: block;
+  color: #1e3a5f;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  margin-bottom: 4px;
+}
+.ajuda-footer {
+  border-top: 0.5px solid #e2e8f0;
+  padding: 10px 16px;
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+}
+.ajuda-nav {
+  flex: 1;
+  padding: 7px;
+  border-radius: 8px;
+  border: 0.5px solid #e2e8f0;
+  background: #fff;
+  font-size: 12px;
+  color: #475569;
+  cursor: pointer;
+  text-align: center;
+}
+.ajuda-nav:hover { background: #f1f5f9; }
+
+@media (max-width: 600px) {
+  #ajuda-panel {
+    right: 12px;
+    left: 12px;
+    width: auto;
+    top: auto;
+    bottom: 80px;
+    transform: none;
+    max-height: 70vh;
+  }
+}
 </style>
 <script>
 window._openFotoModal = function(imgSrc) {
