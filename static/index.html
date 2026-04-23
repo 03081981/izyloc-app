@@ -2908,8 +2908,9 @@ window._openFotoModal = function(imgSrc) {
             <div id="cfg-lista-corretores"></div>
             <div class="cfg-add-box">
               <p class="cfg-add-title">Adicionar novo corretor</p>
-              <div class="cfg-grid-3">
+              <div class="cfg-grid-2">
                 <div class="cfg-field"><label>Nome completo *</label><input type="text" id="cfg-corretor-nome" placeholder="Nome do corretor"></div>
+                <div class="cfg-field"><label>Email</label><input type="email" id="cfg-corretor-email" placeholder="email@corretor.com"></div>
                 <div class="cfg-field"><label>CRECI (se tiver)</label><input type="text" id="cfg-corretor-creci" placeholder="CRECI-SP 00000"></div>
                 <div class="cfg-field"><label>CPF (se não tiver CRECI)</label><input type="text" id="cfg-corretor-cpf" placeholder="000.000.000-00"></div>
               </div>
@@ -11348,17 +11349,77 @@ function renderizarCorretores(lista) {
     return;
   }
   el.innerHTML = lista.map(function(c) {
-    var doc = (c.creci ? 'CRECI: ' + _cfgEscapeHtml(c.creci) : '')
+    var id = _cfgEscapeHtml(c.id || '');
+    var nome = _cfgEscapeHtml(c.nome || '');
+    var creci = _cfgEscapeHtml(c.creci || '');
+    var cpf = _cfgEscapeHtml(c.cpf || '');
+    var email = _cfgEscapeHtml(c.email || '');
+    var doc = (c.creci ? 'CRECI: ' + creci : '')
             + ((c.creci && c.cpf) ? ' \u00b7 ' : '')
-            + (c.cpf ? 'CPF: ' + _cfgEscapeHtml(c.cpf) : '');
-    return '<div class="cfg-corretor-item">'
-      + '<div>'
-      +   '<p class="cfg-corretor-nome">' + _cfgEscapeHtml(c.nome) + '</p>'
-      +   '<p class="cfg-corretor-doc">' + doc + '</p>'
+            + (c.cpf ? 'CPF: ' + cpf : '')
+            + (c.email ? ' \u00b7 ' + email : '');
+    return '<div class="cfg-corretor-item" id="cfg-corr-item-' + id + '" style="flex-direction:column;align-items:stretch;">'
+      + '<div style="display:flex;align-items:center;justify-content:space-between;gap:10px;">'
+      +   '<div>'
+      +     '<p class="cfg-corretor-nome">' + nome + '</p>'
+      +     '<p class="cfg-corretor-doc">' + doc + '</p>'
+      +   '</div>'
+      +   '<div style="display:flex;gap:6px;flex-shrink:0;">'
+      +     '<button type="button" class="cfg-corretor-edit-btn" onclick="editarCorretor(\'' + id + '\')">Editar</button>'
+      +     '<button type="button" class="cfg-corretor-remover" onclick="removerCorretor(\'' + id + '\')">Remover</button>'
+      +   '</div>'
       + '</div>'
-      + '<button type="button" class="cfg-corretor-remover" onclick="removerCorretor(\'' + _cfgEscapeHtml(c.id) + '\')">Remover</button>'
+      + '<div class="cfg-corretor-edit-form" id="cfg-corr-form-' + id + '">'
+      +   '<div class="cfg-corretor-edit-grid">'
+      +     '<div class="cfg-field"><label>Nome completo *</label>'
+      +       '<input type="text" id="cfg-edit-nome-' + id + '" value="' + nome + '"></div>'
+      +     '<div class="cfg-field"><label>Email</label>'
+      +       '<input type="email" id="cfg-edit-email-' + id + '" value="' + email + '" placeholder="email@corretor.com"></div>'
+      +     '<div class="cfg-field"><label>CRECI (se tiver)</label>'
+      +       '<input type="text" id="cfg-edit-creci-' + id + '" value="' + creci + '" placeholder="CRECI-SP 00000"></div>'
+      +     '<div class="cfg-field"><label>CPF (se n\u00e3o tiver CRECI)</label>'
+      +       '<input type="text" id="cfg-edit-cpf-' + id + '" value="' + cpf + '" placeholder="000.000.000-00"></div>'
+      +   '</div>'
+      +   '<div class="cfg-corretor-edit-actions">'
+      +     '<button type="button" class="cfg-btn-salvar-edit" onclick="salvarEdicaoCorretor(\'' + id + '\')">Salvar</button>'
+      +     '<button type="button" class="cfg-btn-cancelar-edit" onclick="cancelarEdicaoCorretor(\'' + id + '\')">Cancelar</button>'
+      +   '</div>'
+      + '</div>'
     + '</div>';
   }).join('');
+}
+
+function editarCorretor(id) {
+  document.querySelectorAll('.cfg-corretor-edit-form.aberto').forEach(function(f){
+    if (f.id !== 'cfg-corr-form-' + id) f.classList.remove('aberto');
+  });
+  var form = document.getElementById('cfg-corr-form-' + id);
+  if (form) form.classList.toggle('aberto');
+}
+
+function cancelarEdicaoCorretor(id) {
+  var form = document.getElementById('cfg-corr-form-' + id);
+  if (form) form.classList.remove('aberto');
+}
+
+async function salvarEdicaoCorretor(id) {
+  var nome  = (_cfgGetVal('cfg-edit-nome-'  + id) || '').trim();
+  var email = (_cfgGetVal('cfg-edit-email-' + id) || '').trim();
+  var creci = (_cfgGetVal('cfg-edit-creci-' + id) || '').trim();
+  var cpf   = (_cfgGetVal('cfg-edit-cpf-'   + id) || '').trim();
+
+  if (!nome) { showToast('Nome é obrigatório', 'error'); return; }
+  if (!creci && !cpf) { showToast('Informe o CRECI ou o CPF', 'error'); return; }
+
+  var res = await api('PATCH', '/api/config/corretores/' + encodeURIComponent(id),
+                      { nome: nome, email: email, creci: creci, cpf: cpf });
+  if (res && res.ok) {
+    showToast('Corretor atualizado!', 'success');
+    var r2 = await api('GET', '/api/config/corretores');
+    renderizarCorretores((r2 && r2.corretores) || []);
+  } else {
+    showToast((res && res.error) || 'Erro ao salvar alterações', 'error');
+  }
 }
 
 async function salvarPerfil() {
@@ -11402,13 +11463,15 @@ function _cfgGetVal(id) {
 
 async function adicionarCorretor() {
   var nome = _cfgGetVal('cfg-corretor-nome').trim();
+  var email = _cfgGetVal('cfg-corretor-email').trim();
   var creci = _cfgGetVal('cfg-corretor-creci').trim();
   var cpf = _cfgGetVal('cfg-corretor-cpf').trim();
   if (!nome) { showToast('Nome é obrigatório', 'error'); return; }
   if (!creci && !cpf) { showToast('Informe o CRECI ou o CPF', 'error'); return; }
-  var res = await api('POST', '/api/config/corretores', { nome: nome, creci: creci, cpf: cpf });
+  var res = await api('POST', '/api/config/corretores', { nome: nome, email: email, creci: creci, cpf: cpf });
   if (res && res.ok) {
     _cfgSetVal('cfg-corretor-nome','');
+    _cfgSetVal('cfg-corretor-email','');
     _cfgSetVal('cfg-corretor-creci','');
     _cfgSetVal('cfg-corretor-cpf','');
     showToast('Corretor adicionado!', 'success');
