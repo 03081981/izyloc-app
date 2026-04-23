@@ -3368,13 +3368,15 @@ class SendToAutentiqueHandler(BaseHandler):
             if not autentique_id:
                 return self.err('Autentique nao retornou id do documento', 502)
 
-            # 7. Atualizar inspeção
+            # 7. Atualizar inspecao (status 'aguardando_assinatura' casa com
+            #    o que o frontend espera em _mlStatusKey — label
+            #    'Aguard. assinatura').
             conn.execute(
                 "UPDATE inspections SET "
                 "autentique_doc_id=?, "
                 "autentique_status='sent', "
                 "autentique_sent_at=NOW(), "
-                "status='awaiting_signature', "
+                "status='aguardando_assinatura', "
                 "updated_at=? "
                 "WHERE id=? AND user_id=?",
                 (str(autentique_id),
@@ -3456,29 +3458,71 @@ class AutentiqueWebhookHandler(BaseHandler):
     """Recebe notificacao do Autentique quando o documento for assinado."""
     def post(self):
         try:
+            # Log de headers para identificar qual campo traz o secret
+            try:
+                _hdrs = {}
+                for k, v in self.request.headers.items():
+                    _hdrs[k] = v
+                print('[AUTENTIQUE_WEBHOOK] headers: '
+                      + json.dumps(_hdrs)[:800], flush=True)
+            except Exception:
+                pass
+
+            # Validar secret (quando configurado). Aceita os nomes de header
+            # mais comuns do Autentique.
+            WEBHOOK_SECRET = os.environ.get('AUTENTIQUE_WEBHOOK_SECRET', '')
+            if WEBHOOK_SECRET:
+                got = (
+                    self.request.headers.get('X-Autentique-Token')
+                    or self.request.headers.get('X-Autentique-Secret')
+                    or self.request.headers.get('X-Webhook-Secret')
+                    or self.request.headers.get('Authorization', '').replace(
+                        'Bearer ', '').strip()
+                    or ''
+                )
+                if got != WEBHOOK_SECRET:
+                    print('[AUTENTIQUE_WEBHOOK] Invalid secret - rejecting '
+                          '(got_tier=' + ('present' if got else 'empty')
+                          + ')', flush=True)
+                    self.set_status(401)
+                    self.write({'ok': False, 'error': 'Invalid secret'})
+                    return
+
             data = self.json_body() or {}
-            print('[AUTENTIQUE_WEBHOOK] ' + json.dumps(data)[:800], flush=True)
+            print('[AUTENTIQUE_WEBHOOK] received: '
+                  + json.dumps(data)[:800], flush=True)
 
             event = (data.get('event') or '').strip()
             doc = data.get('document') or {}
             doc_id = doc.get('id') or data.get('document_id') or ''
 
-            if doc_id and event in ('document_signed', 'document_finished',
-                                    'signed', 'finished'):
+            if not doc_id:
+                self.write({'ok': True})
+                return
+
+            # document.finished e as variantes que ja aceitavamos
+            finished_events = (
+                'document.finished', 'document_finished',
+                'document_signed', 'document.signed',
+                'signed', 'finished'
+            )
+            if event in finished_events:
                 conn = get_conn()
                 try:
+                    # 'assinado_digital' eh o valor que o frontend reconhece
+                    # em _mlStatusKey -> label 'Assinado digital'
                     conn.execute(
                         "UPDATE inspections SET "
                         "autentique_status='signed', "
-                        "status='signed', "
+                        "status='assinado_digital', "
                         "updated_at=? "
                         "WHERE autentique_doc_id=?",
                         (datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
                          str(doc_id))
                     )
                     conn.commit()
-                    print('[AUTENTIQUE_WEBHOOK] signed doc=' + str(doc_id),
-                          flush=True)
+                    print('[AUTENTIQUE_WEBHOOK] signed doc=' + str(doc_id)
+                          + ' event=' + event, flush=True)
                 finally:
                     try: conn.close()
                     except Exception: pass

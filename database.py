@@ -193,6 +193,10 @@ def init_db():
         "ALTER TABLE inspections ADD COLUMN IF NOT EXISTS autentique_doc_id VARCHAR(100)",
         "ALTER TABLE inspections ADD COLUMN IF NOT EXISTS autentique_status VARCHAR(30) DEFAULT 'pending'",
         "ALTER TABLE inspections ADD COLUMN IF NOT EXISTS autentique_sent_at TIMESTAMPTZ",
+        # Normaliza status antigos do Autentique (eram em ingles; agora em PT
+        # pra casar com _mlStatusKey do frontend)
+        "UPDATE inspections SET status='aguardando_assinatura' WHERE status='awaiting_signature'",
+        "UPDATE inspections SET status='assinado_digital' WHERE status='signed'",
     ]:
         _run_migration(c, raw, sql)
 
