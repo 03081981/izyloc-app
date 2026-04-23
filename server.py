@@ -3227,29 +3227,49 @@ class SendToAutentiqueHandler(BaseHandler):
                     'action': 'SIGN',
                 })
 
+            # DEBUG: ver conteúdo raw dos JSONs antes da extração
+            _dbg_locs_raw = insp.get('locadores_json')
+            _dbg_locsat_raw = insp.get('locatarios_json')
+            print('[AUTENTIQUE_DEBUG] locadores_json raw: '
+                  + repr(_dbg_locs_raw)[:500], flush=True)
+            print('[AUTENTIQUE_DEBUG] locatarios_json raw: '
+                  + repr(_dbg_locsat_raw)[:500], flush=True)
+            print('[AUTENTIQUE_DEBUG] legacy fields: locador_name='
+                  + repr(insp.get('locador_name'))
+                  + ' locador_email=' + repr(insp.get('locador_email'))
+                  + ' locatario_name=' + repr(insp.get('locatario_name'))
+                  + ' locatario_email=' + repr(insp.get('locatario_email'))
+                  + ' corretor_name=' + repr(insp.get('corretor_name'))
+                  + ' corretor_email=' + repr(insp.get('corretor_email'))
+                  + ' imob_name=' + repr(insp.get('imobiliaria_name'))
+                  + ' imob_email=' + repr(insp.get('imobiliaria_email')),
+                  flush=True)
+
             # Locadores do JSON
             try:
-                locs_json = insp.get('locadores_json') or '[]'
+                locs_json = _dbg_locs_raw or '[]'
                 locs = json.loads(locs_json) if isinstance(locs_json, str) else locs_json
                 if isinstance(locs, list):
                     for p in locs:
                         if isinstance(p, dict):
                             _add_signer(p.get('name') or p.get('nome'),
                                         p.get('email'))
-            except Exception:
-                pass
+            except Exception as _e_loc:
+                print('[AUTENTIQUE_DEBUG] locs parse err: ' + str(_e_loc),
+                      flush=True)
 
             # Locatarios do JSON
             try:
-                locsat_json = insp.get('locatarios_json') or '[]'
+                locsat_json = _dbg_locsat_raw or '[]'
                 locsat = json.loads(locsat_json) if isinstance(locsat_json, str) else locsat_json
                 if isinstance(locsat, list):
                     for p in locsat:
                         if isinstance(p, dict):
                             _add_signer(p.get('name') or p.get('nome'),
                                         p.get('email'))
-            except Exception:
-                pass
+            except Exception as _e_lct:
+                print('[AUTENTIQUE_DEBUG] locsat parse err: ' + str(_e_lct),
+                      flush=True)
 
             # Fallback: campos diretos (legacy)
             _add_signer(insp.get('locador_name'), insp.get('locador_email'))
@@ -3257,6 +3277,9 @@ class SendToAutentiqueHandler(BaseHandler):
             # Corretor e imobiliaria
             _add_signer(insp.get('corretor_name'), insp.get('corretor_email'))
             _add_signer(insp.get('imobiliaria_name'), insp.get('imobiliaria_email'))
+
+            print('[AUTENTIQUE_DEBUG] signers final: '
+                  + repr(signers)[:500], flush=True)
 
             if not signers:
                 return self.err(

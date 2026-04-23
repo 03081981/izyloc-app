@@ -5228,8 +5228,43 @@ function dashGerarPdf(id) {
   try { if (typeof openInspection === 'function') { openInspection(id); setTimeout(function(){ if (typeof gerarLaudoPDF === 'function') gerarLaudoPDF(); }, 400); return; } } catch(e){}
   alert('Abra o laudo e gere o PDF.');
 }
-function dashAbrirAutentique(id) {
-  alert('Fluxo Autentique em breve.');
+async function dashAbrirAutentique(id) {
+  if (!id) {
+    if (typeof showToast === 'function') showToast('ID do laudo nao informado', 'error');
+    return;
+  }
+  var confirmMsg = 'Enviar laudo para assinatura digital pelo Autentique?\n\n'
+    + 'Todos os signatários cadastrados na etapa 4 receberão um email '
+    + 'para assinar.\n\n'
+    + 'Após assinado, o laudo não poderá mais ser editado.';
+  if (!confirm(confirmMsg)) return;
+
+  try { if (typeof showLoading === 'function') showLoading('Enviando para Autentique...'); } catch(e){}
+  try {
+    var result = await api('POST',
+      '/api/inspections/' + encodeURIComponent(id) + '/send-to-autentique',
+      {});
+    try { if (typeof hideLoading === 'function') hideLoading(); } catch(e){}
+
+    if (result && result.ok && result.sent) {
+      var n = result.signers_count || 0;
+      if (typeof showToast === 'function') {
+        showToast('Laudo enviado para ' + n + ' signatário(s)! '
+          + 'Cada um receberá um email para assinar.', 'success');
+      }
+      // Recarregar lista de laudos para refletir status atualizado
+      try { if (typeof renderMeusLaudos === 'function') renderMeusLaudos(); } catch(e){}
+      try { if (typeof loadDashboard === 'function') loadDashboard(); } catch(e){}
+    } else {
+      var errMsg = (result && result.error) || 'Erro ao enviar para Autentique';
+      if (typeof showToast === 'function') showToast(errMsg, 'error');
+    }
+  } catch(e) {
+    try { if (typeof hideLoading === 'function') hideLoading(); } catch(_){}
+    if (typeof showToast === 'function') {
+      showToast((e && e.message) || 'Erro ao enviar para Autentique', 'error');
+    }
+  }
 }
 function dashExcluir(id) {
   var insp = (window._allInspections || []).find(function(x){ return x && x.id === id; }) || {};
@@ -6706,6 +6741,20 @@ window.addEventListener('resize', () => {
         }
         if (next === 5 && typeof initItensEtapa === 'function') initItensEtapa();
         if (next === 6 && typeof window.initRevisao === 'function') window.initRevisao();
+        if (next === 7) {
+          // Reset visual do botao Autentique na entrada da Etapa 8
+          try {
+            var _btnA = document.getElementById('btn-enviar-autentique');
+            if (_btnA) {
+              _btnA.disabled = false;
+              _btnA.textContent = 'Enviar para Autentique';
+              _btnA.style.background = '#7c3aed';
+            }
+            var _cA = document.getElementById('autentique-status-container');
+            if (_cA) _cA.innerHTML = '';
+            window._autentiqueCliqueExplicito = false;
+          } catch(e){}
+        }
       }
     };
 
