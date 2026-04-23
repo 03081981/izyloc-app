@@ -3706,6 +3706,10 @@ function switchTab(tab, el) {
   var titles = {vistorias:'Dashboard', estatisticas:'Fotos e consumo', perfil:'Configurações'};
   var tt = document.getElementById('dash-topbar-title');
   if (tt) tt.textContent = titles[tab] || 'Dashboard';
+  // Ao abrir Configuracoes, carregar o perfil do usuario
+  if (tab === 'perfil' && typeof carregarConfiguracoes === 'function') {
+    try { carregarConfiguracoes(); } catch(e){}
+  }
 }
 
 // ── Sync profile fields across tabs ──
@@ -11175,6 +11179,202 @@ if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', _mpVerificarRetorno);
 } else {
   _mpVerificarRetorno();
+}
+
+/* ========== Configurações ========== */
+var _cfgPerfilSelecionado = null;
+
+async function carregarConfiguracoes() {
+  try {
+    var perfil = await api('GET', '/api/config/profile');
+    if (!perfil || !perfil.ok || !perfil.tipo_perfil) {
+      abrirModalPerfil();
+      return;
+    }
+    renderizarConfigPerfil(perfil);
+    if (perfil.tipo_perfil === 'imobiliaria') {
+      var res = await api('GET', '/api/config/corretores');
+      renderizarCorretores((res && res.corretores) || []);
+    }
+  } catch(e) {
+    abrirModalPerfil();
+  }
+}
+
+function renderizarConfigPerfil(p) {
+  var imo = document.getElementById('cfg-imobiliaria');
+  var cor = document.getElementById('cfg-corretor');
+  var pro = document.getElementById('cfg-proprietario');
+  if (imo) imo.style.display = 'none';
+  if (cor) cor.style.display = 'none';
+  if (pro) pro.style.display = 'none';
+
+  if (p.tipo_perfil === 'imobiliaria') {
+    if (imo) imo.style.display = 'block';
+    _cfgSetVal('cfg-nome-imobiliaria', p.nome_imobiliaria);
+    _cfgSetVal('cfg-cnpj', p.cnpj);
+    _cfgSetVal('cfg-creci-imobiliaria', p.creci_imobiliaria);
+    _cfgSetVal('cfg-telefone-imob', p.telefone);
+    _cfgSetVal('cfg-email-imob', p.email_contato);
+  } else if (p.tipo_perfil === 'corretor') {
+    if (cor) cor.style.display = 'block';
+    _cfgSetVal('cfg-nome-corretor', p.nome);
+    _cfgSetVal('cfg-cpf-corretor', p.cpf);
+    _cfgSetVal('cfg-creci-corretor', p.creci);
+    _cfgSetVal('cfg-telefone-corretor', p.telefone);
+    _cfgSetVal('cfg-email-corretor', p.email_contato);
+  } else if (p.tipo_perfil === 'proprietario') {
+    if (pro) pro.style.display = 'block';
+    _cfgSetVal('cfg-nome-prop', p.nome);
+    _cfgSetVal('cfg-cpf-prop', p.cpf);
+    _cfgSetVal('cfg-telefone-prop', p.telefone);
+    _cfgSetVal('cfg-email-prop', p.email_contato);
+  }
+}
+
+function _cfgSetVal(id, v) {
+  var el = document.getElementById(id);
+  if (el) el.value = v || '';
+}
+
+function _cfgEscapeHtml(s) {
+  return String(s == null ? '' : s)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+
+function renderizarCorretores(lista) {
+  var el = document.getElementById('cfg-lista-corretores');
+  if (!el) return;
+  if (!lista || !lista.length) {
+    el.innerHTML = '<p style="color:#9ca3af;font-size:13px;margin:0 0 8px;">Nenhum corretor cadastrado ainda.</p>';
+    return;
+  }
+  el.innerHTML = lista.map(function(c) {
+    var doc = (c.creci ? 'CRECI: ' + _cfgEscapeHtml(c.creci) : '')
+            + ((c.creci && c.cpf) ? ' \u00b7 ' : '')
+            + (c.cpf ? 'CPF: ' + _cfgEscapeHtml(c.cpf) : '');
+    return '<div class="cfg-corretor-item">'
+      + '<div>'
+      +   '<p class="cfg-corretor-nome">' + _cfgEscapeHtml(c.nome) + '</p>'
+      +   '<p class="cfg-corretor-doc">' + doc + '</p>'
+      + '</div>'
+      + '<button type="button" class="cfg-corretor-remover" onclick="removerCorretor(\'' + _cfgEscapeHtml(c.id) + '\')">Remover</button>'
+    + '</div>';
+  }).join('');
+}
+
+async function salvarPerfil() {
+  var imo = document.getElementById('cfg-imobiliaria');
+  var cor = document.getElementById('cfg-corretor');
+  var tipo = (imo && imo.style.display !== 'none') ? 'imobiliaria'
+    : (cor && cor.style.display !== 'none') ? 'corretor' : 'proprietario';
+
+  var data = { tipo_perfil: tipo };
+  if (tipo === 'imobiliaria') {
+    data.nome_imobiliaria = _cfgGetVal('cfg-nome-imobiliaria');
+    data.cnpj = _cfgGetVal('cfg-cnpj');
+    data.creci_imobiliaria = _cfgGetVal('cfg-creci-imobiliaria');
+    data.telefone = _cfgGetVal('cfg-telefone-imob');
+    data.email_contato = _cfgGetVal('cfg-email-imob');
+  } else if (tipo === 'corretor') {
+    data.nome = _cfgGetVal('cfg-nome-corretor');
+    data.cpf = _cfgGetVal('cfg-cpf-corretor');
+    data.creci = _cfgGetVal('cfg-creci-corretor');
+    data.telefone = _cfgGetVal('cfg-telefone-corretor');
+    data.email_contato = _cfgGetVal('cfg-email-corretor');
+  } else {
+    data.nome = _cfgGetVal('cfg-nome-prop');
+    data.cpf = _cfgGetVal('cfg-cpf-prop');
+    data.telefone = _cfgGetVal('cfg-telefone-prop');
+    data.email_contato = _cfgGetVal('cfg-email-prop');
+  }
+
+  var res = await api('POST', '/api/config/profile', data);
+  if (res && res.ok) {
+    showToast('Dados salvos com sucesso!', 'success');
+  } else {
+    showToast('Erro ao salvar dados', 'error');
+  }
+}
+
+function _cfgGetVal(id) {
+  var el = document.getElementById(id);
+  return el ? el.value : '';
+}
+
+async function adicionarCorretor() {
+  var nome = _cfgGetVal('cfg-corretor-nome').trim();
+  var creci = _cfgGetVal('cfg-corretor-creci').trim();
+  var cpf = _cfgGetVal('cfg-corretor-cpf').trim();
+  if (!nome) { showToast('Nome é obrigatório', 'error'); return; }
+  if (!creci && !cpf) { showToast('Informe o CRECI ou o CPF', 'error'); return; }
+  var res = await api('POST', '/api/config/corretores', { nome: nome, creci: creci, cpf: cpf });
+  if (res && res.ok) {
+    _cfgSetVal('cfg-corretor-nome','');
+    _cfgSetVal('cfg-corretor-creci','');
+    _cfgSetVal('cfg-corretor-cpf','');
+    showToast('Corretor adicionado!', 'success');
+    var r2 = await api('GET', '/api/config/corretores');
+    renderizarCorretores((r2 && r2.corretores) || []);
+  } else {
+    showToast((res && res.error) || 'Erro ao adicionar corretor', 'error');
+  }
+}
+
+async function removerCorretor(id) {
+  if (!confirm('Remover este corretor?')) return;
+  var res = await api('DELETE', '/api/config/corretores/' + encodeURIComponent(id));
+  if (res && res.ok) {
+    showToast('Corretor removido', 'success');
+    var r2 = await api('GET', '/api/config/corretores');
+    renderizarCorretores((r2 && r2.corretores) || []);
+  } else {
+    showToast('Erro ao remover corretor', 'error');
+  }
+}
+
+function abrirModalPerfil() {
+  _cfgPerfilSelecionado = null;
+  document.querySelectorAll('.cfg-perfil-opcao').forEach(function(el){ el.classList.remove('selected'); });
+  var ov = document.getElementById('cfg-modal-perfil');
+  if (ov) ov.classList.add('visivel');
+}
+
+function fecharModalPerfil() {
+  var ov = document.getElementById('cfg-modal-perfil');
+  if (ov) ov.classList.remove('visivel');
+}
+
+function selecionarPerfil(tipo) {
+  _cfgPerfilSelecionado = tipo;
+  document.querySelectorAll('.cfg-perfil-opcao').forEach(function(el){ el.classList.remove('selected'); });
+  var opt = document.getElementById('opt-' + tipo);
+  if (opt) opt.classList.add('selected');
+}
+
+async function confirmarPerfil() {
+  if (!_cfgPerfilSelecionado) { showToast('Selecione um perfil', 'error'); return; }
+  var res = await api('POST', '/api/config/profile', { tipo_perfil: _cfgPerfilSelecionado });
+  if (res && res.ok) {
+    fecharModalPerfil();
+    carregarConfiguracoes();
+  } else {
+    showToast('Erro ao salvar perfil', 'error');
+  }
+}
+
+async function excluirConta() {
+  if (!confirm('Tem certeza? Todos os seus laudos e dados serão apagados permanentemente.')) return;
+  if (!confirm('Esta ação é irreversível. Confirmar exclusão definitiva da conta?')) return;
+  var res = await api('DELETE', '/api/config/account');
+  if (res && res.ok) {
+    showToast('Conta excluída', 'success');
+    try { localStorage.removeItem('izylo_token'); } catch(e){}
+    setTimeout(function(){ window.location.href = '/'; }, 2000);
+  } else {
+    showToast('Erro ao excluir conta', 'error');
+  }
 }
 </script>
 </body>
