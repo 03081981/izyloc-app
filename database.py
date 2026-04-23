@@ -418,5 +418,43 @@ def init_db():
         c.execute("INSERT INTO settings (key, value, value_type, category, description) VALUES (%s, %s, %s, %s, %s) ON CONFLICT (key) DO NOTHING", _s_row)
     raw.commit()
 
+    # user_profile_config: perfil de conta (imobiliaria | corretor | proprietario)
+    c.execute("""
+        CREATE TABLE IF NOT EXISTS user_profile_config (
+            id VARCHAR(64) PRIMARY KEY,
+            user_id VARCHAR(64) NOT NULL UNIQUE,
+            tipo_perfil VARCHAR(20) NOT NULL DEFAULT 'imobiliaria',
+            nome VARCHAR(200),
+            cpf VARCHAR(20),
+            creci VARCHAR(50),
+            telefone VARCHAR(30),
+            email_contato VARCHAR(200),
+            nome_imobiliaria VARCHAR(200),
+            cnpj VARCHAR(20),
+            creci_imobiliaria VARCHAR(50),
+            created_at TIMESTAMPTZ DEFAULT NOW(),
+            updated_at TIMESTAMPTZ DEFAULT NOW()
+        )
+    """)
+    raw.commit()
+    c.execute("CREATE INDEX IF NOT EXISTS idx_user_profile_config_user ON user_profile_config(user_id)")
+    raw.commit()
+
+    # corretores: cadastro da equipe da imobiliaria
+    c.execute("""
+        CREATE TABLE IF NOT EXISTS corretores (
+            id VARCHAR(64) PRIMARY KEY,
+            user_id VARCHAR(64) NOT NULL,
+            nome VARCHAR(200) NOT NULL,
+            creci VARCHAR(50),
+            cpf VARCHAR(20),
+            ativo BOOLEAN DEFAULT TRUE,
+            created_at TIMESTAMPTZ DEFAULT NOW()
+        )
+    """)
+    raw.commit()
+    c.execute("CREATE INDEX IF NOT EXISTS idx_corretores_user ON corretores(user_id)")
+    raw.commit()
+
     raw.close()
     print("✅ Banco de dados PostgreSQL inicializado com sucesso")
