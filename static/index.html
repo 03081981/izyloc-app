@@ -2253,6 +2253,49 @@ textarea.obs-geral{width:100%;background:#f8fafc;border:.5px solid #dce3ed;borde
 @media (max-width: 480px) {
   #ml-counters { grid-template-columns: repeat(2, 1fr) !important; }
 }
+
+/* ===== Configuracoes ===== */
+.cfg-section { background: #fff; border: 1px solid #e5e7eb; border-radius: 12px; padding: 20px 22px; margin-bottom: 14px; }
+.cfg-section.danger { border-color: #fca5a5; }
+.cfg-section-title { font-size: 15px; font-weight: 500; color: #1f2937; margin-bottom: 4px; }
+.cfg-section-desc { font-size: 12px; color: #6b7280; margin-bottom: 16px; }
+.cfg-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px; }
+.cfg-grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 8px; }
+.cfg-field label { display: block; font-size: 11px; font-weight: 500; color: #6b7280; margin-bottom: 5px; }
+.cfg-field input { width: 100%; box-sizing: border-box; padding: 9px 11px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 13px; color: #1f2937; outline: none; background: #fff; }
+.cfg-field input:focus { border-color: #2d7dd2; box-shadow: 0 0 0 3px rgba(45,125,210,0.12); }
+.cfg-btn-blue { background: #2d7dd2; color: #fff; border: none; border-radius: 8px; padding: 9px 20px; font-size: 13px; font-weight: 500; cursor: pointer; }
+.cfg-btn-blue:hover { background: #236fb9; }
+.cfg-btn-gray { background: #f3f4f6; color: #374151; border: 1px solid #d1d5db; border-radius: 8px; padding: 9px 20px; font-size: 13px; font-weight: 500; cursor: pointer; margin-right: 8px; }
+.cfg-btn-gray:hover { background: #e5e7eb; }
+.cfg-btn-red { background: #fff; color: #b91c1c; border: 1px solid #fca5a5; border-radius: 8px; padding: 9px 20px; font-size: 13px; font-weight: 500; cursor: pointer; }
+.cfg-btn-red:hover { background: #fee2e2; }
+.cfg-corretor-item { display: flex; align-items: center; justify-content: space-between; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; padding: 10px 14px; margin-bottom: 8px; }
+.cfg-corretor-nome { font-size: 13px; font-weight: 500; color: #1f2937; margin: 0; }
+.cfg-corretor-doc { font-size: 11px; color: #6b7280; margin: 2px 0 0; }
+.cfg-corretor-remover { background: #fff; border: 1px solid #fca5a5; color: #b91c1c; border-radius: 6px; padding: 4px 10px; font-size: 11px; cursor: pointer; }
+.cfg-corretor-remover:hover { background: #fee2e2; }
+.cfg-add-box { border-top: 1px solid #e5e7eb; padding-top: 14px; margin-top: 6px; }
+.cfg-add-title { font-size: 12px; font-weight: 500; color: #6b7280; margin-bottom: 10px; }
+.cfg-hint { font-size: 11px; color: #9ca3af; margin: 4px 0 8px; }
+.cfg-perfil-badge { display: inline-flex; align-items: center; gap: 6px; background: #dbeafe; color: #1e40af; border-radius: 8px; padding: 5px 12px; font-size: 12px; font-weight: 500; margin-bottom: 14px; }
+
+/* Modal selecao de perfil */
+.cfg-modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 9999; align-items: center; justify-content: center; padding: 20px; }
+.cfg-modal-overlay.visivel { display: flex; }
+.cfg-modal-box { background: #fff; border-radius: 14px; padding: 28px 24px; width: 100%; max-width: 440px; box-shadow: 0 20px 50px rgba(0,0,0,0.25); }
+.cfg-modal-title { font-size: 18px; font-weight: 600; color: #1f2937; margin: 0 0 6px; }
+.cfg-modal-desc { font-size: 13px; color: #6b7280; margin: 0 0 20px; }
+.cfg-perfil-opcao { border: 1.5px solid #e5e7eb; border-radius: 12px; padding: 14px 16px; margin-bottom: 10px; cursor: pointer; display: flex; align-items: center; gap: 14px; transition: border-color .15s ease, background .15s ease; }
+.cfg-perfil-opcao:hover { border-color: #2d7dd2; background: #f0f7ff; }
+.cfg-perfil-opcao.selected { border-color: #2d7dd2; background: #f0f7ff; }
+.cfg-perfil-opcao-icon { font-size: 24px; line-height: 1; flex-shrink: 0; }
+.cfg-perfil-opcao-titulo { font-size: 14px; font-weight: 500; color: #1f2937; margin: 0 0 2px; }
+.cfg-perfil-opcao-desc { font-size: 12px; color: #6b7280; margin: 0; }
+
+@media (max-width: 640px) {
+  .cfg-grid-2, .cfg-grid-3 { grid-template-columns: 1fr; }
+}
 </style>
 <script>
 window._openFotoModal = function(imgSrc) {
@@ -2733,34 +2776,136 @@ window._openFotoModal = function(imgSrc) {
 
     <!-- TAB: PERFIL -->
     <div id="dash-tab-perfil" class="dash-tab-content">
-      <div class="profile-card">
-        <div class="profile-header">
-          <div class="profile-avatar-lg" id="profile-avatar-lg">M</div>
-          <div class="profile-header-info">
-            <div class="profile-header-name" id="profile-name-header">Usuário</div>
-            <div class="profile-header-role">Vistoriador</div>
+      <!-- Modal selecao de perfil (primeiro acesso ou troca de tipo) -->
+      <div class="cfg-modal-overlay" id="cfg-modal-perfil">
+        <div class="cfg-modal-box">
+          <p class="cfg-modal-title">Como você usa o izyLAUDO?</p>
+          <p class="cfg-modal-desc">Isso define quais campos aparecem nas suas configurações e nos laudos.</p>
+          <div class="cfg-perfil-opcao" onclick="selecionarPerfil('imobiliaria')" id="opt-imobiliaria">
+            <span class="cfg-perfil-opcao-icon">🏢</span>
+            <div>
+              <p class="cfg-perfil-opcao-titulo">Imobiliária</p>
+              <p class="cfg-perfil-opcao-desc">Tenho uma equipe de corretores</p>
+            </div>
+          </div>
+          <div class="cfg-perfil-opcao" onclick="selecionarPerfil('corretor')" id="opt-corretor">
+            <span class="cfg-perfil-opcao-icon">🤝</span>
+            <div>
+              <p class="cfg-perfil-opcao-titulo">Corretor autônomo</p>
+              <p class="cfg-perfil-opcao-desc">Trabalho por conta própria</p>
+            </div>
+          </div>
+          <div class="cfg-perfil-opcao" onclick="selecionarPerfil('proprietario')" id="opt-proprietario">
+            <span class="cfg-perfil-opcao-icon">🏠</span>
+            <div>
+              <p class="cfg-perfil-opcao-titulo">Proprietário</p>
+              <p class="cfg-perfil-opcao-desc">Vistorio meu próprio imóvel</p>
+            </div>
+          </div>
+          <div style="display:flex;gap:10px;margin-top:20px;">
+            <button type="button" class="cfg-btn-gray" onclick="fecharModalPerfil()">Cancelar</button>
+            <button type="button" class="cfg-btn-blue" onclick="confirmarPerfil()">Confirmar</button>
           </div>
         </div>
-        <div class="profile-body">
-          <div class="profile-field">
-            <span class="profile-field-label">Nome</span>
-            <span class="profile-field-value" id="profile-name-val">—</span>
+      </div>
+
+      <!-- Tela configuracoes -->
+      <div id="cfg-conteudo">
+
+        <!-- IMOBILIARIA -->
+        <div id="cfg-imobiliaria" style="display:none">
+          <div class="cfg-section">
+            <div class="cfg-perfil-badge">🏢 Imobiliária</div>
+            <p class="cfg-section-title">Perfil da empresa</p>
+            <p class="cfg-section-desc">Aparece pré-preenchido na etapa 4 de cada novo laudo.</p>
+            <div class="cfg-grid-2">
+              <div class="cfg-field"><label>Nome da imobiliária</label><input type="text" id="cfg-nome-imobiliaria" placeholder="Ex: Imobiliária Silva Ltda"></div>
+              <div class="cfg-field"><label>CNPJ</label><input type="text" id="cfg-cnpj" placeholder="00.000.000/0000-00"></div>
+              <div class="cfg-field"><label>CRECI da imobiliária</label><input type="text" id="cfg-creci-imobiliaria" placeholder="CRECI-SP 12345-J"></div>
+              <div class="cfg-field"><label>Telefone</label><input type="text" id="cfg-telefone-imob" placeholder="(00) 00000-0000"></div>
+              <div class="cfg-field" style="grid-column:span 2"><label>Email de contato</label><input type="email" id="cfg-email-imob" placeholder="contato@imobiliaria.com.br"></div>
+            </div>
+            <button type="button" class="cfg-btn-blue" onclick="salvarPerfil()">Salvar perfil</button>
           </div>
-          <div class="profile-field">
-            <span class="profile-field-label">E-mail</span>
-            <span class="profile-field-value" id="profile-email">—</span>
+
+          <div class="cfg-section">
+            <p class="cfg-section-title">Corretores da equipe</p>
+            <p class="cfg-section-desc">Na etapa 4, selecione o corretor na lista — sem digitar toda vez.</p>
+            <div id="cfg-lista-corretores"></div>
+            <div class="cfg-add-box">
+              <p class="cfg-add-title">Adicionar novo corretor</p>
+              <div class="cfg-grid-3">
+                <div class="cfg-field"><label>Nome completo *</label><input type="text" id="cfg-corretor-nome" placeholder="Nome do corretor"></div>
+                <div class="cfg-field"><label>CRECI (se tiver)</label><input type="text" id="cfg-corretor-creci" placeholder="CRECI-SP 00000"></div>
+                <div class="cfg-field"><label>CPF (se não tiver CRECI)</label><input type="text" id="cfg-corretor-cpf" placeholder="000.000.000-00"></div>
+              </div>
+              <p class="cfg-hint">* Informe pelo menos CRECI ou CPF.</p>
+              <button type="button" class="cfg-btn-blue" onclick="adicionarCorretor()">+ Adicionar corretor</button>
+            </div>
           </div>
-          <div class="profile-field">
-            <span class="profile-field-label">Empresa</span>
-            <span class="profile-field-value" id="profile-company-val">—</span>
-          </div>
-          <div class="profile-field" style="border:none;padding-top:20px">
-            <button class="btn btn-ghost" onclick="logout()">
-              <svg viewBox="0 0 20 20" fill="currentColor" width="16" height="16"><path fill-rule="evenodd" d="M3 3a1 1 0 00-1 1v12a1 1 0 102 0V4a1 1 0 00-1-1zm10.293 9.293a1 1 0 001.414 1.414l3-3a1 1 0 000-1.414l-3-3a1 1 0 10-1.414 1.414L14.586 9H7a1 1 0 100 2h7.586l-1.293 1.293z"/></svg>
-              Sair da conta
-            </button>
+
+          <div class="cfg-section danger">
+            <p class="cfg-section-title">Zona de perigo</p>
+            <p class="cfg-section-desc">Ações irreversíveis — confirme antes de prosseguir.</p>
+            <button type="button" class="cfg-btn-gray" onclick="abrirModalPerfil()">Alterar tipo de perfil</button>
+            <button type="button" class="cfg-btn-red" onclick="excluirConta()">Excluir minha conta</button>
           </div>
         </div>
+
+        <!-- CORRETOR AUTONOMO -->
+        <div id="cfg-corretor" style="display:none">
+          <div class="cfg-section">
+            <div class="cfg-perfil-badge">🤝 Corretor autônomo</div>
+            <p class="cfg-section-title">Meus dados</p>
+            <p class="cfg-section-desc">Aparecem pré-preenchidos no campo "Corretor avaliador" de cada novo laudo.</p>
+            <div class="cfg-grid-2">
+              <div class="cfg-field"><label>Nome completo</label><input type="text" id="cfg-nome-corretor" placeholder="Seu nome completo"></div>
+              <div class="cfg-field"><label>CPF</label><input type="text" id="cfg-cpf-corretor" placeholder="000.000.000-00"></div>
+              <div class="cfg-field"><label>CRECI (se tiver)</label><input type="text" id="cfg-creci-corretor" placeholder="CRECI-SP 00000"></div>
+              <div class="cfg-field"><label>Telefone</label><input type="text" id="cfg-telefone-corretor" placeholder="(00) 00000-0000"></div>
+              <div class="cfg-field" style="grid-column:span 2"><label>Email</label><input type="email" id="cfg-email-corretor" placeholder="seu@email.com"></div>
+            </div>
+            <button type="button" class="cfg-btn-blue" onclick="salvarPerfil()">Salvar dados</button>
+          </div>
+
+          <div class="cfg-section danger">
+            <p class="cfg-section-title">Zona de perigo</p>
+            <p class="cfg-section-desc">Ações irreversíveis — confirme antes de prosseguir.</p>
+            <button type="button" class="cfg-btn-gray" onclick="abrirModalPerfil()">Alterar tipo de perfil</button>
+            <button type="button" class="cfg-btn-red" onclick="excluirConta()">Excluir minha conta</button>
+          </div>
+        </div>
+
+        <!-- PROPRIETARIO -->
+        <div id="cfg-proprietario" style="display:none">
+          <div class="cfg-section">
+            <div class="cfg-perfil-badge">🏠 Proprietário</div>
+            <p class="cfg-section-title">Meus dados</p>
+            <p class="cfg-section-desc">Aparecem pré-preenchidos como locador nos laudos em que você é o proprietário.</p>
+            <div class="cfg-grid-2">
+              <div class="cfg-field"><label>Nome completo</label><input type="text" id="cfg-nome-prop" placeholder="Seu nome completo"></div>
+              <div class="cfg-field"><label>CPF</label><input type="text" id="cfg-cpf-prop" placeholder="000.000.000-00"></div>
+              <div class="cfg-field"><label>Telefone</label><input type="text" id="cfg-telefone-prop" placeholder="(00) 00000-0000"></div>
+              <div class="cfg-field"><label>Email</label><input type="email" id="cfg-email-prop" placeholder="seu@email.com"></div>
+            </div>
+            <button type="button" class="cfg-btn-blue" onclick="salvarPerfil()">Salvar dados</button>
+          </div>
+
+          <div class="cfg-section danger">
+            <p class="cfg-section-title">Zona de perigo</p>
+            <p class="cfg-section-desc">Ações irreversíveis — confirme antes de prosseguir.</p>
+            <button type="button" class="cfg-btn-gray" onclick="abrirModalPerfil()">Alterar tipo de perfil</button>
+            <button type="button" class="cfg-btn-red" onclick="excluirConta()">Excluir minha conta</button>
+          </div>
+        </div>
+
+        <!-- Sair -->
+        <div class="cfg-section">
+          <p class="cfg-section-title">Sessão</p>
+          <p class="cfg-section-desc">Encerre sua sessão neste dispositivo.</p>
+          <button type="button" class="cfg-btn-gray" onclick="logout()">Sair da conta</button>
+        </div>
+
       </div>
     </div>
 
