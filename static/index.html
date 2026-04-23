@@ -11602,22 +11602,21 @@ function _popularDropdownCorretores(corretores) {
     if (inputNameWrap) inputNameWrap.style.display = 'none';
     inputName.style.display = 'none';
 
-    // Popular dropdown
+    // Popular dropdown — label mostra apenas o nome; demais dados em data-*
     var optionsHtml = '<option value="">Selecione o corretor...</option>';
     for (var i = 0; i < corretores.length; i++) {
       var c = corretores[i];
       var nome = _cfgEscapeHtml(c.nome || '');
       var creci = _cfgEscapeHtml(c.creci || '');
       var cpf = _cfgEscapeHtml(c.cpf || '');
+      var email = _cfgEscapeHtml(c.email || '');
       var id = _cfgEscapeHtml(c.id || '');
-      var label = nome;
-      if (c.creci) label += ' \u2014 CRECI ' + creci;
-      else if (c.cpf) label += ' \u2014 CPF ' + cpf;
       optionsHtml += '<option value="' + id + '"'
         + ' data-nome="' + nome + '"'
         + ' data-creci="' + creci + '"'
-        + ' data-cpf="' + cpf + '">'
-        + label + '</option>';
+        + ' data-cpf="' + cpf + '"'
+        + ' data-email="' + email + '">'
+        + nome + '</option>';
     }
     selectEl.innerHTML = optionsHtml;
 
@@ -11638,16 +11637,19 @@ function onSelectCorretor(sel) {
   if (!sel) return;
   var opt = sel.options[sel.selectedIndex];
   if (!opt || !opt.value) return;
-  var nome = opt.dataset.nome || '';
+  var nome  = opt.dataset.nome  || '';
   var creci = opt.dataset.creci || '';
-  var cpf = opt.dataset.cpf || '';
+  var cpf   = opt.dataset.cpf   || '';
+  var email = opt.dataset.email || '';
   // Forçar preenchimento (seleção do dropdown sobrescreve valores anteriores)
-  var elName = document.getElementById('wi-corr-name');
-  if (elName) elName.value = nome;
+  var elName  = document.getElementById('wi-corr-name');
+  if (elName)  elName.value  = nome;
   var elCreci = document.getElementById('wi-corr-creci');
   if (elCreci) elCreci.value = creci;
-  var elCpf = document.getElementById('wi-corr-cpf');
-  if (elCpf) elCpf.value = cpf;
+  var elCpf   = document.getElementById('wi-corr-cpf');
+  if (elCpf)   elCpf.value   = cpf;
+  var elEmail = document.getElementById('wi-corr-email');
+  if (elEmail) elEmail.value = email;
 }
 </script>
 </body>
