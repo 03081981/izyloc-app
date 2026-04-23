@@ -2296,6 +2296,24 @@ textarea.obs-geral{width:100%;background:#f8fafc;border:.5px solid #dce3ed;borde
 @media (max-width: 640px) {
   .cfg-grid-2, .cfg-grid-3 { grid-template-columns: 1fr; }
 }
+
+/* Dropdown corretores etapa 4 */
+#wi-corr-select-wrap { display: none; flex-direction: column; gap: 4px; grid-column: 1 / -1; margin-bottom: 10px; }
+#wi-corr-select-wrap label { font-size: var(--fs-xs); font-weight: var(--fw-semibold); color: #4a5568; }
+#wi-corr-select-wrap select {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 9px 12px;
+  border: 0.5px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: var(--fs-sm);
+  color: #1a2540;
+  background: #fff;
+  outline: none;
+  cursor: pointer;
+  font-family: inherit;
+}
+#wi-corr-select-wrap select:focus { border-color: #2d7dd2; box-shadow: 0 0 0 3px rgba(45,125,210,0.12); }
 </style>
 <script>
 window._openFotoModal = function(imgSrc) {
@@ -3338,7 +3356,13 @@ window._openFotoModal = function(imgSrc) {
 <div style="font-size: var(--fs-xxs);font-weight: var(--fw-bold);color:#8898aa;text-transform:uppercase;letter-spacing:0.5px;margin:16px 0 10px">Corretor avaliador</div>
 <div id="corretor-block" style="background:#fff;border-radius:12px;border:0.5px solid #e2e8f0;padding:16px;margin-bottom:10px">
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-    <div style="grid-column:1/-1;display:flex;flex-direction:column;gap:4px">
+    <div id="wi-corr-select-wrap">
+      <label>Corretor avaliador</label>
+      <select id="wi-corr-select" onchange="onSelectCorretor(this)">
+        <option value="">Selecione o corretor...</option>
+      </select>
+    </div>
+    <div style="grid-column:1/-1;display:flex;flex-direction:column;gap:4px" id="wi-corr-name-wrap">
       <label style="font-size: var(--fs-xs);font-weight: var(--fw-semibold);color:#4a5568">Nome do corretor avaliador</label>
       <input id="wi-corr-name" type="text" placeholder="Nome completo do corretor" style="border:0.5px solid #e2e8f0;border-radius:8px;padding:9px 12px;font-size: var(--fs-sm);color:#1a2540;font-family:inherit;background:#fff;outline:none"/>
     </div>
@@ -11449,13 +11473,63 @@ async function preencherEtapa4ComConfiguracoes() {
 }
 
 function _popularDropdownCorretores(corretores) {
-  // Default no-op; real implementation ligada ao dropdown é sobrescrita no commit 3.
-  if (!corretores || corretores.length === 0) return;
-  if (corretores.length === 1) {
-    _setIfEmpty('wi-corr-name', corretores[0].nome);
-    _setIfEmpty('wi-corr-creci', corretores[0].creci || '');
-    _setIfEmpty('wi-corr-cpf', corretores[0].cpf || '');
+  var selectWrap = document.getElementById('wi-corr-select-wrap');
+  var selectEl = document.getElementById('wi-corr-select');
+  var inputNameWrap = document.getElementById('wi-corr-name-wrap');
+  var inputName = document.getElementById('wi-corr-name');
+
+  if (corretores && corretores.length > 0 && selectWrap && selectEl && inputName) {
+    // Mostrar dropdown e esconder input livre
+    selectWrap.style.display = 'flex';
+    if (inputNameWrap) inputNameWrap.style.display = 'none';
+    inputName.style.display = 'none';
+
+    // Popular dropdown
+    var optionsHtml = '<option value="">Selecione o corretor...</option>';
+    for (var i = 0; i < corretores.length; i++) {
+      var c = corretores[i];
+      var nome = _cfgEscapeHtml(c.nome || '');
+      var creci = _cfgEscapeHtml(c.creci || '');
+      var cpf = _cfgEscapeHtml(c.cpf || '');
+      var id = _cfgEscapeHtml(c.id || '');
+      var label = nome;
+      if (c.creci) label += ' \u2014 CRECI ' + creci;
+      else if (c.cpf) label += ' \u2014 CPF ' + cpf;
+      optionsHtml += '<option value="' + id + '"'
+        + ' data-nome="' + nome + '"'
+        + ' data-creci="' + creci + '"'
+        + ' data-cpf="' + cpf + '">'
+        + label + '</option>';
+    }
+    selectEl.innerHTML = optionsHtml;
+
+    // Se só 1 corretor, selecionar automaticamente
+    if (corretores.length === 1) {
+      selectEl.value = corretores[0].id;
+      onSelectCorretor(selectEl);
+    }
+  } else {
+    // Nenhum corretor cadastrado — manter input livre
+    if (selectWrap) selectWrap.style.display = 'none';
+    if (inputNameWrap) inputNameWrap.style.display = 'flex';
+    if (inputName) inputName.style.display = '';
   }
+}
+
+function onSelectCorretor(sel) {
+  if (!sel) return;
+  var opt = sel.options[sel.selectedIndex];
+  if (!opt || !opt.value) return;
+  var nome = opt.dataset.nome || '';
+  var creci = opt.dataset.creci || '';
+  var cpf = opt.dataset.cpf || '';
+  // Forçar preenchimento (seleção do dropdown sobrescreve valores anteriores)
+  var elName = document.getElementById('wi-corr-name');
+  if (elName) elName.value = nome;
+  var elCreci = document.getElementById('wi-corr-creci');
+  if (elCreci) elCreci.value = creci;
+  var elCpf = document.getElementById('wi-corr-cpf');
+  if (elCpf) elCpf.value = cpf;
 }
 </script>
 </body>
