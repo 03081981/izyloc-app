@@ -2812,6 +2812,163 @@ class LaudoBulkDeleteHandler(BaseHandler):
             conn.close()
 
 
+# ─── Configuracoes: perfil da conta + corretores + exclusao ──────────────────
+class ConfigProfileHandler(BaseHandler):
+    def get(self):
+        user = self.require_auth()
+        if not user:
+            return
+        user_id = user['user_id']
+        conn = get_conn()
+        try:
+            row = conn.execute(
+                "SELECT tipo_perfil, nome, cpf, creci, telefone, email_contato, "
+                "nome_imobiliaria, cnpj, creci_imobiliaria "
+                "FROM user_profile_config WHERE user_id=?",
+                (user_id,)
+            ).fetchone()
+            if row:
+                self.ok(dict(row))
+            else:
+                self.ok({})
+        finally:
+            conn.close()
+
+    def post(self):
+        user = self.require_auth()
+        if not user:
+            return
+        user_id = user['user_id']
+        data = self.json_body()
+        tipo = (data.get('tipo_perfil') or 'imobiliaria').strip().lower()
+        if tipo not in ('imobiliaria', 'corretor', 'proprietario'):
+            tipo = 'imobiliaria'
+        import uuid
+        conn = get_conn()
+        try:
+            existing = conn.execute(
+                "SELECT id FROM user_profile_config WHERE user_id=?",
+                (user_id,)
+            ).fetchone()
+            if existing:
+                conn.execute(
+                    "UPDATE user_profile_config SET "
+                    "tipo_perfil=?, nome=?, cpf=?, creci=?, "
+                    "telefone=?, email_contato=?, "
+                    "nome_imobiliaria=?, cnpj=?, creci_imobiliaria=?, "
+                    "updated_at=NOW() "
+                    "WHERE user_id=?",
+                    (
+                        tipo,
+                        data.get('nome'), data.get('cpf'), data.get('creci'),
+                        data.get('telefone'), data.get('email_contato'),
+                        data.get('nome_imobiliaria'), data.get('cnpj'),
+                        data.get('creci_imobiliaria'),
+                        user_id,
+                    )
+                )
+            else:
+                conn.execute(
+                    "INSERT INTO user_profile_config "
+                    "(id, user_id, tipo_perfil, nome, cpf, creci, telefone, "
+                    "email_contato, nome_imobiliaria, cnpj, creci_imobiliaria) "
+                    "VALUES (?,?,?,?,?,?,?,?,?,?,?)",
+                    (
+                        str(uuid.uuid4()), user_id, tipo,
+                        data.get('nome'), data.get('cpf'), data.get('creci'),
+                        data.get('telefone'), data.get('email_contato'),
+                        data.get('nome_imobiliaria'), data.get('cnpj'),
+                        data.get('creci_imobiliaria'),
+                    )
+                )
+            conn.commit()
+            self.ok({'saved': True, 'tipo_perfil': tipo})
+        finally:
+            conn.close()
+
+
+class ConfigCorretoresHandler(BaseHandler):
+    def get(self):
+        user = self.require_auth()
+        if not user:
+            return
+        user_id = user['user_id']
+        conn = get_conn()
+        try:
+            rows = conn.execute(
+                "SELECT id, nome, creci, cpf FROM corretores "
+                "WHERE user_id=? AND ativo=TRUE ORDER BY nome",
+                (user_id,)
+            ).fetchall()
+            self.ok({'corretores': [dict(r) for r in rows]})
+        finally:
+            conn.close()
+
+    def post(self):
+        user = self.require_auth()
+        if not user:
+            return
+        user_id = user['user_id']
+        data = self.json_body()
+        nome = (data.get('nome') or '').strip()
+        creci = (data.get('creci') or '').strip()
+        cpf = (data.get('cpf') or '').strip()
+        if not nome:
+            self.err('Nome e obrigatorio', 400)
+            return
+        if not creci and not cpf:
+            self.err('Informe o CRECI ou o CPF do corretor', 400)
+            return
+        import uuid
+        conn = get_conn()
+        try:
+            conn.execute(
+                "INSERT INTO corretores (id, user_id, nome, creci, cpf) "
+                "VALUES (?, ?, ?, ?, ?)",
+                (str(uuid.uuid4()), user_id, nome, creci or None, cpf or None)
+            )
+            conn.commit()
+            self.ok({'saved': True})
+        finally:
+            conn.close()
+
+
+class ConfigCorretorDeleteHandler(BaseHandler):
+    def delete(self, corretor_id):
+        user = self.require_auth()
+        if not user:
+            return
+        user_id = user['user_id']
+        conn = get_conn()
+        try:
+            conn.execute(
+                "UPDATE corretores SET ativo=FALSE "
+                "WHERE id=? AND user_id=?",
+                (corretor_id, user_id)
+            )
+            conn.commit()
+            self.ok({'deleted': True})
+        finally:
+            conn.close()
+
+
+class DeleteAccountHandler(BaseHandler):
+    def delete(self):
+        user = self.require_auth()
+        if not user:
+            return
+        user_id = user['user_id']
+        conn = get_conn()
+        try:
+            # Remover em ordem: dados derivados antes do usuario
+            conn.execute("DELETE FROM corretores WHERE user_id=?", (user_id,))
+            conn.execute("DELETE FROM user_profile_config WHERE user_id=?", (user_id,))
+            conn.execute("DELETE FROM users WHERE id=?", (user_id,))
+            conn.commit()
+            self.ok({'deleted': True})
+        finally:
+            conn.close()
+
 
 def make_app():
     static_dir = os.path.join(os.path.dirname(__file__), 'static')
@@ -2832,6 +2989,11 @@ def make_app():
         (r'/api/payments/create-preference', CreatePaymentPreferenceHandler),
         (r'/api/payments/webhook', PaymentWebhookHandler),
         (r'/api/payments/status/([^/]+)', PaymentStatusHandler),
+        # Configuracoes: perfil da conta + corretores + exclusao
+        (r'/api/config/profile', ConfigProfileHandler),
+        (r'/api/config/corretores', ConfigCorretoresHandler),
+        (r'/api/config/corretores/([^/]+)', ConfigCorretorDeleteHandler),
+        (r'/api/config/account', DeleteAccountHandler),
         # Admin panel
         (r'/admin', AdminPageHandler),
         (r'/api/admin/login', AdminLoginHandler),
