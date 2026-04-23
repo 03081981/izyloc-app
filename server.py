@@ -453,7 +453,8 @@ class MeHandler(BaseHandler):
             return
         conn = get_conn()
         try:
-            row = conn.execute('SELECT * FROM users WHERE id=?', (user['user_id'],)).fetchone()
+            user_id = user['user_id']
+            row = conn.execute('SELECT * FROM users WHERE id=?', (user_id,)).fetchone()
             if not row:
                 return self.err('Usu\u00e1rio n\u00e3o encontrado', 404)
             u = self.row_to_dict(row)
@@ -463,6 +464,35 @@ class MeHandler(BaseHandler):
             u['balance_cents'] = balance_cents
             u['balance_formatted'] = format_balance_brl(balance_cents)
             u['email_verified'] = bool(u.get('email_verified_at'))
+
+            # Contadores de fotos do mes atual (agregado de balance_transactions)
+            try:
+                foto_rows = conn.execute(
+                    "SELECT analysis_type, "
+                    "COALESCE(SUM(photos_count), 0) AS total "
+                    "FROM balance_transactions "
+                    "WHERE user_id = ? "
+                    "  AND type = 'analysis_debit' "
+                    "  AND created_at >= date_trunc('month', NOW()) "
+                    "GROUP BY analysis_type",
+                    (user_id,)
+                ).fetchall()
+                fotos_map = {}
+                for r_ in foto_rows:
+                    tipo = r_.get('analysis_type') if hasattr(r_, 'get') else r_[0]
+                    total = r_.get('total') if hasattr(r_, 'get') else r_[1]
+                    try:
+                        fotos_map[tipo] = int(total or 0)
+                    except Exception:
+                        fotos_map[tipo] = 0
+                u['fotos_usadas_conv_mes'] = fotos_map.get('convencional', 0)
+                u['fotos_usadas_prem_mes'] = fotos_map.get('premium', 0)
+            except Exception as _e:
+                # Em caso de falha, devolve zeros para nao quebrar o /me
+                print(f'[ME] Erro ao agregar fotos do mes: {_e}', flush=True)
+                u['fotos_usadas_conv_mes'] = 0
+                u['fotos_usadas_prem_mes'] = 0
+
             self.ok(u)
         finally:
             conn.close()
