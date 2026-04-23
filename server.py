@@ -3429,6 +3429,44 @@ class SendToAutentiqueHandler(BaseHandler):
             return None
 
 
+class AutentiqueWebhookHandler(BaseHandler):
+    """Recebe notificacao do Autentique quando o documento for assinado."""
+    def post(self):
+        try:
+            data = self.json_body() or {}
+            print('[AUTENTIQUE_WEBHOOK] ' + json.dumps(data)[:800], flush=True)
+
+            event = (data.get('event') or '').strip()
+            doc = data.get('document') or {}
+            doc_id = doc.get('id') or data.get('document_id') or ''
+
+            if doc_id and event in ('document_signed', 'document_finished',
+                                    'signed', 'finished'):
+                conn = get_conn()
+                try:
+                    conn.execute(
+                        "UPDATE inspections SET "
+                        "autentique_status='signed', "
+                        "status='signed', "
+                        "updated_at=? "
+                        "WHERE autentique_doc_id=?",
+                        (datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+                         str(doc_id))
+                    )
+                    conn.commit()
+                    print('[AUTENTIQUE_WEBHOOK] signed doc=' + str(doc_id),
+                          flush=True)
+                finally:
+                    try: conn.close()
+                    except Exception: pass
+
+            self.write({'ok': True})
+        except Exception as e:
+            print('[AUTENTIQUE_WEBHOOK] ERROR: ' + str(e), flush=True)
+            # Sempre 200 para nao fazer o Autentique reenviar
+            self.write({'ok': True})
+
+
 def make_app():
     static_dir = os.path.join(os.path.dirname(__file__), 'static')
     upload_dir = UPLOAD_DIR
@@ -3487,6 +3525,7 @@ def make_app():
         (r'/api/inspections/([^/]+)/diag', DiagLocadoresHandler),
         # Autentique - assinatura digital
         (r'/api/inspections/([^/]+)/send-to-autentique', SendToAutentiqueHandler),
+        (r'/api/webhooks/autentique', AutentiqueWebhookHandler),
         # Static files
         (r'/uploads/(.*)', tornado.web.StaticFileHandler, {'path': upload_dir}),
         (r'/static/(.*)', tornado.web.StaticFileHandler, {'path': static_dir}),
