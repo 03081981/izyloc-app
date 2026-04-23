@@ -190,6 +190,9 @@ def init_db():
         "ALTER TABLE inspections ADD COLUMN IF NOT EXISTS ambientes_json TEXT",
         "ALTER TABLE inspections ADD COLUMN IF NOT EXISTS imobiliaria_email TEXT",
         "ALTER TABLE inspections ADD COLUMN IF NOT EXISTS responsavel TEXT DEFAULT 'proprietario'",
+        "ALTER TABLE inspections ADD COLUMN IF NOT EXISTS autentique_doc_id VARCHAR(100)",
+        "ALTER TABLE inspections ADD COLUMN IF NOT EXISTS autentique_status VARCHAR(30) DEFAULT 'pending'",
+        "ALTER TABLE inspections ADD COLUMN IF NOT EXISTS autentique_sent_at TIMESTAMPTZ",
     ]:
         _run_migration(c, raw, sql)
 

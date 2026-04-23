@@ -45,6 +45,7 @@ SECRET_KEY = os.environ.get('SECRET_KEY', 'izylo-secret-key-change-in-production
 MP_ACCESS_TOKEN = os.environ.get('MP_ACCESS_TOKEN', '')
 MP_WEBHOOK_SECRET = os.environ.get('MP_WEBHOOK_SECRET', '')
 APP_BASE_URL = os.environ.get('APP_BASE_URL', 'https://izyloc-app-production.up.railway.app')
+AUTENTIQUE_TOKEN = os.environ.get('AUTENTIQUE_TOKEN', '7800e349d2e4353904f7749a3584af5d5d4ad35a3749df945cc84b6c5565893a')
 UPLOAD_DIR = os.path.join(os.path.dirname(__file__), 'uploads')
 PDF_DIR = os.path.join(os.path.dirname(__file__), 'pdfs')
 Path(UPLOAD_DIR).mkdir(exist_ok=True)
@@ -3183,6 +3184,251 @@ class DeleteAccountHandler(BaseHandler):
                 pass
 
 
+# ─── Autentique: envio de laudo para assinatura digital ──────────────────────
+class SendToAutentiqueHandler(BaseHandler):
+    def post(self, inspection_id):
+        user = self.require_auth()
+        if not user:
+            return
+
+        user_id = user['user_id']
+        conn = get_conn()
+        try:
+            # 1. Buscar inspeção
+            insp_row = conn.execute(
+                "SELECT * FROM inspections WHERE id=? AND user_id=?",
+                (inspection_id, user_id)
+            ).fetchone()
+            if not insp_row:
+                return self.err('Laudo nao encontrado', 404)
+            insp = self.row_to_dict(insp_row)
+
+            # 2. Verificar se já foi enviado
+            if insp.get('autentique_doc_id'):
+                return self.err(
+                    'Este laudo ja foi enviado para assinatura',
+                    400
+                )
+
+            # 3. Montar lista de signatarios a partir dos campos/JSONs da inspeção
+            signers = []
+            seen_emails = set()
+
+            def _add_signer(name, email):
+                if not email:
+                    return
+                e = str(email).strip().lower()
+                if not e or '@' not in e or e in seen_emails:
+                    return
+                seen_emails.add(e)
+                signers.append({
+                    'email': str(email).strip(),
+                    'name': (name or '').strip() or (email or '').split('@')[0],
+                    'action': 'SIGN',
+                })
+
+            # Locadores do JSON
+            try:
+                locs_json = insp.get('locadores_json') or '[]'
+                locs = json.loads(locs_json) if isinstance(locs_json, str) else locs_json
+                if isinstance(locs, list):
+                    for p in locs:
+                        if isinstance(p, dict):
+                            _add_signer(p.get('name') or p.get('nome'),
+                                        p.get('email'))
+            except Exception:
+                pass
+
+            # Locatarios do JSON
+            try:
+                locsat_json = insp.get('locatarios_json') or '[]'
+                locsat = json.loads(locsat_json) if isinstance(locsat_json, str) else locsat_json
+                if isinstance(locsat, list):
+                    for p in locsat:
+                        if isinstance(p, dict):
+                            _add_signer(p.get('name') or p.get('nome'),
+                                        p.get('email'))
+            except Exception:
+                pass
+
+            # Fallback: campos diretos (legacy)
+            _add_signer(insp.get('locador_name'), insp.get('locador_email'))
+            _add_signer(insp.get('locatario_name'), insp.get('locatario_email'))
+            # Corretor e imobiliaria
+            _add_signer(insp.get('corretor_name'), insp.get('corretor_email'))
+            _add_signer(insp.get('imobiliaria_name'), insp.get('imobiliaria_email'))
+
+            if not signers:
+                return self.err(
+                    'Nenhum signatario com email encontrado. Cadastre os emails '
+                    'das partes na etapa 4.',
+                    400
+                )
+
+            # 4. Gerar PDF do laudo (reusa generate_pdf do pdf_service)
+            pdf_bytes = self._gerar_pdf_bytes(conn, insp)
+            if not pdf_bytes:
+                return self.err('Erro ao gerar PDF do laudo', 500)
+
+            # 5. Nome do documento
+            tipo_v = (insp.get('type') or 'entrada').capitalize()
+            address = insp.get('property_address') or insp.get('address') or 'Laudo'
+            doc_name = 'Laudo de Vistoria - ' + tipo_v + ' - ' + address
+            # Autentique tem limite de 255 chars
+            if len(doc_name) > 250:
+                doc_name = doc_name[:250]
+
+            # 6. Chamar API Autentique (GraphQL multipart)
+            import requests as _req
+
+            query = (
+                'mutation CreateDocumentMutation('
+                '$document: DocumentInput!, '
+                '$signers: [SignerInput!]!, '
+                '$file: Upload!'
+                ') { createDocument(document: $document, signers: $signers, '
+                'file: $file) { id name signatures { public_id name email '
+                'link { short_link } } } }'
+            )
+
+            variables = {
+                'document': {
+                    'name': doc_name,
+                    'message': 'Por favor, assine o laudo de vistoria do imovel.',
+                },
+                'signers': signers,
+                'file': None,
+            }
+
+            operations = json.dumps({'query': query, 'variables': variables},
+                                    ensure_ascii=False)
+            map_field = json.dumps({'file': ['variables.file']})
+
+            try:
+                resp = _req.post(
+                    'https://api.autentique.com.br/v2/graphql',
+                    headers={'Authorization': 'Bearer ' + AUTENTIQUE_TOKEN},
+                    data={'operations': operations, 'map': map_field},
+                    files={'file': (
+                        'laudo_' + inspection_id + '.pdf',
+                        pdf_bytes,
+                        'application/pdf'
+                    )},
+                    timeout=60
+                )
+            except Exception as _net_e:
+                print('[AUTENTIQUE] NET_ERROR: ' + str(_net_e), flush=True)
+                return self.err('Falha de conexao com Autentique: '
+                                + str(_net_e), 502)
+
+            try:
+                result = resp.json()
+            except Exception:
+                print('[AUTENTIQUE] invalid_json status=' + str(resp.status_code)
+                      + ' body=' + str(resp.text[:500]), flush=True)
+                return self.err(
+                    'Resposta invalida do Autentique (status '
+                    + str(resp.status_code) + ')', 502)
+
+            if 'errors' in result:
+                print('[AUTENTIQUE] GQL_ERRORS: '
+                      + json.dumps(result.get('errors'))[:500], flush=True)
+                msg = 'Erro no Autentique'
+                try:
+                    msg = result['errors'][0].get('message', msg)
+                except Exception:
+                    pass
+                return self.err(msg, 502)
+
+            doc = (result.get('data') or {}).get('createDocument') or {}
+            autentique_id = doc.get('id')
+            if not autentique_id:
+                return self.err('Autentique nao retornou id do documento', 502)
+
+            # 7. Atualizar inspeção
+            conn.execute(
+                "UPDATE inspections SET "
+                "autentique_doc_id=?, "
+                "autentique_status='sent', "
+                "autentique_sent_at=NOW(), "
+                "status='awaiting_signature', "
+                "updated_at=? "
+                "WHERE id=? AND user_id=?",
+                (str(autentique_id),
+                 datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+                 inspection_id, user_id)
+            )
+            conn.commit()
+
+            print('[AUTENTIQUE] OK user=' + user_id + ' insp=' + inspection_id
+                  + ' doc=' + str(autentique_id)
+                  + ' signers=' + str(len(signers)), flush=True)
+
+            self.ok({
+                'sent': True,
+                'autentique_doc_id': autentique_id,
+                'doc_name': doc_name,
+                'signers_count': len(signers),
+                'signatures': doc.get('signatures', []),
+            })
+
+        except Exception as e:
+            try:
+                conn.rollback()
+            except Exception:
+                pass
+            print('[AUTENTIQUE] ERROR user=' + str(user.get('user_id')) + ': '
+                  + str(e), flush=True)
+            return self.err('Erro ao enviar para Autentique: ' + str(e), 500)
+        finally:
+            try:
+                conn.close()
+            except Exception:
+                pass
+
+    def _gerar_pdf_bytes(self, conn, insp):
+        """Reusa generate_pdf() do pdf_service para gerar o PDF em disco e
+        retornar os bytes. Mesma logica do GeneratePDFHandler.get()."""
+        try:
+            from pdf_service import generate_pdf as _gen_pdf
+        except Exception as _e:
+            print('[AUTENTIQUE] pdf_service import fail: ' + str(_e), flush=True)
+            return None
+        try:
+            insp_id = insp.get('id')
+            rooms = conn.execute(
+                'SELECT * FROM rooms WHERE inspection_id=? ORDER BY order_num',
+                (insp_id,)
+            ).fetchall()
+            rooms_list = []
+            for room in rooms:
+                room_dict = self.row_to_dict(room)
+                items = conn.execute(
+                    'SELECT * FROM room_items WHERE room_id=? ORDER BY created_at',
+                    (room['id'],)
+                ).fetchall()
+                room_dict['items'] = self.rows_to_list(items)
+                rooms_list.append(room_dict)
+            sigs = conn.execute(
+                'SELECT * FROM signatures WHERE inspection_id=?',
+                (insp_id,)
+            ).fetchall()
+            signatures_list = self.rows_to_list(sigs)
+
+            tipo = (insp.get('type') or 'entrada')
+            pdf_filename = ('IZYLO_Laudo_autentique_' + str(tipo) + '_'
+                            + str(insp_id)[:8].upper() + '.pdf')
+            pdf_path = os.path.join(PDF_DIR, pdf_filename)
+            ok = _gen_pdf(insp, rooms_list, signatures_list, pdf_path)
+            if not ok or not os.path.exists(pdf_path):
+                return None
+            with open(pdf_path, 'rb') as f:
+                return f.read()
+        except Exception as _e:
+            print('[AUTENTIQUE] PDF_ERROR: ' + str(_e), flush=True)
+            return None
+
+
 def make_app():
     static_dir = os.path.join(os.path.dirname(__file__), 'static')
     upload_dir = UPLOAD_DIR
@@ -3239,6 +3485,8 @@ def make_app():
         # PDF
         (r'/api/inspections/([^/]+)/pdf', GeneratePDFHandler),
         (r'/api/inspections/([^/]+)/diag', DiagLocadoresHandler),
+        # Autentique - assinatura digital
+        (r'/api/inspections/([^/]+)/send-to-autentique', SendToAutentiqueHandler),
         # Static files
         (r'/uploads/(.*)', tornado.web.StaticFileHandler, {'path': upload_dir}),
         (r'/static/(.*)', tornado.web.StaticFileHandler, {'path': static_dir}),
