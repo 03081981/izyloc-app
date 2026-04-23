@@ -1933,19 +1933,133 @@ class AnalyzePhotoHandler(BaseHandler):
 class AnalisarBatchHandler(BaseHandler):
     def post(self):
         try:
+            user = self.require_auth()
+            if not user:
+                return
+
             data = tornado.escape.json_decode(self.request.body)
             imagens = data.get("imagens", [])
             ambiente = data.get("ambiente", "Ambiente")
 
             if not imagens:
-                self.write({"resumo": "", "estado_geral": "Bom", "success": False})
+                self.set_status(400)
+                self.write({"error": "Nenhuma imagem enviada", "success": False})
                 return
 
             tipo_vistoria = data.get("tipo_vistoria", "entrada")
             tipo_analise = data.get("tipo_analise", "convencional")
             if tipo_analise not in ["convencional", "premium"]:
                 tipo_analise = "convencional"
+
+            qtd_fotos = len(imagens)
+
+            # === DEBITO EM LOTE ANTES DE CHAMAR A IA ===
+            user_id = user['user_id']
+            if tipo_analise == 'premium':
+                price_key = 'price_per_photo_premium_cents'
+                default_price = 90
+            else:
+                price_key = 'price_per_photo_convencional_cents'
+                default_price = 50
+
+            conn = get_conn()
+            new_balance = None
+            total_cents = 0
+            price_per_foto = default_price
+            try:
+                srow = conn.execute(
+                    "SELECT value FROM settings WHERE key=?",
+                    (price_key,)
+                ).fetchone()
+                if srow and srow.get('value') is not None:
+                    try:
+                        price_per_foto = int(srow['value'])
+                    except Exception:
+                        price_per_foto = default_price
+                total_cents = price_per_foto * qtd_fotos
+
+                urow = conn.execute(
+                    "SELECT balance_cents FROM users WHERE id=?",
+                    (user_id,)
+                ).fetchone()
+                balance_cents = int(urow['balance_cents']) if urow and urow.get('balance_cents') is not None else 0
+
+                if balance_cents < total_cents:
+                    self.set_status(402)
+                    self.write({
+                        'ok': False,
+                        'error': 'Saldo insuficiente para analisar ' + str(qtd_fotos) + ' foto(s). Adicione creditos.',
+                        'code': 'insufficient_balance',
+                        'balance_cents': balance_cents,
+                        'price_cents': total_cents,
+                        'photos_count': qtd_fotos,
+                    })
+                    conn.close()
+                    return
+
+                new_balance = balance_cents - total_cents
+                upd = conn.execute(
+                    "UPDATE users SET balance_cents=?, updated_at=NOW() "
+                    "WHERE id=? AND balance_cents>=?",
+                    (new_balance, user_id, total_cents)
+                )
+                if upd.rowcount == 0:
+                    self.set_status(402)
+                    self.write({
+                        'ok': False,
+                        'error': 'Saldo insuficiente.',
+                        'code': 'insufficient_balance',
+                    })
+                    conn.close()
+                    return
+
+                descricao = (
+                    'Analise IA Premium - ' + str(qtd_fotos) + ' foto(s)'
+                    if tipo_analise == 'premium'
+                    else 'Analise IA Convencional - ' + str(qtd_fotos) + ' foto(s)'
+                )
+                conn.execute(
+                    "INSERT INTO balance_transactions "
+                    "(user_id, type, amount_cents, balance_after_cents, "
+                    " description, status, analysis_type, photos_count) "
+                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+                    (user_id, 'analysis_debit', -total_cents, new_balance,
+                     descricao, 'completed', tipo_analise, qtd_fotos)
+                )
+                conn.commit()
+                print(f"[BILLING] batch_debit user={user_id} tipo={tipo_analise} "
+                      f"qtd={qtd_fotos} total_cents={total_cents} "
+                      f"new_balance={new_balance}", flush=True)
+            except Exception as _e:
+                try:
+                    conn.rollback()
+                except Exception:
+                    pass
+                print(f"[BILLING] ERROR batch user={user_id} tipo={tipo_analise} "
+                      f"qtd={qtd_fotos}: {_e}", flush=True)
+                self.set_status(500)
+                self.write({
+                    'ok': False,
+                    'error': 'Falha ao debitar saldo. Tente novamente.',
+                    'code': 'billing_error',
+                })
+                try:
+                    conn.close()
+                except Exception:
+                    pass
+                return
+            finally:
+                try:
+                    conn.close()
+                except Exception:
+                    pass
+            # === FIM DEBITO EM LOTE ===
+
             resultado = analyze_batch(imagens, ambiente, tipo_vistoria, tipo_analise=tipo_analise)
+            if isinstance(resultado, dict):
+                resultado['balance_after_cents'] = new_balance
+                resultado['debited_cents'] = total_cents
+                resultado['photos_count'] = qtd_fotos
             self.write(resultado)
         except Exception as e:
             self.set_status(500)
@@ -1955,6 +2069,11 @@ class AnalisarBatchHandler(BaseHandler):
 class ConsolidarAmbienteHandler(BaseHandler):
     def post(self):
         try:
+            # Auth obrigatoria: consolida texto mas ainda consome LLM
+            user = self.require_auth()
+            if not user:
+                return
+
             data = tornado.escape.json_decode(self.request.body)
             ambiente = data.get("ambiente", "Ambiente")
             descricoes = data.get("descricoes", [])
