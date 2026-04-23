@@ -11970,7 +11970,9 @@ var AJUDA_CONTEUDOS = [
     contexto: '\ud83d\udccd Etapa 5 de 8 \u2014 Ambientes',
     html:
       '<p class="ajuda-desc">Selecione todos os ambientes que existem no im\u00f3vel. A IA vai descrever cada um automaticamente com base nas fotos da pr\u00f3xima etapa.</p>' +
-      '<div class="ajuda-tip"><strong>\ud83d\udca1 Como selecionar</strong>' +
+      '<div class="ajuda-alert"><strong>\u26a0\ufe0f Aten\u00e7\u00e3o \u2014 Tipo do im\u00f3vel</strong>' +
+      'Selecione corretamente se o im\u00f3vel \u00e9 <b>Residencial</b> ou <b>Comercial</b>. Essa escolha define o modelo do laudo e os campos de assinatura \u2014 um im\u00f3vel comercial tem estrutura de laudo diferente de um residencial.</div>' +
+      '<div class="ajuda-tip"><strong>\ud83d\udca1 Como selecionar os ambientes</strong>' +
       'Use os bot\u00f5es <b>+</b> e <b>\u2013</b> para definir a quantidade de cada ambiente (ex: 2 dormit\u00f3rios, 1 banheiro social). Clique em <b>"+ Outro ambiente"</b> para adicionar ambientes personalizados.<br><br>' +
       'N\u00e3o esque\u00e7a de incluir \u00e1reas externas, garagem e \u00e1reas de servi\u00e7o se existirem.</div>' +
       '<div class="ajuda-next"><strong>Pr\u00f3xima etapa</strong>Etapa 6 \u2014 Fotografar ou fazer upload das fotos de cada ambiente</div>'
@@ -11979,7 +11981,11 @@ var AJUDA_CONTEUDOS = [
     id: 'etapa6',
     contexto: '\ud83d\udccd Etapa 6 de 8 \u2014 Fotos dos ambientes',
     html:
-      '<p class="ajuda-desc">Essa \u00e9 a etapa mais importante. Fotografe ou fa\u00e7a upload das fotos \u2014 a IA analisa e descreve automaticamente paredes, pisos, teto, m\u00f3veis e equipamentos.</p>' +
+      '<p class="ajuda-desc">Essa \u00e9 a etapa mais importante. Fotografe ou fa\u00e7a upload das fotos de cada ambiente \u2014 a IA analisa e descreve automaticamente paredes, pisos, teto, m\u00f3veis e equipamentos. Voc\u00ea pode <b>corrigir ou acrescentar informa\u00e7\u00f5es</b> diretamente na descri\u00e7\u00e3o gerada pela IA antes de avan\u00e7ar.</p>' +
+      '<div class="ajuda-alert"><strong>\u26a0\ufe0f Organize as fotos por ambiente</strong>' +
+      'Cada foto deve ser adicionada no ambiente correto. Colocar fotos do banheiro no dormit\u00f3rio, por exemplo, compromete a qualidade da descri\u00e7\u00e3o.<br><br>' +
+      'Se precisar de mais de <b>20 fotos em um ambiente</b>, crie um segundo com o mesmo nome acrescido de <b>"continua\u00e7\u00e3o"</b> \u2014 ex: <i>"Sala de estar \u2014 continua\u00e7\u00e3o"</i>.<br><br>' +
+      'Voc\u00ea pode <b>criar ou excluir ambientes</b> diretamente nessa etapa caso precise ajustar o que foi selecionado na etapa 5.</div>' +
       '<div class="ajuda-tip"><strong>\ud83d\udcf8 Como fotografar bem</strong>' +
       'Tire no m\u00ednimo <b>4 fotos por ambiente</b>. Fotografe em sequ\u00eancia:<br>' +
       '1. <b>Vis\u00e3o geral</b> do ambiente<br>' +
@@ -11987,22 +11993,24 @@ var AJUDA_CONTEUDOS = [
       '3. <b>Teto</b> \u2014 aponte a c\u00e2mera para cima<br>' +
       '4. <b>Paredes</b> \u2014 cada parede separada<br>' +
       '5. <b>Defeitos ou marcas</b> \u2014 aproxime e use zoom<br>' +
-      '6. <b>Equipamentos</b> \u2014 fotografe a plaqueta de identifica\u00e7\u00e3o</div>' +
-      '<div class="ajuda-tip"><strong>\ud83d\udcf1 Celular \u00b7 \ud83d\udda5\ufe0f Computador</strong>' +
-      'No <b>celular</b>: fotografe diretamente pela c\u00e2mera do dispositivo.<br>' +
-      'No <b>computador</b>: fa\u00e7a upload das fotos j\u00e1 tiradas.<br><br>' +
-      'Se o im\u00f3vel for <b>mobiliado ou de temporada</b>, o sistema exibe itens espec\u00edficos de mob\u00edlia para registro individual.</div>' +
+      '6. <b>Equipamentos</b> \u2014 fotografe a plaqueta de identifica\u00e7\u00e3o<br><br>' +
+      '\ud83d\udcf1 <b>No celular:</b> fotografe diretamente pela c\u00e2mera.<br>' +
+      '\ud83d\udda5\ufe0f <b>No computador:</b> fa\u00e7a upload. M\u00e1ximo de <b>20 fotos por ambiente</b>.</div>' +
+      '<div class="ajuda-tip"><strong>\ud83e\udd16 Qual IA usar?</strong>' +
+      '<b>Convencional (R$ 0,50/foto)</b> \u2014 ideal para ambientes simples, sem grandes problemas, poucos detalhes ou m\u00f3veis. Gera descri\u00e7\u00f5es objetivas para o padr\u00e3o da maioria das vistorias.<br><br>' +
+      '<b>Premium (R$ 0,90/foto)</b> \u2014 recomendado para ambientes com <b>problemas s\u00e9rios</b> como infiltra\u00e7\u00f5es, danos estruturais, mofo ou situa\u00e7\u00f5es que exigem descri\u00e7\u00e3o mais minuciosa para fins jur\u00eddicos.</div>' +
       '<div class="ajuda-next"><strong>Pr\u00f3xima etapa</strong>Etapa 7 \u2014 Revisar o laudo gerado pela IA</div>'
   },
   {
     id: 'etapa7',
     contexto: '\ud83d\udccd Etapa 7 de 8 \u2014 Revis\u00e3o',
     html:
-      '<p class="ajuda-desc">A IA j\u00e1 gerou as descri\u00e7\u00f5es de todos os ambientes. Agora revise, corrija e complemente antes de gerar o PDF final.</p>' +
+      '<p class="ajuda-desc">A IA j\u00e1 gerou as descri\u00e7\u00f5es de todos os ambientes. Agora revise, corrija e complemente antes de gerar o PDF final. <b>Voc\u00ea pode editar qualquer texto gerado pela IA</b> \u2014 clique no campo e corrija ou acrescente o que for necess\u00e1rio.</p>' +
       '<div class="ajuda-tip"><strong>\u270f\ufe0f Como revisar</strong>' +
-      'Leia com aten\u00e7\u00e3o cada descri\u00e7\u00e3o. Voc\u00ea pode <b>editar qualquer texto</b> diretamente \u2014 clique no campo e corrija. Se a IA n\u00e3o identificou algum item importante, adicione manualmente. Verifique tamb\u00e9m os dados das partes envolvidas.</div>' +
+      'Leia com aten\u00e7\u00e3o cada descri\u00e7\u00e3o gerada. Se a IA n\u00e3o identificou algum item importante, adicione manualmente. Voc\u00ea tamb\u00e9m pode corrigir termos, ajustar detalhes ou complementar a descri\u00e7\u00e3o de qualquer ambiente.<br><br>' +
+      'Verifique tamb\u00e9m os dados das partes envolvidas (locador, locat\u00e1rio, corretor) antes de finalizar.</div>' +
       '<div class="ajuda-alert"><strong>\u26a0\ufe0f Aten\u00e7\u00e3o</strong>' +
-      'Essa \u00e9 sua \u00faltima chance de ajustar o laudo antes de gerar o PDF. Ap\u00f3s enviar para assinatura pelo Autentique, o documento n\u00e3o poder\u00e1 mais ser editado.</div>' +
+      'Essa \u00e9 sua \u00faltima chance de ajustar o laudo antes de gerar o PDF. Ap\u00f3s enviar para assinatura pelo <b>Autentique</b>, o documento \u00e9 bloqueado permanentemente e n\u00e3o poder\u00e1 mais ser editado.</div>' +
       '<div class="ajuda-next"><strong>Pr\u00f3xima etapa</strong>Etapa 8 \u2014 Gerar e baixar o PDF com validade jur\u00eddica</div>'
   },
   {
