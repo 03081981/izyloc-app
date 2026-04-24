@@ -1,636 +1,467 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>izyLAUDO — Painel Admin</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>izyLAUDO — Admin</title>
 <style>
-*{box-sizing:border-box;margin:0;padding:0}
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f1f5f9;color:#1e293b;min-height:100vh}
+* { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', Arial, sans-serif; }
+body { background: #f1f5f9; color: #1e293b; }
+.adm-header {
+  background: #1e3a5f; color: #fff;
+  padding: 16px 32px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.adm-header h1 { font-size: 18px; font-weight: 600; }
+.adm-header span { font-size: 12px; opacity: 0.6; }
+.adm-body { padding: 24px 32px; max-width: 1400px; margin: 0 auto; }
 
-/* ── LOGIN ── */
-.login-page{display:flex;align-items:center;justify-content:center;min-height:100vh;background:linear-gradient(135deg,#1e3a5f 0%,#2563eb 100%)}
-.login-card{background:#fff;border-radius:16px;padding:40px 36px;width:100%;max-width:380px;box-shadow:0 20px 60px rgba(0,0,0,.25)}
-.login-logo{text-align:center;margin-bottom:28px}
-.login-logo h1{font-size:26px;font-weight:800;color:#1e3a5f}
-.login-logo h1 span{color:#2563eb}
-.login-logo p{font-size:12px;color:#94a3b8;margin-top:4px;letter-spacing:.5px;text-transform:uppercase}
-.login-label{font-size:12px;font-weight:600;color:#64748b;display:block;margin-bottom:6px}
-.login-input{width:100%;padding:11px 14px;border:1.5px solid #e2e8f0;border-radius:8px;font-size:14px;outline:none;transition:.2s}
-.login-input:focus{border-color:#2563eb;box-shadow:0 0 0 3px rgba(37,99,235,.1)}
-.login-btn{width:100%;padding:12px;background:#2563eb;color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;margin-top:20px;transition:.2s}
-.login-btn:hover{background:#1d4ed8}
-.login-err{color:#dc2626;font-size:13px;margin-top:10px;text-align:center;display:none}
+/* Filtros */
+.adm-filtros { display: flex; gap: 8px; margin-bottom: 24px; flex-wrap: wrap; }
+.adm-filtro { padding: 7px 16px; border-radius: 20px; font-size: 12px; font-weight: 500;
+  cursor: pointer; border: 1px solid #e2e8f0; background: #fff; color: #64748b; }
+.adm-filtro.active { background: #1e3a5f; color: #fff; border-color: #1e3a5f; }
 
-/* ── LAYOUT ── */
-.app{display:flex;min-height:100vh}
-.sidebar{width:220px;background:#1e3a5f;flex-shrink:0;display:flex;flex-direction:column}
-.sidebar-logo{padding:24px 20px 20px;border-bottom:1px solid rgba(255,255,255,.08)}
-.sidebar-logo h2{font-size:18px;font-weight:800;color:#fff}
-.sidebar-logo h2 span{color:#60a5fa}
-.sidebar-logo p{font-size:10px;color:#94a3b8;margin-top:2px;text-transform:uppercase;letter-spacing:.5px}
-.sidebar-nav{padding:12px 0;flex:1}
-.nav-item{display:flex;align-items:center;gap:10px;padding:10px 20px;color:#cbd5e1;font-size:13px;font-weight:500;cursor:pointer;border-left:3px solid transparent;transition:.15s;user-select:none}
-.nav-item:hover{background:rgba(255,255,255,.06);color:#fff}
-.nav-item.active{background:rgba(37,99,235,.3);color:#fff;border-left-color:#60a5fa}
-.nav-item svg{width:16px;height:16px;flex-shrink:0}
-.sidebar-footer{padding:16px 20px;border-top:1px solid rgba(255,255,255,.08)}
-.sidebar-footer button{width:100%;padding:8px;background:rgba(239,68,68,.15);color:#fca5a5;border:1px solid rgba(239,68,68,.3);border-radius:6px;font-size:12px;cursor:pointer;transition:.2s}
-.sidebar-footer button:hover{background:rgba(239,68,68,.25)}
-.main{flex:1;overflow:auto}
-.topbar{background:#fff;padding:16px 28px;border-bottom:1px solid #e2e8f0;display:flex;align-items:center;justify-content:space-between}
-.topbar h1{font-size:18px;font-weight:700;color:#1e293b}
-.topbar-sub{font-size:12px;color:#94a3b8;margin-top:2px}
-.content{padding:28px}
+/* Cards */
+.adm-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 16px; margin-bottom: 24px; }
+.adm-card { background: #fff; border-radius: 12px; padding: 16px; border: 1px solid #e2e8f0; }
+.adm-card-label { font-size: 11px; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
+.adm-card-val { font-size: 24px; font-weight: 600; color: #1e293b; }
+.adm-card-sub { font-size: 11px; color: #94a3b8; margin-top: 4px; }
+.adm-card.verde .adm-card-val { color: #16a34a; }
+.adm-card.azul .adm-card-val { color: #2d7dd2; }
+.adm-card.vermelho .adm-card-val { color: #dc2626; }
+.adm-card.laranja .adm-card-val { color: #ea580c; }
 
-/* ── CARDS ── */
-.stats-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:16px;margin-bottom:28px}
-.stat-card{background:#fff;border-radius:12px;padding:20px;box-shadow:0 1px 3px rgba(0,0,0,.06);border-left:4px solid #e2e8f0;transition:.2s}
-.stat-card.blue{border-left-color:#2563eb}
-.stat-card.green{border-left-color:#16a34a}
-.stat-card.red{border-left-color:#dc2626}
-.stat-card.purple{border-left-color:#7c3aed}
-.stat-card.orange{border-left-color:#ea580c}
-.stat-label{font-size:11px;font-weight:600;color:#94a3b8;text-transform:uppercase;letter-spacing:.5px}
-.stat-value{font-size:32px;font-weight:800;color:#1e293b;margin-top:6px;line-height:1}
-.stat-desc{font-size:11px;color:#94a3b8;margin-top:4px}
+/* Seções */
+.adm-section { background: #fff; border-radius: 12px; border: 1px solid #e2e8f0; margin-bottom: 24px; overflow: hidden; }
+.adm-section-header { padding: 14px 20px; border-bottom: 1px solid #f1f5f9; display: flex; align-items: center; justify-content: space-between; }
+.adm-section-title { font-size: 14px; font-weight: 600; color: #1e293b; }
 
-/* ── TABLE ── */
-.section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
-.section-title{font-size:15px;font-weight:700;color:#1e293b}
-.btn{padding:8px 16px;border-radius:7px;font-size:13px;font-weight:600;cursor:pointer;border:none;transition:.2s}
-.btn-primary{background:#2563eb;color:#fff}
-.btn-primary:hover{background:#1d4ed8}
-.btn-secondary{background:#f1f5f9;color:#475569;border:1px solid #e2e8f0}
-.btn-secondary:hover{background:#e2e8f0}
-.btn-danger{background:#fef2f2;color:#dc2626;border:1px solid #fecaca}
-.btn-danger:hover{background:#fee2e2}
-.btn-success{background:#f0fdf4;color:#16a34a;border:1px solid #bbf7d0}
-.btn-success:hover{background:#dcfce7}
-.btn-sm{padding:5px 10px;font-size:11px}
-.card{background:#fff;border-radius:12px;box-shadow:0 1px 3px rgba(0,0,0,.06);overflow:hidden}
-.table-wrap{overflow-x:auto}
-table{width:100%;border-collapse:collapse}
-thead{background:#f8fafc}
-th{padding:11px 16px;text-align:left;font-size:11px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid #e2e8f0;white-space:nowrap}
-td{padding:13px 16px;font-size:13px;color:#334155;border-bottom:1px solid #f1f5f9}
-tr:last-child td{border-bottom:none}
-tr:hover td{background:#fafbfc}
-.badge{display:inline-flex;align-items:center;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:600}
-.badge-green{background:#dcfce7;color:#16a34a}
-.badge-red{background:#fee2e2;color:#dc2626}
-.badge-gray{background:#f1f5f9;color:#64748b}
-.badge-blue{background:#dbeafe;color:#2563eb}
-.actions{display:flex;gap:6px;align-items:center}
+/* Tabela */
+.adm-table { width: 100%; border-collapse: collapse; }
+.adm-table th { padding: 10px 16px; background: #f8fafc; font-size: 11px; font-weight: 600;
+  color: #94a3b8; text-transform: uppercase; letter-spacing: 0.4px; text-align: left; }
+.adm-table td { padding: 12px 16px; font-size: 13px; border-top: 1px solid #f1f5f9; }
+.adm-table tr:hover td { background: #f8fafc; }
 
-/* ── MODAL ── */
-.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;z-index:1000;backdrop-filter:blur(2px)}
-.modal{background:#fff;border-radius:14px;padding:28px;width:100%;max-width:460px;box-shadow:0 20px 60px rgba(0,0,0,.2)}
-.modal-title{font-size:16px;font-weight:700;margin-bottom:20px;color:#1e293b}
-.form-group{margin-bottom:16px}
-.form-label{font-size:12px;font-weight:600;color:#64748b;display:block;margin-bottom:6px}
-.form-input{width:100%;padding:9px 12px;border:1.5px solid #e2e8f0;border-radius:7px;font-size:13px;outline:none;transition:.2s}
-.form-input:focus{border-color:#2563eb;box-shadow:0 0 0 3px rgba(37,99,235,.1)}
-.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.modal-footer{display:flex;gap:10px;justify-content:flex-end;margin-top:20px}
-.modal-close{position:absolute;top:16px;right:16px;background:none;border:none;font-size:20px;cursor:pointer;color:#94a3b8}
+/* Badges */
+.badge { display: inline-flex; align-items: center; gap: 4px; padding: 3px 8px;
+  border-radius: 12px; font-size: 11px; font-weight: 500; }
+.badge-ok { background: #dcfce7; color: #15803d; }
+.badge-warn { background: #fef9c3; color: #854d0e; }
+.badge-err { background: #fee2e2; color: #dc2626; }
 
-/* ── TOAST ── */
-.toast-wrap{position:fixed;bottom:24px;right:24px;z-index:9999;display:flex;flex-direction:column;gap:8px}
-.toast{padding:12px 18px;border-radius:10px;font-size:13px;font-weight:500;box-shadow:0 4px 20px rgba(0,0,0,.15);animation:slideIn .3s ease}
-.toast-success{background:#166534;color:#dcfce7}
-.toast-error{background:#991b1b;color:#fee2e2}
-@keyframes slideIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+/* Botões */
+.btn { padding: 6px 14px; border-radius: 7px; font-size: 12px; font-weight: 500;
+  cursor: pointer; border: none; }
+.btn-blue { background: #2d7dd2; color: #fff; }
+.btn-red { background: #dc2626; color: #fff; }
+.btn-green { background: #16a34a; color: #fff; }
+.btn-gray { background: #e2e8f0; color: #475569; }
 
-/* ── EMPTY ── */
-.empty{text-align:center;padding:48px 24px;color:#94a3b8}
-.empty p{margin-top:8px;font-size:13px}
+/* Preços */
+.preco-form { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; padding: 20px; }
+.preco-field label { display: block; font-size: 12px; color: #64748b; margin-bottom: 6px; font-weight: 500; }
+.preco-field input { width: 100%; padding: 8px 12px; border: 1px solid #e2e8f0;
+  border-radius: 8px; font-size: 14px; }
+.preco-actions { padding: 0 20px 20px; }
 
-/* ── LOADING ── */
-.loading-spinner{display:inline-block;width:18px;height:18px;border:2px solid #e2e8f0;border-top-color:#2563eb;border-radius:50%;animation:spin .6s linear infinite}
-@keyframes spin{to{transform:rotate(360deg)}}
-.page-loading{display:flex;align-items:center;justify-content:center;padding:60px;gap:12px;color:#94a3b8;font-size:14px}
+/* IA usage */
+.ia-bar { display: flex; height: 24px; border-radius: 6px; overflow: hidden; margin: 12px 20px; }
+.ia-bar-claude { background: #2d7dd2; display: flex; align-items: center;
+  justify-content: center; font-size: 11px; color: #fff; font-weight: 600; }
+.ia-bar-gemini { background: #16a34a; display: flex; align-items: center;
+  justify-content: center; font-size: 11px; color: #fff; font-weight: 600; }
 
-/* ── SEARCH ── */
-.search-bar{display:flex;gap:12px;margin-bottom:16px}
-.search-input{padding:9px 14px;border:1.5px solid #e2e8f0;border-radius:7px;font-size:13px;outline:none;flex:1;min-width:0}
-.search-input:focus{border-color:#2563eb}
+/* Modal ajuste saldo */
+.modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.3); z-index: 100; }
+.modal-overlay.open { display: flex; align-items: center; justify-content: center; }
+.modal-box { background: #fff; border-radius: 12px; padding: 24px; width: 360px; }
+.modal-title { font-size: 15px; font-weight: 600; margin-bottom: 16px; }
+.modal-field { margin-bottom: 12px; }
+.modal-field label { display: block; font-size: 12px; color: #64748b; margin-bottom: 4px; }
+.modal-field input, .modal-field textarea { width: 100%; padding: 8px 12px;
+  border: 1px solid #e2e8f0; border-radius: 8px; font-size: 13px; }
+.modal-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 16px; }
 
-/* PAGES */
-.page{display:none}
-.page.active{display:block}
+/* Alertas */
+.alerta-item { display: flex; align-items: center; gap: 12px; padding: 12px 20px;
+  border-bottom: 1px solid #f1f5f9; }
+.alerta-icon { font-size: 20px; }
+.alerta-text { font-size: 13px; color: #1e293b; }
+.alerta-sub { font-size: 11px; color: #94a3b8; }
 </style>
 </head>
 <body>
-
-<!-- LOGIN PAGE -->
-<div id="login-page" class="login-page">
-  <div class="login-card">
-    <div class="login-logo">
-      <h1>izy<span>LAUDO</span></h1>
-      <p>Painel Administrativo</p>
-    </div>
-    <div class="form-group">
-      <label class="login-label">Senha de Administrador</label>
-      <input type="password" id="admin-password" class="login-input" placeholder="Digite a senha admin"
-             onkeydown="if(event.key==='Enter') doAdminLogin()"/>
-    </div>
-    <button class="login-btn" onclick="doAdminLogin()">Entrar</button>
-    <div id="login-err" class="login-err">Senha incorreta</div>
-  </div>
+<div class="adm-header">
+  <h1>izyLAUDO — Painel Admin</h1>
+  <span id="adm-ultima-atualizacao">Carregando...</span>
 </div>
 
-<!-- MAIN APP -->
-<div id="app" class="app" style="display:none">
-  <!-- Sidebar -->
-  <aside class="sidebar">
-    <div class="sidebar-logo">
-      <h2>izy<span>LAUDO</span></h2>
-      <p>Admin Panel</p>
-    </div>
-    <nav class="sidebar-nav">
-      <div class="nav-item active" onclick="showPage('dashboard')" data-page="dashboard">
-        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
-        Dashboard
-      </div>
-      <div class="nav-item" onclick="showPage('clients')" data-page="clients">
-        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-        Clientes
-      </div>
-      <div class="nav-item" onclick="showPage('plans')" data-page="plans">
-        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
-        Planos
-      </div>
-      <div class="nav-item" onclick="showPage('usage')" data-page="usage">
-        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
-        Uso
-      </div>
-    </nav>
-    <div class="sidebar-footer">
-      <button onclick="doLogout()">Sair do Painel</button>
-    </div>
-  </aside>
+<div class="adm-body">
 
-  <!-- Main content -->
-  <div class="main">
-    <!-- Dashboard -->
-    <div id="page-dashboard" class="page active">
-      <div class="topbar">
-        <div><div class="topbar h1" style="font-size:18px;font-weight:700">Dashboard</div><div class="topbar-sub">Visao geral do sistema</div></div>
-      </div>
-      <div class="content">
-        <div id="stats-grid" class="stats-grid">
-          <div class="page-loading"><div class="loading-spinner"></div> Carregando...</div>
-        </div>
-        <div class="card">
-          <div style="padding:20px 20px 0"><p style="font-size:13px;font-weight:700;color:#1e293b">Ultimos Clientes Cadastrados</p></div>
-          <div class="table-wrap" id="recent-clients-wrap">
-            <div class="page-loading"><div class="loading-spinner"></div></div>
-          </div>
-        </div>
-      </div>
-    </div>
+  <!-- Filtros de período -->
+  <div class="adm-filtros">
+    <button class="adm-filtro" data-periodo="7d" onclick="admCarregar('7d',this)">Últimos 7 dias</button>
+    <button class="adm-filtro active" data-periodo="30d" onclick="admCarregar('30d',this)">Últimos 30 dias</button>
+    <button class="adm-filtro" data-periodo="90d" onclick="admCarregar('90d',this)">Últimos 90 dias</button>
+    <button class="adm-filtro" data-periodo="ano" onclick="admCarregar('ano',this)">Este ano</button>
+    <button class="adm-filtro" data-periodo="tudo" onclick="admCarregar('tudo',this)">Tudo</button>
+  </div>
 
-    <!-- Clients -->
-    <div id="page-clients" class="page">
-      <div class="topbar">
-        <div><div style="font-size:18px;font-weight:700">Clientes</div><div class="topbar-sub">Gestao de usuarios do sistema</div></div>
-        <button class="btn btn-primary" onclick="openAddClientModal()">+ Novo Cliente</button>
-      </div>
-      <div class="content">
-        <div class="search-bar">
-          <input type="text" id="client-search" class="search-input" placeholder="Buscar por nome ou e-mail..." oninput="filterClients()"/>
-          <select id="client-filter" class="search-input" style="max-width:160px" onchange="filterClients()">
-            <option value="">Todos os status</option>
-            <option value="active">Ativo</option>
-            <option value="blocked">Bloqueado</option>
-          </select>
-        </div>
-        <div class="card">
-          <div class="table-wrap">
-            <table>
-              <thead><tr>
-                <th>Cliente</th><th>E-mail</th><th>Telefone</th><th>Plano</th>
-                <th>Laudos</th><th>Cadastro</th><th>Status</th><th>Acoes</th>
-              </tr></thead>
-              <tbody id="clients-tbody">
-                <tr><td colspan="8"><div class="page-loading"><div class="loading-spinner"></div></div></td></tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
+  <!-- Cards de resumo -->
+  <div class="adm-grid">
+    <div class="adm-card azul">
+      <div class="adm-card-label">Usuários total</div>
+      <div class="adm-card-val" id="adm-total-usuarios">—</div>
+      <div class="adm-card-sub" id="adm-novos-usuarios">— novos no período</div>
     </div>
-
-    <!-- Plans -->
-    <div id="page-plans" class="page">
-      <div class="topbar">
-        <div><div style="font-size:18px;font-weight:700">Planos</div><div class="topbar-sub">Gestao de planos e precos</div></div>
-        <button class="btn btn-primary" onclick="openAddPlanModal()">+ Novo Plano</button>
-      </div>
-      <div class="content">
-        <div id="plans-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;margin-bottom:24px">
-          <div class="page-loading"><div class="loading-spinner"></div></div>
-        </div>
-      </div>
+    <div class="adm-card azul">
+      <div class="adm-card-label">Usuários ativos</div>
+      <div class="adm-card-val" id="adm-usuarios-ativos">—</div>
+      <div class="adm-card-sub">Analisaram fotos no período</div>
     </div>
-
-    <!-- Usage -->
-    <div id="page-usage" class="page">
-      <div class="topbar">
-        <div><div style="font-size:18px;font-weight:700">Controle de Uso</div><div class="topbar-sub">Laudos e fotos por cliente</div></div>
-        <button class="btn btn-secondary" onclick="loadUsage()">&#8635; Atualizar</button>
-      </div>
-      <div class="content">
-        <div class="card">
-          <div class="table-wrap">
-            <table>
-              <thead><tr>
-                <th>Cliente</th><th>E-mail</th><th>Plano</th>
-                <th>Laudos Gerados</th><th>Fotos Processadas</th><th>Status</th>
-              </tr></thead>
-              <tbody id="usage-tbody">
-                <tr><td colspan="6"><div class="page-loading"><div class="loading-spinner"></div></div></td></tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
+    <div class="adm-card verde">
+      <div class="adm-card-label">Receita no período</div>
+      <div class="adm-card-val" id="adm-receita-periodo">—</div>
+      <div class="adm-card-sub" id="adm-receita-total">Total: —</div>
+    </div>
+    <div class="adm-card verde">
+      <div class="adm-card-label">Ticket médio</div>
+      <div class="adm-card-val" id="adm-ticket-medio">—</div>
+      <div class="adm-card-sub">Por usuário (total)</div>
+    </div>
+    <div class="adm-card azul">
+      <div class="adm-card-label">Laudos gerados</div>
+      <div class="adm-card-val" id="adm-laudos-periodo">—</div>
+      <div class="adm-card-sub" id="adm-laudos-total">Total: —</div>
+    </div>
+    <div class="adm-card azul">
+      <div class="adm-card-label">Fotos analisadas</div>
+      <div class="adm-card-val" id="adm-fotos-periodo">—</div>
+      <div class="adm-card-sub" id="adm-fotos-total">Total: —</div>
+    </div>
+    <div class="adm-card laranja">
+      <div class="adm-card-label">Saldo baixo</div>
+      <div class="adm-card-val" id="adm-saldo-baixo">—</div>
+      <div class="adm-card-sub">Usuários com menos de R$ 1,00</div>
+    </div>
+    <div class="adm-card vermelho">
+      <div class="adm-card-label">Reembolsos</div>
+      <div class="adm-card-val" id="adm-reembolsos">—</div>
+      <div class="adm-card-sub">Falhas de IA no período</div>
     </div>
   </div>
+
+  <!-- IA Usage -->
+  <div class="adm-section">
+    <div class="adm-section-header">
+      <span class="adm-section-title">Uso de IA — Claude vs Gemini</span>
+      <span id="adm-ia-texto" style="font-size:12px;color:#94a3b8;">—</span>
+    </div>
+    <div class="ia-bar" id="adm-ia-bar">
+      <div class="ia-bar-claude" style="width:100%" id="adm-ia-claude-bar">Claude</div>
+      <div class="ia-bar-gemini" style="width:0%" id="adm-ia-gemini-bar"></div>
+    </div>
+    <div style="display:flex;gap:16px;padding:8px 20px 16px;font-size:12px;color:#64748b;">
+      <span>🔵 Claude: <strong id="adm-claude-fotos">—</strong> fotos</span>
+      <span>🟢 Gemini: <strong id="adm-gemini-fotos">—</strong> fotos</span>
+    </div>
+  </div>
+
+  <!-- Laudos por tipo -->
+  <div class="adm-section">
+    <div class="adm-section-header">
+      <span class="adm-section-title">Laudos por tipo</span>
+    </div>
+    <div style="display:flex;gap:24px;padding:16px 20px;" id="adm-laudos-tipo">—</div>
+  </div>
+
+  <!-- Configuração de preços -->
+  <div class="adm-section">
+    <div class="adm-section-header">
+      <span class="adm-section-title">⚙️ Preços das análises</span>
+      <span style="font-size:11px;color:#94a3b8;">Alterações aplicadas imediatamente</span>
+    </div>
+    <div class="preco-form">
+      <div class="preco-field">
+        <label>Convencional (centavos)</label>
+        <input type="number" id="preco-conv" placeholder="50" min="1">
+        <div style="font-size:11px;color:#94a3b8;margin-top:4px;">Atual: <span id="preco-conv-atual">—</span></div>
+      </div>
+      <div class="preco-field">
+        <label>Premium (centavos)</label>
+        <input type="number" id="preco-prem" placeholder="90" min="1">
+        <div style="font-size:11px;color:#94a3b8;margin-top:4px;">Atual: <span id="preco-prem-atual">—</span></div>
+      </div>
+      <div class="preco-field">
+        <label>Bônus boas-vindas (centavos)</label>
+        <input type="number" id="preco-bonus" placeholder="500" min="0">
+        <div style="font-size:11px;color:#94a3b8;margin-top:4px;">Atual: <span id="preco-bonus-atual">—</span></div>
+      </div>
+    </div>
+    <div class="preco-actions">
+      <button class="btn btn-blue" onclick="admSalvarPrecos()">💾 Salvar preços</button>
+      <span id="preco-status" style="font-size:12px;color:#16a34a;margin-left:12px;"></span>
+    </div>
+  </div>
+
+  <!-- Usuários -->
+  <div class="adm-section">
+    <div class="adm-section-header">
+      <span class="adm-section-title">👥 Usuários</span>
+      <input type="text" id="adm-busca-user" placeholder="Buscar por email ou nome..."
+        style="padding:6px 12px;border:1px solid #e2e8f0;border-radius:8px;font-size:12px;width:220px;"
+        oninput="admFiltrarUsuarios()">
+    </div>
+    <table class="adm-table" id="adm-tabela-users">
+      <thead>
+        <tr>
+          <th>Usuário</th>
+          <th>Saldo</th>
+          <th>Laudos</th>
+          <th>Fotos</th>
+          <th>Cadastro</th>
+          <th>Status</th>
+          <th>Ações</th>
+        </tr>
+      </thead>
+      <tbody id="adm-users-body">
+        <tr><td colspan="7" style="text-align:center;color:#94a3b8;padding:24px;">Carregando...</td></tr>
+      </tbody>
+    </table>
+  </div>
+
 </div>
 
-<!-- ── MODALS ── -->
-
-<!-- Edit Client Modal -->
-<div id="modal-client" class="modal-overlay" style="display:none">
-  <div class="modal">
-    <p class="modal-title" id="modal-client-title">Editar Cliente</p>
-    <input type="hidden" id="edit-client-id"/>
-    <div class="form-row">
-      <div class="form-group"><label class="form-label">Nome</label><input type="text" id="edit-client-name" class="form-input"/></div>
-      <div class="form-group"><label class="form-label">Empresa</label><input type="text" id="edit-client-company" class="form-input"/></div>
+<!-- Modal ajuste saldo -->
+<div class="modal-overlay" id="modal-saldo">
+  <div class="modal-box">
+    <div class="modal-title">Ajustar saldo do usuário</div>
+    <div id="modal-saldo-user" style="font-size:13px;color:#64748b;margin-bottom:12px;"></div>
+    <div class="modal-field">
+      <label>Valor em centavos (negativo para débito)</label>
+      <input type="number" id="modal-saldo-valor" placeholder="Ex: 500 = R$ 5,00">
     </div>
-    <div class="form-row">
-      <div class="form-group"><label class="form-label">E-mail</label><input type="email" id="edit-client-email" class="form-input"/></div>
-      <div class="form-group"><label class="form-label">Telefone</label><input type="text" id="edit-client-phone" class="form-input"/></div>
+    <div class="modal-field">
+      <label>Motivo</label>
+      <input type="text" id="modal-saldo-motivo" placeholder="Ex: Cortesia, correção de erro...">
     </div>
-    <div class="form-group">
-      <label class="form-label">Plano</label>
-      <select id="edit-client-plan" class="form-input"></select>
-    </div>
-    <div class="modal-footer">
-      <button class="btn btn-secondary" onclick="closeModal('modal-client')">Cancelar</button>
-      <button class="btn btn-primary" onclick="saveClient()">Salvar</button>
+    <div class="modal-actions">
+      <button class="btn btn-gray" onclick="fecharModalSaldo()">Cancelar</button>
+      <button class="btn btn-blue" onclick="admAjustarSaldo()">Confirmar</button>
     </div>
   </div>
 </div>
-
-<!-- Add Plan Modal -->
-<div id="modal-plan" class="modal-overlay" style="display:none">
-  <div class="modal">
-    <p class="modal-title" id="modal-plan-title">Novo Plano</p>
-    <input type="hidden" id="edit-plan-id"/>
-    <div class="form-group"><label class="form-label">Nome do Plano</label><input type="text" id="edit-plan-name" class="form-input" placeholder="Ex: Pro, Basico, Enterprise"/></div>
-    <div class="form-row">
-      <div class="form-group"><label class="form-label">Valor Mensal (R$)</label><input type="number" id="edit-plan-price" class="form-input" step="0.01" min="0" placeholder="0.00"/></div>
-      <div class="form-group"><label class="form-label">Limite de Laudos</label><input type="number" id="edit-plan-limit" class="form-input" min="0" placeholder="Ilimitado"/></div>
-    </div>
-    <div class="form-group"><label class="form-label">Valor por Foto (R$)</label><input type="number" id="edit-plan-photo-price" class="form-input" step="0.01" min="0" placeholder="0.00"/></div>
-    <div class="modal-footer">
-      <button class="btn btn-secondary" onclick="closeModal('modal-plan')">Cancelar</button>
-      <button class="btn btn-primary" onclick="savePlan()">Salvar Plano</button>
-    </div>
-  </div>
-</div>
-
-<!-- Confirm Delete Modal -->
-<div id="modal-confirm" class="modal-overlay" style="display:none">
-  <div class="modal" style="max-width:380px">
-    <p class="modal-title">Confirmar exclusao</p>
-    <p id="confirm-text" style="font-size:14px;color:#475569;margin-bottom:20px"></p>
-    <div class="modal-footer">
-      <button class="btn btn-secondary" onclick="closeModal('modal-confirm')">Cancelar</button>
-      <button class="btn btn-danger" id="confirm-btn">Excluir</button>
-    </div>
-  </div>
-</div>
-
-<!-- Toast container -->
-<div class="toast-wrap" id="toast-wrap"></div>
 
 <script>
-// âââ HELPERS âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
-function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
-function formatDate(s){ if(!s) return '–'; const d=new Date(s); return isNaN(d)?s:d.toLocaleDateString('pt-BR'); }
-function statusBadge(s){
-  const m={active:'badge-green',blocked:'badge-red',inactive:'badge-gray'};
-  return '<span class="badge '+(m[s]||'badge-gray')+'">'+esc(s||'–')+'</span>';
-}
-function showToast(msg,type){
-  const w=document.getElementById('toast-wrap');
-  const t=document.createElement('div');
-  t.className='toast'+(type==='error'?' toast-error':'');
-  t.textContent=msg; w.appendChild(t);
-  setTimeout(()=>t.remove(),3500);
-}
-function openModal(id){document.getElementById(id).style.display='flex';}
-function closeModal(id){document.getElementById(id).style.display='none';}
+const ADMIN_TOKEN = 'izylaudo2026';
+let _admUsers = [];
+let _admUserSelecionado = null;
 
-// âââ API âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
-async function adminApi(method,path,body){
-  const tok=localStorage.getItem('admin_token');
-  const opts={method,headers:{'Content-Type':'application/json',...(tok?{'Authorization':'Bearer '+tok}:{})}};
-  if(body) opts.body=JSON.stringify(body);
-  const r=await fetch(path,opts);
-  const data=await r.json().catch(()=>({ok:false,error:'Resposta invÃ¡lida'}));
-  return {status:r.status,...data};
-}
-
-// âââ AUTH ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
-async function doAdminLogin(){
-  const pwd=document.getElementById('admin-password').value.trim();
-  const err=document.getElementById('login-err');
-  if(!pwd){err.textContent='Informe a senha.';return;}
-  const res=await adminApi('POST','/api/admin/login',{password:pwd});
-  if(res.ok&&res.token){
-    localStorage.setItem('admin_token',res.token);
-    err.textContent='';
-    document.getElementById('login-page').style.display='none';
-    document.getElementById('app').style.display='block';
-    initApp();
-  } else {
-    err.textContent=res.error||'Senha incorreta';
-  }
-}
-function doLogout(){
-  localStorage.removeItem('admin_token');
-  document.getElementById('app').style.display='none';
-  document.getElementById('login-page').style.display='flex';
-  document.getElementById('admin-password').value='';
-}
-
-// âââ INIT / NAV ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
-function initApp(){
-  if(localStorage.getItem('admin_token')){
-    document.getElementById('login-page').style.display='none';
-    document.getElementById('app').style.display='block';
-    showPage('dashboard');
-  }
-}
-function showPage(name){
-  ['dashboard','clients','plans','usage'].forEach(p=>{
-    const el=document.getElementById('page-'+p);
-    if(el) el.style.display=(p===name?'block':'none');
-  });
-  if(name==='dashboard') loadDashboard();
-  if(name==='clients')   loadClients();
-  if(name==='plans')     loadPlans();
-  if(name==='usage')     loadUsage();
-}
-
-// âââ DASHBOARD âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
-async function loadDashboard(){
-  const res=await adminApi('GET','/api/admin/stats');
-  if(!res.ok) return showToast('Erro ao carregar dashboard','error');
-  const g=document.getElementById('stats-grid');
-  if(g) g.innerHTML=
-    '<div class="stat-card"><div class="stat-num">'+(res.total_clients||0)+'</div><div class="stat-label">Clientes</div></div>'+
-    '<div class="stat-card"><div class="stat-num">'+(res.total_inspections||0)+'</div><div class="stat-label">Vistorias</div></div>'+
-    '<div class="stat-card"><div class="stat-num">'+(res.total_photos||0)+'</div><div class="stat-label">Fotos</div></div>'+
-    '<div class="stat-card"><div class="stat-num">'+(res.active_plans||0)+'</div><div class="stat-label">Planos ativos</div></div>';
-  if(res.recent_clients) renderRecentClients(res.recent_clients);
-}
-function renderRecentClients(clients){
-  const w=document.getElementById('recent-clients-wrap');
-  if(!w) return;
-  if(!clients.length){w.innerHTML='<p>Nenhum cliente recente.</p>';return;}
-  w.innerHTML='<table class="data-table"><thead><tr><th>Nome</th><th>E-mail</th><th>Status</th><th>Cadastro</th></tr></thead><tbody>'+
-    clients.map(c=>'<tr><td>'+esc(c.name)+'</td><td>'+esc(c.email)+'</td><td>'+statusBadge(c.status)+'</td><td>'+formatDate(c.created_at)+'</td></tr>').join('')+
-    '</tbody></table>';
-}
-
-// âââ CLIENTS âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
-let _allClients=[];
-async function loadClients(){
-  const res=await adminApi('GET','/api/admin/clients');
-  if(!res.ok) return showToast('Erro ao carregar clientes','error');
-  _allClients=res.clients||[];
-  await populatePlanSelect();
-  renderClientsTable(_allClients);
-}
-function renderClientsTable(list){
-  const tb=document.getElementById('clients-tbody');
-  if(!tb) return;
-  if(!list.length){tb.innerHTML='<tr><td colspan="7">Nenhum cliente encontrado.</td></tr>';return;}
-  tb.innerHTML=list.map(c=>
-    '<tr>'+
-    '<td>'+esc(c.name)+'</td>'+
-    '<td>'+esc(c.email)+'</td>'+
-    '<td>'+esc(c.company_name||'–')+'</td>'+
-    '<td>'+esc(c.plan_name||'–')+'</td>'+
-    '<td>'+(c.inspection_count||0)+'</td>'+
-    '<td>'+statusBadge(c.status)+'</td>'+
-    '<td>'+
-      '<button class="btn btn-sm" data-id="'+esc(c.id)+'" onclick="openEditClientModal(this.dataset.id)">Editar</button> '+
-      '<button class="btn btn-sm '+(c.status==='blocked'?'btn-success':'btn-danger')+'" data-id="'+esc(c.id)+'" data-act="'+(c.status==='blocked'?'activate':'block')+'" onclick="toggleClientStatus(this.dataset.id,this.dataset.act)">'+
-        (c.status==='blocked'?'Ativar':'Bloquear')+
-      '</button>'+
-    '</td>'+
-    '</tr>'
-  ).join('');
-}
-function filterClients(){
-  const q=(document.getElementById('client-search')?.value||'').toLowerCase();
-  const f=document.getElementById('client-filter')?.value||'all';
-  let list=_allClients;
-  if(q) list=list.filter(c=>(c.name||'').toLowerCase().includes(q)||(c.email||'').toLowerCase().includes(q));
-  if(f!=='all') list=list.filter(c=>(c.status||'active')===f);
-  renderClientsTable(list);
-}
-async function populatePlanSelect(){
-  const sel=document.getElementById('edit-client-plan');
-  if(!sel) return;
-  const res=await adminApi('GET','/api/admin/plans');
-  if(!res.ok) return;
-  sel.innerHTML='<option value="">— Sem plano —</option>'+
-    (res.plans||[]).map(p=>'<option value="'+esc(p.id)+'">'+esc(p.name)+'</option>').join('');
-}
-function openAddClientModal(){
-  document.getElementById('modal-client-title').textContent='Novo Cliente';
-  ['edit-client-id','edit-client-name','edit-client-company','edit-client-email','edit-client-phone'].forEach(id=>{
-    document.getElementById(id).value='';
-  });
-  const sp=document.getElementById('edit-client-plan');
-  if(sp) sp.value='';
-  openModal('modal-client');
-}
-function openEditClientModal(id){
-  const c=_allClients.find(x=>x.id===id);
-  if(!c) return;
-  document.getElementById('modal-client-title').textContent='Editar Cliente';
-  document.getElementById('edit-client-id').value=c.id;
-  document.getElementById('edit-client-name').value=c.name||'';
-  document.getElementById('edit-client-company').value=c.company_name||'';
-  document.getElementById('edit-client-email').value=c.email||'';
-  document.getElementById('edit-client-phone').value=c.phone||'';
-  const sp=document.getElementById('edit-client-plan');
-  if(sp) sp.value=c.plan_id||'';
-  openModal('modal-client');
-}
-
-async function saveClient(){
-  const id   =document.getElementById('edit-client-id').value.trim();
-  const name =document.getElementById('edit-client-name').value.trim();
-  const email=document.getElementById('edit-client-email').value.trim();
-  const phone=document.getElementById('edit-client-phone').value.trim();
-  const company=document.getElementById('edit-client-company').value.trim();
-  const plan_id=(document.getElementById('edit-client-plan')?.value||'').trim();
-  if(!name||!email){showToast('Nome e e-mail sÃ£o obrigatÃ³rios','error');return;}
-  let res;
-  if(id){
-    res=await adminApi('PUT','/api/admin/clients/'+id,{action:'update',name,email,phone,company_name:company});
-    if(res.ok&&plan_id){
-      await adminApi('PUT','/api/admin/clients/'+id,{action:'assign_plan',plan_id});
-    }
-  } else {
-    res=await adminApi('POST','/api/admin/clients',{name,email,phone,company_name:company,plan_id:plan_id||null});
-  }
-  if(res.ok){
-    closeModal('modal-client');
-    const msg=id?'Cliente atualizado!':'Cliente criado! Senha temporÃ¡ria: '+(res.temp_password||'(ver e-mail)');
-    showToast(msg);
-    loadClients();
-  } else {
-    showToast(res.error||'Erro ao salvar cliente','error');
-  }
-}
-async function toggleClientStatus(id,action){
-  const res=await adminApi('PUT','/api/admin/clients/'+id,{action});
-  if(res.ok){
-    showToast(action==='block'?'Cliente bloqueado!':'Cliente ativado!');
-    loadClients();
-  } else {
-    showToast(res.error||'Erro ao alterar status','error');
+async function admFetch(path, method, body) {
+  method = method || 'GET';
+  const opts = {
+    method: method,
+    headers: { 'Content-Type': 'application/json', 'X-Admin-Token': ADMIN_TOKEN }
+  };
+  if (body) opts.body = JSON.stringify(body);
+  try {
+    const r = await fetch(path, opts);
+    return await r.json();
+  } catch (e) {
+    console.error('admFetch error', path, e);
+    return null;
   }
 }
 
-// âââ PLANS âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
-let _allPlans=[];
-async function loadPlans(){
-  const res=await adminApi('GET','/api/admin/plans');
-  if(!res.ok) return showToast('Erro ao carregar planos','error');
-  _allPlans=res.plans||[];
-  renderPlansGrid(_allPlans);
-}
-function renderPlansGrid(list){
-  const g=document.getElementById('plans-grid');
-  if(!g) return;
-  if(!list.length){
-    g.innerHTML='<p>Nenhum plano cadastrado. <button class="btn" onclick="openAddPlanModal()">Criar primeiro plano</button></p>';
+async function admCarregar(periodo, btn) {
+  if (btn) {
+    document.querySelectorAll('.adm-filtro').forEach(function(b) { b.classList.remove('active'); });
+    btn.classList.add('active');
+  }
+
+  const data = await admFetch('/api/admin/stats?periodo=' + periodo + '&token=' + ADMIN_TOKEN);
+  if (!data || data.error) {
+    document.getElementById('adm-ultima-atualizacao').textContent = 'Erro ao carregar';
     return;
   }
-  g.innerHTML=list.map(p=>
-    '<div class="plan-card'+(p.active?'':' plan-inactive')+'">'+
-    '<div class="plan-name">'+esc(p.name)+'</div>'+
-    '<div class="plan-price">R$ '+Number(p.price||0).toFixed(2)+'/mês</div>'+
-    '<div class="plan-detail">Limite: '+(p.inspection_limit||'Ilimitado')+'</div>'+
-    '<div class="plan-detail">Foto extra: R$ '+Number(p.extra_photo_price||0).toFixed(2)+'</div>'+
-    '<div class="plan-detail">Clientes: '+(p.client_count||0)+'</div>'+
-    '<div class="plan-actions">'+
-      '<button class="btn btn-sm" data-id="'+esc(p.id)+'" onclick="openEditPlanModal(this.dataset.id)">Editar</button> '+
-      '<button class="btn btn-sm '+(p.active?'btn-danger':'btn-success')+'" data-id="'+esc(p.id)+'" data-val="'+(p.active?0:1)+'" onclick="togglePlan(this.dataset.id,!!+this.dataset.val)">'+
-        (p.active?'Desativar':'Ativar')+
-      '</button>'+
-    '</div>'+
-    '</div>'
-  ).join('');
-}
-function openAddPlanModal(){
-  document.getElementById('modal-plan-title').textContent='Novo Plano';
-  ['edit-plan-id','edit-plan-name','edit-plan-price','edit-plan-limit','edit-plan-photo-price'].forEach(id=>{
-    document.getElementById(id).value='';
+
+  var fmt = function(c) { return 'R$ ' + ((c||0)/100).toFixed(2).replace('.',','); };
+
+  // Usuários
+  document.getElementById('adm-total-usuarios').textContent = data.usuarios.total;
+  document.getElementById('adm-novos-usuarios').textContent = data.usuarios.novos_periodo + ' novos no período';
+  document.getElementById('adm-usuarios-ativos').textContent = data.usuarios.ativos_periodo;
+
+  // Financeiro
+  document.getElementById('adm-receita-periodo').textContent = fmt(data.financeiro.receita_periodo_cents);
+  document.getElementById('adm-receita-total').textContent = 'Total: ' + fmt(data.financeiro.receita_total_cents);
+  document.getElementById('adm-ticket-medio').textContent = fmt(data.financeiro.ticket_medio_cents);
+
+  // Laudos
+  document.getElementById('adm-laudos-periodo').textContent = data.laudos.periodo;
+  document.getElementById('adm-laudos-total').textContent = 'Total: ' + data.laudos.total;
+
+  // Fotos
+  document.getElementById('adm-fotos-periodo').textContent = data.fotos.periodo;
+  document.getElementById('adm-fotos-total').textContent = 'Total: ' + data.fotos.total;
+
+  // Alertas
+  document.getElementById('adm-saldo-baixo').textContent = data.alertas.saldo_baixo;
+  document.getElementById('adm-reembolsos').textContent = data.alertas.reembolsos_periodo;
+
+  // IA Usage
+  var claude = (data.ia_usage && data.ia_usage.claude) || 0;
+  var gemini = (data.ia_usage && data.ia_usage.gemini) || 0;
+  var total_ia = (claude + gemini) || 1;
+  var pct_claude = Math.round(claude / total_ia * 100);
+  var pct_gemini = 100 - pct_claude;
+  document.getElementById('adm-ia-claude-bar').style.width = pct_claude + '%';
+  document.getElementById('adm-ia-claude-bar').textContent = pct_claude > 10 ? ('Claude ' + pct_claude + '%') : '';
+  document.getElementById('adm-ia-gemini-bar').style.width = pct_gemini + '%';
+  document.getElementById('adm-ia-gemini-bar').textContent = pct_gemini > 10 ? ('Gemini ' + pct_gemini + '%') : '';
+  document.getElementById('adm-claude-fotos').textContent = claude;
+  document.getElementById('adm-gemini-fotos').textContent = gemini;
+  document.getElementById('adm-ia-texto').textContent = pct_claude + '% Claude · ' + pct_gemini + '% Gemini';
+
+  // Laudos por tipo
+  var tipos = data.laudos.por_tipo || {};
+  var tipoHtml = '';
+  var tipoLabels = {
+    'entrada': '🔑 Entrada',
+    'saida': '🔓 Saída',
+    'temporada': '🏖️ Temporada',
+    'periodica': '📅 Periódica',
+    'conferencia': '📋 Conferência'
+  };
+  Object.keys(tipos).forEach(function(t) {
+    var label = tipoLabels[t] || t;
+    tipoHtml += '<div style="text-align:center;">' +
+      '<div style="font-size:22px;font-weight:600;color:#1e293b;">' + tipos[t] + '</div>' +
+      '<div style="font-size:12px;color:#94a3b8;">' + label + '</div>' +
+      '</div>';
   });
-  openModal('modal-plan');
-}
-function openEditPlanModal(id){
-  const p=_allPlans.find(x=>x.id===id);
-  if(!p) return;
-  document.getElementById('modal-plan-title').textContent='Editar Plano';
-  document.getElementById('edit-plan-id').value=p.id;
-  document.getElementById('edit-plan-name').value=p.name||'';
-  document.getElementById('edit-plan-price').value=p.price||'';
-  document.getElementById('edit-plan-limit').value=p.inspection_limit||'';
-  document.getElementById('edit-plan-photo-price').value=p.extra_photo_price||'';
-  openModal('modal-plan');
-}
-async function savePlan(){
-  const id    =document.getElementById('edit-plan-id').value.trim();
-  const name  =document.getElementById('edit-plan-name').value.trim();
-  const price =document.getElementById('edit-plan-price').value.trim();
-  const limit =document.getElementById('edit-plan-limit').value.trim();
-  const eprice=document.getElementById('edit-plan-photo-price').value.trim();
-  if(!name){showToast('Nome do plano Ã© obrigatÃ³rio','error');return;}
-  const body={name,price:parseFloat(price)||0,inspection_limit:parseInt(limit)||null,extra_photo_price:parseFloat(eprice)||0};
-  const res=id
-    ? await adminApi('PUT','/api/admin/plans/'+id,body)
-    : await adminApi('POST','/api/admin/plans',body);
-  if(res.ok){
-    closeModal('modal-plan');
-    showToast(id?'Plano atualizado!':'Plano criado!');
-    loadPlans();
-  } else {
-    showToast(res.error||'Erro ao salvar plano','error');
-  }
-}
-async function togglePlan(id,active){
-  const res=await adminApi('PUT','/api/admin/plans/'+id,{active});
-  if(res.ok){
-    showToast(active?'Plano ativado!':'Plano desativado!');
-    loadPlans();
-  } else {
-    showToast(res.error||'Erro ao alterar plano','error');
-  }
+  document.getElementById('adm-laudos-tipo').innerHTML = tipoHtml || '<span style="color:#94a3b8;font-size:13px;">Nenhum laudo no período</span>';
+
+  // Preços
+  var p = data.precos || {};
+  var conv = (p.price_conv_cents != null) ? p.price_conv_cents : 50;
+  var prem = (p.price_prem_cents != null) ? p.price_prem_cents : 90;
+  var bonus = (p.bonus_boas_vindas_cents != null) ? p.bonus_boas_vindas_cents : 500;
+  document.getElementById('preco-conv-atual').textContent = fmt(conv);
+  document.getElementById('preco-prem-atual').textContent = fmt(prem);
+  document.getElementById('preco-bonus-atual').textContent = fmt(bonus);
+  document.getElementById('preco-conv').value = conv;
+  document.getElementById('preco-prem').value = prem;
+  document.getElementById('preco-bonus').value = bonus;
+
+  document.getElementById('adm-ultima-atualizacao').textContent = 'Atualizado: ' + new Date().toLocaleTimeString('pt-BR');
+
+  // Carregar usuários
+  admCarregarUsuarios();
 }
 
-// âââ USAGE âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
-async function loadUsage(){
-  const res=await adminApi('GET','/api/admin/usage');
-  if(!res.ok) return showToast('Erro ao carregar uso','error');
-  const tb=document.getElementById('usage-tbody');
-  if(!tb) return;
-  const rows=res.usage||[];
-  if(!rows.length){tb.innerHTML='<tr><td colspan="5">Nenhum dado de uso.</td></tr>';return;}
-  tb.innerHTML=rows.map(r=>
-    '<tr>'+
-    '<td>'+esc(r.client_name||r.name||'–')+'</td>'+
-    '<td>'+(r.inspection_count||0)+'</td>'+
-    '<td>'+(r.photo_count||0)+'</td>'+
-    '<td>'+esc(r.plan_name||'–')+'</td>'+
-    '<td>'+formatDate(r.last_activity||r.created_at)+'</td>'+
-    '</tr>'
-  ).join('');
+async function admCarregarUsuarios() {
+  const data = await admFetch('/api/admin/users?token=' + ADMIN_TOKEN);
+  if (!data || !data.users) return;
+  _admUsers = data.users;
+  admRenderUsuarios(_admUsers);
 }
 
-// âââ CONFIRM âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
-let _confirmCb=null;
-function confirmDelete(msg,cb){
-  document.getElementById('confirm-text').textContent=msg;
-  _confirmCb=cb;
-  openModal('modal-confirm');
+function admEscape(s) {
+  if (s == null) return '';
+  return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
 }
 
-// âââ BOOT ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
-document.addEventListener('DOMContentLoaded',()=>{
-  const cb=document.getElementById('confirm-btn');
-  if(cb) cb.addEventListener('click',()=>{
-    closeModal('modal-confirm');
-    if(_confirmCb){_confirmCb();_confirmCb=null;}
+function admRenderUsuarios(users) {
+  var fmt = function(c) { return 'R$ ' + ((c||0)/100).toFixed(2).replace('.',','); };
+  var html = '';
+  users.forEach(function(u) {
+    var bloqueado = !!u.is_blocked;
+    var saldoBaixo = (u.balance_cents || 0) < 100;
+    var nome = admEscape(u.name || '—');
+    var email = admEscape(u.email || '');
+    var userIdJs = String(u.id || '').replace(/\\/g, '\\\\').replace(/'/g, "\\'");
+    var nomeJs = String(u.name || u.email || '').replace(/\\/g, '\\\\').replace(/'/g, "\\'");
+    html += '<tr>' +
+      '<td><div style="font-weight:500;">' + nome + '</div>' +
+      '<div style="font-size:11px;color:#94a3b8;">' + email + '</div></td>' +
+      '<td><span style="color:' + (saldoBaixo ? '#dc2626' : '#16a34a') + ';font-weight:600;">' + fmt(u.balance_cents) + '</span></td>' +
+      '<td>' + (u.total_laudos || 0) + '</td>' +
+      '<td>' + (u.total_fotos || 0) + '</td>' +
+      '<td style="font-size:11px;color:#94a3b8;">' + (u.created_at ? String(u.created_at).substring(0,10) : '—') + '</td>' +
+      '<td><span class="badge ' + (bloqueado ? 'badge-err' : 'badge-ok') + '">' + (bloqueado ? '🔒 Bloqueado' : '✓ Ativo') + '</span></td>' +
+      '<td style="display:flex;gap:6px;">' +
+        '<button class="btn btn-blue" onclick="abrirModalSaldo(\'' + userIdJs + '\',\'' + nomeJs + '\',' + (u.balance_cents || 0) + ')">💰 Saldo</button>' +
+        '<button class="btn ' + (bloqueado ? 'btn-green' : 'btn-red') + '" onclick="admToggleBlock(\'' + userIdJs + '\',' + (!bloqueado) + ')">' +
+        (bloqueado ? '🔓 Desbloquear' : '🔒 Bloquear') + '</button>' +
+      '</td>' +
+    '</tr>';
   });
-  initApp();
-});
+  document.getElementById('adm-users-body').innerHTML = html || '<tr><td colspan="7" style="text-align:center;color:#94a3b8;padding:24px;">Nenhum usuário</td></tr>';
+}
 
+function admFiltrarUsuarios() {
+  var q = document.getElementById('adm-busca-user').value.toLowerCase();
+  var filtrados = _admUsers.filter(function(u) {
+    return (u.email || '').toLowerCase().indexOf(q) !== -1 || (u.name || '').toLowerCase().indexOf(q) !== -1;
+  });
+  admRenderUsuarios(filtrados);
+}
 
+async function admToggleBlock(userId, blocked) {
+  if (!confirm('Confirma ' + (blocked ? 'bloquear' : 'desbloquear') + ' este usuário?')) return;
+  await admFetch('/api/admin/users/' + encodeURIComponent(userId) + '/block?token=' + ADMIN_TOKEN, 'POST', { blocked: blocked });
+  admCarregarUsuarios();
+}
+
+function abrirModalSaldo(userId, nome, saldoAtual) {
+  _admUserSelecionado = userId;
+  var fmt = function(c) { return 'R$ ' + ((c||0)/100).toFixed(2).replace('.',','); };
+  document.getElementById('modal-saldo-user').textContent = nome + ' · Saldo atual: ' + fmt(saldoAtual);
+  document.getElementById('modal-saldo-valor').value = '';
+  document.getElementById('modal-saldo-motivo').value = '';
+  document.getElementById('modal-saldo').classList.add('open');
+}
+
+function fecharModalSaldo() {
+  document.getElementById('modal-saldo').classList.remove('open');
+  _admUserSelecionado = null;
+}
+
+async function admAjustarSaldo() {
+  var valor = parseInt(document.getElementById('modal-saldo-valor').value, 10);
+  var motivo = document.getElementById('modal-saldo-motivo').value || 'Ajuste manual pelo admin';
+  if (!valor || isNaN(valor)) { alert('Digite um valor válido em centavos'); return; }
+  if (!_admUserSelecionado) return;
+  await admFetch('/api/admin/users/' + encodeURIComponent(_admUserSelecionado) + '/balance?token=' + ADMIN_TOKEN, 'POST', {
+    amount_cents: valor, reason: motivo
+  });
+  fecharModalSaldo();
+  admCarregarUsuarios();
+}
+
+async function admSalvarPrecos() {
+  var conv = parseInt(document.getElementById('preco-conv').value, 10);
+  var prem = parseInt(document.getElementById('preco-prem').value, 10);
+  var bonus = parseInt(document.getElementById('preco-bonus').value, 10);
+  if (!conv || !prem || isNaN(conv) || isNaN(prem)) { alert('Preencha os valores corretamente'); return; }
+  if (isNaN(bonus)) bonus = 0;
+  await admFetch('/api/admin/settings/prices?token=' + ADMIN_TOKEN, 'POST', {
+    price_conv_cents: conv, price_prem_cents: prem, bonus_boas_vindas_cents: bonus
+  });
+  var status = document.getElementById('preco-status');
+  status.textContent = '✓ Salvo com sucesso!';
+  setTimeout(function() { status.textContent = ''; }, 3000);
+  var activeBtn = document.querySelector('.adm-filtro.active');
+  var periodo = (activeBtn && activeBtn.getAttribute('data-periodo')) || '30d';
+  admCarregar(periodo, null);
+}
+
+// Inicializar
+admCarregar('30d', document.querySelector('.adm-filtro.active'));
 </script>
 </body>
 </html>
