@@ -4755,14 +4755,31 @@ async function loadDashboard() {
   const estesMes = list.filter(i => {
     const d = new Date(i.created_at); return d.getMonth()===m && d.getFullYear()===y;
   }).length;
-  const emAndamento = list.filter(i => i.status==='rascunho' || i.status==='assinado' || i.status==='processando').length;
-  const concluidas = list.filter(i => i.status==='concluído').length;
+  // Status atuais validos:
+  //   'em_andamento' | 'rascunho' | 'draft' | 'in_progress'  -> Em andamento
+  //   'concluido' | 'concluído' | 'aguardando_assinatura'
+  //     | 'assinado_digital' | 'assinado_fisico' | 'assinado' | 'signed'
+  //                                                           -> Finalizados
+  const EM_ANDAMENTO_STATUSES = [
+    'em_andamento', 'rascunho', 'draft', 'in_progress', 'processando'
+  ];
+  const FINALIZADOS_STATUSES = [
+    'concluido', 'concluído', 'aguardando_assinatura',
+    'assinado_digital', 'assinado_fisico', 'assinado', 'signed'
+  ];
+  const _normSt = s => (s == null ? '' : String(s)).toLowerCase();
+  const emAndamento = list.filter(i => EM_ANDAMENTO_STATUSES.indexOf(_normSt(i.status)) !== -1).length;
+  const concluidas = list.filter(i => FINALIZADOS_STATUSES.indexOf(_normSt(i.status)) !== -1).length;
 
   // Dashboard principal
-  document.getElementById('stat-total').textContent = total;
-  document.getElementById('stat-mes').textContent = estesMes;
-  document.getElementById('stat-andamento').textContent = emAndamento;
-  document.getElementById('stat-concluído').textContent = concluidas;
+  var _stTotalEl = document.getElementById('stat-total');
+  if (_stTotalEl) _stTotalEl.textContent = total;
+  var _stMesEl = document.getElementById('stat-mes');
+  if (_stMesEl) _stMesEl.textContent = estesMes;
+  var _stAndEl = document.getElementById('stat-andamento');
+  if (_stAndEl) _stAndEl.textContent = emAndamento;
+  var _stConcEl = document.getElementById('stat-concluído');
+  if (_stConcEl) _stConcEl.textContent = concluidas;
 
   // Aba estatísticas (manter sincronizado)
   const t2 = document.getElementById('stat-total-2');
@@ -4770,17 +4787,29 @@ async function loadDashboard() {
   const a2 = document.getElementById('stat-andamento-2');
   if (a2) a2.textContent = emAndamento;
 
-  // Saldo de fotos (quando backend enviar currentUser.credits)
-  const credits = (currentUser && currentUser.credits != null) ? currentUser.credits : null;
+  // Fotos usadas este mes: soma conv+prem que vem do /me (task #38).
+  // Fallback para currentUser.credits (interface antiga) caso /me ainda
+  // nao tenha os contadores.
+  var fotosUsadas = null;
+  if (currentUser && (typeof currentUser.fotos_usadas_conv_mes === 'number'
+                      || typeof currentUser.fotos_usadas_prem_mes === 'number')) {
+    fotosUsadas = (currentUser.fotos_usadas_conv_mes || 0)
+                + (currentUser.fotos_usadas_prem_mes || 0);
+  }
   const saldoEl = document.getElementById('stat-saldo');
   const saldoDisplayEl = document.getElementById('db-saldo-display');
   const saldoCreditsEl = document.getElementById('stat-credits');
-  if (credits !== null) {
-    if (saldoEl) saldoEl.textContent = credits;
-    if (saldoDisplayEl) saldoDisplayEl.textContent = credits + ' fotos';
-    if (saldoCreditsEl) saldoCreditsEl.textContent = credits;
+  if (fotosUsadas !== null) {
+    if (saldoEl) saldoEl.textContent = fotosUsadas;
+    if (saldoDisplayEl) saldoDisplayEl.textContent = fotosUsadas + ' fotos';
+    if (saldoCreditsEl) saldoCreditsEl.textContent = fotosUsadas;
+  } else if (currentUser && currentUser.credits != null) {
+    // Legacy fallback (caso /me nao traga os contadores novos)
+    if (saldoEl) saldoEl.textContent = currentUser.credits;
+    if (saldoDisplayEl) saldoDisplayEl.textContent = currentUser.credits + ' fotos';
+    if (saldoCreditsEl) saldoCreditsEl.textContent = currentUser.credits;
     const cbal = document.querySelector('.credits-bal-value');
-    if (cbal) cbal.textContent = credits + ' fotos';
+    if (cbal) cbal.textContent = currentUser.credits + ' fotos';
   }
 
   const container = document.getElementById('inspections-list');
