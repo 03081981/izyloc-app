@@ -387,6 +387,34 @@ body { background: #f1f5f9; color: #1e293b; }
   </div>
 </div>
 
+<!-- Modal Excluir Usuario -->
+<div class="modal-overlay" id="modal-excluir-user">
+  <div class="modal-box">
+    <div class="modal-title" style="color:#dc2626;">🗑️ Excluir usuário</div>
+    <div id="modal-excluir-user-info" style="font-size:13px;color:#1e293b;margin-bottom:10px;font-weight:500;"></div>
+    <div style="background:#fef2f2;border:1px solid #fecaca;border-radius:8px;padding:12px;
+      margin-bottom:14px;font-size:12px;color:#991b1b;line-height:1.5;">
+      ⚠️ Esta ação é <strong>irreversível</strong>. Todos os laudos, fotos, créditos
+      e dados financeiros do usuário serão permanentemente excluídos.
+    </div>
+    <div class="modal-field">
+      <label>Para confirmar, digite o email do usuário:</label>
+      <input type="text" id="modal-excluir-email" placeholder="" autocomplete="off" oninput="_admValidarEmailExclusao()">
+    </div>
+    <div id="modal-excluir-status" style="font-size:12px;margin-top:4px;min-height:16px;"></div>
+    <div class="modal-actions">
+      <button class="btn btn-gray" onclick="fecharModalExcluirUser()">Cancelar</button>
+      <button class="btn btn-red" id="btn-confirmar-excluir" onclick="admExcluirUsuario()" disabled
+        style="opacity:0.5;cursor:not-allowed;">Excluir permanentemente</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast (sucesso/erro) -->
+<div id="adm-toast" style="position:fixed;bottom:24px;right:24px;padding:14px 20px;
+  border-radius:10px;font-size:13px;font-weight:500;color:#fff;display:none;z-index:1000;
+  box-shadow:0 4px 16px rgba(0,0,0,0.15);max-width:340px;"></div>
+
 <script>
 // ADMIN_TOKEN e o header X-Admin-Token enviado ao backend. Vem da sessionStorage
 // (populada no login) ou do valor URL legado como fallback.
@@ -702,7 +730,12 @@ function admRenderUsuarios(users) {
     var email = admEscape(u.email || '');
     var userIdJs = String(u.id || '').replace(/\\/g, '\\\\').replace(/'/g, "\\'");
     var nomeJs = String(u.name || u.email || '').replace(/\\/g, '\\\\').replace(/'/g, "\\'");
-    html += '<tr>' +
+    var emailJs = String(u.email || '').replace(/\\/g, '\\\\').replace(/'/g, "\\'");
+    var isAdmin = (String(u.email || '').trim().toLowerCase() === 'financeiro@izylaudo.com.br');
+    var delBtn = isAdmin
+      ? ''
+      : '<button class="btn btn-red" title="Excluir usuário" onclick="abrirModalExcluirUser(\'' + userIdJs + '\',\'' + nomeJs + '\',\'' + emailJs + '\')">🗑️</button>';
+    html += '<tr data-user-id="' + userIdJs + '">' +
       '<td><div style="font-weight:500;">' + nome + '</div>' +
       '<div style="font-size:11px;color:#94a3b8;">' + email + '</div></td>' +
       '<td><span style="color:' + (saldoBaixo ? '#dc2626' : '#16a34a') + ';font-weight:600;">' + fmt(u.balance_cents) + '</span></td>' +
@@ -710,10 +743,11 @@ function admRenderUsuarios(users) {
       '<td>' + (u.total_fotos || 0) + '</td>' +
       '<td style="font-size:11px;color:#94a3b8;">' + (u.created_at ? String(u.created_at).substring(0,10) : '—') + '</td>' +
       '<td><span class="badge ' + (bloqueado ? 'badge-err' : 'badge-ok') + '">' + (bloqueado ? '🔒 Bloqueado' : '✓ Ativo') + '</span></td>' +
-      '<td style="display:flex;gap:6px;">' +
+      '<td style="display:flex;gap:6px;flex-wrap:wrap;">' +
         '<button class="btn btn-blue" onclick="abrirModalSaldo(\'' + userIdJs + '\',\'' + nomeJs + '\',' + (u.balance_cents || 0) + ')">💰 Saldo</button>' +
         '<button class="btn ' + (bloqueado ? 'btn-green' : 'btn-red') + '" onclick="admToggleBlock(\'' + userIdJs + '\',' + (!bloqueado) + ')">' +
         (bloqueado ? '🔓 Desbloquear' : '🔒 Bloquear') + '</button>' +
+        delBtn +
       '</td>' +
     '</tr>';
   });
@@ -732,6 +766,91 @@ async function admToggleBlock(userId, blocked) {
   if (!confirm('Confirma ' + (blocked ? 'bloquear' : 'desbloquear') + ' este usuário?')) return;
   await admFetch('/api/admin/users/' + encodeURIComponent(userId) + '/block?token=' + ADMIN_TOKEN, 'POST', { blocked: blocked });
   admCarregarUsuarios();
+}
+
+// ─── Excluir usuário ───────────────────────────────────────────────────
+var _admExcluirCtx = { id: null, email: null, nome: null };
+
+function abrirModalExcluirUser(userId, nome, email) {
+  _admExcluirCtx = { id: userId, email: String(email || '').toLowerCase(), nome: nome };
+  document.getElementById('modal-excluir-user-info').textContent =
+    nome + (email ? ' — ' + email : '');
+  document.getElementById('modal-excluir-email').value = '';
+  document.getElementById('modal-excluir-email').setAttribute('placeholder', email || '');
+  document.getElementById('modal-excluir-status').textContent = '';
+  var btn = document.getElementById('btn-confirmar-excluir');
+  btn.disabled = true;
+  btn.style.opacity = '0.5';
+  btn.style.cursor = 'not-allowed';
+  document.getElementById('modal-excluir-user').classList.add('open');
+  setTimeout(function(){ document.getElementById('modal-excluir-email').focus(); }, 50);
+}
+
+function fecharModalExcluirUser() {
+  document.getElementById('modal-excluir-user').classList.remove('open');
+  _admExcluirCtx = { id: null, email: null, nome: null };
+}
+
+function _admValidarEmailExclusao() {
+  var typed = (document.getElementById('modal-excluir-email').value || '').trim().toLowerCase();
+  var match = typed && _admExcluirCtx.email && typed === _admExcluirCtx.email;
+  var btn = document.getElementById('btn-confirmar-excluir');
+  btn.disabled = !match;
+  btn.style.opacity = match ? '1' : '0.5';
+  btn.style.cursor = match ? 'pointer' : 'not-allowed';
+  var status = document.getElementById('modal-excluir-status');
+  if (!typed) {
+    status.textContent = '';
+  } else if (match) {
+    status.style.color = '#16a34a';
+    status.textContent = '✓ Email confere. Clique em "Excluir permanentemente".';
+  } else {
+    status.style.color = '#dc2626';
+    status.textContent = 'O email digitado não confere.';
+  }
+}
+
+function _admToast(msg, tipo) {
+  var el = document.getElementById('adm-toast');
+  if (!el) return;
+  el.textContent = msg;
+  el.style.background = (tipo === 'erro') ? '#dc2626' : '#16a34a';
+  el.style.display = 'block';
+  setTimeout(function(){ el.style.display = 'none'; }, 4500);
+}
+
+async function admExcluirUsuario() {
+  var ctx = _admExcluirCtx;
+  if (!ctx || !ctx.id || !ctx.email) return;
+  var typed = (document.getElementById('modal-excluir-email').value || '').trim().toLowerCase();
+  if (typed !== ctx.email) {
+    _admToast('Email não confere.', 'erro');
+    return;
+  }
+  var btn = document.getElementById('btn-confirmar-excluir');
+  btn.disabled = true;
+  btn.textContent = 'Excluindo...';
+  var r = await admFetch(
+    '/api/admin/users/' + encodeURIComponent(ctx.id) + '?token=' + encodeURIComponent(ADMIN_TOKEN),
+    'DELETE',
+    { confirm_email: ctx.email }
+  );
+  btn.textContent = 'Excluir permanentemente';
+  if (r && r.ok) {
+    var row = document.querySelector('tr[data-user-id="' + ctx.id.replace(/"/g, '') + '"]');
+    if (row && row.parentNode) row.parentNode.removeChild(row);
+    _admToast('Usuário excluído com sucesso.', 'ok');
+    fecharModalExcluirUser();
+    // Recarrega contadores do dashboard e tabela completa
+    if (typeof admCarregar === 'function') {
+      var active = document.querySelector('.adm-filtro.active');
+      var per = active && active.getAttribute('data-periodo') || '30d';
+      admCarregar(per, null);
+    }
+  } else {
+    _admToast((r && r.error) || 'Falha ao excluir usuário.', 'erro');
+    btn.disabled = false;
+  }
 }
 
 function abrirModalSaldo(userId, nome, saldoAtual) {

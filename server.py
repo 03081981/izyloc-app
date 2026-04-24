@@ -2062,6 +2062,125 @@ class AdminUserBalanceHandler(AdminHandler):
             conn.close()
 
 
+class AdminUserDeleteHandler(AdminHandler):
+    """DELETE /api/admin/users/:user_id — exclui usuario + dados em cascata.
+
+    Protecoes:
+      - Nao exclui o admin (match por ADMIN_EMAIL)
+      - Exige confirm_email no body = email do usuario alvo (segunda camada)
+    """
+    def delete(self, user_id):
+        if not self.require_admin():
+            return
+        try:
+            data = json.loads(self.request.body or b'{}')
+        except Exception:
+            data = {}
+        confirm_email = str(data.get('confirm_email') or '').strip().lower()
+
+        conn = get_conn()
+        try:
+            target = conn.execute(
+                'SELECT id, email, name FROM users WHERE id = ?', (user_id,)
+            ).fetchone()
+            if not target:
+                self.set_status(404)
+                self.ok({'ok': False, 'error': 'Usuario nao encontrado'})
+                return
+            target = dict(target)
+            target_email = (target.get('email') or '').strip().lower()
+
+            # Protecao 1: nao deixa excluir o admin
+            admin_email = (ADMIN_EMAIL or 'financeiro@izylaudo.com.br').strip().lower()
+            if target_email == admin_email:
+                self.set_status(403)
+                self.ok({
+                    'ok': False,
+                    'error': 'Nao e permitido excluir o usuario administrador (' + admin_email + ').',
+                })
+                return
+
+            # Protecao 2: confirm_email tem que bater com o email do alvo
+            if not confirm_email or confirm_email != target_email:
+                self.set_status(400)
+                self.ok({
+                    'ok': False,
+                    'error': 'Confirmacao invalida: digite o email exato do usuario.',
+                })
+                return
+
+            # Cascade delete. Respeita FKs (inspections -> rooms -> items -> photos).
+            # A maioria das tabelas filhas ja tem ON DELETE CASCADE, mas fazemos
+            # explicito para nao depender de migracoes antigas.
+            try:
+                conn.execute(
+                    "DELETE FROM item_photos WHERE item_id IN ("
+                    "  SELECT ri.id FROM room_items ri "
+                    "  JOIN rooms r ON r.id = ri.room_id "
+                    "  JOIN inspections i ON i.id = r.inspection_id "
+                    "  WHERE i.user_id = ?)",
+                    (user_id,),
+                )
+            except Exception as _e:
+                print('[ADMIN_DEL] item_photos skip: ' + str(_e), flush=True)
+                conn.rollback()
+            try:
+                conn.execute(
+                    "DELETE FROM room_items WHERE room_id IN ("
+                    "  SELECT r.id FROM rooms r "
+                    "  JOIN inspections i ON i.id = r.inspection_id "
+                    "  WHERE i.user_id = ?)",
+                    (user_id,),
+                )
+            except Exception as _e:
+                print('[ADMIN_DEL] room_items skip: ' + str(_e), flush=True)
+                conn.rollback()
+            try:
+                conn.execute(
+                    "DELETE FROM rooms WHERE inspection_id IN ("
+                    "  SELECT id FROM inspections WHERE user_id = ?)",
+                    (user_id,),
+                )
+            except Exception as _e:
+                print('[ADMIN_DEL] rooms skip: ' + str(_e), flush=True)
+                conn.rollback()
+            conn.execute("DELETE FROM inspections WHERE user_id = ?", (user_id,))
+            conn.execute("DELETE FROM balance_transactions WHERE user_id = ?", (user_id,))
+            try:
+                conn.execute("DELETE FROM password_reset_tokens WHERE user_id = ?", (user_id,))
+            except Exception:
+                conn.rollback()
+            try:
+                conn.execute("DELETE FROM corretores WHERE user_id = ?", (user_id,))
+            except Exception:
+                conn.rollback()
+            try:
+                conn.execute("DELETE FROM user_profile_config WHERE user_id = ?", (user_id,))
+            except Exception:
+                conn.rollback()
+            conn.execute("DELETE FROM users WHERE id = ?", (user_id,))
+            conn.commit()
+            print('[ADMIN_DEL] OK target=' + user_id + ' email=' + target_email, flush=True)
+            self.ok({
+                'ok': True,
+                'message': 'Usuario excluido com sucesso',
+                'email': target_email,
+            })
+        except Exception as _e:
+            try:
+                conn.rollback()
+            except Exception:
+                pass
+            print('[ADMIN_DEL] ERROR target=' + user_id + ' err=' + str(_e), flush=True)
+            self.set_status(500)
+            self.ok({'ok': False, 'error': 'Falha ao excluir: ' + str(_e)})
+        finally:
+            try:
+                conn.close()
+            except Exception:
+                pass
+
+
 class AdminPricesHandler(AdminHandler):
     def get(self):
         if not self.require_admin():
@@ -5312,6 +5431,7 @@ def make_app():
         (r'/api/admin/users', AdminUsersHandler),
         (r'/api/admin/users/([^/]+)/block', AdminUserBlockHandler),
         (r'/api/admin/users/([^/]+)/balance', AdminUserBalanceHandler),
+        (r'/api/admin/users/([^/]+)', AdminUserDeleteHandler),
         (r'/api/admin/settings/prices', AdminPricesHandler),
         (r'/api/admin/ia-prices', AdminIAPricesHandler),
         (r'/api/admin/change-password', AdminChangePasswordHandler),
