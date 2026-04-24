@@ -2994,7 +2994,7 @@ window._openFotoModal = function(imgSrc) {
 
         <div class="db-card-bottom">
           <div class="db-card-bottom-info">Total gasto este mês: <span id="db-total-mes">R$ 0,00</span></div>
-          <button type="button" class="db-card-extrato-link" onclick="switchTab('extrato', this)">Ver extrato completo →</button>
+          <button type="button" class="db-card-extrato-link" onclick="switchTab('estatisticas', document.getElementById('nav-extrato'))">Ver extrato completo →</button>
         </div>
       </div>
 
@@ -3137,6 +3137,75 @@ window._openFotoModal = function(imgSrc) {
             <button class="pkg-btn" onclick="this.closest('.pkg-grid').querySelectorAll('.pkg-btn').forEach(b=>b.classList.remove('selected'));this.classList.add('selected')">+1.000</button>
           </div>
           <button class="btn-recharge" onclick="showToast('Em breve: sistema de recarga','warn')">Recarregar agora</button>
+        </div>
+      </div>
+
+      <!-- ===== Extrato Financeiro ===== -->
+      <div id="ext-secao" style="margin-top:24px;">
+        <!-- Cabecalho de impressao (oculto na tela) -->
+        <div id="ext-print-header" style="display:none;margin-bottom:20px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;border-bottom:2px solid #1e3a5f;padding-bottom:12px;margin-bottom:16px;">
+            <div>
+              <div style="font-size:20px;font-weight:700;color:#1e3a5f;">izyLAUDO</div>
+              <div style="font-size:12px;color:#64748b;">Vistorias Imobiliárias</div>
+            </div>
+            <div style="text-align:right;font-size:12px;color:#64748b;">
+              <div>Extrato financeiro</div>
+              <div id="ext-print-periodo"></div>
+              <div id="ext-print-data"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Cabecalho -->
+        <div class="ext-header">
+          <div>
+            <p class="ext-title">Extrato financeiro</p>
+            <p class="ext-sub">Histórico completo de recargas e análises de fotos</p>
+          </div>
+          <div class="ext-acoes">
+            <div class="ext-filtros">
+              <button type="button" class="ext-filtro-btn active" onclick="extCarregar('mes',this)">Este mês</button>
+              <button type="button" class="ext-filtro-btn" onclick="extCarregar('3m',this)">Últimos 3 meses</button>
+              <button type="button" class="ext-filtro-btn" onclick="extCarregar('6m',this)">Últimos 6 meses</button>
+              <button type="button" class="ext-filtro-btn" onclick="extCarregar('ano',this)">Este ano</button>
+              <button type="button" class="ext-filtro-btn" onclick="extCarregar('tudo',this)">Tudo</button>
+            </div>
+            <button type="button" class="ext-btn-acao" onclick="extImprimir()">🖨 Imprimir</button>
+            <button type="button" class="ext-btn-acao" onclick="extBaixarPDF()">⬇ Baixar PDF</button>
+          </div>
+        </div>
+
+        <!-- Resumo -->
+        <div class="ext-resumo">
+          <div class="ext-resumo-card verde">
+            <div class="ext-resumo-label">Total recarregado</div>
+            <div class="ext-resumo-val" id="ext-val-rec">—</div>
+            <div class="ext-resumo-sub" id="ext-sub-rec">—</div>
+          </div>
+          <div class="ext-resumo-card vermelho">
+            <div class="ext-resumo-label">Total consumido</div>
+            <div class="ext-resumo-val" id="ext-val-cons">—</div>
+            <div class="ext-resumo-sub" id="ext-sub-cons">—</div>
+          </div>
+          <div class="ext-resumo-card">
+            <div class="ext-resumo-label">Saldo atual</div>
+            <div class="ext-resumo-val" id="ext-val-saldo">—</div>
+            <div class="ext-resumo-sub">Disponível para uso</div>
+          </div>
+        </div>
+
+        <!-- Tabela -->
+        <div class="ext-tabela">
+          <div class="ext-tabela-header">
+            <div>Descrição</div>
+            <div>Data</div>
+            <div>Tipo</div>
+            <div style="text-align:right">Valor · Saldo</div>
+          </div>
+          <div id="ext-lista-body">
+            <div class="ext-vazio">Carregando...</div>
+          </div>
         </div>
       </div>
     </div>
@@ -4098,6 +4167,17 @@ function switchTab(tab, el) {
       }
     };
     _tryLoad(0);
+  }
+  // Ao abrir Extrato/Estatisticas, carregar o extrato financeiro
+  if (tab === 'estatisticas' || tab === 'extrato') {
+    var _tryExt = function(attempt) {
+      if (typeof extCarregar === 'function') {
+        try { extCarregar('mes'); } catch(e) { console.warn('extCarregar:', e); }
+      } else if (attempt < 5) {
+        setTimeout(function(){ _tryExt(attempt + 1); }, 100);
+      }
+    };
+    _tryExt(0);
   }
 }
 
@@ -12330,6 +12410,133 @@ document.addEventListener('keydown', function(e) {
     if (pn && pn.classList.contains('visivel')) fecharAjuda();
   }
 });
+
+/* ========== Extrato Financeiro ========== */
+var _extPeriodoAtual = 'mes';
+var _extPeriodoLabels = {
+  'mes':'Este m\u00eas','3m':'\u00daltimos 3 meses',
+  '6m':'\u00daltimos 6 meses','ano':'Este ano','tudo':'Todo o hist\u00f3rico'
+};
+
+async function extCarregar(periodo, btn) {
+  _extPeriodoAtual = periodo || 'mes';
+  if (btn) {
+    document.querySelectorAll('.ext-filtro-btn').forEach(function(b){ b.classList.remove('active'); });
+    btn.classList.add('active');
+  }
+  var body = document.getElementById('ext-lista-body');
+  if (body) body.innerHTML = '<div class="ext-vazio">Carregando...</div>';
+
+  try {
+    var data = await api('GET', '/api/billing/transactions?periodo=' + encodeURIComponent(_extPeriodoAtual));
+    if (!data || !data.ok) {
+      if (body) body.innerHTML = '<div class="ext-vazio">Erro ao carregar. Tente novamente.</div>';
+      return;
+    }
+    _extRenderResumo(data.resumo || {});
+    _extRenderLista(data.transactions || []);
+  } catch(e) {
+    if (body) body.innerHTML = '<div class="ext-vazio">Erro ao carregar. Tente novamente.</div>';
+  }
+}
+
+function _extFmtBrl(cents) {
+  var v = (cents || 0) / 100;
+  return 'R$ ' + v.toFixed(2).replace('.', ',');
+}
+
+function _extRenderResumo(r) {
+  function sEl(id, val) { var e = document.getElementById(id); if (e) e.textContent = val; }
+  var rec = r.total_recargas_cents || 0;
+  var cons = r.total_consumido_cents || 0;
+  var fotos = r.total_fotos || 0;
+  var qtdRec = r.count_recargas || 0;
+  sEl('ext-val-rec', _extFmtBrl(rec));
+  sEl('ext-sub-rec', qtdRec + ' recarga' + (qtdRec !== 1 ? 's' : '') + ' no per\u00edodo');
+  sEl('ext-val-cons', _extFmtBrl(cons));
+  sEl('ext-sub-cons', fotos + ' foto' + (fotos !== 1 ? 's' : '') + ' analisada' + (fotos !== 1 ? 's' : ''));
+  sEl('ext-val-saldo', _extFmtBrl(r.balance_cents || 0));
+}
+
+function _extEscape(s) {
+  return String(s == null ? '' : s)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+
+function _extRenderLista(transactions) {
+  var body = document.getElementById('ext-lista-body');
+  if (!body) return;
+  if (!transactions || !transactions.length) {
+    body.innerHTML = '<div class="ext-vazio">Nenhuma movimenta\u00e7\u00e3o no per\u00edodo selecionado.</div>';
+    return;
+  }
+  var html = '';
+  var mesAtual = '';
+  transactions.forEach(function(t) {
+    var dt = new Date((t.created_at || '').replace(' ', 'T'));
+    if (isNaN(dt.getTime())) dt = new Date();
+    var mesStr = dt.toLocaleDateString('pt-BR', {month:'long', year:'numeric'});
+    mesStr = mesStr.charAt(0).toUpperCase() + mesStr.slice(1);
+    if (mesStr !== mesAtual) {
+      mesAtual = mesStr;
+      html += '<div class="ext-mes-label">' + _extEscape(mesStr) + '</div>';
+    }
+    var amt = parseInt(t.amount_cents || 0, 10);
+    var isRec = amt > 0;
+    var isPrem = t.analysis_type === 'premium';
+    var badgeClass = isRec ? 'ext-badge-recarga' : (isPrem ? 'ext-badge-premium' : 'ext-badge-conv');
+    var badgeLabel = isRec ? '\u2b06 Recarga' : (isPrem ? '\u2b07 Premium' : '\u2b07 Convencional');
+    var valorClass = isRec ? 'ext-valor-pos' : 'ext-valor-neg';
+    var valorSign = isRec ? '+' : '\u2212';
+    var valorFmt = _extFmtBrl(Math.abs(amt));
+    var saldoFmt = _extFmtBrl(t.balance_after_cents || 0);
+    var dataFmt = dt.toLocaleDateString('pt-BR');
+    var horaFmt = dt.toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'});
+    var desc = t.description || (isRec ? 'Recarga via Mercado Pago' : 'An\u00e1lise de fotos');
+    var sub = (!isRec && t.photos_count) ? (t.photos_count + ' foto' + (t.photos_count !== 1 ? 's' : '')) : '';
+    html += '<div class="ext-linha">'
+      +   '<div>'
+      +     '<div class="ext-linha-desc">' + _extEscape(desc) + '</div>'
+      +     (sub ? '<div class="ext-linha-sub">' + _extEscape(sub) + '</div>' : '')
+      +   '</div>'
+      +   '<div class="ext-linha-data">' + dataFmt + '<br>' + horaFmt + '</div>'
+      +   '<div><span class="ext-badge ' + badgeClass + '">' + badgeLabel + '</span></div>'
+      +   '<div style="text-align:right">'
+      +     '<div class="' + valorClass + '">' + valorSign + ' ' + valorFmt + '</div>'
+      +     '<div class="ext-saldo-apos">Saldo: ' + saldoFmt + '</div>'
+      +   '</div>'
+      + '</div>';
+  });
+  body.innerHTML = html;
+}
+
+function extImprimir() {
+  var label = _extPeriodoLabels[_extPeriodoAtual] || _extPeriodoAtual;
+  var agora = new Date().toLocaleDateString('pt-BR', {
+    day:'2-digit', month:'2-digit', year:'numeric',
+    hour:'2-digit', minute:'2-digit'
+  });
+  var pp = document.getElementById('ext-print-periodo');
+  var pd = document.getElementById('ext-print-data');
+  if (pp) pp.textContent = 'Per\u00edodo: ' + label;
+  if (pd) pd.textContent = 'Gerado em: ' + agora;
+  window.print();
+}
+
+function extBaixarPDF() {
+  var token = (typeof localStorage !== 'undefined')
+    ? (localStorage.getItem('izylo_token') || '') : '';
+  var url = '/api/billing/transactions/pdf?periodo='
+    + encodeURIComponent(_extPeriodoAtual)
+    + '&token=' + encodeURIComponent(token);
+  var a = document.createElement('a');
+  a.href = url;
+  a.download = 'extrato_izylaudo_' + _extPeriodoAtual + '.pdf';
+  document.body.appendChild(a);
+  a.click();
+  setTimeout(function(){ document.body.removeChild(a); }, 100);
+}
 
 /* ========== Autentique ========== */
 async function enviarParaAutentique() {
