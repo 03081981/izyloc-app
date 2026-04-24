@@ -2520,6 +2520,117 @@ textarea.obs-geral{width:100%;background:#f8fafc;border:.5px solid #dce3ed;borde
   }
 }
 
+/* ===== Extrato Financeiro ===== */
+.ext-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.ext-title { font-size: 18px; font-weight: 500; color: #1f2937; margin: 0 0 3px; }
+.ext-sub { font-size: 13px; color: #6b7280; margin: 0; }
+.ext-acoes { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.ext-filtros { display: flex; gap: 6px; flex-wrap: wrap; }
+.ext-filtro-btn {
+  padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 500;
+  cursor: pointer; border: 1px solid #d1d5db;
+  background: #fff; color: #6b7280;
+  transition: all .15s;
+}
+.ext-filtro-btn:hover { background: #f9fafb; }
+.ext-filtro-btn.active { background: #1e3a5f; color: #fff; border-color: #1e3a5f; }
+.ext-btn-acao {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 7px 14px; border-radius: 8px; font-size: 12px; font-weight: 500;
+  cursor: pointer; border: 1px solid #d1d5db;
+  background: #fff; color: #374151;
+  transition: all .15s; text-decoration: none;
+}
+.ext-btn-acao:hover { background: #f3f4f6; }
+.ext-resumo {
+  display: grid; grid-template-columns: 1fr 1fr 1fr;
+  gap: 12px; margin-bottom: 20px;
+}
+.ext-resumo-card {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px; padding: 16px;
+}
+.ext-resumo-label { font-size: 11px; color: #6b7280; text-transform: uppercase; letter-spacing: 0.4px; margin-bottom: 6px; }
+.ext-resumo-val { font-size: 22px; font-weight: 500; color: #1f2937; }
+.ext-resumo-sub { font-size: 11px; color: #9ca3af; margin-top: 3px; }
+.ext-resumo-card.verde .ext-resumo-val { color: #16a34a; }
+.ext-resumo-card.vermelho .ext-resumo-val { color: #dc2626; }
+.ext-tabela {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px; overflow: hidden;
+}
+.ext-tabela-header {
+  display: grid; grid-template-columns: 2.5fr 1fr 1fr 1fr;
+  padding: 10px 16px; background: #f9fafb;
+  border-bottom: 1px solid #e5e7eb;
+  font-size: 11px; font-weight: 600; color: #6b7280;
+  text-transform: uppercase; letter-spacing: 0.4px;
+}
+.ext-mes-label {
+  padding: 8px 16px; background: #f9fafb;
+  font-size: 11px; font-weight: 600; color: #6b7280;
+  text-transform: uppercase; letter-spacing: 0.5px;
+  border-bottom: 1px solid #e5e7eb;
+}
+.ext-linha {
+  display: grid; grid-template-columns: 2.5fr 1fr 1fr 1fr;
+  padding: 13px 16px; border-bottom: 1px solid #e5e7eb;
+  align-items: center;
+}
+.ext-linha:last-child { border-bottom: none; }
+.ext-linha:hover { background: #f9fafb; }
+.ext-linha-desc { font-size: 13px; color: #1f2937; font-weight: 500; margin-bottom: 2px; }
+.ext-linha-sub { font-size: 11px; color: #6b7280; }
+.ext-linha-data { font-size: 12px; color: #6b7280; line-height: 1.5; }
+.ext-badge { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; font-weight: 500; padding: 3px 8px; border-radius: 20px; }
+.ext-badge-recarga { background: #dcfce7; color: #15803d; }
+.ext-badge-conv { background: #eff6ff; color: #1d4ed8; }
+.ext-badge-premium { background: #f5f3ff; color: #6d28d9; }
+.ext-valor-pos { font-size: 13px; font-weight: 600; color: #16a34a; }
+.ext-valor-neg { font-size: 13px; font-weight: 600; color: #dc2626; }
+.ext-saldo-apos { font-size: 11px; color: #6b7280; margin-top: 2px; }
+.ext-vazio { padding: 40px 16px; text-align: center; color: #9ca3af; font-size: 13px; }
+
+@media (max-width: 640px) {
+  .ext-resumo { grid-template-columns: 1fr; }
+  .ext-tabela-header, .ext-linha { grid-template-columns: 1fr; gap: 4px; }
+  .ext-tabela-header { display: none; }
+}
+
+/* CSS de impressao do extrato */
+@media print {
+  @page { margin: 15mm; }
+  body > *:not(#page-dashboard) { display: none !important; }
+  #page-dashboard .sidebar,
+  #page-dashboard nav,
+  #page-dashboard header,
+  #page-dashboard .topbar,
+  #page-dashboard .db-hero,
+  #page-dashboard .db-card-novo,
+  #page-dashboard .db-metrics-row,
+  #page-dashboard .db-main-grid,
+  #page-dashboard #dash-tab-vistorias,
+  #page-dashboard #dash-tab-perfil,
+  .ext-btn-acao,
+  .ext-filtros,
+  .ext-acoes,
+  #page-dashboard .fab,
+  #page-dashboard .dash-header { display: none !important; }
+  #ext-print-header { display: block !important; }
+  .ext-linha { break-inside: avoid; }
+  .dash-main-wrapper { padding: 0 !important; background: #fff !important; }
+  .ext-tabela, .ext-resumo-card { box-shadow: none !important; border: 1px solid #ccc !important; }
+}
+
 /* Status Autentique */
 .autentique-status-badge {
   display: inline-flex;
