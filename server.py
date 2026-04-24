@@ -2377,18 +2377,6 @@ class AdminForgotPasswordHandler(tornado.web.RequestHandler):
         alphabet = _string.ascii_letters + _string.digits + '!@#$'
         nova = ''.join(_secrets.choice(alphabet) for _ in range(12))
 
-        conn = get_conn()
-        try:
-            conn.execute(
-                "INSERT INTO settings (key, value, value_type, category, updated_at) "
-                "VALUES ('admin_password', ?, 'string', 'auth', NOW()) "
-                "ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value, updated_at = NOW()",
-                (nova,),
-            )
-            conn.commit()
-        finally:
-            conn.close()
-
         base_url = os.environ.get(
             'APP_BASE_URL',
             'https://izyloc-app-production.up.railway.app',
@@ -2413,6 +2401,9 @@ class AdminForgotPasswordHandler(tornado.web.RequestHandler):
             'personalizada apos o acesso.</p>'
             '</div></div>'
         )
+        # Envia o email primeiro; so atualiza a senha no banco se o email for
+        # aceito pela Resend. Caso contrario o admin ficaria preso fora do
+        # painel com uma senha desconhecida.
         ok = False
         try:
             ok = send_email(ADMIN_EMAIL, 'izyLAUDO - Nova senha do painel admin', _html)
@@ -2420,17 +2411,30 @@ class AdminForgotPasswordHandler(tornado.web.RequestHandler):
             print('[EMAIL] forgot_password email_error: ' + str(_e), flush=True)
 
         self.set_header('Content-Type', 'application/json; charset=utf-8')
-        if ok:
-            self.finish(json.dumps({
-                'ok': True,
-                'message': 'Nova senha enviada para ' + ADMIN_EMAIL,
-            }))
-        else:
+        if not ok:
             self.set_status(500)
             self.finish(json.dumps({
                 'ok': False,
                 'error': 'Erro ao enviar email. Verifique RESEND_API_KEY.',
             }))
+            return
+
+        conn = get_conn()
+        try:
+            conn.execute(
+                "INSERT INTO settings (key, value, value_type, category, updated_at) "
+                "VALUES ('admin_password', ?, 'string', 'auth', NOW()) "
+                "ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value, updated_at = NOW()",
+                (nova,),
+            )
+            conn.commit()
+        finally:
+            conn.close()
+
+        self.finish(json.dumps({
+            'ok': True,
+            'message': 'Nova senha enviada para ' + ADMIN_EMAIL,
+        }))
 
 
 class InspectionsHandler(BaseHandler):
