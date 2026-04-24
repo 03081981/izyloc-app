@@ -2610,6 +2610,9 @@ textarea.obs-geral{width:100%;background:#f8fafc;border:.5px solid #dce3ed;borde
 .ext-saldo-apos { font-size: 11px; color: #6b7280; margin-top: 2px; }
 .ext-vazio { padding: 40px 16px; text-align: center; color: #9ca3af; font-size: 13px; }
 
+/* Custo do laudo (sublinha dos cards) */
+.laudo-custo { font-size: 11px; color: #166534; font-weight: 500; }
+
 @media (max-width: 640px) {
   .ext-resumo { grid-template-columns: 1fr; }
   .ext-tabela-header, .ext-linha { grid-template-columns: 1fr; gap: 4px; }
@@ -5608,12 +5611,19 @@ function _mlRenderCard(insp, statusKey) {
   if (date) subparts.push(date);
   subparts.push(code);
   var sub = subparts.join(" · ");
+  // Custo da análise (se houver): aparece após o código no subtexto.
+  var _custoMl = parseInt(insp.custo_total_cents || 0, 10);
+  var custoHtml = '';
+  if (_custoMl > 0) {
+    custoHtml = '<span class="laudo-custo"> \u00b7 R$ '
+      + (_custoMl/100).toFixed(2).replace('.', ',') + '</span>';
+  }
   return "<div class=\"ml-card\" style=\"display:flex;align-items:stretch;gap:12px;background:#fff;border:1px solid #e5e7eb;border-radius:10px;padding:14px;margin-bottom:10px;\">" +
     "<div style=\"width:38px;height:38px;border-radius:8px;background:#eff6ff;display:flex;align-items:center;justify-content:center;flex-shrink:0;\"><svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\"><rect x=\"4\" y=\"3\" width=\"16\" height=\"18\" rx=\"2\" fill=\"none\" stroke=\"#2d7dd2\" stroke-width=\"1.5\"/><line x1=\"8\" y1=\"8\" x2=\"16\" y2=\"8\" stroke=\"#2d7dd2\" stroke-width=\"1.3\" stroke-linecap=\"round\"/><line x1=\"8\" y1=\"12\" x2=\"16\" y2=\"12\" stroke=\"#2d7dd2\" stroke-width=\"1.3\" stroke-linecap=\"round\"/><line x1=\"8\" y1=\"16\" x2=\"13\" y2=\"16\" stroke=\"#2d7dd2\" stroke-width=\"1.3\" stroke-linecap=\"round\"/></svg></div>" +
     "<label style=\"display:flex;align-items:center;padding:0 4px;cursor:pointer;\" onclick=\"event.stopPropagation();\"><input type=\"checkbox\" class=\"ml-sel\" data-id=\""+(insp.id||"")+"\" onclick=\"event.stopPropagation();_mlToggleSel('"+(insp.id||"")+"',this.checked);\" style=\"width:18px;height:18px;cursor:pointer;\"></label>" +
     "<div class=\"insp-info\" style=\"flex:1;min-width:0;\">" +
       "<div style=\"font-size: var(--fs-body);font-weight: var(--fw-semibold);color:#111827;margin-bottom:2px;\">"+end+"</div>" +
-      "<div style=\"font-size: var(--fs-xs);color:#6b7280;\">"+sub+"</div>" +
+      "<div style=\"font-size: var(--fs-xs);color:#6b7280;\">"+sub+custoHtml+"</div>" +
     "</div>" +
     "<div class=\"insp-right\" style=\"display:flex;flex-direction:column;gap:8px;align-items:flex-end;justify-content:space-between;\">" +
       "<span style=\"background:"+info.bg+";color:"+info.color+";padding:3px 8px;border-radius:5px;font-size: var(--fs-tiny);font-weight: var(--fw-bold);letter-spacing:0.3px;white-space:nowrap;\">"+info.label+"</span>" +
