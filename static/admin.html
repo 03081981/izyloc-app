@@ -320,7 +320,10 @@ body { background: #f1f5f9; color: #1e293b; }
   <div class="adm-section">
     <div class="adm-section-header">
       <span class="adm-section-title">👥 Usuários</span>
-      <input type="text" id="adm-busca-user" placeholder="Buscar por email ou nome..."
+      <input type="search" id="adm-busca-user" name="adm-search-usuarios"
+        placeholder="Buscar usuário..."
+        autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
+        data-lpignore="true" data-form-type="other"
         style="padding:6px 12px;border:1px solid #e2e8f0;border-radius:8px;font-size:12px;width:220px;"
         oninput="admFiltrarUsuarios()">
     </div>
@@ -900,6 +903,19 @@ async function admSalvarPrecos() {
 if (sessionStorage.getItem('adm_auth') === 'ok') {
   admCarregar('30d', document.querySelector('.adm-filtro.active'));
 }
+
+// Forca campo de busca a iniciar vazio - alguns navegadores/extensoes
+// preenchem historico de autocomplete mesmo com autocomplete=off no input.
+(function _clearSearchOnLoad() {
+  var tryClear = function() {
+    var el = document.getElementById('adm-busca-user');
+    if (el) el.value = '';
+  };
+  tryClear();
+  // Chrome as vezes restaura valores apos o primeiro tick - garantir com delays.
+  setTimeout(tryClear, 100);
+  setTimeout(tryClear, 500);
+})();
 </script>
 </body>
 </html>
