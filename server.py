@@ -1442,12 +1442,19 @@ class InspectionsHandler(BaseHandler):
             return
         conn = get_conn()
         try:
-            # Ordena por updated_at DESC (fallback para created_at) para
-            # que "Laudos recentes" do dashboard reflita a atividade mais
-            # recente, independente do status.
+            # Inclui custo_total_cents: soma de debitos (em centavos) por
+            # laudo vindos de balance_transactions.
             rows = conn.execute(
-                'SELECT * FROM inspections WHERE user_id=? '
-                'ORDER BY COALESCE(updated_at, created_at) DESC NULLS LAST',
+                'SELECT i.*, '
+                '  COALESCE(('
+                '    SELECT SUM(ABS(amount_cents)) '
+                '    FROM balance_transactions '
+                '    WHERE inspection_id = i.id '
+                "      AND type = 'analysis_debit' "
+                "      AND status = 'completed'"
+                '  ), 0) AS custo_total_cents '
+                'FROM inspections i WHERE i.user_id=? '
+                'ORDER BY COALESCE(i.updated_at, i.created_at) DESC NULLS LAST',
                 (user['user_id'],)).fetchall()
             self.ok({'inspections': self.rows_to_list(rows)})
         finally:
@@ -1520,6 +1527,38 @@ class InspectionHandler(BaseHandler):
             if not insp:
                 return self.err('Vistoria nao encontrada', 404)
             result = self.row_to_dict(insp)
+
+            # Agrega custo da analise por laudo vindo de balance_transactions
+            try:
+                _custo = conn.execute(
+                    "SELECT analysis_type, "
+                    "  COALESCE(SUM(ABS(amount_cents)), 0) AS total_cents, "
+                    "  COALESCE(SUM(photos_count), 0) AS qtd "
+                    "FROM balance_transactions "
+                    "WHERE inspection_id=? "
+                    "  AND type='analysis_debit' "
+                    "  AND status='completed' "
+                    "GROUP BY analysis_type",
+                    (insp_id,)
+                ).fetchall()
+                total_cents = 0
+                qtd_conv = 0
+                qtd_prem = 0
+                for _cr in _custo:
+                    total_cents += int(_cr.get('total_cents') or 0)
+                    tipo_a = _cr.get('analysis_type') or ''
+                    q = int(_cr.get('qtd') or 0)
+                    if tipo_a == 'premium':
+                        qtd_prem += q
+                    else:
+                        qtd_conv += q
+                result['custo_total_cents'] = total_cents
+                result['custo_qtd_convencional'] = qtd_conv
+                result['custo_qtd_premium'] = qtd_prem
+            except Exception:
+                result['custo_total_cents'] = 0
+                result['custo_qtd_convencional'] = 0
+                result['custo_qtd_premium'] = 0
 
             # Inclui ambientes + itens
             rooms = conn.execute(
@@ -1913,13 +1952,17 @@ class AnalyzePhotoHandler(BaseHandler):
                 descricao = ('Analise IA Premium - 1 foto'
                              if tipo_analise == 'premium'
                              else 'Analise IA Convencional - 1 foto')
+                _insp_ref = (data.get('inspection_id')
+                             or data.get('inspectionId') or None)
                 conn.execute(
                     "INSERT INTO balance_transactions "
                     "(user_id, type, amount_cents, balance_after_cents, "
-                    " description, status, analysis_type, photos_count) "
-                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+                    " description, status, analysis_type, photos_count, "
+                    " inspection_id) "
+                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
                     (user_id, 'analysis_debit', -price_cents, new_balance,
-                     descricao, 'completed', tipo_analise, 1)
+                     descricao, 'completed', tipo_analise, 1,
+                     _insp_ref)
                 )
                 conn.commit()
                 print(f"[BILLING] debit user={user_id} tipo={tipo_analise} "
@@ -2053,13 +2096,17 @@ class AnalisarBatchHandler(BaseHandler):
                     if tipo_analise == 'premium'
                     else 'Analise IA Convencional - ' + str(qtd_fotos) + ' foto(s)'
                 )
+                _insp_ref = (data.get('inspection_id')
+                             or data.get('inspectionId') or None)
                 conn.execute(
                     "INSERT INTO balance_transactions "
                     "(user_id, type, amount_cents, balance_after_cents, "
-                    " description, status, analysis_type, photos_count) "
-                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+                    " description, status, analysis_type, photos_count, "
+                    " inspection_id) "
+                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
                     (user_id, 'analysis_debit', -total_cents, new_balance,
-                     descricao, 'completed', tipo_analise, qtd_fotos)
+                     descricao, 'completed', tipo_analise, qtd_fotos,
+                     _insp_ref)
                 )
                 conn.commit()
                 print(f"[BILLING] batch_debit user={user_id} tipo={tipo_analise} "
