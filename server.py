@@ -3559,6 +3559,245 @@ class AutentiqueWebhookHandler(BaseHandler):
             self.write({'ok': True})
 
 
+# ─── Extrato Financeiro ──────────────────────────────────────────────────────
+
+_EXTRATO_PERIODO_SQL = {
+    'mes':  "AND created_at >= date_trunc('month', NOW())",
+    '3m':   "AND created_at >= NOW() - INTERVAL '3 months'",
+    '6m':   "AND created_at >= NOW() - INTERVAL '6 months'",
+    'ano':  "AND created_at >= date_trunc('year', NOW())",
+    'tudo': ''
+}
+
+_EXTRATO_PERIODO_LABELS = {
+    'mes':  'Este mes',
+    '3m':   'Ultimos 3 meses',
+    '6m':   'Ultimos 6 meses',
+    'ano':  'Este ano',
+    'tudo': 'Todo o historico'
+}
+
+
+class BillingTransactionsHandler(BaseHandler):
+    def get(self):
+        user = self.require_auth()
+        if not user:
+            return
+        user_id = user['user_id']
+        periodo = self.get_argument('periodo', 'mes')
+        periodo_sql = _EXTRATO_PERIODO_SQL.get(periodo,
+                                               _EXTRATO_PERIODO_SQL['mes'])
+
+        conn = get_conn()
+        try:
+            # periodo_sql vem de whitelist; seguro interpolar diretamente
+            sql = (
+                "SELECT id, type, amount_cents, balance_after_cents, "
+                "description, status, analysis_type, photos_count, "
+                "created_at "
+                "FROM balance_transactions "
+                "WHERE user_id=? " + periodo_sql + " "
+                "ORDER BY created_at DESC"
+            )
+            rows = conn.execute(sql, (user_id,)).fetchall()
+            transactions = self.rows_to_list(rows)
+
+            total_recargas = 0
+            total_consumido = 0
+            total_fotos = 0
+            count_recargas = 0
+            for t in transactions:
+                # Serialize datetime para string
+                if t.get('created_at') is not None and not isinstance(
+                        t['created_at'], str):
+                    try:
+                        t['created_at'] = t['created_at'].isoformat(sep=' ')
+                    except Exception:
+                        t['created_at'] = str(t['created_at'])
+                amt = int(t.get('amount_cents') or 0)
+                if amt > 0:
+                    total_recargas += amt
+                    count_recargas += 1
+                elif amt < 0:
+                    total_consumido += abs(amt)
+                    total_fotos += int(t.get('photos_count') or 0)
+
+            urow = conn.execute(
+                "SELECT balance_cents, name, email FROM users WHERE id=?",
+                (user_id,)
+            ).fetchone()
+            balance_cents = int(urow['balance_cents']) if (urow and
+                urow.get('balance_cents') is not None) else 0
+            user_name = urow['name'] if urow else ''
+            user_email = urow['email'] if urow else ''
+
+            self.ok({
+                'transactions': transactions,
+                'user': {'name': user_name, 'email': user_email},
+                'resumo': {
+                    'total_recargas_cents': total_recargas,
+                    'total_consumido_cents': total_consumido,
+                    'total_fotos': total_fotos,
+                    'count_recargas': count_recargas,
+                    'balance_cents': balance_cents,
+                },
+                'periodo': periodo,
+            })
+        finally:
+            conn.close()
+
+
+class BillingTransactionsPDFHandler(BaseHandler):
+    def get(self):
+        # require_auth aceita ?token=... (ver BaseHandler.get_current_user)
+        user = self.require_auth()
+        if not user:
+            return
+        user_id = user['user_id']
+        periodo = self.get_argument('periodo', 'mes')
+        periodo_sql = _EXTRATO_PERIODO_SQL.get(periodo,
+                                               _EXTRATO_PERIODO_SQL['mes'])
+
+        conn = get_conn()
+        try:
+            sql = (
+                "SELECT amount_cents, balance_after_cents, description, "
+                "analysis_type, photos_count, created_at "
+                "FROM balance_transactions "
+                "WHERE user_id=? " + periodo_sql + " "
+                "ORDER BY created_at DESC"
+            )
+            rows_raw = conn.execute(sql, (user_id,)).fetchall()
+            rows = [self.row_to_dict(r) for r in rows_raw]
+
+            urow = conn.execute(
+                "SELECT balance_cents, name, email FROM users WHERE id=?",
+                (user_id,)
+            ).fetchone()
+            balance_cents = int(urow['balance_cents']) if (urow and
+                urow.get('balance_cents') is not None) else 0
+            user_name = urow['name'] if urow else ''
+            user_email = urow['email'] if urow else ''
+        finally:
+            conn.close()
+
+        from reportlab.lib.pagesizes import A4
+        from reportlab.lib import colors
+        from reportlab.platypus import (SimpleDocTemplate, Table, TableStyle,
+                                         Paragraph, Spacer)
+        from reportlab.lib.styles import ParagraphStyle
+        from reportlab.lib.units import cm
+        import io
+
+        buffer = io.BytesIO()
+        doc = SimpleDocTemplate(buffer, pagesize=A4,
+                                rightMargin=2*cm, leftMargin=2*cm,
+                                topMargin=2*cm, bottomMargin=2*cm)
+
+        story = []
+        title_style = ParagraphStyle(
+            'title', fontSize=18, fontName='Helvetica-Bold',
+            textColor=colors.HexColor('#1e3a5f'), spaceAfter=4)
+        sub_style = ParagraphStyle(
+            'sub', fontSize=10, textColor=colors.HexColor('#64748b'),
+            spaceAfter=2)
+
+        story.append(Paragraph('izyLAUDO - Extrato Financeiro', title_style))
+        story.append(Paragraph(
+            'Periodo: ' + _EXTRATO_PERIODO_LABELS.get(periodo, periodo),
+            sub_style))
+        story.append(Paragraph(
+            'Usuario: ' + (user_name or '') + ' (' + (user_email or '') + ')',
+            sub_style))
+        story.append(Paragraph(
+            'Gerado em: ' + datetime.now().strftime('%d/%m/%Y %H:%M'),
+            sub_style))
+        story.append(Spacer(1, 0.5*cm))
+
+        total_rec = sum(int(r.get('amount_cents') or 0)
+                         for r in rows if int(r.get('amount_cents') or 0) > 0)
+        total_cons = sum(abs(int(r.get('amount_cents') or 0))
+                          for r in rows if int(r.get('amount_cents') or 0) < 0)
+
+        def _fmt_brl(cents):
+            return 'R$ ' + ('%.2f' % (cents / 100.0)).replace('.', ',')
+
+        resumo_data = [
+            ['Total recarregado', 'Total consumido', 'Saldo atual'],
+            [_fmt_brl(total_rec), _fmt_brl(total_cons),
+             _fmt_brl(balance_cents)]
+        ]
+        resumo_table = Table(resumo_data,
+                              colWidths=[5.5*cm, 5.5*cm, 5.5*cm])
+        resumo_table.setStyle(TableStyle([
+            ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#f8fafc')),
+            ('TEXTCOLOR', (0, 0), (-1, 0), colors.HexColor('#64748b')),
+            ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+            ('FONTSIZE', (0, 0), (-1, -1), 9),
+            ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+            ('TEXTCOLOR', (0, 1), (0, 1), colors.HexColor('#15803d')),
+            ('TEXTCOLOR', (1, 1), (1, 1), colors.HexColor('#dc2626')),
+            ('FONTNAME', (0, 1), (-1, 1), 'Helvetica-Bold'),
+            ('FONTSIZE', (0, 1), (-1, 1), 12),
+            ('BOX', (0, 0), (-1, -1), 0.5, colors.HexColor('#e2e8f0')),
+            ('INNERGRID', (0, 0), (-1, -1), 0.5, colors.HexColor('#e2e8f0')),
+            ('TOPPADDING', (0, 0), (-1, -1), 8),
+            ('BOTTOMPADDING', (0, 0), (-1, -1), 8),
+        ]))
+        story.append(resumo_table)
+        story.append(Spacer(1, 0.5*cm))
+
+        table_data = [['Data', 'Descricao', 'Tipo', 'Valor', 'Saldo']]
+        for r in rows:
+            dt = r.get('created_at')
+            if hasattr(dt, 'strftime'):
+                data_str = dt.strftime('%d/%m/%Y %H:%M')
+            else:
+                data_str = str(dt)[:16] if dt else ''
+            amt = int(r.get('amount_cents') or 0)
+            is_rec = amt > 0
+            tipo = 'Recarga' if is_rec else (
+                'Premium' if r.get('analysis_type') == 'premium'
+                else 'Convencional')
+            valor = ('+ ' if is_rec else '- ') + _fmt_brl(abs(amt))
+            saldo = _fmt_brl(int(r.get('balance_after_cents') or 0))
+            desc = r.get('description') or tipo
+            table_data.append([data_str, desc, tipo, valor, saldo])
+
+        if len(table_data) == 1:
+            table_data.append(['', 'Nenhuma movimentacao no periodo', '',
+                                '', ''])
+
+        col_widths = [3*cm, 6.5*cm, 2.5*cm, 2.5*cm, 2.5*cm]
+        trans_table = Table(table_data, colWidths=col_widths, repeatRows=1)
+        trans_table.setStyle(TableStyle([
+            ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#1e3a5f')),
+            ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
+            ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+            ('FONTSIZE', (0, 0), (-1, -1), 8),
+            ('ALIGN', (3, 0), (-1, -1), 'RIGHT'),
+            ('ROWBACKGROUNDS', (0, 1), (-1, -1),
+             [colors.white, colors.HexColor('#f8fafc')]),
+            ('BOX', (0, 0), (-1, -1), 0.5, colors.HexColor('#e2e8f0')),
+            ('INNERGRID', (0, 0), (-1, -1), 0.3, colors.HexColor('#e2e8f0')),
+            ('TOPPADDING', (0, 0), (-1, -1), 5),
+            ('BOTTOMPADDING', (0, 0), (-1, -1), 5),
+            ('LEFTPADDING', (0, 0), (-1, -1), 6),
+            ('RIGHTPADDING', (0, 0), (-1, -1), 6),
+        ]))
+        story.append(trans_table)
+
+        doc.build(story)
+        pdf_bytes = buffer.getvalue()
+
+        filename = ('extrato_izylaudo_'
+                    + datetime.now().strftime('%Y%m%d_%H%M') + '.pdf')
+        self.set_header('Content-Type', 'application/pdf')
+        self.set_header('Content-Disposition',
+                        'attachment; filename="' + filename + '"')
+        self.finish(pdf_bytes)
+
+
 def make_app():
     static_dir = os.path.join(os.path.dirname(__file__), 'static')
     upload_dir = UPLOAD_DIR
@@ -3618,6 +3857,9 @@ def make_app():
         # Autentique - assinatura digital
         (r'/api/inspections/([^/]+)/send-to-autentique', SendToAutentiqueHandler),
         (r'/api/webhooks/autentique', AutentiqueWebhookHandler),
+        # Extrato financeiro
+        (r'/api/billing/transactions', BillingTransactionsHandler),
+        (r'/api/billing/transactions/pdf', BillingTransactionsPDFHandler),
         # Static files
         (r'/uploads/(.*)', tornado.web.StaticFileHandler, {'path': upload_dir}),
         (r'/static/(.*)', tornado.web.StaticFileHandler, {'path': static_dir}),
