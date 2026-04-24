@@ -5407,7 +5407,10 @@ function _mlRenderList() {
 
 function _mlRenderCard(insp, statusKey) {
   var code = (typeof _dashLaudoCode === "function") ? _dashLaudoCode(insp) : (insp.codigo || insp.id || "-");
-  var info = (typeof _dashStatusInfo === "function") ? _dashStatusInfo(statusKey) : { label: statusKey, bg: "#f3f4f6", color: "#374151" };
+  // _dashStatusInfo espera o status RAW (ex: 'aguardando_assinatura'),
+  // nao o statusKey curto ('aguardando'). Passando statusKey curto caia no
+  // default "EM ANDAMENTO" laranja.
+  var info = (typeof _dashStatusInfo === "function") ? _dashStatusInfo(insp.status || statusKey) : { label: statusKey, bg: "#f3f4f6", color: "#374151" };
   var end = insp.property_address || insp.endereco || insp.address || "Endereço não informado";
   var cli = insp.tenant_name || insp.cliente || insp.client || "";
   var tipoRaw = (insp.type || insp.tipo || "").toString().toLowerCase();

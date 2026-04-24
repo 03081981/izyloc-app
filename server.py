@@ -3468,11 +3468,24 @@ class AutentiqueWebhookHandler(BaseHandler):
             except Exception:
                 pass
 
-            # Validar secret (quando configurado). Aceita os nomes de header
-            # mais comuns do Autentique.
+            # Validar assinatura HMAC-SHA256 (formato real do Autentique).
+            # O Autentique envia X-Autentique-Signature = hex(hmac_sha256(
+            # secret, raw_body)). Ainda aceitamos tokens planos nos nomes
+            # antigos como fallback, caso a configuracao mude.
             WEBHOOK_SECRET = os.environ.get('AUTENTIQUE_WEBHOOK_SECRET', '')
             if WEBHOOK_SECRET:
-                got = (
+                raw_body = self.request.body or b''
+                import hmac as _hmac
+                import hashlib as _hashlib
+                expected_sig = _hmac.new(
+                    WEBHOOK_SECRET.encode('utf-8'),
+                    raw_body,
+                    _hashlib.sha256
+                ).hexdigest()
+                got_sig = (self.request.headers.get('X-Autentique-Signature')
+                           or '').strip().lower()
+                # Fallback: aceita tambem bearer plain caso futuro
+                got_plain = (
                     self.request.headers.get('X-Autentique-Token')
                     or self.request.headers.get('X-Autentique-Secret')
                     or self.request.headers.get('X-Webhook-Secret')
@@ -3480,12 +3493,20 @@ class AutentiqueWebhookHandler(BaseHandler):
                         'Bearer ', '').strip()
                     or ''
                 )
-                if got != WEBHOOK_SECRET:
+                sig_ok = (got_sig and _hmac.compare_digest(
+                    got_sig, expected_sig.lower()))
+                plain_ok = (got_plain and _hmac.compare_digest(
+                    got_plain, WEBHOOK_SECRET))
+                if not (sig_ok or plain_ok):
                     print('[AUTENTIQUE_WEBHOOK] Invalid secret - rejecting '
-                          '(got_tier=' + ('present' if got else 'empty')
-                          + ')', flush=True)
+                          'got_sig=' + (got_sig[:12] + '...' if got_sig
+                                        else 'empty')
+                          + ' expected_sig=' + expected_sig[:12] + '...'
+                          + ' got_plain_tier=' + ('present' if got_plain
+                                                  else 'empty'),
+                          flush=True)
                     self.set_status(401)
-                    self.write({'ok': False, 'error': 'Invalid secret'})
+                    self.write({'ok': False, 'error': 'Invalid signature'})
                     return
 
             data = self.json_body() or {}
