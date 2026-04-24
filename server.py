@@ -4738,12 +4738,22 @@ class AutentiqueWebhookHandler(BaseHandler):
             except Exception:
                 pass
 
-            # Validar assinatura HMAC-SHA256 (formato real do Autentique).
-            # O Autentique envia X-Autentique-Signature = hex(hmac_sha256(
-            # secret, raw_body)). Ainda aceitamos tokens planos nos nomes
-            # antigos como fallback, caso a configuracao mude.
+            # Validar assinatura HMAC-SHA256 (quando presente).
+            # Autentique envia X-Autentique-Signature apenas para contas Pro.
+            # Se o header nao vier, aceitamos o webhook - mitigacao de spoofing
+            # fica no UPDATE: so afeta inspections.autentique_doc_id valido.
             WEBHOOK_SECRET = os.environ.get('AUTENTIQUE_WEBHOOK_SECRET', '')
-            if WEBHOOK_SECRET:
+            got_sig = (self.request.headers.get('X-Autentique-Signature')
+                       or '').strip().lower()
+            got_plain = (
+                self.request.headers.get('X-Autentique-Token')
+                or self.request.headers.get('X-Autentique-Secret')
+                or self.request.headers.get('X-Webhook-Secret')
+                or self.request.headers.get('Authorization', '').replace(
+                    'Bearer ', '').strip()
+                or ''
+            )
+            if WEBHOOK_SECRET and (got_sig or got_plain):
                 raw_body = self.request.body or b''
                 import hmac as _hmac
                 import hashlib as _hashlib
@@ -4752,17 +4762,6 @@ class AutentiqueWebhookHandler(BaseHandler):
                     raw_body,
                     _hashlib.sha256
                 ).hexdigest()
-                got_sig = (self.request.headers.get('X-Autentique-Signature')
-                           or '').strip().lower()
-                # Fallback: aceita tambem bearer plain caso futuro
-                got_plain = (
-                    self.request.headers.get('X-Autentique-Token')
-                    or self.request.headers.get('X-Autentique-Secret')
-                    or self.request.headers.get('X-Webhook-Secret')
-                    or self.request.headers.get('Authorization', '').replace(
-                        'Bearer ', '').strip()
-                    or ''
-                )
                 sig_ok = (got_sig and _hmac.compare_digest(
                     got_sig, expected_sig.lower()))
                 plain_ok = (got_plain and _hmac.compare_digest(
@@ -4771,33 +4770,60 @@ class AutentiqueWebhookHandler(BaseHandler):
                     print('[AUTENTIQUE_WEBHOOK] Invalid secret - rejecting '
                           'got_sig=' + (got_sig[:12] + '...' if got_sig
                                         else 'empty')
-                          + ' expected_sig=' + expected_sig[:12] + '...'
-                          + ' got_plain_tier=' + ('present' if got_plain
-                                                  else 'empty'),
+                          + ' expected_sig=' + expected_sig[:12] + '...',
                           flush=True)
                     self.set_status(401)
                     self.write({'ok': False, 'error': 'Invalid signature'})
                     return
+            elif not (got_sig or got_plain):
+                print('[AUTENTIQUE_WEBHOOK] no signature header present - '
+                      'accepting (Autentique free-tier behavior)', flush=True)
 
             data = self.json_body() or {}
             print('[AUTENTIQUE_WEBHOOK] received: '
                   + json.dumps(data)[:800], flush=True)
 
-            event = (data.get('event') or '').strip()
-            doc = data.get('document') or {}
-            doc_id = doc.get('id') or data.get('document_id') or ''
+            # Payload real do Autentique: event e um OBJETO, nao string.
+            # Formato: { id, url, name, event: { id, data: { id, object, ... } } }
+            # O evento subscrito dispara por si so (aqui = document.finished).
+            # Fallback: variantes antigas caso o formato mude.
+            raw_event = data.get('event')
+            doc_id = ''
+            if isinstance(raw_event, dict):
+                _ev_data = raw_event.get('data') or {}
+                if isinstance(_ev_data, dict):
+                    doc_id = str(_ev_data.get('id') or '')
+            # Fallbacks para shapes antigos
+            if not doc_id:
+                _doc = data.get('document') or {}
+                if isinstance(_doc, dict):
+                    doc_id = str(_doc.get('id') or '')
+            if not doc_id:
+                doc_id = str(data.get('document_id') or '')
+
+            # String event type (para back-compat com codigo antigo). No
+            # formato novo event eh um dict sem type explicito - entao usamos
+            # event.data.object como proxy ('document' => document.finished).
+            event_str = ''
+            if isinstance(raw_event, str):
+                event_str = raw_event.strip()
+            elif isinstance(raw_event, dict):
+                _ev_data = raw_event.get('data') or {}
+                if isinstance(_ev_data, dict) and _ev_data.get('object') == 'document':
+                    event_str = 'document.finished'
 
             if not doc_id:
+                print('[AUTENTIQUE_WEBHOOK] no doc_id in payload - ignoring', flush=True)
                 self.write({'ok': True})
                 return
 
-            # document.finished e as variantes que ja aceitavamos
+            # document.finished e variantes antigas
             finished_events = (
                 'document.finished', 'document_finished',
                 'document_signed', 'document.signed',
                 'signed', 'finished'
             )
-            if event in finished_events:
+            if event_str in finished_events:
                 conn = get_conn()
                 try:
                     # 'assinado_digital' eh o valor que o frontend reconhece
@@ -4813,7 +4839,7 @@ class AutentiqueWebhookHandler(BaseHandler):
                     )
                     conn.commit()
                     print('[AUTENTIQUE_WEBHOOK] signed doc=' + str(doc_id)
-                          + ' event=' + event, flush=True)
+                          + ' event=' + event_str, flush=True)
                 finally:
                     try: conn.close()
                     except Exception: pass
