@@ -2437,6 +2437,78 @@ class AdminForgotPasswordHandler(tornado.web.RequestHandler):
         }))
 
 
+# ============================================================================
+# Admin: sincronizacao manual do status Autentique (task #78)
+# ----------------------------------------------------------------------------
+# Usado quando o webhook do Autentique falha em casar um documento assinado
+# com a linha correta em inspections (ex.: doc_id trocou porque o laudo foi
+# enviado 2x ao Autentique). Corrige autentique_doc_id e/ou forca o status.
+# ============================================================================
+
+class AdminAutentiqueSyncHandler(AdminHandler):
+    def post(self):
+        if not self.require_admin():
+            return
+        try:
+            data = json.loads(self.request.body or b'{}')
+        except Exception:
+            data = {}
+        inspection_id = str(data.get('inspection_id') or '').strip()
+        new_doc_id = str(data.get('autentique_doc_id') or '').strip()
+        mark_signed = bool(data.get('mark_signed', False))
+        if not inspection_id:
+            self.set_status(400)
+            self.ok({'ok': False, 'error': 'inspection_id obrigatorio'})
+            return
+
+        conn = get_conn()
+        try:
+            row = conn.execute(
+                'SELECT id, autentique_doc_id, autentique_status, status '
+                'FROM inspections WHERE id = ?',
+                (inspection_id,),
+            ).fetchone()
+            if not row:
+                self.set_status(404)
+                self.ok({'ok': False, 'error': 'inspection nao encontrada'})
+                return
+            before = dict(row)
+
+            updates = []
+            params = []
+            if new_doc_id:
+                updates.append('autentique_doc_id = ?')
+                params.append(new_doc_id)
+            if mark_signed:
+                updates.append("autentique_status = 'signed'")
+                updates.append("status = 'assinado_digital'")
+            if not updates:
+                self.ok({'ok': True, 'changed': False, 'before': before})
+                return
+
+            updates.append('updated_at = ?')
+            params.append(datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
+            params.append(inspection_id)
+            sql = ('UPDATE inspections SET ' + ', '.join(updates)
+                   + ' WHERE id = ?')
+            conn.execute(sql, tuple(params))
+            conn.commit()
+
+            after_row = conn.execute(
+                'SELECT id, autentique_doc_id, autentique_status, status '
+                'FROM inspections WHERE id = ?',
+                (inspection_id,),
+            ).fetchone()
+            after = dict(after_row) if after_row else None
+            print('[ADMIN] autentique_sync insp=' + inspection_id
+                  + ' mark_signed=' + str(mark_signed)
+                  + ' new_doc_id=' + (new_doc_id[:12] + '...' if new_doc_id else 'no-change'),
+                  flush=True)
+            self.ok({'ok': True, 'changed': True, 'before': before, 'after': after})
+        finally:
+            conn.close()
+
+
 class InspectionsHandler(BaseHandler):
     def get(self):
         user = self.require_auth()
@@ -5152,6 +5224,7 @@ def make_app():
         (r'/api/admin/ia-prices', AdminIAPricesHandler),
         (r'/api/admin/change-password', AdminChangePasswordHandler),
         (r'/api/admin/forgot-password', AdminForgotPasswordHandler),
+        (r'/api/admin/autentique/sync', AdminAutentiqueSyncHandler),
         # Inspections
         (r'/api/inspections', InspectionsHandler),
         (r'/api/inspections/([^/]+)', InspectionHandler),
