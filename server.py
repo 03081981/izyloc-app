@@ -823,6 +823,87 @@ class PasswordResetConfirmHandler(BaseHandler):
             conn.close()
 
 
+class ResetPasswordPageHandler(tornado.web.RequestHandler):
+    """GET /reset-password?token=XXX
+
+    Pagina standalone para redefinicao de senha (task #76). Complementa o
+    fluxo SPA existente (/?reset_token=XXX) oferecendo uma URL dedicada
+    que pode ser usada em emails de recuperacao. Posta em /api/auth/reset-password.
+    """
+    def get(self):
+        token = (self.get_argument('token', '') or '').strip()
+        # Escapa o token para seguranca no HTML
+        token_js = (token
+                    .replace('\\', '\\\\')
+                    .replace("'", "\\'")
+                    .replace('<', '')
+                    .replace('>', '')
+                    .replace('"', ''))
+        self.set_header('Content-Type', 'text/html; charset=utf-8')
+        self.finish("""<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>izyLAUDO \u2014 Redefinir senha</title>
+<style>
+* { box-sizing:border-box; font-family:Arial,sans-serif; }
+body { background:#f1f5f9; display:flex; align-items:center; justify-content:center; min-height:100vh; margin:0; }
+.card { background:#fff; border-radius:16px; padding:40px; width:360px; box-shadow:0 8px 32px rgba(0,0,0,0.12); }
+.logo { text-align:center; margin-bottom:24px; }
+.logo span { font-size:24px; font-weight:700; color:#2d7dd2; }
+.logo span.light { font-weight:300; color:#1e293b; }
+h2 { font-size:18px; color:#1e293b; margin:0 0 8px; text-align:center; }
+p { font-size:13px; color:#64748b; text-align:center; margin:0 0 20px; }
+input { width:100%; padding:10px 12px; border:1px solid #e2e8f0; border-radius:8px; font-size:14px; margin-bottom:12px; }
+button { width:100%; padding:12px; background:#2d7dd2; color:#fff; border:none; border-radius:8px; font-size:14px; font-weight:600; cursor:pointer; }
+.msg { font-size:12px; text-align:center; min-height:16px; margin-bottom:12px; }
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="logo"><span>izy</span><span class="light">LAUDO</span></div>
+  <h2>Redefinir senha</h2>
+  <p>Digite sua nova senha abaixo.</p>
+  <input type="password" id="nova-senha" placeholder="Nova senha (m\u00EDnimo 6 caracteres)">
+  <input type="password" id="conf-senha" placeholder="Confirmar nova senha">
+  <div class="msg" id="msg"></div>
+  <button onclick="resetar()">Redefinir senha</button>
+</div>
+<script>
+var TOKEN = '""" + token_js + """';
+async function resetar() {
+  var nova = document.getElementById('nova-senha').value;
+  var conf = document.getElementById('conf-senha').value;
+  var msg = document.getElementById('msg');
+  if (!nova || nova.length < 6) { msg.style.color='#dc2626'; msg.textContent='Senha deve ter no m\u00EDnimo 6 caracteres'; return; }
+  if (nova !== conf) { msg.style.color='#dc2626'; msg.textContent='Senhas n\u00E3o conferem'; return; }
+  msg.style.color='#94a3b8'; msg.textContent='Salvando...';
+  try {
+    var r = await fetch('/api/auth/reset-password', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({token: TOKEN, new_password: nova})
+    });
+    var data = await r.json();
+    if (data && data.ok) {
+      msg.style.color='#16a34a';
+      msg.textContent='Senha redefinida com sucesso! Redirecionando...';
+      setTimeout(function(){ window.location.href='/'; }, 2000);
+    } else {
+      msg.style.color='#dc2626';
+      msg.textContent = (data && data.error) || 'Link inv\u00E1lido ou expirado';
+    }
+  } catch (e) {
+    msg.style.color='#dc2626';
+    msg.textContent = 'Erro de rede. Tente novamente.';
+  }
+}
+</script>
+</body>
+</html>""")
+
+
 class EmailVerifyHandler(BaseHandler):
     """
     GET /verify-email?token=<token>
@@ -5080,6 +5161,8 @@ def make_app():
         (r'/meus-laudos', MeusLaudosHandler),
         # Email verification
         (r'/verify-email', EmailVerifyHandler),
+        # Pagina standalone de redefinicao de senha (task #76)
+        (r'/reset-password', ResetPasswordPageHandler),
         # Frontend (SPA)
         (r'/(.*)', MainHandler),
     ], debug=True)
