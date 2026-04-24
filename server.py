@@ -58,7 +58,7 @@ Path(UPLOAD_DIR).mkdir(exist_ok=True)
 Path(PDF_DIR).mkdir(exist_ok=True)
 
 def analyze_with_gemini(images, ambiente, tipo_vistoria, tipo_analise):
-    """Fallback para Google Gemini 2.0 Flash quando Anthropic falha.
+    """Fallback para Google Gemini 2.5 Flash quando Anthropic falha.
 
     `images` aceita dois formatos:
       - lista de strings base64 (ou data URL)
@@ -86,7 +86,7 @@ def analyze_with_gemini(images, ambiente, tipo_vistoria, tipo_analise):
 
     try:
         _genai.configure(api_key=GEMINI_API_KEY)
-        model = _genai.GenerativeModel('gemini-2.0-flash')
+        model = _genai.GenerativeModel('gemini-2.5-flash')
 
         detail_instr = (
             'Use linguagem tecnica e detalhada para fins juridicos.'
