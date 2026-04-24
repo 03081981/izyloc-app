@@ -1600,7 +1600,7 @@ class AdminStatsHandler(AdminHandler):
                 'SELECT COUNT(*) AS c FROM users'
             ).fetchone()['c']
             novos_usuarios = conn.execute(
-                'SELECT COUNT(*) AS c FROM users WHERE created_at >= ' + periodo_sql
+                'SELECT COUNT(*) AS c FROM users WHERE created_at::timestamp >= ' + periodo_sql
             ).fetchone()['c']
             usuarios_ativos = conn.execute(
                 'SELECT COUNT(DISTINCT user_id) AS c FROM balance_transactions '
@@ -1630,11 +1630,11 @@ class AdminStatsHandler(AdminHandler):
                 'SELECT COUNT(*) AS c FROM inspections'
             ).fetchone()['c']
             laudos_periodo = conn.execute(
-                'SELECT COUNT(*) AS c FROM inspections WHERE created_at >= ' + periodo_sql
+                'SELECT COUNT(*) AS c FROM inspections WHERE created_at::timestamp >= ' + periodo_sql
             ).fetchone()['c']
             tipo_rows = conn.execute(
                 "SELECT COALESCE(type, 'outros') AS tipo, COUNT(*) AS c FROM inspections "
-                'WHERE created_at >= ' + periodo_sql + ' GROUP BY type'
+                'WHERE created_at::timestamp >= ' + periodo_sql + ' GROUP BY type'
             ).fetchall()
             laudos_tipo = {r['tipo']: r['c'] for r in tipo_rows}
 
@@ -1756,7 +1756,7 @@ class AdminUsersHandler(AdminHandler):
                 'LEFT JOIN balance_transactions bt ON bt.user_id = u.id '
                 "  AND bt.amount_cents < 0 AND bt.status = 'completed' "
                 'GROUP BY u.id, u.name, u.email, u.balance_cents, u.created_at, u.is_blocked '
-                'ORDER BY u.created_at DESC'
+                'ORDER BY u.created_at::timestamp DESC'
             ).fetchall()
             users = []
             for r in rows:
