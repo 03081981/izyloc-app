@@ -16,7 +16,12 @@ import bcrypt
 import hashlib
 import re
 import secrets
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
+
+# Timezone de Brasilia (UTC-3). Usado APENAS para exibicao de datas ao
+# usuario final (PDFs, defaults de UI). Escritas no banco continuam em
+# UTC/horario do container para manter consistencia com SQL NOW().
+TZ_BR = timezone(timedelta(hours=-3))
 from pathlib import Path
 import base64
 import urllib.request
@@ -1490,7 +1495,7 @@ class InspectionsHandler(BaseHandler):
             values = [
                 insp_id, user['user_id'], data['type'], 'rascunho',
                 data.get('property_address', ''), data.get('property_type', ''),
-                data.get('property_area', ''), data.get('inspection_date', datetime.now().strftime('%d/%m/%Y')),
+                data.get('property_area', ''), data.get('inspection_date', datetime.now(TZ_BR).strftime('%d/%m/%Y')),
                 data.get('bairro', ''), data.get('complemento', ''),
                 data.get('cep', ''), data.get('cidade', ''), data.get('estado', ''),
                 data.get('locador_name', ''), data.get('locador_cpf', ''),
@@ -3765,14 +3770,19 @@ class BillingTransactionsPDFHandler(BaseHandler):
                                 topMargin=2*cm, bottomMargin=2*cm)
 
         story = []
+        # Espacamento vertical explicito entre titulo e subtitulos para evitar
+        # sobreposicao (observado em preview de alguns leitores PDF).
         title_style = ParagraphStyle(
             'title', fontSize=18, fontName='Helvetica-Bold',
-            textColor=colors.HexColor('#1e3a5f'), spaceAfter=4)
+            leading=22,
+            textColor=colors.HexColor('#1e3a5f'), spaceAfter=12)
         sub_style = ParagraphStyle(
-            'sub', fontSize=10, textColor=colors.HexColor('#64748b'),
-            spaceAfter=2)
+            'sub', fontSize=10, leading=14,
+            textColor=colors.HexColor('#64748b'),
+            spaceAfter=4)
 
         story.append(Paragraph('izyLAUDO - Extrato Financeiro', title_style))
+        story.append(Spacer(1, 0.3 * cm))
         story.append(Paragraph(
             'Periodo: ' + _EXTRATO_PERIODO_LABELS.get(periodo, periodo),
             sub_style))
@@ -3780,7 +3790,7 @@ class BillingTransactionsPDFHandler(BaseHandler):
             'Usuario: ' + (user_name or '') + ' (' + (user_email or '') + ')',
             sub_style))
         story.append(Paragraph(
-            'Gerado em: ' + datetime.now().strftime('%d/%m/%Y %H:%M'),
+            'Gerado em: ' + datetime.now(TZ_BR).strftime('%d/%m/%Y %H:%M'),
             sub_style))
         story.append(Spacer(1, 0.5*cm))
 
@@ -3861,7 +3871,7 @@ class BillingTransactionsPDFHandler(BaseHandler):
         pdf_bytes = buffer.getvalue()
 
         filename = ('extrato_izylaudo_'
-                    + datetime.now().strftime('%Y%m%d_%H%M') + '.pdf')
+                    + datetime.now(TZ_BR).strftime('%Y%m%d_%H%M') + '.pdf')
         self.set_header('Content-Type', 'application/pdf')
         self.set_header('Content-Disposition',
                         'attachment; filename="' + filename + '"')
