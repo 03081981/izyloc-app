@@ -9246,9 +9246,18 @@ function wiz6RenderTabs() {
     tab.ondrop = (function(idx){ return function(e){ wiz6Drop(e, idx); }; })(i);
     tab.onclick = (function(idx){ return function(){ wiz6GoAmb(idx); }; })(i);
     var isActive = (i === _wiz6AmbIdx);
-    var isDone = _wiz6AmbDone[i];
+    // Status real: derivado de wizard.itensData[i].jaAnalisou (task #99)
+    var _ambDados = (wizard.itensData && wizard.itensData[i]) || {};
+    var _ambFotos = (_ambDados.fotos || []).length;
+    var isDone = !!_ambDados.jaAnalisou || !!_wiz6AmbDone[i];
+    var hasFotosNaoAnalisadas = (_ambFotos > 0 && !isDone);
     tab.style.cssText = 'padding:6px 14px;border-radius:20px;font-size: var(--fs-xs);font-weight: var(--fw-medium);cursor:pointer;border:0.5px solid ' + (isActive?'#2d7dd2':'#e2e8f0') + ';background:' + (isActive?'#2d7dd2':'#fff') + ';color:' + (isActive?'#fff':'#8898aa') + ';display:flex;align-items:center;gap:5px;user-select:none';
-    tab.innerHTML = '<span style="font-size: var(--fs-tiny);opacity:.5;cursor:grab">\u2847</span>' + (isDone ? '\u2713 ' : '') + nome + '<span onclick="event.stopPropagation();wiz6ExcluirAmb(' + i + ')" style="font-size: var(--fs-xxs);color:' + (isActive?'rgba(255,255,255,.7)':'#94a3b8') + ';cursor:pointer;margin-left:2px;line-height:1;padding:0 2px" title="Excluir ambiente">\u00d7</span>';
+    var _checkPill = isDone
+      ? '<span style="display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;border-radius:50%;background:#16a34a;color:#fff;font-size:10px;font-weight:700;flex-shrink:0">\u2713</span>'
+      : (hasFotosNaoAnalisadas
+          ? '<span style="display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;border-radius:50%;background:#f59e0b;color:#fff;font-size:10px;font-weight:700;flex-shrink:0" title="Fotos sem an\u00e1lise">!</span>'
+          : '');
+    tab.innerHTML = '<span style="font-size: var(--fs-tiny);opacity:.5;cursor:grab">\u2847</span>' + _checkPill + nome + '<span onclick="event.stopPropagation();wiz6ExcluirAmb(' + i + ')" style="font-size: var(--fs-xxs);color:' + (isActive?'rgba(255,255,255,.7)':'#94a3b8') + ';cursor:pointer;margin-left:2px;line-height:1;padding:0 2px" title="Excluir ambiente">\u00d7</span>';
     tabs.appendChild(tab);
   });
   // Bot\u00e3o "+ Amb"
@@ -9310,6 +9319,25 @@ function wiz6Drop(event, targetIdx) {
   wiz6RenderAmbCard(_wiz6AmbIdx);
 }
 function wiz6GoAmb(idx) {
+  // Aviso (nao bloqueante) se sai de ambiente com fotos sem analise (task #99)
+  try {
+    if (idx !== _wiz6AmbIdx) {
+      var _curDados = (wizard.itensData && wizard.itensData[_wiz6AmbIdx]) || {};
+      var _curFotos = (_curDados.fotos || []).length;
+      var _curJa = !!_curDados.jaAnalisou;
+      if (_curFotos > 0 && !_curJa) {
+        var _curNome = (wizard.selectedRooms && wizard.selectedRooms[_wiz6AmbIdx])
+                       || _wiz6Ambientes[_wiz6AmbIdx] || 'ambiente atual';
+        if (typeof showToast === 'function') {
+          showToast('\u26a0 Voce adicionou fotos no ambiente ' + _curNome
+                    + ' mas ainda nao analisou com a IA. Clique em Analisar com IA antes de continuar.',
+                    'warn', 6000);
+        } else if (typeof toast === 'function') {
+          toast('\u26a0 ' + _curNome + ': fotos sem analise IA. Analise antes de continuar.', 'warn');
+        }
+      }
+    }
+  } catch(_eGoT) { /* nao bloqueia navegacao */ }
   _wiz6AmbIdx = idx;
   wiz6RenderTabs();
   wiz6RenderAmbCard(idx);
@@ -9602,12 +9630,27 @@ function wiz6RenderAmbCard(idx) {
   var btnProx = '<button id="wiz6-btn-prox-amb" onclick="wiz6ProxAmb()" style="padding:12px 24px;background:#2d7dd2;color:#fff;border:none;border-radius:10px;font-size: var(--fs-body);font-weight: var(--fw-semibold);cursor:pointer;flex:1">' + txtProx + '</button>';
   var btnAnterior = idx > 0 ? '<button onclick="wiz6AmbAnterior()" style="padding:12px 20px;background:#fff;color:#8898aa;border:0.5px solid #e2e8f0;border-radius:10px;font-size: var(--fs-sm);cursor:pointer">&larr; Anterior</button>' : '';
 
+  // Header colorido conforme estado (task #99)
+  var _hdrGrad, _hdrSubColor, _hdrSubText;
+  if (jaAnalisou) {
+    _hdrGrad = 'linear-gradient(135deg,#14532d,#16a34a)';
+    _hdrSubColor = '#bbf7d0';
+    _hdrSubText = '\u2713 An\u00e1lise conclu\u00edda \u2014 ' + fotos.length + ' foto' + (fotos.length!==1?'s':'') + ' analisada' + (fotos.length!==1?'s':'') + ' pela IA';
+  } else if (fotos.length > 0) {
+    _hdrGrad = 'linear-gradient(135deg,#92400e,#f59e0b)';
+    _hdrSubColor = '#fed7aa';
+    _hdrSubText = '\u26a0 ' + fotos.length + ' foto' + (fotos.length!==1?'s':'') + ' adicionada' + (fotos.length!==1?'s':'') + ' \u2014 clique em Analisar com IA!';
+  } else {
+    _hdrGrad = 'linear-gradient(135deg,#1e3a5f,#2d7dd2)';
+    _hdrSubColor = '#93c5fd';
+    _hdrSubText = '0 fotos adicionadas';
+  }
   card.innerHTML =
-    '<div style="background:linear-gradient(135deg,#1e3a5f,#2d7dd2);padding:14px 18px;border-radius:12px 12px 0 0;display:flex;align-items:center;gap:10px">' +
+    '<div style="background:' + _hdrGrad + ';padding:14px 18px;border-radius:12px 12px 0 0;display:flex;align-items:center;gap:10px;transition:background .25s">' +
       '<span style="font-size: var(--fs-h3)">' + icone + '</span>' +
       '<div style="flex:1">' +
         '<div style="font-size: var(--fs-lg);font-weight: var(--fw-bold);color:#fff">' + nome + '</div>' +
-        '<div style="font-size: var(--fs-xxs);color:#93c5fd">' + fotos.length + ' foto' + (fotos.length!==1?'s':'') + ' adicionada' + (fotos.length!==1?'s':'') + '</div>' +
+        '<div style="font-size: var(--fs-xxs);color:' + _hdrSubColor + ';font-weight:500">' + _hdrSubText + '</div>' +
       '</div>' +
     '</div>' +
 
