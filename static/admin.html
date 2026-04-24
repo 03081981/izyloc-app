@@ -117,6 +117,12 @@ body { background: #f1f5f9; color: #1e293b; }
     <div id="adm-login-erro" style="color:#dc2626;font-size:12px;margin-top:10px;display:none;">
       Senha incorreta. Tente novamente.
     </div>
+    <div style="margin-top:12px;">
+      <button type="button" onclick="admRecuperarSenha()" style="background:none;border:none;
+        color:#2d7dd2;font-size:12px;cursor:pointer;text-decoration:underline;">
+        Esqueci minha senha
+      </button>
+    </div>
   </div>
 </div>
 
@@ -336,6 +342,29 @@ body { background: #f1f5f9; color: #1e293b; }
     </table>
   </div>
 
+  <!-- Seção troca de senha -->
+  <div class="adm-section" style="margin-top:24px;">
+    <div class="adm-section-header">
+      <span class="adm-section-title">🔐 Alterar senha do painel admin</span>
+    </div>
+    <div style="padding:20px;display:grid;grid-template-columns:1fr 1fr;gap:16px;max-width:500px;">
+      <div>
+        <label style="display:block;font-size:12px;color:#64748b;margin-bottom:6px;font-weight:500;">Nova senha</label>
+        <input type="password" id="adm-nova-senha" placeholder="Mínimo 8 caracteres"
+          style="width:100%;padding:8px 12px;border:1px solid #e2e8f0;border-radius:8px;font-size:13px;">
+      </div>
+      <div>
+        <label style="display:block;font-size:12px;color:#64748b;margin-bottom:6px;font-weight:500;">Confirmar nova senha</label>
+        <input type="password" id="adm-confirmar-senha" placeholder="Repita a senha"
+          style="width:100%;padding:8px 12px;border:1px solid #e2e8f0;border-radius:8px;font-size:13px;">
+      </div>
+    </div>
+    <div style="padding:0 20px 20px;display:flex;align-items:center;gap:12px;">
+      <button class="btn btn-blue" onclick="admAlterarSenha()">🔐 Alterar senha</button>
+      <span id="adm-senha-status" style="font-size:12px;"></span>
+    </div>
+  </div>
+
 </div>
 
 <!-- Modal ajuste saldo -->
@@ -359,26 +388,90 @@ body { background: #f1f5f9; color: #1e293b; }
 </div>
 
 <script>
-const ADMIN_TOKEN = 'izylaudo2026';
-const ADMIN_SENHA = 'izyAdmin@2026';
+// ADMIN_TOKEN e o header X-Admin-Token enviado ao backend. Vem da sessionStorage
+// (populada no login) ou do valor URL legado como fallback.
+let ADMIN_TOKEN = sessionStorage.getItem('adm_token') || 'izylaudo2026';
 let _admUsers = [];
 let _admUserSelecionado = null;
 
-function admLogin() {
+async function admLogin() {
   var senha = document.getElementById('adm-senha-input').value;
-  if (senha === ADMIN_SENHA) {
-    sessionStorage.setItem('adm_auth', 'ok');
-    document.getElementById('adm-login-screen').style.display = 'none';
-    admCarregar('30d', document.querySelector('.adm-filtro.active'));
+  var erro = document.getElementById('adm-login-erro');
+  erro.style.display = 'none';
+  if (!senha) {
+    erro.textContent = 'Digite a senha';
+    erro.style.display = 'block';
+    return;
+  }
+  // Valida a senha contra o backend (settings.admin_password) via endpoint admin.
+  try {
+    var r = await fetch('/api/admin/stats?periodo=30d&token=' + encodeURIComponent(senha));
+    if (r.status === 200) {
+      sessionStorage.setItem('adm_auth', 'ok');
+      sessionStorage.setItem('adm_token', senha);
+      ADMIN_TOKEN = senha;
+      document.getElementById('adm-login-screen').style.display = 'none';
+      admCarregar('30d', document.querySelector('.adm-filtro.active'));
+      return;
+    }
+  } catch (e) { /* noop, cai em erro abaixo */ }
+  erro.textContent = 'Senha incorreta. Tente novamente.';
+  erro.style.display = 'block';
+  document.getElementById('adm-senha-input').value = '';
+  document.getElementById('adm-senha-input').focus();
+}
+
+async function admRecuperarSenha() {
+  if (!confirm('Enviar nova senha para o email do administrador?')) return;
+  try {
+    var r = await fetch('/api/admin/forgot-password', { method: 'POST' });
+    var data = await r.json();
+    if (data && data.ok) {
+      alert('Nova senha enviada para o email do administrador!\nVerifique a caixa de entrada.');
+    } else {
+      alert('Erro ao enviar email: ' + ((data && data.error) || 'Tente novamente'));
+    }
+  } catch (e) {
+    alert('Erro de rede ao solicitar recuperacao de senha.');
+  }
+}
+
+async function admAlterarSenha() {
+  var nova = document.getElementById('adm-nova-senha').value;
+  var conf = document.getElementById('adm-confirmar-senha').value;
+  var status = document.getElementById('adm-senha-status');
+  if (!nova || nova.length < 8) {
+    status.style.color = '#dc2626';
+    status.textContent = 'Senha deve ter no minimo 8 caracteres';
+    return;
+  }
+  if (nova !== conf) {
+    status.style.color = '#dc2626';
+    status.textContent = 'Senhas nao conferem';
+    return;
+  }
+  status.style.color = '#94a3b8';
+  status.textContent = 'Salvando...';
+  var result = await admFetch('/api/admin/change-password?token=' + encodeURIComponent(ADMIN_TOKEN),
+    'POST', { nova_senha: nova, confirmar: conf });
+  if (result && result.ok) {
+    // Atualizar token local para a nova senha (caso contrario proximas chamadas
+    // falharao com 403 pois o backend agora exige a nova senha).
+    ADMIN_TOKEN = nova;
+    sessionStorage.setItem('adm_token', nova);
+    status.style.color = '#16a34a';
+    status.textContent = '\u2713 Senha alterada! Email de confirmacao enviado.';
+    document.getElementById('adm-nova-senha').value = '';
+    document.getElementById('adm-confirmar-senha').value = '';
   } else {
-    document.getElementById('adm-login-erro').style.display = 'block';
-    document.getElementById('adm-senha-input').value = '';
-    document.getElementById('adm-senha-input').focus();
+    status.style.color = '#dc2626';
+    status.textContent = (result && result.error) || 'Erro ao alterar senha';
   }
 }
 
 function admLogout() {
   sessionStorage.removeItem('adm_auth');
+  sessionStorage.removeItem('adm_token');
   location.reload();
 }
 
