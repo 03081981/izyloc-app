@@ -2142,7 +2142,85 @@ class AnalisarBatchHandler(BaseHandler):
                     pass
             # === FIM DEBITO EM LOTE ===
 
-            resultado = analyze_batch(imagens, ambiente, tipo_vistoria, tipo_analise=tipo_analise)
+            # Chama IA e reembolsa automaticamente se falhar apos retries.
+            ia_err = None
+            resultado = None
+            try:
+                resultado = analyze_batch(imagens, ambiente, tipo_vistoria,
+                                          tipo_analise=tipo_analise)
+            except Exception as _ia_e:
+                ia_err = _ia_e
+                print('[BILLING] ia_batch_error user=' + user_id
+                      + ' total_cents=' + str(total_cents)
+                      + ' reason=' + str(_ia_e)[:200], flush=True)
+
+            # Detecta falha silenciosa (success=False ou resumo vazio)
+            if ia_err is None and isinstance(resultado, dict):
+                _has_resumo = bool((resultado.get('resumo') or '').strip())
+                _success_flag = resultado.get('success', True)
+                if (_success_flag is False) or (not _has_resumo):
+                    ia_err = Exception('ia_empty_response')
+                    print('[BILLING] ia_silent_fail user=' + user_id
+                          + ' total_cents=' + str(total_cents)
+                          + ' has_resumo=' + str(_has_resumo)
+                          + ' success=' + str(_success_flag), flush=True)
+
+            if ia_err is not None:
+                # Reembolso: devolve saldo + registra transacao de refund
+                try:
+                    _conn_rf = get_conn()
+                    try:
+                        _conn_rf.execute(
+                            "UPDATE users SET balance_cents=balance_cents+?, "
+                            "updated_at=NOW() WHERE id=?",
+                            (total_cents, user_id)
+                        )
+                        _bal_row = _conn_rf.execute(
+                            "SELECT balance_cents FROM users WHERE id=?",
+                            (user_id,)
+                        ).fetchone()
+                        _bal_after = (int(_bal_row['balance_cents'])
+                                      if (_bal_row and _bal_row.get(
+                                          'balance_cents') is not None)
+                                      else 0)
+                        _refund_desc = ('Reembolso automatico - IA '
+                                        'indisponivel (' + str(qtd_fotos)
+                                        + ' foto(s))')
+                        _insp_ref2 = (data.get('inspection_id')
+                                      or data.get('inspectionId') or None)
+                        _conn_rf.execute(
+                            "INSERT INTO balance_transactions "
+                            "(user_id, type, amount_cents, "
+                            " balance_after_cents, description, status, "
+                            " analysis_type, photos_count, inspection_id) "
+                            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                            (user_id, 'refund', total_cents, _bal_after,
+                             _refund_desc, 'completed',
+                             tipo_analise, qtd_fotos, _insp_ref2)
+                        )
+                        _conn_rf.commit()
+                        print('[BILLING] refund_ok user=' + user_id
+                              + ' total_cents=' + str(total_cents)
+                              + ' new_balance=' + str(_bal_after),
+                              flush=True)
+                    finally:
+                        _conn_rf.close()
+                except Exception as _rf_e:
+                    print('[BILLING] refund_error user=' + user_id
+                          + ' err=' + str(_rf_e), flush=True)
+
+                self.set_status(503)
+                self.write({
+                    'ok': False,
+                    'success': False,
+                    'code': 'ia_unavailable',
+                    'error': ('A IA esta temporariamente sobrecarregada. '
+                              'Seu saldo foi estornado automaticamente. '
+                              'Tente novamente em alguns instantes.'),
+                    'refunded_cents': total_cents,
+                })
+                return
+
             if isinstance(resultado, dict):
                 resultado['balance_after_cents'] = new_balance
                 resultado['debited_cents'] = total_cents

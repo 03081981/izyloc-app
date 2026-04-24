@@ -10394,6 +10394,18 @@ function wiz6AnalisarBatchSub(idx, subNome, si, modo = 'convencional') {
       wiz6RenderAmbCard(_wiz6AmbIdx);
       return;
     }
+    if (dados && dados.code === 'ia_unavailable') {
+      if (typeof showToast === 'function') {
+        showToast('\u26a0\ufe0f IA temporariamente sobrecarregada. Seu saldo foi estornado. Tente novamente em alguns segundos.', 'error', 6000);
+      }
+      sd.jaAnalisou = false;
+      wiz6RenderAmbCard(_wiz6AmbIdx);
+      // Recarrega saldo da sidebar (foi reembolsado)
+      if (typeof wiz6DescontarCréditos === 'function') {
+        try { wiz6DescontarCréditos(0, modo); } catch(e){}
+      }
+      return;
+    }
     sd.resumo = dados.resumo || '';
     sd.jaAnalisou = true;
     sd.estado_geral = dados.estado_geral || 'Bom';
@@ -10816,6 +10828,24 @@ function wiz6AnalisarBatch(ambIdx, modo = 'convencional') {
       setTimeout(function(){
         if (typeof abrirModalComprarCreditos === 'function') abrirModalComprarCreditos();
       }, 1500);
+      wiz6RenderAmbCard(ambIdx);
+      return;
+    }
+    if (dados && dados.code === 'ia_unavailable') {
+      if (!wizard.itensData[ambIdx]) wizard.itensData[ambIdx] = {};
+      wizard.itensData[ambIdx].jaAnalisou = false;
+      if (statusEl) {
+        statusEl.innerHTML = '\u26a0 IA sobrecarregada - saldo estornado';
+        statusEl.style.background = '#fef2f2';
+        statusEl.style.color = '#991b1b';
+      }
+      if (typeof showToast === 'function') {
+        showToast('\u26a0\ufe0f IA temporariamente sobrecarregada. Seu saldo foi estornado. Tente novamente em alguns segundos.', 'error', 6000);
+      }
+      // Recarrega saldo (foi reembolsado)
+      if (typeof wiz6DescontarCréditos === 'function') {
+        try { wiz6DescontarCréditos(0, modo); } catch(e){}
+      }
       wiz6RenderAmbCard(ambIdx);
       return;
     }
@@ -11659,7 +11689,7 @@ function wiz6Concluir() {
 <script>
 /* ========== Toast helper (global) ========== */
 if (typeof window.showToast !== 'function') {
-  window.showToast = function(msg, type) {
+  window.showToast = function(msg, type, duration) {
     try {
       var host = document.getElementById('__izy_toast_host');
       if (!host) {
@@ -11677,11 +11707,12 @@ if (typeof window.showToast !== 'function') {
       t.textContent = String(msg || '');
       host.appendChild(t);
       requestAnimationFrame(function(){ t.style.opacity = '1'; t.style.transform = 'translateY(0)'; });
+      var _dur = (typeof duration === 'number' && duration > 0) ? duration : 4200;
       setTimeout(function(){
         t.style.opacity = '0';
         t.style.transform = 'translateY(-8px)';
         setTimeout(function(){ try { host.removeChild(t); } catch(e){} }, 260);
-      }, 4200);
+      }, _dur);
     } catch(e) { /* silent */ }
   };
 }
