@@ -412,13 +412,19 @@ def _build_person_blocos(persons, num_prefix, titulo_base):
     blocos = []
     for i, p in enumerate(persons):
         suffix = u' (%d)' % (i + 1) if len(persons) > 1 else ''
+        is_pj = (p.get('tipo_pessoa') == 'pj')
+        _nome_label = u'Razão social' if is_pj else u'Nome completo'
+        _doc_label = u'CNPJ' if is_pj else u'CPF'
+        _campos = [(_nome_label, p['nome']), (_doc_label, p['cpf'])]
+        if is_pj and p.get('representante'):
+            _campos.append((u'Representante legal', p['representante']))
+        elif (not is_pj) and p.get('rg'):
+            _campos.append((u'RG', p['rg']))
+        _campos.append((u'Telefone', p['telefone']))
+        _campos.append((u'E-mail', p['email']))
         blocos.append({
             'titulo': u'%s %s%s' % (num_prefix, titulo_base, suffix),
-            'campos': [('Nome completo', p['nome']),
-                       ('CPF', p['cpf'])] +
-                      ([('RG', p['rg'])] if p.get('rg') else []) +
-                      [('Telefone', p['telefone']),
-                       ('E-mail', p['email'])],
+            'campos': _campos,
             'is_imob': False
         })
     return blocos
@@ -1641,11 +1647,20 @@ def generate_pdf(inspection_data: dict, rooms_data: list,
                                'rg': insp.get('locador_rg', ''),
                                'phone': insp.get('locador_phone', ''),
                                'email': insp.get('locador_email', '')}]
-        locadores = [{'nome': _title_case(_safe(loc.get('name', ''), u'\u2014')),
-                      'cpf': _fmt_cpf(_safe(loc.get('cpf', ''), u'\u2014')),
-                      'rg': _safe(loc.get('rg', ''), ''),
-                      'telefone': _fmt_tel(_safe(loc.get('phone', ''), u'\u2014')),
-                      'email': (_safe(loc.get('email', ''), u'\u2014') or '').lower().strip()} for loc in locadores_list]
+        def _norm_person(loc):
+            _is_pj = (loc.get('tipo_pessoa') == 'pj')
+            _doc_raw = _safe(loc.get('cpf', ''), u'\u2014')
+            _doc_fmt = _fmt_cnpj(_doc_raw) if _is_pj else _fmt_cpf(_doc_raw)
+            return {
+                'tipo_pessoa': 'pj' if _is_pj else 'pf',
+                'nome': _title_case(_safe(loc.get('name', ''), u'\u2014')),
+                'cpf': _doc_fmt,
+                'rg': _safe(loc.get('rg', ''), ''),
+                'representante': _title_case(_safe(loc.get('representante', ''), '')),
+                'telefone': _fmt_tel(_safe(loc.get('phone', ''), u'\u2014')),
+                'email': (_safe(loc.get('email', ''), u'\u2014') or '').lower().strip(),
+            }
+        locadores = [_norm_person(loc) for loc in locadores_list]
         dados_locador = locadores[0]
 
         # --- Locatarios (lista) ---
@@ -1660,11 +1675,7 @@ def generate_pdf(inspection_data: dict, rooms_data: list,
                                'rg': insp.get('locatario_rg', ''),
                                'phone': insp.get('locatario_phone', ''),
                                'email': insp.get('locatario_email', '')}]
-        locatarios = [{'nome': _title_case(_safe(loc.get('name', ''), u'\u2014')),
-                       'cpf': _fmt_cpf(_safe(loc.get('cpf', ''), u'\u2014')),
-                       'rg': _safe(loc.get('rg', ''), ''),
-                       'telefone': _fmt_tel(_safe(loc.get('phone', ''), u'\u2014')),
-                       'email': (_safe(loc.get('email', ''), u'\u2014') or '').lower().strip()} for loc in locatarios_list]
+        locatarios = [_norm_person(loc) for loc in locatarios_list]
         dados_locatario = locatarios[0]
 
         dados_corretor = {

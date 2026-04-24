@@ -3674,18 +3674,24 @@ window._openFotoModal = function(imgSrc) {
 <div style="font-size: var(--fs-xxs);font-weight: var(--fw-bold);color:#8898aa;text-transform:uppercase;letter-spacing:0.5px;margin:16px 0 10px">Locador(es) — Proprietário<span id="wiz4-suf-loc"></span></div>
 <div id="locadores-container">
   <div class="person-block" id="loc-block-0" style="background:#fff;border-radius:12px;border:0.5px solid #e2e8f0;padding:16px;margin-bottom:10px">
-    <div style="font-size: var(--fs-sm);font-weight: var(--fw-semibold);color:#1a2540;margin-bottom:12px;display:flex;align-items:center;gap:8px">
-      <div style="width:22px;height:22px;border-radius:50%;background:#2d7dd2;color:#fff;font-size: var(--fs-tiny);display:flex;align-items:center;justify-content:center;font-weight: var(--fw-bold)">1</div>
-      Locador
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:12px;flex-wrap:wrap">
+      <div style="font-size: var(--fs-sm);font-weight: var(--fw-semibold);color:#1a2540;display:flex;align-items:center;gap:8px">
+        <div style="width:22px;height:22px;border-radius:50%;background:#2d7dd2;color:#fff;font-size: var(--fs-tiny);display:flex;align-items:center;justify-content:center;font-weight: var(--fw-bold)">1</div>
+        Locador
+      </div>
+      <div class="pfpj-toggle" style="display:inline-flex;font-size:11px;border:1px solid #e2e8f0;border-radius:999px;overflow:hidden;background:#f8fafc">
+        <label style="padding:5px 11px;cursor:pointer;font-weight:500;color:#2d7dd2;background:#eaf2ff"><input type="radio" name="loc-tp-0" value="pf" checked style="display:none" onchange="applyPfPj('loc',0,'pf')">Pessoa Física</label>
+        <label style="padding:5px 11px;cursor:pointer;font-weight:500;color:#64748b"><input type="radio" name="loc-tp-0" value="pj" style="display:none" onchange="applyPfPj('loc',0,'pj')">Pessoa Jurídica</label>
+      </div>
     </div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
       <div style="grid-column:1/-1;display:flex;flex-direction:column;gap:4px">
-        <label style="font-size: var(--fs-xs);font-weight: var(--fw-semibold);color:#4a5568">Nome completo</label>
+        <label id="loc-name-label-0" style="font-size: var(--fs-xs);font-weight: var(--fw-semibold);color:#4a5568">Nome completo</label>
         <input id="loc-name-0" type="text" placeholder="Nome do locador" style="border:0.5px solid #e2e8f0;border-radius:8px;padding:9px 12px;font-size: var(--fs-sm);color:#1a2540;font-family:inherit;background:#fff;outline:none"/>
       </div>
       <div style="display:flex;flex-direction:column;gap:4px">
-        <label style="font-size: var(--fs-xs);font-weight: var(--fw-semibold);color:#4a5568">CPF</label>
-        <input id="loc-cpf-0" type="text" placeholder="000.000.000-00" style="border:0.5px solid #e2e8f0;border-radius:8px;padding:9px 12px;font-size: var(--fs-sm);color:#1a2540;font-family:inherit;background:#fff;outline:none"/>
+        <label id="loc-cpf-label-0" style="font-size: var(--fs-xs);font-weight: var(--fw-semibold);color:#4a5568">CPF</label>
+        <input id="loc-cpf-0" type="text" placeholder="000.000.000-00" oninput="_pfPjMask(this,'loc',0)" style="border:0.5px solid #e2e8f0;border-radius:8px;padding:9px 12px;font-size: var(--fs-sm);color:#1a2540;font-family:inherit;background:#fff;outline:none"/>
       </div>
       <div style="display:flex;flex-direction:column;gap:4px">
         <label style="font-size: var(--fs-xs);font-weight: var(--fw-semibold);color:#4a5568">Telefone</label>
@@ -3694,6 +3700,10 @@ window._openFotoModal = function(imgSrc) {
       <div style="display:flex;flex-direction:column;gap:4px">
         <label style="font-size: var(--fs-xs);font-weight: var(--fw-semibold);color:#4a5568">E-mail</label>
         <input id="loc-email-0" type="email" placeholder="email@exemplo.com" style="border:0.5px solid #e2e8f0;border-radius:8px;padding:9px 12px;font-size: var(--fs-sm);color:#1a2540;font-family:inherit;background:#fff;outline:none"/>
+      </div>
+      <div id="loc-rep-wrap-0" style="grid-column:1/-1;display:none;flex-direction:column;gap:4px">
+        <label style="font-size: var(--fs-xs);font-weight: var(--fw-semibold);color:#4a5568">Representante legal (opcional)</label>
+        <input id="loc-rep-0" type="text" placeholder="Nome do representante legal" style="border:0.5px solid #e2e8f0;border-radius:8px;padding:9px 12px;font-size: var(--fs-sm);color:#1a2540;font-family:inherit;background:#fff;outline:none"/>
       </div>
     </div>
   </div>
@@ -3704,18 +3714,24 @@ window._openFotoModal = function(imgSrc) {
 <div style="font-size: var(--fs-xxs);font-weight: var(--fw-bold);color:#8898aa;text-transform:uppercase;letter-spacing:0.5px;margin:16px 0 10px">Locatário(s) — Inquilino<span id="wiz4-suf-ten"></span></div>
 <div id="locatários-container">
   <div class="person-block" id="locat-block-0" style="background:#fff;border-radius:12px;border:0.5px solid #e2e8f0;padding:16px;margin-bottom:10px">
-    <div style="font-size: var(--fs-sm);font-weight: var(--fw-semibold);color:#1a2540;margin-bottom:12px;display:flex;align-items:center;gap:8px">
-      <div style="width:22px;height:22px;border-radius:50%;background:#2d7dd2;color:#fff;font-size: var(--fs-tiny);display:flex;align-items:center;justify-content:center;font-weight: var(--fw-bold)">1</div>
-      Locatário
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:12px;flex-wrap:wrap">
+      <div style="font-size: var(--fs-sm);font-weight: var(--fw-semibold);color:#1a2540;display:flex;align-items:center;gap:8px">
+        <div style="width:22px;height:22px;border-radius:50%;background:#2d7dd2;color:#fff;font-size: var(--fs-tiny);display:flex;align-items:center;justify-content:center;font-weight: var(--fw-bold)">1</div>
+        Locatário
+      </div>
+      <div class="pfpj-toggle" style="display:inline-flex;font-size:11px;border:1px solid #e2e8f0;border-radius:999px;overflow:hidden;background:#f8fafc">
+        <label style="padding:5px 11px;cursor:pointer;font-weight:500;color:#2d7dd2;background:#eaf2ff"><input type="radio" name="locat-tp-0" value="pf" checked style="display:none" onchange="applyPfPj('locat',0,'pf')">Pessoa Física</label>
+        <label style="padding:5px 11px;cursor:pointer;font-weight:500;color:#64748b"><input type="radio" name="locat-tp-0" value="pj" style="display:none" onchange="applyPfPj('locat',0,'pj')">Pessoa Jurídica</label>
+      </div>
     </div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
       <div style="grid-column:1/-1;display:flex;flex-direction:column;gap:4px">
-        <label style="font-size: var(--fs-xs);font-weight: var(--fw-semibold);color:#4a5568">Nome completo</label>
+        <label id="locat-name-label-0" style="font-size: var(--fs-xs);font-weight: var(--fw-semibold);color:#4a5568">Nome completo</label>
         <input id="locat-name-0" type="text" placeholder="Nome do locatário" style="border:0.5px solid #e2e8f0;border-radius:8px;padding:9px 12px;font-size: var(--fs-sm);color:#1a2540;font-family:inherit;background:#fff;outline:none"/>
       </div>
       <div style="display:flex;flex-direction:column;gap:4px">
-        <label style="font-size: var(--fs-xs);font-weight: var(--fw-semibold);color:#4a5568">CPF</label>
-        <input id="locat-cpf-0" type="text" placeholder="000.000.000-00" style="border:0.5px solid #e2e8f0;border-radius:8px;padding:9px 12px;font-size: var(--fs-sm);color:#1a2540;font-family:inherit;background:#fff;outline:none"/>
+        <label id="locat-cpf-label-0" style="font-size: var(--fs-xs);font-weight: var(--fw-semibold);color:#4a5568">CPF</label>
+        <input id="locat-cpf-0" type="text" placeholder="000.000.000-00" oninput="_pfPjMask(this,'locat',0)" style="border:0.5px solid #e2e8f0;border-radius:8px;padding:9px 12px;font-size: var(--fs-sm);color:#1a2540;font-family:inherit;background:#fff;outline:none"/>
       </div>
       <div style="display:flex;flex-direction:column;gap:4px">
         <label style="font-size: var(--fs-xs);font-weight: var(--fw-semibold);color:#4a5568">Telefone</label>
@@ -3724,6 +3740,10 @@ window._openFotoModal = function(imgSrc) {
       <div style="display:flex;flex-direction:column;gap:4px">
         <label style="font-size: var(--fs-xs);font-weight: var(--fw-semibold);color:#4a5568">E-mail</label>
         <input id="locat-email-0" type="email" placeholder="email@exemplo.com" style="border:0.5px solid #e2e8f0;border-radius:8px;padding:9px 12px;font-size: var(--fs-sm);color:#1a2540;font-family:inherit;background:#fff;outline:none"/>
+      </div>
+      <div id="locat-rep-wrap-0" style="grid-column:1/-1;display:none;flex-direction:column;gap:4px">
+        <label style="font-size: var(--fs-xs);font-weight: var(--fw-semibold);color:#4a5568">Representante legal (opcional)</label>
+        <input id="locat-rep-0" type="text" placeholder="Nome do representante legal" style="border:0.5px solid #e2e8f0;border-radius:8px;padding:9px 12px;font-size: var(--fs-sm);color:#1a2540;font-family:inherit;background:#fff;outline:none"/>
       </div>
     </div>
   </div>
@@ -5185,6 +5205,11 @@ async function editarLaudo(id, origin) {
             _sv("loc-cpf-"+i, p.cpf);
             _sv("loc-phone-"+i, p.phone);
             _sv("loc-email-"+i, p.email);
+            _sv("loc-rep-"+i, p.representante || "");
+            // Aplica tipo_pessoa (pf/pj) restaurando toggle + labels + mascara
+            var _tpP = (p.tipo_pessoa === 'pj') ? 'pj' : 'pf';
+            var _tpRad = document.querySelector('input[name="loc-tp-'+i+'"][value="'+_tpP+'"]');
+            if (_tpRad) { _tpRad.checked = true; if (typeof applyPfPj === 'function') applyPfPj('loc', i, _tpP); }
           });
         }
         var tens = [];
@@ -5202,6 +5227,10 @@ async function editarLaudo(id, origin) {
             _sv("locat-cpf-"+i, p.cpf);
             _sv("locat-phone-"+i, p.phone);
             _sv("locat-email-"+i, p.email);
+            _sv("locat-rep-"+i, p.representante || "");
+            var _tpP2 = (p.tipo_pessoa === 'pj') ? 'pj' : 'pf';
+            var _tpRad2 = document.querySelector('input[name="locat-tp-'+i+'"][value="'+_tpP2+'"]');
+            if (_tpRad2) { _tpRad2.checked = true; if (typeof applyPfPj === 'function') applyPfPj('locat', i, _tpP2); }
           });
         }
       } catch(e){ try { console.warn("[editarLaudo] partes fill error", e); } catch(e2){} }
@@ -6618,11 +6647,14 @@ async function gerarLaudo() {
     var _locArr = [];
     document.querySelectorAll('#locadores-container .person-block').forEach(function(b) {
       var x = b.id.replace('loc-block-','');
+      var _tpL = (typeof _pfPjGetTipo === 'function') ? _pfPjGetTipo('loc', x) : 'pf';
       _locArr.push({
+        tipo_pessoa: _tpL,
         name: (document.getElementById('loc-name-'+x)||{}).value||'',
         cpf: (document.getElementById('loc-cpf-'+x)||{}).value||'',
         phone: (document.getElementById('loc-phone-'+x)||{}).value||'',
-        email: (document.getElementById('loc-email-'+x)||{}).value||''
+        email: (document.getElementById('loc-email-'+x)||{}).value||'',
+        representante: (document.getElementById('loc-rep-'+x)||{}).value||''
       });
     });
     // Coletar todos locatários do DOM
@@ -6630,11 +6662,14 @@ async function gerarLaudo() {
     document.querySelectorAll('#locatários-container .person-block').forEach(function(b) {
       var prefix = b.id.indexOf('locat-block-') === 0 ? 'locat' : 'ten';
       var x = b.id.replace('locat-block-','').replace('ten-block-','');
+      var _tpT = (typeof _pfPjGetTipo === 'function') ? _pfPjGetTipo(prefix, x) : 'pf';
       _tenArr.push({
+        tipo_pessoa: _tpT,
         name: (document.getElementById(prefix+'-name-'+x)||{}).value||'',
         cpf: (document.getElementById(prefix+'-cpf-'+x)||{}).value||'',
         phone: (document.getElementById(prefix+'-phone-'+x)||{}).value||'',
-        email: (document.getElementById(prefix+'-email-'+x)||{}).value||''
+        email: (document.getElementById(prefix+'-email-'+x)||{}).value||'',
+        representante: (document.getElementById(prefix+'-rep-'+x)||{}).value||''
       });
     });
     if (_locArr.length) body.locadores_json = JSON.stringify(_locArr);
@@ -7051,14 +7086,85 @@ window.addEventListener('resize', () => {
       var d = document.createElement('div');
       d.className = 'person-block';
       d.id = prefix + '-block-' + idx;
-      var h = '<div class="person-block-header"><span class="person-block-title">' + label + ' ' + (idx+1) + '</span>';
+      var tpName = prefix + '-tp-' + idx;
+      var h = '<div class="person-block-header" style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;">' +
+              '<span class="person-block-title">' + label + ' ' + (idx+1) + '</span>' +
+              '<div class="pfpj-toggle" style="display:inline-flex;font-size:11px;border:1px solid #e2e8f0;border-radius:999px;overflow:hidden;background:#f8fafc">' +
+                '<label style="padding:5px 11px;cursor:pointer;font-weight:500;color:#2d7dd2;background:#eaf2ff">' +
+                  '<input type="radio" name="'+tpName+'" value="pf" checked style="display:none" onchange="applyPfPj(\''+prefix+'\','+idx+',\'pf\')">Pessoa Física</label>' +
+                '<label style="padding:5px 11px;cursor:pointer;font-weight:500;color:#64748b">' +
+                  '<input type="radio" name="'+tpName+'" value="pj" style="display:none" onchange="applyPfPj(\''+prefix+'\','+idx+',\'pj\')">Pessoa Jurídica</label>' +
+              '</div>';
       if (removable) h += '<button onclick="this.closest(\'.person-block\').remove()" style="background:none;border:none;color:#e74c3c;cursor:pointer;font-size: var(--fs-h4);font-weight: var(--fw-bold);padding:0 6px" title="Remover">\u00d7</button>';
       h += '</div>';
-      h += '<div class="form-row"><div class="form-group"><label class="form-label">Nome</label><input class="form-input" id="'+prefix+'-name-'+idx+'" type="text" placeholder="Nome completo"/></div><div class="form-group"><label class="form-label">CPF</label><input class="form-input" id="'+prefix+'-cpf-'+idx+'" type="text" placeholder="000.000.000-00"/></div></div>';
+      h += '<div class="form-row"><div class="form-group"><label class="form-label" id="'+prefix+'-name-label-'+idx+'">Nome completo</label><input class="form-input" id="'+prefix+'-name-'+idx+'" type="text" placeholder="Nome completo"/></div><div class="form-group"><label class="form-label" id="'+prefix+'-cpf-label-'+idx+'">CPF</label><input class="form-input" id="'+prefix+'-cpf-'+idx+'" type="text" placeholder="000.000.000-00" oninput="_pfPjMask(this,\''+prefix+'\','+idx+')"/></div></div>';
       h += '<div class="form-row"><div class="form-group"><label class="form-label">Telefone</label><input class="form-input" id="'+prefix+'-phone-'+idx+'" type="text" placeholder="Telefone (opcional)"/></div><div class="form-group" style="flex:1"><label class="form-label">E-mail</label><input class="form-input" id="'+prefix+'-email-'+idx+'" type="email" placeholder="email@exemplo.com"/></div></div>';
+      h += '<div class="form-row" id="'+prefix+'-rep-wrap-'+idx+'" style="display:none"><div class="form-group" style="flex:1"><label class="form-label">Representante legal (opcional)</label><input class="form-input" id="'+prefix+'-rep-'+idx+'" type="text" placeholder="Nome do representante legal"/></div></div>';
       d.innerHTML = h;
       return d;
     }
+
+    // ─── PF / PJ helpers (task #88) ─────────────────────────────────────
+    window._pfPjGetTipo = function(prefix, idx) {
+      var checked = document.querySelector('input[name="'+prefix+'-tp-'+idx+'"]:checked');
+      return checked ? checked.value : 'pf';
+    };
+
+    window._maskCPF = function(v) {
+      v = (v||'').replace(/\D/g,'').substring(0,11);
+      return v
+        .replace(/^(\d{3})(\d)/, '$1.$2')
+        .replace(/^(\d{3})\.(\d{3})(\d)/, '$1.$2.$3')
+        .replace(/\.(\d{3})(\d{1,2})$/, '.$1-$2');
+    };
+    window._maskCNPJ = function(v) {
+      v = (v||'').replace(/\D/g,'').substring(0,14);
+      return v
+        .replace(/^(\d{2})(\d)/, '$1.$2')
+        .replace(/^(\d{2})\.(\d{3})(\d)/, '$1.$2.$3')
+        .replace(/\.(\d{3})(\d)/, '.$1/$2')
+        .replace(/(\d{4})(\d{1,2})$/, '$1-$2');
+    };
+    window._pfPjMask = function(inputEl, prefix, idx) {
+      var tipo = window._pfPjGetTipo(prefix, idx);
+      inputEl.value = (tipo === 'pj')
+        ? window._maskCNPJ(inputEl.value)
+        : window._maskCPF(inputEl.value);
+    };
+
+    window.applyPfPj = function(prefix, idx, tipo) {
+      // Atualiza cor dos rotulos do toggle (visual)
+      var labels = document.querySelectorAll('input[name="'+prefix+'-tp-'+idx+'"]');
+      labels.forEach(function(inp){
+        var lbl = inp.closest('label');
+        if (!lbl) return;
+        if (inp.value === tipo) {
+          lbl.style.background = '#eaf2ff';
+          lbl.style.color = '#2d7dd2';
+        } else {
+          lbl.style.background = 'transparent';
+          lbl.style.color = '#64748b';
+        }
+      });
+      var nameLbl = document.getElementById(prefix+'-name-label-'+idx);
+      var cpfLbl = document.getElementById(prefix+'-cpf-label-'+idx);
+      var cpfInp = document.getElementById(prefix+'-cpf-'+idx);
+      var nameInp = document.getElementById(prefix+'-name-'+idx);
+      var repWrap = document.getElementById(prefix+'-rep-wrap-'+idx);
+      if (tipo === 'pj') {
+        if (nameLbl) nameLbl.textContent = 'Razão social';
+        if (cpfLbl)  cpfLbl.textContent = 'CNPJ';
+        if (cpfInp)  { cpfInp.placeholder = '00.000.000/0000-00'; cpfInp.value = window._maskCNPJ(cpfInp.value); }
+        if (nameInp) nameInp.placeholder = 'Razão social da empresa';
+        if (repWrap) repWrap.style.display = (repWrap.classList && repWrap.classList.contains('form-row')) ? 'flex' : 'flex';
+      } else {
+        if (nameLbl) nameLbl.textContent = 'Nome completo';
+        if (cpfLbl)  cpfLbl.textContent = 'CPF';
+        if (cpfInp)  { cpfInp.placeholder = '000.000.000-00'; cpfInp.value = window._maskCPF(cpfInp.value); }
+        if (nameInp) nameInp.placeholder = (prefix === 'loc') ? 'Nome do locador' : 'Nome do locatário';
+        if (repWrap) repWrap.style.display = 'none';
+      }
+    };
 
     window.addLocador = function() {
       var c = document.getElementById('locadores-container');
@@ -7092,23 +7198,29 @@ window.addEventListener('resize', () => {
         var locadores = [];
         document.querySelectorAll('#locadores-container .person-block').forEach(function(b) {
           var idx = b.id.replace('loc-block-', '');
+          var _tp = (typeof _pfPjGetTipo === 'function') ? _pfPjGetTipo('loc', idx) : 'pf';
           locadores.push({
+            tipo_pessoa: _tp,
             name: (b.querySelector('[id=loc-name-'+idx+']') || {}).value || '',
             cpf: (b.querySelector('[id=loc-cpf-'+idx+']') || {}).value || '',
             phone: (b.querySelector('[id=loc-phone-'+idx+']') || {}).value || '',
-            email: (b.querySelector('[id=loc-email-'+idx+']') || {}).value || ''
+            email: (b.querySelector('[id=loc-email-'+idx+']') || {}).value || '',
+            representante: (b.querySelector('[id=loc-rep-'+idx+']') || {}).value || ''
           });
         });
         var locatários = [];
           document.querySelectorAll('#locatários-container .person-block').forEach(function(b) {
               var prefix = b.id.indexOf('locat-block-') === 0 ? 'locat' : 'ten';
               var idx = b.id.replace('locat-block-', '').replace('ten-block-', '');
+              var _tp = (typeof _pfPjGetTipo === 'function') ? _pfPjGetTipo(prefix, idx) : 'pf';
               locatários.push({
+                  tipo_pessoa: _tp,
                   name: (document.getElementById(prefix+'-name-'+idx) || {}).value || '',
                   cpf: (document.getElementById(prefix+'-cpf-'+idx) || {}).value || '',
                   rg: (document.getElementById(prefix+'-rg-'+idx) || {}).value || '',
                   phone: (document.getElementById(prefix+'-phone-'+idx) || {}).value || '',
-                  email: (document.getElementById(prefix+'-email-'+idx) || {}).value || ''
+                  email: (document.getElementById(prefix+'-email-'+idx) || {}).value || '',
+                  representante: (document.getElementById(prefix+'-rep-'+idx) || {}).value || ''
               });
           });
           var data = {
