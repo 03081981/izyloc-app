@@ -2987,7 +2987,7 @@ window._openFotoModal = function(imgSrc) {
           <div class="db-foto-bloco">
             <div class="db-foto-tipo">
               <span class="db-badge-conv">Convencional</span>
-              <span style="color:rgba(255,255,255,0.4)">R$ 0,50/foto</span>
+              <span style="color:rgba(255,255,255,0.4)" id="db-preco-conv">R$ --/foto</span>
             </div>
             <div class="db-foto-num" id="db-fotos-conv">--</div>
             <div class="db-foto-sub">fotos analisadas este mês</div>
@@ -2999,7 +2999,7 @@ window._openFotoModal = function(imgSrc) {
           <div class="db-foto-bloco">
             <div class="db-foto-tipo">
               <span class="db-badge-prem">Premium</span>
-              <span style="color:rgba(255,255,255,0.4)">R$ 0,90/foto</span>
+              <span style="color:rgba(255,255,255,0.4)" id="db-preco-prem">R$ --/foto</span>
             </div>
             <div class="db-foto-num" id="db-fotos-prem">--</div>
             <div class="db-foto-sub">fotos analisadas este mês</div>
@@ -4638,24 +4638,56 @@ function switchDashTab(tab, btn) {
   document.getElementById(`dash-tab-${tab}`).style.display = 'block';
 }
 
-// ─── Push 15: Confirmacao de analise IA com preco dinamico ───────────────────
+// ─── Precos dinamicos: cache + sync de DOM ───────────────────────────────────
+// Inicializado com defaults defensivos; sempre sobrescrito por loadPrices().
+// Nunca referencie precos literais fora deste cache - use window._prices.* ou
+// as helpers window.priceBrl() / window.pricePerPhotoLabel().
 window._prices = {
   convencional_cents: 50,
   premium_cents: 90,
+  bonus_welcome_cents: 500,
   convencional_brl: 'R$ 0,50',
-  premium_brl: 'R$ 0,90'
+  premium_brl: 'R$ 0,90',
+  bonus_welcome_brl: 'R$ 5,00'
 };
+
+// Helpers globais para leitura uniforme dos precos em qualquer tela.
+window.priceBrl = function(tipo) {
+  return (tipo === 'premium')
+    ? (window._prices.premium_brl || 'R$ --')
+    : (window._prices.convencional_brl || 'R$ --');
+};
+window.pricePerPhotoLabel = function(tipo) {
+  return window.priceBrl(tipo) + '/foto';
+};
+
+// Atualiza elementos de UI que exibem precos em varios lugares do app.
+// Chamado toda vez que loadPrices() tem sucesso.
+function _syncPriceDomElements() {
+  var sel = function(id, text) {
+    var el = document.getElementById(id);
+    if (el) el.textContent = text;
+  };
+  sel('db-preco-conv', window.priceBrl('convencional') + '/foto');
+  sel('db-preco-prem', window.priceBrl('premium') + '/foto');
+  // Help text ids (se estiverem renderizados no momento)
+  sel('help-price-conv', window.priceBrl('convencional'));
+  sel('help-price-prem', window.priceBrl('premium'));
+}
 
 async function loadPrices() {
   try {
     const r = await api('GET', '/api/settings/prices');
     if (r && r.ok) {
       window._prices = {
-        convencional_cents: r.convencional_cents,
-        premium_cents: r.premium_cents,
-        convencional_brl: r.convencional_brl,
-        premium_brl: r.premium_brl
+        convencional_cents:   r.convencional_cents,
+        premium_cents:        r.premium_cents,
+        bonus_welcome_cents:  (r.bonus_welcome_cents != null ? r.bonus_welcome_cents : window._prices.bonus_welcome_cents),
+        convencional_brl:     r.convencional_brl,
+        premium_brl:          r.premium_brl,
+        bonus_welcome_brl:    (r.bonus_welcome_brl || window._prices.bonus_welcome_brl)
       };
+      _syncPriceDomElements();
     }
   } catch(e) { /* fallback silencioso: mantem defaults */ }
 }
@@ -9421,10 +9453,10 @@ function wiz6RenderAmbCard(idx) {
               '</label>' +
             '</div>' +
             '<button id="btnConv_' + idx + '" onclick="confirmarAnalise(\'convencional\',' + fotos.length + ',function(){wiz6AnalisarBatch(' + idx + ',\'convencional\');}).catch(console.error)" style="padding:10px 24px;background:#2d7dd2;color:#fff;border:none;border-radius:8px;font-size: var(--fs-sm);font-weight: var(--fw-bold);cursor:pointer;margin-right:8px">' +
-              (jaAnalisou ? '\ud83d\udd04 Re-analisar com IA' : '\ud83e\udd16 Analisar com IA') +
+              (jaAnalisou ? '\ud83d\udd04 Re-analisar com IA' : '\ud83e\udd16 Analisar com IA') + ' \u2014 ' + window.pricePerPhotoLabel('convencional') +
             '</button>' +
             '<button id="btnPrem_' + idx + '" onclick="confirmarAnalise(\'premium\',' + fotos.length + ',function(){wiz6AnalisarBatch(' + idx + ',\'premium\');}).catch(console.error)" style="padding:10px 24px;background:#9333ea;color:#fff;border:none;border-radius:8px;font-size: var(--fs-sm);font-weight: var(--fw-bold);cursor:pointer">' +
-              '\u2b50 ' + (jaAnalisou ? 'Re-analisar com IA PREMIUM' : 'Analisar com IA PREMIUM') +
+              '\u2b50 ' + (jaAnalisou ? 'Re-analisar com IA PREMIUM' : 'Analisar com IA PREMIUM') + ' \u2014 ' + window.pricePerPhotoLabel('premium') +
             '</button>' +
           '</div>' +
         '</div>'
@@ -10214,7 +10246,7 @@ function wiz6BuildSuiteHtml(idx) {
       h += '</label>';
       h += '</div>';
       h += '<button onclick="confirmarAnalise(\'convencional\',' + fotos.length + ',function(){wiz6AnalisarBatchSub(' + idx + ',\'' + subNome.replace(/'/g,"\\\'") + '\',' + si + ');}).catch(console.error)" style="padding:10px 24px;background:#2d7dd2;color:#fff;border:none;border-radius:8px;font-size: var(--fs-sm);font-weight: var(--fw-bold);cursor:pointer">';
-      h += jaAnalisou ? '\ud83d\udd04 Re-analisar com IA' : '\ud83e\udd16 Analisar com IA';
+      h += (jaAnalisou ? '\ud83d\udd04 Re-analisar com IA' : '\ud83e\udd16 Analisar com IA') + ' \u2014 ' + window.pricePerPhotoLabel('convencional');
       h += '</button></div></div>';
     }
 
@@ -10625,7 +10657,7 @@ function _wiz6RenderSubsBlock(ambIdx, dados) {
       h += '<div style="display:flex;gap:8px;justify-content:center;align-items:center">';
       h += '<label style="display:flex;align-items:center;gap:6px;padding:7px 12px;border:0.5px solid #e2e8f0;border-radius:7px;background:#fff;font-size: var(--fs-xxs);color:#8898aa;cursor:pointer">+ Adicionar mais fotos<input type="file" accept="image/*" multiple style="display:none" onchange="wiz6AddFotosSub(this,' + ambIdx + ',\'' + subNome.replace(/'/g,"\\\'") + '\')">';
       h += '</label>';
-      h += '<div style="display:flex;gap:8px;flex-wrap:wrap">' + '<button onclick="confirmarAnalise(\'convencional\',' + fotos.length + ',function(){wiz6AnalisarSub(' + ambIdx + ',\'' + subNome.replace(/'/g,"\\\'") + '\',\'convencional\');}).catch(console.error)" style="background:#2d7dd2;color:#fff;border:none;border-radius:7px;padding:7px 14px;font-size: var(--fs-xxs);font-weight: var(--fw-semibold);cursor:pointer">' + (sd.jaAnalisou ? '\ud83d\udd04 Re-analisar com IA' : '\ud83e\udd16 Analisar com IA') + '</button>' + '<button onclick="confirmarAnalise(\'premium\',' + fotos.length + ',function(){wiz6AnalisarSub(' + ambIdx + ',\'' + subNome.replace(/'/g,"\\\'") + '\',\'premium\');}).catch(console.error)" style="background:#9333ea;color:#fff;border:none;border-radius:7px;padding:7px 14px;font-size: var(--fs-xxs);font-weight: var(--fw-semibold);cursor:pointer">' + (sd.jaAnalisou ? '\ud83d\udd04 Re-analisar com IA PREMIUM' : '\ud83e\udd16 Analisar com IA PREMIUM') + '</button>' + '</div>';
+      h += '<div style="display:flex;gap:8px;flex-wrap:wrap">' + '<button onclick="confirmarAnalise(\'convencional\',' + fotos.length + ',function(){wiz6AnalisarSub(' + ambIdx + ',\'' + subNome.replace(/'/g,"\\\'") + '\',\'convencional\');}).catch(console.error)" style="background:#2d7dd2;color:#fff;border:none;border-radius:7px;padding:7px 14px;font-size: var(--fs-xxs);font-weight: var(--fw-semibold);cursor:pointer">' + (sd.jaAnalisou ? '\ud83d\udd04 Re-analisar com IA' : '\ud83e\udd16 Analisar com IA') + ' \u2014 ' + window.pricePerPhotoLabel('convencional') + '</button>' + '<button onclick="confirmarAnalise(\'premium\',' + fotos.length + ',function(){wiz6AnalisarSub(' + ambIdx + ',\'' + subNome.replace(/'/g,"\\\'") + '\',\'premium\');}).catch(console.error)" style="background:#9333ea;color:#fff;border:none;border-radius:7px;padding:7px 14px;font-size: var(--fs-xxs);font-weight: var(--fw-semibold);cursor:pointer">' + (sd.jaAnalisou ? '\ud83d\udd04 Re-analisar com IA PREMIUM' : '\ud83e\udd16 Analisar com IA PREMIUM') + ' \u2014 ' + window.pricePerPhotoLabel('premium') + '</button>' + '</div>';
       h += '</div>';
       h += '<div id="wiz6-ai-status-sub-' + ambIdx + '-' + _subSi + '" style="display:none;background:#eef4ff;border-left:3px solid #2d7dd2;border-radius:0 8px 8px 0;padding:12px 14px;margin-bottom:14px;font-size: var(--fs-xs);color:#185fa5;line-height:1.6"></div>';
       h += '</div>';
@@ -12367,8 +12399,8 @@ var AJUDA_CONTEUDOS = [
       '\ud83d\udcf1 <b>No celular:</b> fotografe diretamente pela c\u00e2mera.<br>' +
       '\ud83d\udda5\ufe0f <b>No computador:</b> fa\u00e7a upload. M\u00e1ximo de <b>20 fotos por ambiente</b>.</div>' +
       '<div class="ajuda-tip"><strong>\ud83e\udd16 Qual IA usar?</strong>' +
-      '<b>Convencional (R$ 0,50/foto)</b> \u2014 ideal para ambientes simples, sem grandes problemas, poucos detalhes ou m\u00f3veis. Gera descri\u00e7\u00f5es objetivas para o padr\u00e3o da maioria das vistorias.<br><br>' +
-      '<b>Premium (R$ 0,90/foto)</b> \u2014 recomendado para ambientes com <b>problemas s\u00e9rios</b> como infiltra\u00e7\u00f5es, danos estruturais, mofo ou situa\u00e7\u00f5es que exigem descri\u00e7\u00e3o mais minuciosa para fins jur\u00eddicos.</div>' +
+      '<b>Convencional (<span id="help-price-conv">' + (window._prices && window._prices.convencional_brl || 'R$ 0,50') + '</span>/foto)</b> \u2014 ideal para ambientes simples, sem grandes problemas, poucos detalhes ou m\u00f3veis. Gera descri\u00e7\u00f5es objetivas para o padr\u00e3o da maioria das vistorias.<br><br>' +
+      '<b>Premium (<span id="help-price-prem">' + (window._prices && window._prices.premium_brl || 'R$ 0,90') + '</span>/foto)</b> \u2014 recomendado para ambientes com <b>problemas s\u00e9rios</b> como infiltra\u00e7\u00f5es, danos estruturais, mofo ou situa\u00e7\u00f5es que exigem descri\u00e7\u00e3o mais minuciosa para fins jur\u00eddicos.</div>' +
       '<div class="ajuda-next"><strong>Pr\u00f3xima etapa</strong>Etapa 7 \u2014 Revisar o laudo gerado pela IA</div>'
   },
   {

@@ -1085,10 +1085,15 @@ class AdminPageHandler(tornado.web.RequestHandler):
 
 
 class SettingsPricesHandler(BaseHandler):
-    """Push 15: endpoint publico para preco por foto (convencional/premium).
+    """Endpoint publico: precos por foto (convencional/premium) + bonus de
+    boas-vindas. Lido sempre da tabela settings; nunca hardcoded.
 
-    Lido da tabela settings; fallback para 50/90 cents se ausente. Usado pelo
-    frontend para exibir modal de confirmacao antes de disparar analise IA.
+    Fallback defensivo (caso o DB esteja vazio): 50/90 cents por foto e 500
+    cents de bonus de boas-vindas. O frontend usa esse endpoint para:
+      - exibir cards de preco no dashboard
+      - preencher label dos botoes de analise na etapa 6
+      - texto do modal de confirmacao
+      - help text / tooltip
     """
     def get(self):
         conn = get_conn()
@@ -1096,7 +1101,8 @@ class SettingsPricesHandler(BaseHandler):
             rows = conn.execute(
                 "SELECT key, value FROM settings WHERE key IN "
                 "('price_per_photo_convencional_cents', "
-                "'price_per_photo_premium_cents')"
+                "'price_per_photo_premium_cents', "
+                "'welcome_bonus_cents')"
             ).fetchall()
             prices = {}
             for r in rows:
@@ -1106,11 +1112,14 @@ class SettingsPricesHandler(BaseHandler):
                     continue
             conv_cents = prices.get('price_per_photo_convencional_cents', 50)
             prem_cents = prices.get('price_per_photo_premium_cents', 90)
+            bonus_cents = prices.get('welcome_bonus_cents', 500)
             self.ok({
                 'convencional_cents': conv_cents,
-                'premium_cents': prem_cents,
-                'convencional_brl': format_balance_brl(conv_cents),
-                'premium_brl': format_balance_brl(prem_cents),
+                'premium_cents':      prem_cents,
+                'bonus_welcome_cents': bonus_cents,
+                'convencional_brl':   format_balance_brl(conv_cents),
+                'premium_brl':        format_balance_brl(prem_cents),
+                'bonus_welcome_brl':  format_balance_brl(bonus_cents),
             })
         finally:
             conn.close()
