@@ -2613,6 +2613,24 @@ textarea.obs-geral{width:100%;background:#f8fafc;border:.5px solid #dce3ed;borde
 /* Custo do laudo (sublinha dos cards) */
 .laudo-custo { font-size: 11px; color: #166534; font-weight: 500; }
 
+/* Saldo informativo (nao clicavel) no menu lateral */
+.nav-saldo-item {
+  display: block;
+  padding: 8px 16px;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.65);
+  user-select: none;
+  cursor: default;
+}
+.nav-saldo-item .nav-saldo-valor,
+#nav-saldo-fotos.nav-saldo-valor,
+#nav-saldo-fotos-d.nav-saldo-valor,
+#nav-saldo-fotos-ml.nav-saldo-valor,
+#wiz-nav-saldo.nav-saldo-valor {
+  color: #fff;
+  font-weight: 600;
+}
+
 @media (max-width: 640px) {
   .ext-resumo { grid-template-columns: 1fr; }
   .ext-tabela-header, .ext-linha { grid-template-columns: 1fr; gap: 4px; }
@@ -2876,9 +2894,7 @@ window._openFotoModal = function(imgSrc) {
 
     <div class="nav-divider"></div>
     <div class="nav-section-label">Fotos e créditos</div>
-    <div class="nav-item nav-item-cred" id="nav-fotos" onclick="switchTab('estatisticas',this)">
-      <span id="nav-saldo-fotos" style="color:#4fc3f7;font-weight: var(--fw-semibold)">Fotos restantes</span>
-    </div>
+    <div class="nav-saldo-item">Saldo: <span id="nav-saldo-fotos" class="nav-saldo-valor">R$ 0,00</span></div>
     <div class="nav-item" id="nav-recarga" onclick="abrirModalComprarCreditos()">+ Adicionar créditos</div>
     <div class="nav-item" id="nav-extrato" onclick="switchTab('estatisticas',this)">Extrato de uso</div>
 
@@ -3332,7 +3348,7 @@ window._openFotoModal = function(imgSrc) {
         <div class="nav-item" onclick="showMeusLaudosPage()">Meus laudos</div>
         <div class="nav-divider"></div>
         <div class="nav-section-label">Fotos e créditos</div>
-        <div class="nav-item nav-item-cred"><span id="wiz-nav-saldo" style="color:#4fc3f7;font-weight: var(--fw-semibold)">📸 Fotos restantes</span></div>
+        <div class="nav-saldo-item">Saldo: <span id="wiz-nav-saldo" class="nav-saldo-valor">R$ 0,00</span></div>
         <div class="nav-item" onclick="abrirModalComprarCreditos()">+ Adicionar créditos</div>
         <div class="nav-item" onclick="showPage('page-dashboard')">📋 Extrato de uso</div>
         <div class="nav-divider"></div>
@@ -3982,9 +3998,7 @@ window._openFotoModal = function(imgSrc) {
 
     <div class="nav-divider"></div>
     <div class="nav-section-label">Fotos e créditos</div>
-    <div class="nav-item nav-item-cred" id="nav-fotos-d" onclick="showPage('page-dashboard'); switchTab('estatisticas',this);">
-      <span id="nav-saldo-fotos-d" style="color:#4fc3f7;font-weight: var(--fw-semibold)">Fotos restantes</span>
-    </div>
+    <div class="nav-saldo-item">Saldo: <span id="nav-saldo-fotos-d" class="nav-saldo-valor">R$ 0,00</span></div>
     <div class="nav-item" id="nav-recarga-d" onclick="abrirModalComprarCreditos()">+ Adicionar créditos</div>
     <div class="nav-item" id="nav-extrato-d" onclick="showPage('page-dashboard'); switchTab('estatisticas',this);">Extrato de uso</div>
 
@@ -4040,9 +4054,7 @@ window._openFotoModal = function(imgSrc) {
 
     <div class="nav-divider"></div>
     <div class="nav-section-label">Fotos e créditos</div>
-    <div class="nav-item nav-item-cred" id="nav-fotos-ml" onclick="showPage('page-dashboard'); switchTab('estatisticas',this);">
-      <span id="nav-saldo-fotos-ml" style="color:#4fc3f7;font-weight: var(--fw-semibold)">Fotos restantes</span>
-    </div>
+    <div class="nav-saldo-item">Saldo: <span id="nav-saldo-fotos-ml" class="nav-saldo-valor">R$ 0,00</span></div>
     <div class="nav-item" id="nav-recarga-ml" onclick="abrirModalComprarCreditos()">+ Adicionar créditos</div>
     <div class="nav-item" id="nav-extrato-ml" onclick="showPage('page-dashboard'); switchTab('estatisticas',this);">Extrato de uso</div>
 
@@ -4829,6 +4841,8 @@ function atualizaCardDashboard() {
     var cents = currentUser.balance_cents || 0;
     saldoEl.textContent = 'R$ ' + (cents / 100).toFixed(2).replace('.', ',');
   }
+  // Mantem saldo do menu lateral sincronizado com o card do dashboard
+  try { if (typeof atualizarSaldoSidebar === 'function') atualizarSaldoSidebar(); } catch(e){}
   var conv = currentUser.fotos_usadas_conv_mes || 0;
   var prem = currentUser.fotos_usadas_prem_mes || 0;
   var totalFotos = conv + prem || 1;
@@ -4861,6 +4875,7 @@ async function loadDashboard() {
       const { ok, ...userData } = me;
       currentUser = userData;
       localStorage.setItem('izylo_user', JSON.stringify(userData));
+      try { if (typeof atualizarSaldoSidebar === 'function') atualizarSaldoSidebar(); } catch(e){}
     }
   } catch(e) {}
   const balEl = document.getElementById('db-balance-brl');
@@ -11428,6 +11443,22 @@ function _wiz6EstadoClass(estado) {
   return 'estado-pendente';
 }
 
+/* Atualiza o "Saldo: R$ X,YY" em todas as 4 barras laterais. Lê o valor
+   atual de currentUser.balance_cents; null-safe. */
+function atualizarSaldoSidebar() {
+  try {
+    var cents = (typeof currentUser !== 'undefined' && currentUser
+                 && typeof currentUser.balance_cents === 'number')
+                 ? currentUser.balance_cents : 0;
+    var str = 'R$ ' + (cents / 100).toFixed(2).replace('.', ',');
+    document.querySelectorAll('.nav-saldo-valor').forEach(function(el) {
+      el.textContent = str;
+    });
+  } catch(e) {}
+}
+// Expose globally
+window.atualizarSaldoSidebar = atualizarSaldoSidebar;
+
 async function wiz6DescontarCréditos(qtd, tipo) {
   // O débito real acontece no backend (AnalisarBatchHandler). Aqui só atualizamos
   // o saldo exibido no cliente via /api/auth/me após a análise ter sido processada.
@@ -11455,6 +11486,7 @@ async function wiz6DescontarCréditos(qtd, tipo) {
       });
       // Atualizar tambem a label de fotos restantes na sidebar, se existir
       try { if (typeof atualizaCardDashboard === 'function') atualizaCardDashboard(); } catch(e){}
+      try { if (typeof atualizarSaldoSidebar === 'function') atualizarSaldoSidebar(); } catch(e){}
     }
   } catch(e) {
     console.warn('wiz6DescontarCréditos: erro ao atualizar saldo', e);
