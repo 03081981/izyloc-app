@@ -927,7 +927,46 @@ class EmailVerifyHandler(BaseHandler):
 # ===========================================================================
 
 ADMIN_SECRET = os.environ.get('ADMIN_SECRET', 'izylaudo-admin-2024')
-ADMIN_EMAIL = os.environ.get('ADMIN_EMAIL', 'admin@izylaudo.com')
+ADMIN_EMAIL = os.environ.get('ADMIN_EMAIL', 'financeiro@izylaudo.com.br')
+RESEND_API_KEY = os.environ.get('RESEND_API_KEY', '')
+RESEND_FROM = os.environ.get('RESEND_FROM', 'izyLAUDO <noreply@izylaudo.com.br>')
+
+
+def send_email(to, subject, html):
+    """Envio transacional via Resend (sincrono).
+
+    Diferente do email_worker (queue assincrona), esta funcao e usada para
+    notificacoes imediatas do admin (troca/recuperacao de senha). Retorna
+    True em sucesso, False em falha. Nao lanca exceptions.
+    """
+    if not RESEND_API_KEY:
+        print('[EMAIL] send_email skipped (RESEND_API_KEY vazio)', flush=True)
+        return False
+    try:
+        import requests as _req
+        resp = _req.post(
+            'https://api.resend.com/emails',
+            headers={
+                'Authorization': 'Bearer ' + RESEND_API_KEY,
+                'Content-Type': 'application/json',
+            },
+            json={
+                'from': RESEND_FROM,
+                'to': [to],
+                'subject': subject,
+                'html': html,
+            },
+            timeout=10,
+        )
+        if resp.status_code in (200, 201):
+            print('[EMAIL] Enviado para ' + to + ': ' + subject, flush=True)
+            return True
+        print('[EMAIL] Erro ' + str(resp.status_code) + ': '
+              + (resp.text or '')[:200], flush=True)
+        return False
+    except Exception as _e:
+        print('[EMAIL] Exception: ' + str(_e), flush=True)
+        return False
 
 
 def create_admin_token():
@@ -1613,12 +1652,30 @@ _ADMIN_PRICE_MAP = {
 class AdminHandler(tornado.web.RequestHandler):
     """Base para endpoints admin via URL secreta.
 
-    Autenticacao via header X-Admin-Token ou parametro ?token=.
+    Autenticacao via header X-Admin-Token ou parametro ?token=. A senha
+    valida agora vem do banco (settings.admin_password). Fallback para
+    ADMIN_URL_TOKEN para compatibilidade com URL secreta do deploy inicial.
     """
     def require_admin(self):
         token = (self.request.headers.get('X-Admin-Token', '')
                  or self.get_argument('token', ''))
-        if token != ADMIN_URL_TOKEN:
+        # Senha atual do banco (task #74)
+        senha_atual = None
+        try:
+            _conn = get_conn()
+            try:
+                _row = _conn.execute(
+                    "SELECT value FROM settings WHERE key = 'admin_password'"
+                ).fetchone()
+                if _row and _row.get('value'):
+                    senha_atual = str(_row['value'])
+            finally:
+                _conn.close()
+        except Exception as _e:
+            print('[ADMIN] require_admin db_error: ' + str(_e), flush=True)
+        # Aceita a senha atual do DB OU o URL token legado (para a URL secreta)
+        valid_tokens = [t for t in (senha_atual, ADMIN_URL_TOKEN) if t]
+        if token not in valid_tokens:
             self.set_status(403)
             self.set_header('Content-Type', 'application/json')
             self.finish(json.dumps({'ok': False, 'error': 'Acesso negado'}))
@@ -2163,6 +2220,136 @@ class AdminIAPricesHandler(AdminHandler):
 
         self.set_status(400)
         self.ok({'ok': False, 'error': 'Acao invalida'})
+
+
+# ============================================================================
+# Admin password management (task #74)
+# ----------------------------------------------------------------------------
+# Senha do admin vive em settings.admin_password. Dois endpoints:
+#  - POST /api/admin/change-password (autenticado): admin altera propria senha
+#  - POST /api/admin/forgot-password (publico): gera nova senha aleatoria e
+#    envia por email para ADMIN_EMAIL (financeiro@izylaudo.com.br)
+# ============================================================================
+
+class AdminChangePasswordHandler(AdminHandler):
+    def post(self):
+        if not self.require_admin():
+            return
+        try:
+            data = json.loads(self.request.body or b'{}')
+        except Exception:
+            data = {}
+        nova = str(data.get('nova_senha') or '').strip()
+        conf = str(data.get('confirmar') or '').strip()
+
+        if not nova or len(nova) < 8:
+            self.set_status(400)
+            self.ok({'ok': False, 'error': 'Senha deve ter no minimo 8 caracteres'})
+            return
+        if nova != conf:
+            self.set_status(400)
+            self.ok({'ok': False, 'error': 'Senhas nao conferem'})
+            return
+
+        conn = get_conn()
+        try:
+            conn.execute(
+                "INSERT INTO settings (key, value, value_type, category, updated_at) "
+                "VALUES ('admin_password', ?, 'string', 'auth', NOW()) "
+                "ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value, updated_at = NOW()",
+                (nova,),
+            )
+            conn.commit()
+        finally:
+            conn.close()
+
+        # Notifica por email (best-effort, nao bloqueia resposta)
+        _html = (
+            '<div style="font-family:Arial,sans-serif;max-width:480px;margin:0 auto;">'
+            '<div style="background:#1e3a5f;padding:24px;border-radius:8px 8px 0 0;">'
+            '<h2 style="color:#fff;margin:0;">izyLAUDO &mdash; Senha alterada</h2>'
+            '</div>'
+            '<div style="background:#f8fafc;padding:24px;border-radius:0 0 8px 8px;">'
+            '<p style="color:#1e293b;">A senha do painel administrativo foi alterada com sucesso.</p>'
+            '<div style="background:#fff;border:1px solid #e2e8f0;border-radius:8px;padding:16px;margin:16px 0;">'
+            '<p style="margin:0;color:#64748b;font-size:13px;">Nova senha:</p>'
+            '<p style="margin:4px 0 0;font-size:18px;font-weight:600;color:#1e3a5f;letter-spacing:1px;">'
+            + nova.replace('<', '&lt;').replace('>', '&gt;')
+            + '</p></div>'
+            '<p style="color:#94a3b8;font-size:12px;">Se voce nao realizou esta alteracao, '
+            'entre em contato imediatamente.</p>'
+            '</div></div>'
+        )
+        try:
+            send_email(ADMIN_EMAIL, 'izyLAUDO - Senha do admin alterada', _html)
+        except Exception as _e:
+            print('[EMAIL] change_password email_error: ' + str(_e), flush=True)
+
+        self.ok({'ok': True})
+
+
+class AdminForgotPasswordHandler(tornado.web.RequestHandler):
+    """Publico: gera nova senha aleatoria e envia para ADMIN_EMAIL."""
+    def post(self):
+        import secrets as _secrets
+        import string as _string
+        alphabet = _string.ascii_letters + _string.digits + '!@#$'
+        nova = ''.join(_secrets.choice(alphabet) for _ in range(12))
+
+        conn = get_conn()
+        try:
+            conn.execute(
+                "INSERT INTO settings (key, value, value_type, category, updated_at) "
+                "VALUES ('admin_password', ?, 'string', 'auth', NOW()) "
+                "ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value, updated_at = NOW()",
+                (nova,),
+            )
+            conn.commit()
+        finally:
+            conn.close()
+
+        base_url = os.environ.get(
+            'APP_BASE_URL',
+            'https://izyloc-app-production.up.railway.app',
+        )
+        _html = (
+            '<div style="font-family:Arial,sans-serif;max-width:480px;margin:0 auto;">'
+            '<div style="background:#1e3a5f;padding:24px;border-radius:8px 8px 0 0;">'
+            '<h2 style="color:#fff;margin:0;">izyLAUDO &mdash; Recuperacao de senha</h2>'
+            '</div>'
+            '<div style="background:#f8fafc;padding:24px;border-radius:0 0 8px 8px;">'
+            '<p style="color:#1e293b;">Uma nova senha foi gerada para o painel administrativo.</p>'
+            '<div style="background:#fff;border:1px solid #e2e8f0;border-radius:8px;padding:16px;'
+            'margin:16px 0;text-align:center;">'
+            '<p style="margin:0;color:#64748b;font-size:13px;">Sua nova senha:</p>'
+            '<p style="margin:8px 0 0;font-size:24px;font-weight:700;color:#1e3a5f;letter-spacing:2px;">'
+            + nova + '</p></div>'
+            '<p style="color:#1e293b;font-size:13px;">Acesse o painel em:<br>'
+            '<a href="' + base_url + '/admin/izylaudo2026" '
+            'style="color:#2d7dd2;">' + base_url + '/admin/izylaudo2026</a>'
+            '</p>'
+            '<p style="color:#94a3b8;font-size:12px;">Recomendamos trocar para uma senha '
+            'personalizada apos o acesso.</p>'
+            '</div></div>'
+        )
+        ok = False
+        try:
+            ok = send_email(ADMIN_EMAIL, 'izyLAUDO - Nova senha do painel admin', _html)
+        except Exception as _e:
+            print('[EMAIL] forgot_password email_error: ' + str(_e), flush=True)
+
+        self.set_header('Content-Type', 'application/json; charset=utf-8')
+        if ok:
+            self.finish(json.dumps({
+                'ok': True,
+                'message': 'Nova senha enviada para ' + ADMIN_EMAIL,
+            }))
+        else:
+            self.set_status(500)
+            self.finish(json.dumps({
+                'ok': False,
+                'error': 'Erro ao enviar email. Verifique RESEND_API_KEY.',
+            }))
 
 
 class InspectionsHandler(BaseHandler):
@@ -3834,6 +4021,10 @@ def _ensure_status_column():
             "VALUES ('usd_brl_rate', '5.70', 'number', 'exchange') "
             "ON CONFLICT (key) DO NOTHING",
             "ALTER TABLE settings ADD COLUMN IF NOT EXISTS updated_at TIMESTAMPTZ DEFAULT NOW()",
+            # Admin password storage (task #74): seed com valor default
+            "INSERT INTO settings (key, value, value_type, category) "
+            "VALUES ('admin_password', 'izyAdmin@2026', 'string', 'auth') "
+            "ON CONFLICT (key) DO NOTHING",
         ]
         for _s in _mig:
             try:
@@ -4848,6 +5039,8 @@ def make_app():
         (r'/api/admin/users/([^/]+)/balance', AdminUserBalanceHandler),
         (r'/api/admin/settings/prices', AdminPricesHandler),
         (r'/api/admin/ia-prices', AdminIAPricesHandler),
+        (r'/api/admin/change-password', AdminChangePasswordHandler),
+        (r'/api/admin/forgot-password', AdminForgotPasswordHandler),
         # Inspections
         (r'/api/inspections', InspectionsHandler),
         (r'/api/inspections/([^/]+)', InspectionHandler),
