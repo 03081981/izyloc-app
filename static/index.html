@@ -3863,7 +3863,18 @@ window._openFotoModal = function(imgSrc) {
 
     <div id="wstep-4" style="display:none">
       <div class="wiz-section-title" id="wiz6-titulo">Vistoria dos ambientes</div>
-      <div class="wiz-section-sub">Fotografe cada ambiente em modo horizontal. A IA identifica e descreve cada item automaticamente.</div><div id="wiz6-badge-tipo" style="display:inline-flex;align-items:center;gap:6px;background:#eef4ff;border:0.5px solid #bfdbfe;border-radius:20px;padding:4px 12px;font-size: var(--fs-xs);color:#2d7dd2;font-weight: var(--fw-medium);margin-bottom:12px;margin-top:8px"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><polygon points="12,3 22,10 2,10" fill="#2d7dd2"/><rect x="3" y="10" width="18" height="11" rx="1" fill="#dbeafe" stroke="#2d7dd2" stroke-width="1.5"/><rect x="9" y="13" width="6" height="8" rx="1" fill="#2d7dd2"/></svg><span id="wiz6-badge-tipo-txt">Im&oacute;vel selecionado</span></div>
+      <div id="wiz6-badge-tipo" style="display:inline-flex;align-items:center;gap:6px;background:#eef4ff;border:0.5px solid #bfdbfe;border-radius:20px;padding:4px 12px;font-size: var(--fs-xs);color:#2d7dd2;font-weight: var(--fw-medium);margin-bottom:12px;margin-top:4px"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><polygon points="12,3 22,10 2,10" fill="#2d7dd2"/><rect x="3" y="10" width="18" height="11" rx="1" fill="#dbeafe" stroke="#2d7dd2" stroke-width="1.5"/><rect x="9" y="13" width="6" height="8" rx="1" fill="#2d7dd2"/></svg><span id="wiz6-badge-tipo-txt">Im&oacute;vel selecionado</span></div>
+
+      <!-- Banner informativo — mesmo estilo da etapa 5 -->
+      <div style="background:linear-gradient(135deg,#1a2540,#1e3a6e);border-radius:12px;padding:14px 16px;margin-bottom:12px;display:flex;align-items:flex-start;gap:12px;color:#e2eaf5;font-size: var(--fs-xs);line-height:1.5">
+        <span style="font-size: var(--fs-h5);flex-shrink:0;line-height:1">📸</span>
+        <span>Faça o upload de múltiplas fotos por ambiente ou fotografe diretamente pelo celular — a IA analisa todas as fotos do ambiente em conjunto e gera uma descrição técnica completa automaticamente.</span>
+      </div>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px">
+        <span style="display:inline-flex;align-items:center;gap:6px;background:rgba(45,125,210,0.25);border:1px solid rgba(45,125,210,0.5);color:#7ec8f7;border-radius:999px;padding:5px 12px;font-size:11px;font-weight:500">📷 Mínimo recomendado: 4 fotos por ambiente</span>
+        <span style="display:inline-flex;align-items:center;gap:6px;background:rgba(45,125,210,0.25);border:1px solid rgba(45,125,210,0.5);color:#7ec8f7;border-radius:999px;padding:5px 12px;font-size:11px;font-weight:500">🔢 Máximo permitido: 20 fotos por ambiente</span>
+        <span style="display:inline-flex;align-items:center;gap:6px;background:rgba(45,125,210,0.25);border:1px solid rgba(45,125,210,0.5);color:#7ec8f7;border-radius:999px;padding:5px 12px;font-size:11px;font-weight:500">📱 Pelo celular ou 💻 upload pelo computador</span>
+      </div>
 
       <!-- ESCOLHA DE MODO (aparece só na primeira vez) -->
       <div style="margin-bottom:12px"><button onclick="prevWizStep ? prevWizStep() : null" style="display:inline-flex;align-items:center;gap:6px;padding:7px 14px;background:#fff;border:0.5px solid #e2e8f0;border-radius:8px;font-size: var(--fs-xs);color:#8898aa;cursor:pointer"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M19 12H5M12 5l-7 7 7 7" stroke="#8898aa" stroke-width="1.5" stroke-linecap="round"/></svg>&larr; Voltar para ambientes</button></div><div id="wiz6-escolha-modo" style="margin-bottom:16px">
