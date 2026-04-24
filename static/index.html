@@ -7586,31 +7586,37 @@ window.addEventListener('resize', () => {
       window._wiz7Locs = [];
       document.querySelectorAll('#locadores-container .person-block').forEach(function(b) {
         var x = b.id.replace('loc-block-','');
+        var _tp = (typeof _pfPjGetTipo === 'function') ? _pfPjGetTipo('loc', x) : 'pf';
         window._wiz7Locs.push({
+          tipo_pessoa: _tp,
           name: (document.getElementById('loc-name-'+x)||{}).value||'',
           cpf: (document.getElementById('loc-cpf-'+x)||{}).value||'',
           rg: (document.getElementById('loc-rg-'+x)||{}).value||'',
           phone: (document.getElementById('loc-phone-'+x)||{}).value||'',
-          email: (document.getElementById('loc-email-'+x)||{}).value||''
+          email: (document.getElementById('loc-email-'+x)||{}).value||'',
+          representante: (document.getElementById('loc-rep-'+x)||{}).value||''
         });
       });
-      if (window._wiz7Locs.length === 0) window._wiz7Locs.push({name:'',cpf:'',rg:'',phone:'',email:''});
+      if (window._wiz7Locs.length === 0) window._wiz7Locs.push({tipo_pessoa:'pf',name:'',cpf:'',rg:'',phone:'',email:'',representante:''});
       window._wiz7Tens = [];
       var _tenCont7 = document.getElementById('locat\u00e1rios-container');
       if (_tenCont7) {
         _tenCont7.querySelectorAll('.person-block').forEach(function(b) {
           var prefix = b.id.indexOf('locat-block-') === 0 ? 'locat' : 'ten';
           var x = b.id.replace('locat-block-','').replace('ten-block-','');
+          var _tp2 = (typeof _pfPjGetTipo === 'function') ? _pfPjGetTipo(prefix, x) : 'pf';
           window._wiz7Tens.push({
+            tipo_pessoa: _tp2,
             name: (document.getElementById(prefix+'-name-'+x)||{}).value||'',
             cpf: (document.getElementById(prefix+'-cpf-'+x)||{}).value||'',
             rg: (document.getElementById(prefix+'-rg-'+x)||{}).value||'',
             phone: (document.getElementById(prefix+'-phone-'+x)||{}).value||'',
-            email: (document.getElementById(prefix+'-email-'+x)||{}).value||''
+            email: (document.getElementById(prefix+'-email-'+x)||{}).value||'',
+            representante: (document.getElementById(prefix+'-rep-'+x)||{}).value||''
           });
         });
       }
-      if (window._wiz7Tens.length === 0) window._wiz7Tens.push({name:'',cpf:'',rg:'',phone:'',email:''});
+      if (window._wiz7Tens.length === 0) window._wiz7Tens.push({tipo_pessoa:'pf',name:'',cpf:'',rg:'',phone:'',email:'',representante:''});
 
       // Populate _fotoStore from wizard.itensData (batch flow) - kept from original
       if (typeof _wiz6Ambientes !== 'undefined' && wizard && wizard.itensData) {
@@ -8710,45 +8716,71 @@ function wiz7BuildPartesHtml() {
   // LOCADORES
   h += '<div style="font-size: var(--fs-xxs);font-weight: var(--fw-semibold);color:#8898aa;letter-spacing:.05em;text-transform:uppercase;margin-bottom:8px">LOCADOR' + (locs.length > 1 ? '(ES)' : '') + '</div>';
   locs.forEach(function(loc, i) {
+    var _tp = (loc.tipo_pessoa === 'pj') ? 'pj' : 'pf';
+    var _nameLbl = (_tp === 'pj') ? 'Razão social' : 'Nome completo';
+    var _docLbl = (_tp === 'pj') ? 'CNPJ' : 'CPF';
+    var _docPh = (_tp === 'pj') ? '00.000.000/0000-00' : '000.000.000-00';
+    var _namePh = (_tp === 'pj') ? 'Razão social da empresa' : 'Nome do locador';
+    var _pill = (_tp === 'pj')
+      ? '<span style="background:#eef2ff;color:#4338ca;font-size:10px;font-weight:600;padding:3px 8px;border-radius:999px;letter-spacing:.03em">Pessoa Jurídica</span>'
+      : '<span style="background:#eaf2ff;color:#2d7dd2;font-size:10px;font-weight:600;padding:3px 8px;border-radius:999px;letter-spacing:.03em">Pessoa Física</span>';
     h += '<div style="background:#fff;border:0.5px solid #e2e8f0;border-radius:10px;padding:14px;margin-bottom:10px">';
     h += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">';
     h += '<div style="display:flex;align-items:center;gap:8px">';
     h += '<div style="width:22px;height:22px;border-radius:50%;background:#2d7dd2;color:#fff;font-size: var(--fs-xxs);font-weight: var(--fw-bold);display:flex;align-items:center;justify-content:center">' + (i+1) + '</div>';
     h += '<span style="font-size: var(--fs-sm);font-weight: var(--fw-semibold);color:#1a2540">Locador</span>';
+    h += _pill;
     h += '</div>';
     if (i > 0) h += '<button onclick="wiz7RemoverLoc(' + i + ')" style="background:none;border:none;color:#ef4444;font-size: var(--fs-h5);cursor:pointer;line-height:1">×</button>';
     h += '</div>';
-    h += '<div style="margin-bottom:10px"><div style="font-size: var(--fs-xxs);color:#8898aa;margin-bottom:4px">Nome completo</div>';
-    h += '<input type="text" value="' + _e(loc.name) + '" onblur="wiz7SalvarLoc(' + i + ',\x27name\x27,this.value)" placeholder="Nome do locador" style="width:100%;padding:10px 12px;border:0.5px solid #e2e8f0;border-radius:8px;font-size: var(--fs-sm);box-sizing:border-box"></div>';
+    h += '<div style="margin-bottom:10px"><div style="font-size: var(--fs-xxs);color:#8898aa;margin-bottom:4px">' + _nameLbl + '</div>';
+    h += '<input type="text" value="' + _e(loc.name) + '" onblur="wiz7SalvarLoc(' + i + ',\x27name\x27,this.value)" placeholder="' + _namePh + '" style="width:100%;padding:10px 12px;border:0.5px solid #e2e8f0;border-radius:8px;font-size: var(--fs-sm);box-sizing:border-box"></div>';
     h += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">';
-    h += '<div><div style="font-size: var(--fs-xxs);color:#8898aa;margin-bottom:4px">CPF</div><input type="text" value="' + _e(loc.cpf) + '" onblur="wiz7SalvarLoc(' + i + ',\x27cpf\x27,this.value)" placeholder="000.000.000-00" style="width:100%;padding:10px 12px;border:0.5px solid #e2e8f0;border-radius:8px;font-size: var(--fs-sm);box-sizing:border-box"></div>';
+    h += '<div><div style="font-size: var(--fs-xxs);color:#8898aa;margin-bottom:4px">' + _docLbl + '</div><input type="text" value="' + _e(loc.cpf) + '" onblur="wiz7SalvarLoc(' + i + ',\x27cpf\x27,this.value)" placeholder="' + _docPh + '" style="width:100%;padding:10px 12px;border:0.5px solid #e2e8f0;border-radius:8px;font-size: var(--fs-sm);box-sizing:border-box"></div>';
     h += '</div>';
     h += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">';
     h += '<div><div style="font-size: var(--fs-xxs);color:#8898aa;margin-bottom:4px">Telefone</div><input type="text" value="' + _e(loc.phone) + '" onblur="wiz7SalvarLoc(' + i + ',\x27phone\x27,this.value)" placeholder="Telefone (opcional)" style="width:100%;padding:10px 12px;border:0.5px solid #e2e8f0;border-radius:8px;font-size: var(--fs-sm);box-sizing:border-box"></div>';
     h += '<div><div style="font-size: var(--fs-xxs);color:#8898aa;margin-bottom:4px">E-mail</div><input type="text" value="' + _e(loc.email) + '" onblur="wiz7SalvarLoc(' + i + ',\x27email\x27,this.value)" placeholder="email@exemplo.com" style="width:100%;padding:10px 12px;border:0.5px solid #e2e8f0;border-radius:8px;font-size: var(--fs-sm);box-sizing:border-box"></div>';
-    h += '</div></div>';
+    h += '</div>';
+    if (_tp === 'pj') {
+      h += '<div style="margin-top:10px"><div style="font-size: var(--fs-xxs);color:#8898aa;margin-bottom:4px">Representante legal (opcional)</div><input type="text" value="' + _e(loc.representante||'') + '" onblur="wiz7SalvarLoc(' + i + ',\x27representante\x27,this.value)" placeholder="Nome do representante legal" style="width:100%;padding:10px 12px;border:0.5px solid #e2e8f0;border-radius:8px;font-size: var(--fs-sm);box-sizing:border-box"></div>';
+    }
+    h += '</div>';
   });
   h += '<button onclick="wiz7AdicionarLoc()" style="display:flex;align-items:center;gap:6px;padding:8px 14px;border:0.5px dashed #2d7dd2;border-radius:20px;background:#f0f7ff;color:#2d7dd2;font-size: var(--fs-xs);font-weight: var(--fw-semibold);cursor:pointer;margin-bottom:16px">+ Adicionar outro locador</button>';
   // LOCATARIOS
   h += '<div style="font-size: var(--fs-xxs);font-weight: var(--fw-semibold);color:#8898aa;letter-spacing:.05em;text-transform:uppercase;margin-bottom:8px;margin-top:4px">LOCATÁRIO' + (tens.length > 1 ? '(S)' : '') + '</div>';
   tens.forEach(function(ten, i) {
+    var _tpT = (ten.tipo_pessoa === 'pj') ? 'pj' : 'pf';
+    var _nameLblT = (_tpT === 'pj') ? 'Razão social' : 'Nome completo';
+    var _docLblT = (_tpT === 'pj') ? 'CNPJ' : 'CPF';
+    var _docPhT = (_tpT === 'pj') ? '00.000.000/0000-00' : '000.000.000-00';
+    var _namePhT = (_tpT === 'pj') ? 'Razão social da empresa' : 'Nome do locatário';
+    var _pillT = (_tpT === 'pj')
+      ? '<span style="background:#eef2ff;color:#4338ca;font-size:10px;font-weight:600;padding:3px 8px;border-radius:999px;letter-spacing:.03em">Pessoa Jurídica</span>'
+      : '<span style="background:#dcfce7;color:#166534;font-size:10px;font-weight:600;padding:3px 8px;border-radius:999px;letter-spacing:.03em">Pessoa Física</span>';
     h += '<div style="background:#fff;border:0.5px solid #e2e8f0;border-radius:10px;padding:14px;margin-bottom:10px">';
     h += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">';
     h += '<div style="display:flex;align-items:center;gap:8px">';
     h += '<div style="width:22px;height:22px;border-radius:50%;background:#16a34a;color:#fff;font-size: var(--fs-xxs);font-weight: var(--fw-bold);display:flex;align-items:center;justify-content:center">' + (i+1) + '</div>';
     h += '<span style="font-size: var(--fs-sm);font-weight: var(--fw-semibold);color:#1a2540">Locatário</span>';
+    h += _pillT;
     h += '</div>';
     if (i > 0) h += '<button onclick="wiz7RemoverTen(' + i + ')" style="background:none;border:none;color:#ef4444;font-size: var(--fs-h5);cursor:pointer;line-height:1">×</button>';
     h += '</div>';
-    h += '<div style="margin-bottom:10px"><div style="font-size: var(--fs-xxs);color:#8898aa;margin-bottom:4px">Nome completo</div>';
-    h += '<input type="text" value="' + _e(ten.name) + '" onblur="wiz7SalvarTen(' + i + ',\x27name\x27,this.value)" placeholder="Nome do locatário" style="width:100%;padding:10px 12px;border:0.5px solid #e2e8f0;border-radius:8px;font-size: var(--fs-sm);box-sizing:border-box"></div>';
+    h += '<div style="margin-bottom:10px"><div style="font-size: var(--fs-xxs);color:#8898aa;margin-bottom:4px">' + _nameLblT + '</div>';
+    h += '<input type="text" value="' + _e(ten.name) + '" onblur="wiz7SalvarTen(' + i + ',\x27name\x27,this.value)" placeholder="' + _namePhT + '" style="width:100%;padding:10px 12px;border:0.5px solid #e2e8f0;border-radius:8px;font-size: var(--fs-sm);box-sizing:border-box"></div>';
     h += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">';
-    h += '<div><div style="font-size: var(--fs-xxs);color:#8898aa;margin-bottom:4px">CPF</div><input type="text" value="' + _e(ten.cpf) + '" onblur="wiz7SalvarTen(' + i + ',\x27cpf\x27,this.value)" placeholder="000.000.000-00" style="width:100%;padding:10px 12px;border:0.5px solid #e2e8f0;border-radius:8px;font-size: var(--fs-sm);box-sizing:border-box"></div>';
+    h += '<div><div style="font-size: var(--fs-xxs);color:#8898aa;margin-bottom:4px">' + _docLblT + '</div><input type="text" value="' + _e(ten.cpf) + '" onblur="wiz7SalvarTen(' + i + ',\x27cpf\x27,this.value)" placeholder="' + _docPhT + '" style="width:100%;padding:10px 12px;border:0.5px solid #e2e8f0;border-radius:8px;font-size: var(--fs-sm);box-sizing:border-box"></div>';
     h += '</div>';
     h += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">';
     h += '<div><div style="font-size: var(--fs-xxs);color:#8898aa;margin-bottom:4px">Telefone</div><input type="text" value="' + _e(ten.phone) + '" onblur="wiz7SalvarTen(' + i + ',\x27phone\x27,this.value)" placeholder="Telefone (opcional)" style="width:100%;padding:10px 12px;border:0.5px solid #e2e8f0;border-radius:8px;font-size: var(--fs-sm);box-sizing:border-box"></div>';
     h += '<div><div style="font-size: var(--fs-xxs);color:#8898aa;margin-bottom:4px">E-mail</div><input type="text" value="' + _e(ten.email) + '" onblur="wiz7SalvarTen(' + i + ',\x27email\x27,this.value)" placeholder="email@exemplo.com" style="width:100%;padding:10px 12px;border:0.5px solid #e2e8f0;border-radius:8px;font-size: var(--fs-sm);box-sizing:border-box"></div>';
-    h += '</div></div>';
+    h += '</div>';
+    if (_tpT === 'pj') {
+      h += '<div style="margin-top:10px"><div style="font-size: var(--fs-xxs);color:#8898aa;margin-bottom:4px">Representante legal (opcional)</div><input type="text" value="' + _e(ten.representante||'') + '" onblur="wiz7SalvarTen(' + i + ',\x27representante\x27,this.value)" placeholder="Nome do representante legal" style="width:100%;padding:10px 12px;border:0.5px solid #e2e8f0;border-radius:8px;font-size: var(--fs-sm);box-sizing:border-box"></div>';
+    }
+    h += '</div>';
   });
   h += '<button onclick="wiz7AdicionarTen()" style="display:flex;align-items:center;gap:6px;padding:8px 14px;border:0.5px dashed #16a34a;border-radius:20px;background:#f0fdf4;color:#16a34a;font-size: var(--fs-xs);font-weight: var(--fw-semibold);cursor:pointer">+ Adicionar outro locatário</button>';
   return h;

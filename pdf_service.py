@@ -1129,9 +1129,9 @@ def gerar_laudo_entrada_proprietario(dados_imovel, dados_locador,
 
     partes_sig = []
     for _loc in locadores:
-        partes_sig.append((u'Locador', _loc['nome'], (u'CPF: ' + _loc['cpf']) if _loc.get('cpf') else u''))
+        partes_sig.append((u'Locador', _loc['nome'], ((u'CNPJ: ' if _loc.get('tipo_pessoa') == 'pj' else u'CPF: ') + _loc['cpf']) if _loc.get('cpf') else u''))
     for _ten in locatarios:
-        partes_sig.append((u'Locatário', _ten['nome'], (u'CPF: ' + _ten['cpf']) if _ten.get('cpf') else u''))
+        partes_sig.append((u'Locatário', _ten['nome'], ((u'CNPJ: ' if _ten.get('tipo_pessoa') == 'pj' else u'CPF: ') + _ten['cpf']) if _ten.get('cpf') else u''))
     if dados_corretor.get('nome'):
         _creci = dados_corretor.get('creci', '')
         _cpf_corr = dados_corretor.get('cpf', '')
@@ -1196,9 +1196,9 @@ def gerar_laudo_modelo1(dados_imovel, dados_locador, dados_locatario,
 
     partes_sig = []
     for _loc in locadores:
-        partes_sig.append((u'Locador', _loc['nome'], (u'CPF: ' + _loc['cpf']) if _loc.get('cpf') else u''))
+        partes_sig.append((u'Locador', _loc['nome'], ((u'CNPJ: ' if _loc.get('tipo_pessoa') == 'pj' else u'CPF: ') + _loc['cpf']) if _loc.get('cpf') else u''))
     for _ten in locatarios:
-        partes_sig.append((u'Locatário', _ten['nome'], (u'CPF: ' + _ten['cpf']) if _ten.get('cpf') else u''))
+        partes_sig.append((u'Locatário', _ten['nome'], ((u'CNPJ: ' if _ten.get('tipo_pessoa') == 'pj' else u'CPF: ') + _ten['cpf']) if _ten.get('cpf') else u''))
     if dados_corretor.get('nome'):
         _creci = dados_corretor.get('creci', '')
         _cpf_corr = dados_corretor.get('cpf', '')
@@ -1252,9 +1252,9 @@ def gerar_laudo_modelo3(dados_imovel, dados_locador, dados_locatario,
 
     partes_sig = []
     for _loc in locadores:
-        partes_sig.append((u'Locador', _loc['nome'], (u'CPF: ' + _loc['cpf']) if _loc.get('cpf') else u''))
+        partes_sig.append((u'Locador', _loc['nome'], ((u'CNPJ: ' if _loc.get('tipo_pessoa') == 'pj' else u'CPF: ') + _loc['cpf']) if _loc.get('cpf') else u''))
     for _ten in locatarios:
-        partes_sig.append((u'Locatário', _ten['nome'], (u'CPF: ' + _ten['cpf']) if _ten.get('cpf') else u''))
+        partes_sig.append((u'Locatário', _ten['nome'], ((u'CNPJ: ' if _ten.get('tipo_pessoa') == 'pj' else u'CPF: ') + _ten['cpf']) if _ten.get('cpf') else u''))
     if dados_corretor.get('nome'):
         _creci = dados_corretor.get('creci', '')
         _cpf_corr = dados_corretor.get('cpf', '')
@@ -1317,9 +1317,9 @@ def gerar_laudo_modelo4(dados_imovel, dados_locador, dados_locatario,
 
     partes_sig = []
     for _loc in locadores:
-        partes_sig.append((u'Locador', _loc['nome'], (u'CPF: ' + _loc['cpf']) if _loc.get('cpf') else u''))
+        partes_sig.append((u'Locador', _loc['nome'], ((u'CNPJ: ' if _loc.get('tipo_pessoa') == 'pj' else u'CPF: ') + _loc['cpf']) if _loc.get('cpf') else u''))
     for _ten in locatarios:
-        partes_sig.append((u'Locatário', _ten['nome'], (u'CPF: ' + _ten['cpf']) if _ten.get('cpf') else u''))
+        partes_sig.append((u'Locatário', _ten['nome'], ((u'CNPJ: ' if _ten.get('tipo_pessoa') == 'pj' else u'CPF: ') + _ten['cpf']) if _ten.get('cpf') else u''))
     if dados_corretor.get('nome'):
         _creci = dados_corretor.get('creci', '')
         _cpf_corr = dados_corretor.get('cpf', '')
@@ -1373,9 +1373,9 @@ def gerar_laudo_modelo5(dados_imovel, dados_locador, dados_locatario,
 
     partes_sig = []
     for _loc in locadores:
-        partes_sig.append((u'Locador', _loc['nome'], (u'CPF: ' + _loc['cpf']) if _loc.get('cpf') else u''))
+        partes_sig.append((u'Locador', _loc['nome'], ((u'CNPJ: ' if _loc.get('tipo_pessoa') == 'pj' else u'CPF: ') + _loc['cpf']) if _loc.get('cpf') else u''))
     for _ten in locatarios:
-        partes_sig.append((u'Locatário', _ten['nome'], (u'CPF: ' + _ten['cpf']) if _ten.get('cpf') else u''))
+        partes_sig.append((u'Locatário', _ten['nome'], ((u'CNPJ: ' if _ten.get('tipo_pessoa') == 'pj' else u'CPF: ') + _ten['cpf']) if _ten.get('cpf') else u''))
     if dados_corretor.get('nome'):
         _creci = dados_corretor.get('creci', '')
         _cpf_corr = dados_corretor.get('cpf', '')
@@ -1438,9 +1438,9 @@ def gerar_laudo_modelo6(dados_imovel, dados_locador, dados_locatario,
 
     partes_sig = []
     for _loc in locadores:
-        partes_sig.append((u'Locador', _loc['nome'], (u'CPF: ' + _loc['cpf']) if _loc.get('cpf') else u''))
+        partes_sig.append((u'Locador', _loc['nome'], ((u'CNPJ: ' if _loc.get('tipo_pessoa') == 'pj' else u'CPF: ') + _loc['cpf']) if _loc.get('cpf') else u''))
     for _ten in locatarios:
-        partes_sig.append((u'Locatário', _ten['nome'], (u'CPF: ' + _ten['cpf']) if _ten.get('cpf') else u''))
+        partes_sig.append((u'Locatário', _ten['nome'], ((u'CNPJ: ' if _ten.get('tipo_pessoa') == 'pj' else u'CPF: ') + _ten['cpf']) if _ten.get('cpf') else u''))
     if dados_corretor.get('nome'):
         _creci = dados_corretor.get('creci', '')
         _cpf_corr = dados_corretor.get('cpf', '')
