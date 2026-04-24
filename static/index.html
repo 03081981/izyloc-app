@@ -4738,8 +4738,13 @@ async function loadDashboard() {
           el.textContent = sau + ', ' + nm.split(' ')[0] + '!';
         }
       })();
-  document.getElementById('profile-company').textContent = currentUser.company_name || '';
-  document.getElementById('profile-email').textContent = currentUser.email;
+  // Null-safe: profile-company e profile-email foram removidos quando a
+  // aba Configuracoes passou a ter layout proprio (task #32). Se os
+  // elementos nao existirem mais, o script nao deve quebrar.
+  var _profCompanyEl = document.getElementById('profile-company');
+  if (_profCompanyEl) _profCompanyEl.textContent = currentUser.company_name || '';
+  var _profEmailEl = document.getElementById('profile-email');
+  if (_profEmailEl) _profEmailEl.textContent = currentUser.email || '';
 
   const r = await api('GET', '/api/inspections');
   if (!r.ok) return;
