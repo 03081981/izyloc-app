@@ -1442,8 +1442,12 @@ class InspectionsHandler(BaseHandler):
             return
         conn = get_conn()
         try:
+            # Ordena por updated_at DESC (fallback para created_at) para
+            # que "Laudos recentes" do dashboard reflita a atividade mais
+            # recente, independente do status.
             rows = conn.execute(
-                'SELECT * FROM inspections WHERE user_id=? ORDER BY created_at DESC',
+                'SELECT * FROM inspections WHERE user_id=? '
+                'ORDER BY COALESCE(updated_at, created_at) DESC NULLS LAST',
                 (user['user_id'],)).fetchall()
             self.ok({'inspections': self.rows_to_list(rows)})
         finally:

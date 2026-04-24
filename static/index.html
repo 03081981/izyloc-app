@@ -5173,26 +5173,23 @@ function _renderDashList() {
     var addr = (i.property_address||'').toLowerCase();
     return code.indexOf(term) >= 0 || addr.indexOf(term) >= 0;
   });
-  // Group by status group
-  var order = ['EM ANDAMENTO','CONCLUÍDO','AGUARD. ASSINATURA','ASSINADOS'];
-  var groups = { 'EM ANDAMENTO':[], 'CONCLUÍDO':[], 'AGUARD. ASSINATURA':[], 'ASSINADOS':[] };
-  filtered.forEach(function(i){
-    var g = _dashStatusInfo(i.status).group;
-    if (!groups[g]) groups[g]=[];
-    groups[g].push(i);
+  // Ordena os laudos recentes por updated_at DESC (fallback para created_at).
+  // Mostra os 6 mais recentes em uma lista flat — qualquer status
+  // (em_andamento, concluido, aguardando_assinatura, assinado_digital,
+  // assinado_fisico) aparece baseado puramente na ordem cronologica de
+  // atividade. Antes o agrupamento por status escondia laudos
+  // recentes quando havia muitos "em andamento" mais antigos.
+  filtered.sort(function(a, b){
+    var ta = Date.parse(a.updated_at || a.created_at || 0) || 0;
+    var tb = Date.parse(b.updated_at || b.created_at || 0) || 0;
+    return tb - ta;
   });
-  // Limit to 6 total preserving group order
-  var shown = 0, MAX = 6, html = '';
-  for (var k=0;k<order.length;k++) {
-    var gname = order[k];
-    var arr = groups[gname] || [];
-    if (!arr.length || shown >= MAX) continue;
-    var take = arr.slice(0, MAX - shown);
-    html += _dashGroupLabel(gname);
-    html += take.map(_dashRenderCard).join('');
-    shown += take.length;
-  }
-  if (!filtered.length) {
+  var MAX = 6;
+  var recent = filtered.slice(0, MAX);
+  var html = '';
+  if (recent.length) {
+    html += recent.map(_dashRenderCard).join('');
+  } else {
     html = '<div style="padding:24px;text-align:center;color:#94a3b8;font-size: var(--fs-sm);">Nenhum laudo encontrado.</div>';
   }
   if (filtered.length > MAX) {
