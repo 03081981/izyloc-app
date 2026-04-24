@@ -2238,6 +2238,11 @@ _LITELLM_PRICES_URL = (
     'model_prices_and_context_window.json'
 )
 _AWESOME_FX_URL = 'https://economia.awesomeapi.com.br/json/last/USD-BRL'
+# Fallbacks caso AwesomeAPI retorne 429 (rate-limit do IP compartilhado do Railway):
+#  - Frankfurter (ECB) - sem autenticacao, estavel
+#  - BCB (Banco Central do Brasil, serie 1 = USD comercial venda)
+_FRANKFURTER_FX_URL = 'https://api.frankfurter.app/latest?from=USD&to=BRL'
+_BCB_FX_URL = 'https://api.bcb.gov.br/dados/serie/bcdata.sgs.1/dados/ultimos/1?formato=json'
 
 # LiteLLM usa multiplos aliases para o mesmo modelo. Mantemos listas ordenadas
 # por preferencia e usamos a primeira chave que existir no JSON.
@@ -2290,22 +2295,51 @@ def _fetch_litellm_prices():
 
 
 def _fetch_usd_brl():
-    """Busca cotacao USD-BRL na AwesomeAPI (brasileira, gratuita).
+    """Busca cotacao USD-BRL tentando varias fontes (cascade).
 
-    Retorna float ou None em falha. Nunca raise.
+    Ordem: AwesomeAPI -> Frankfurter (ECB) -> BCB (Brasil oficial).
+    Retorna float ou None se todas falharem. Nunca raise.
     """
+    import requests as _req
+    _hdrs = {'User-Agent': 'izyLAUDO-scraper/1.0'}
+
+    # 1) AwesomeAPI (melhor - bid/ask em tempo real)
     try:
-        import requests as _req
-        _r = _req.get(_AWESOME_FX_URL, timeout=10,
-                      headers={'User-Agent': 'izyLAUDO-scraper/1.0'})
+        _r = _req.get(_AWESOME_FX_URL, timeout=10, headers=_hdrs)
         _r.raise_for_status()
         _j = _r.json()
-        _row = _j.get('USDBRL') or {}
-        _bid = float(_row.get('bid'))
+        _bid = float((_j.get('USDBRL') or {}).get('bid'))
         if _bid > 0:
+            print('[SCRAPE] FX via AwesomeAPI = %.4f' % _bid, flush=True)
             return _bid
     except Exception as _e:
-        print('[SCRAPE] FX usd-brl error: ' + str(_e), flush=True)
+        print('[SCRAPE] FX AwesomeAPI error: ' + str(_e)[:200], flush=True)
+
+    # 2) Frankfurter (ECB - sem rate limit conhecido)
+    try:
+        _r = _req.get(_FRANKFURTER_FX_URL, timeout=10, headers=_hdrs)
+        _r.raise_for_status()
+        _j = _r.json()
+        _val = float((_j.get('rates') or {}).get('BRL'))
+        if _val > 0:
+            print('[SCRAPE] FX via Frankfurter/ECB = %.4f' % _val, flush=True)
+            return _val
+    except Exception as _e:
+        print('[SCRAPE] FX Frankfurter error: ' + str(_e)[:200], flush=True)
+
+    # 3) BCB (Banco Central do Brasil - serie 1 = USD comercial venda)
+    try:
+        _r = _req.get(_BCB_FX_URL, timeout=10, headers=_hdrs)
+        _r.raise_for_status()
+        _arr = _r.json()
+        if isinstance(_arr, list) and _arr:
+            _val = float(str(_arr[0].get('valor')).replace(',', '.'))
+            if _val > 0:
+                print('[SCRAPE] FX via BCB = %.4f' % _val, flush=True)
+                return _val
+    except Exception as _e:
+        print('[SCRAPE] FX BCB error: ' + str(_e)[:200], flush=True)
+
     return None
 
 
