@@ -51,14 +51,14 @@ MP_ACCESS_TOKEN = os.environ.get('MP_ACCESS_TOKEN', '')
 MP_WEBHOOK_SECRET = os.environ.get('MP_WEBHOOK_SECRET', '')
 APP_BASE_URL = os.environ.get('APP_BASE_URL', 'https://izyloc-app-production.up.railway.app')
 AUTENTIQUE_TOKEN = os.environ.get('AUTENTIQUE_TOKEN', '7800e349d2e4353904f7749a3584af5d5d4ad35a3749df945cc84b6c5565893a')
-GEMINI_API_KEY = os.environ.get('GEMINI_API_KEY', 'AIzaSyBG_eDJuABkrF_S1dHHzj7bzpKBr5I7ZLw')
+GEMINI_API_KEY = os.environ.get('GEMINI_API_KEY', '')
 UPLOAD_DIR = os.path.join(os.path.dirname(__file__), 'uploads')
 PDF_DIR = os.path.join(os.path.dirname(__file__), 'pdfs')
 Path(UPLOAD_DIR).mkdir(exist_ok=True)
 Path(PDF_DIR).mkdir(exist_ok=True)
 
 def analyze_with_gemini(images, ambiente, tipo_vistoria, tipo_analise):
-    """Fallback para Google Gemini 1.5 Flash quando Anthropic falha.
+    """Fallback para Google Gemini 2.0 Flash quando Anthropic falha.
 
     `images` aceita dois formatos:
       - lista de strings base64 (ou data URL)
@@ -68,6 +68,12 @@ def analyze_with_gemini(images, ambiente, tipo_vistoria, tipo_analise):
     Retorna dict no mesmo shape que analyze_batch: {success, resumo,
     estado_geral, provider}.
     """
+    if not GEMINI_API_KEY:
+        return {
+            'success': False, 'resumo': '', 'provider': 'gemini',
+            'error': 'GEMINI_API_KEY not configured',
+        }
+
     try:
         import google.generativeai as _genai
         import base64 as _b64
@@ -80,7 +86,7 @@ def analyze_with_gemini(images, ambiente, tipo_vistoria, tipo_analise):
 
     try:
         _genai.configure(api_key=GEMINI_API_KEY)
-        model = _genai.GenerativeModel('gemini-1.5-flash')
+        model = _genai.GenerativeModel('gemini-2.0-flash')
 
         detail_instr = (
             'Use linguagem tecnica e detalhada para fins juridicos.'
