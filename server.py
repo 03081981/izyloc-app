@@ -3457,6 +3457,36 @@ def _ensure_status_column():
             "CREATE INDEX IF NOT EXISTS idx_balance_tx_ref ON balance_transactions(tx_ref)",
             # Admin panel: users.is_blocked (task #66)
             "ALTER TABLE users ADD COLUMN IF NOT EXISTS is_blocked BOOLEAN DEFAULT FALSE",
+            # IA cost tracking (task #70): tokens + custo por transacao
+            "ALTER TABLE balance_transactions ADD COLUMN IF NOT EXISTS ia_input_tokens INTEGER DEFAULT 0",
+            "ALTER TABLE balance_transactions ADD COLUMN IF NOT EXISTS ia_output_tokens INTEGER DEFAULT 0",
+            "ALTER TABLE balance_transactions ADD COLUMN IF NOT EXISTS ia_custo_usd NUMERIC(10,6) DEFAULT 0",
+            "ALTER TABLE balance_transactions ADD COLUMN IF NOT EXISTS ia_custo_brl NUMERIC(10,4) DEFAULT 0",
+            "ALTER TABLE balance_transactions ADD COLUMN IF NOT EXISTS ia_provider VARCHAR(20) DEFAULT 'claude'",
+            # Tabela de precos das IAs (atualizada por scraping diario)
+            """CREATE TABLE IF NOT EXISTS ia_prices (
+                id SERIAL PRIMARY KEY,
+                provider VARCHAR(20) NOT NULL,
+                model VARCHAR(50) NOT NULL,
+                input_price_usd NUMERIC(12,10) NOT NULL,
+                output_price_usd NUMERIC(12,10) NOT NULL,
+                updated_at TIMESTAMPTZ DEFAULT NOW(),
+                source_url TEXT,
+                scraping_ok BOOLEAN DEFAULT TRUE,
+                UNIQUE(provider, model)
+            )""",
+            # Seeds dos precos oficiais (abril 2026)
+            "INSERT INTO ia_prices (provider, model, input_price_usd, output_price_usd, source_url) "
+            "VALUES ('claude', 'claude-sonnet-4-6', 0.000003, 0.000015, 'https://platform.claude.com/docs/en/about-claude/pricing') "
+            "ON CONFLICT (provider, model) DO NOTHING",
+            "INSERT INTO ia_prices (provider, model, input_price_usd, output_price_usd, source_url) "
+            "VALUES ('gemini', 'gemini-2.5-flash', 0.00000015, 0.0000006, 'https://ai.google.dev/gemini-api/docs/pricing') "
+            "ON CONFLICT (provider, model) DO NOTHING",
+            # Taxa de cambio USD/BRL (default ~5,70)
+            "INSERT INTO settings (key, value, value_type, category) "
+            "VALUES ('usd_brl_rate', '5.70', 'number', 'exchange') "
+            "ON CONFLICT (key) DO NOTHING",
+            "ALTER TABLE settings ADD COLUMN IF NOT EXISTS updated_at TIMESTAMPTZ DEFAULT NOW()",
         ]
         for _s in _mig:
             try:
