@@ -5644,15 +5644,42 @@ function _mlOpenFisico(id) {
   var m = document.getElementById("modal-marcar-fisico"); if (m) m.style.display = "flex";
 }
 function _mlCloseFisico() { var m = document.getElementById("modal-marcar-fisico"); if (m) m.style.display = "none"; window._mlState.marcarFisicoId = null; }
-function _mlConfirmFisico() {
+async function _mlConfirmFisico() {
   var id = window._mlState.marcarFisicoId; if (!id) return;
   var el = document.getElementById("mfisico-data"); var data = el ? el.value : "";
-  if (!data) { alert("Informe a data da assinatura."); return; }
-  var hdr = Object.assign({ "Content-Type":"application/json" }, window.getAuthHeaders ? window.getAuthHeaders() : {});
-  fetch("/laudo/"+id+"/status", { method:"POST", credentials:"same-origin", headers: hdr, body: JSON.stringify({ status:"assinado_fisico", data_assinatura: data }) })
-    .then(function(r){ return r.json().catch(function(){ return {}; }); })
-    .then(function(){ _mlCloseFisico(); renderMeusLaudos(); if (typeof loadDashboard === "function") loadDashboard(); })
-    .catch(function(e){ alert("Erro: "+e); });
+  if (!data) {
+    if (typeof showToast === "function") showToast("Informe a data da assinatura", "error");
+    else alert("Informe a data da assinatura.");
+    return;
+  }
+  // Usa o helper api() para que o token (currentToken) seja incluido
+  // corretamente no Authorization. Nunca chamar logout() em caso de erro:
+  // erro aqui nao deve terminar a sessao, apenas exibir toast.
+  try {
+    var res = await api("POST", "/laudo/" + id + "/status",
+      { status: "assinado_fisico", data_assinatura: data });
+    if (res && res.ok) {
+      _mlCloseFisico();
+      if (typeof showToast === "function") {
+        showToast("Laudo marcado como assinado f\u00edsico!", "success");
+      }
+      if (typeof renderMeusLaudos === "function") renderMeusLaudos();
+      if (typeof loadDashboard === "function") loadDashboard();
+    } else {
+      if (typeof showToast === "function") {
+        showToast((res && res.error) || "Erro ao marcar como f\u00edsico. Tente novamente.", "error");
+      } else {
+        alert("Erro ao marcar como f\u00edsico");
+      }
+    }
+  } catch (e) {
+    // NUNCA chamar logout() aqui — manter a sessao
+    if (typeof showToast === "function") {
+      showToast("Erro ao marcar como f\u00edsico. Tente novamente.", "error");
+    } else {
+      alert("Erro: " + e);
+    }
+  }
 }
 
 function _mlOpenExcluir(id, st) {
