@@ -138,10 +138,17 @@ def analyze_with_gemini(images, ambiente, tipo_vistoria, tipo_analise):
         response = model.generate_content(parts)
         resumo = (response.text or '').strip() if hasattr(response, 'text') else ''
 
+        # Tokens para tracking de custo (task #71)
+        _usage = getattr(response, 'usage_metadata', None)
+        _in_tokens = int(getattr(_usage, 'prompt_token_count', 0) or 0) if _usage else 0
+        _out_tokens = int(getattr(_usage, 'candidates_token_count', 0) or 0) if _usage else 0
+
         if not resumo:
             return {
                 'success': False, 'resumo': '', 'provider': 'gemini',
                 'error': 'empty_response',
+                'input_tokens': _in_tokens, 'output_tokens': _out_tokens,
+                'model': 'gemini-2.5-flash',
             }
 
         return {
@@ -149,6 +156,9 @@ def analyze_with_gemini(images, ambiente, tipo_vistoria, tipo_analise):
             'resumo': resumo,
             'estado_geral': 'Bom',
             'provider': 'gemini',
+            'model': 'gemini-2.5-flash',
+            'input_tokens': _in_tokens,
+            'output_tokens': _out_tokens,
         }
 
     except Exception as _e:
@@ -157,6 +167,46 @@ def analyze_with_gemini(images, ambiente, tipo_vistoria, tipo_analise):
             'success': False, 'resumo': '', 'provider': 'gemini',
             'error': str(_e),
         }
+
+
+def calcular_custo_ia(provider, model, input_tokens, output_tokens, conn):
+    """Calcula custo real da IA em USD e BRL baseado nos precos do banco.
+
+    Retorna dict {custo_usd, custo_brl, scraping_ok}. Em caso de falha
+    ou modelo nao cadastrado, retorna zeros (nao falha a analise).
+    """
+    try:
+        _prow = conn.execute(
+            "SELECT input_price_usd, output_price_usd, scraping_ok "
+            "FROM ia_prices WHERE provider=? AND model=?",
+            (provider, model),
+        ).fetchone()
+        if not _prow:
+            return {'custo_usd': 0.0, 'custo_brl': 0.0, 'scraping_ok': None}
+
+        _in_p = float(_prow['input_price_usd'] or 0)
+        _out_p = float(_prow['output_price_usd'] or 0)
+        _scrap_ok = _prow.get('scraping_ok')
+
+        _custo_usd = float(input_tokens or 0) * _in_p + float(output_tokens or 0) * _out_p
+
+        _rate_row = conn.execute(
+            "SELECT value FROM settings WHERE key=?", ('usd_brl_rate',)
+        ).fetchone()
+        try:
+            _usd_brl = float(_rate_row['value']) if (_rate_row and _rate_row.get('value')) else 5.70
+        except Exception:
+            _usd_brl = 5.70
+
+        _custo_brl = _custo_usd * _usd_brl
+        return {
+            'custo_usd': round(_custo_usd, 6),
+            'custo_brl': round(_custo_brl, 4),
+            'scraping_ok': _scrap_ok,
+        }
+    except Exception as _e:
+        print('[COST] calcular_custo_ia error: ' + str(_e), flush=True)
+        return {'custo_usd': 0.0, 'custo_brl': 0.0, 'scraping_ok': None}
 
 
 def hash_password(pwd):
@@ -2492,6 +2542,7 @@ class AnalisarBatchHandler(BaseHandler):
             new_balance = None
             total_cents = 0
             price_per_foto = default_price
+            tx_id = None  # id da transacao analysis_debit (para update de custo IA)
             try:
                 srow = conn.execute(
                     "SELECT value FROM settings WHERE key=?",
@@ -2546,16 +2597,17 @@ class AnalisarBatchHandler(BaseHandler):
                 )
                 _insp_ref = (data.get('inspection_id')
                              or data.get('inspectionId') or None)
-                conn.execute(
+                _tx_row = conn.execute(
                     "INSERT INTO balance_transactions "
                     "(user_id, type, amount_cents, balance_after_cents, "
                     " description, status, analysis_type, photos_count, "
                     " inspection_id) "
-                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING id",
                     (user_id, 'analysis_debit', -total_cents, new_balance,
                      descricao, 'completed', tipo_analise, qtd_fotos,
                      _insp_ref)
-                )
+                ).fetchone()
+                tx_id = _tx_row['id'] if _tx_row else None
                 conn.commit()
                 print(f"[BILLING] batch_debit user={user_id} tipo={tipo_analise} "
                       f"qtd={qtd_fotos} total_cents={total_cents} "
@@ -2627,6 +2679,37 @@ class AnalisarBatchHandler(BaseHandler):
                               + ' ambiente=' + str(ambiente)
                               + ' len=' + str(len(_gem['resumo'])),
                               flush=True)
+                        # Calcular e gravar custo IA (task #71) — Gemini path
+                        try:
+                            _gem_in = int(_gem.get('input_tokens') or 0)
+                            _gem_out = int(_gem.get('output_tokens') or 0)
+                            _gem_model = _gem.get('model') or 'gemini-2.5-flash'
+                            if tx_id and (_gem_in or _gem_out):
+                                _cost_conn = get_conn()
+                                try:
+                                    _custo = calcular_custo_ia('gemini', _gem_model, _gem_in, _gem_out, _cost_conn)
+                                    _cost_conn.execute(
+                                        "UPDATE balance_transactions SET "
+                                        "  ia_input_tokens=?, ia_output_tokens=?, "
+                                        "  ia_custo_usd=?, ia_custo_brl=?, ia_provider=? "
+                                        "WHERE id=?",
+                                        (_gem_in, _gem_out, _custo['custo_usd'],
+                                         _custo['custo_brl'], 'gemini', tx_id)
+                                    )
+                                    _cost_conn.commit()
+                                    print('[COST] gemini in=' + str(_gem_in)
+                                          + ' out=' + str(_gem_out)
+                                          + ' usd=' + ('%.6f' % _custo['custo_usd'])
+                                          + ' brl=' + ('%.4f' % _custo['custo_brl']),
+                                          flush=True)
+                                finally:
+                                    try:
+                                        _cost_conn.close()
+                                    except Exception:
+                                        pass
+                        except Exception as _c_e:
+                            print('[COST] gemini_update_error tx_id='
+                                  + str(tx_id) + ' err=' + str(_c_e), flush=True)
                         _gem_result = {
                             'ok': True,
                             'success': True,
@@ -2706,6 +2789,38 @@ class AnalisarBatchHandler(BaseHandler):
                 resultado['balance_after_cents'] = new_balance
                 resultado['debited_cents'] = total_cents
                 resultado['photos_count'] = qtd_fotos
+                # Calcular e gravar custo IA (task #71) — Claude path
+                try:
+                    _prov = resultado.get('provider') or 'claude'
+                    _model = resultado.get('model') or 'claude-sonnet-4-6'
+                    _in_t = int(resultado.get('input_tokens') or 0)
+                    _out_t = int(resultado.get('output_tokens') or 0)
+                    if tx_id and (_in_t or _out_t):
+                        _cost_conn = get_conn()
+                        try:
+                            _custo = calcular_custo_ia(_prov, _model, _in_t, _out_t, _cost_conn)
+                            _cost_conn.execute(
+                                "UPDATE balance_transactions SET "
+                                "  ia_input_tokens=?, ia_output_tokens=?, "
+                                "  ia_custo_usd=?, ia_custo_brl=?, ia_provider=? "
+                                "WHERE id=?",
+                                (_in_t, _out_t, _custo['custo_usd'],
+                                 _custo['custo_brl'], _prov, tx_id)
+                            )
+                            _cost_conn.commit()
+                            print('[COST] ' + _prov + ' in=' + str(_in_t)
+                                  + ' out=' + str(_out_t)
+                                  + ' usd=' + ('%.6f' % _custo['custo_usd'])
+                                  + ' brl=' + ('%.4f' % _custo['custo_brl']),
+                                  flush=True)
+                        finally:
+                            try:
+                                _cost_conn.close()
+                            except Exception:
+                                pass
+                except Exception as _c_e:
+                    print('[COST] update_error tx_id=' + str(tx_id)
+                          + ' err=' + str(_c_e), flush=True)
             self.write(resultado)
         except Exception as e:
             self.set_status(500)

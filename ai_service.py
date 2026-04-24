@@ -852,6 +852,10 @@ def analisar_batch(imagens: list, nome_ambiente: str, tipo_vistoria: str = "entr
     lotes = [imagens[i:i+LOTE_MAX] for i in range(0, len(imagens), LOTE_MAX)]
     resumos = []
     all_extras = []
+    # Token/cost tracking (task #71) — acumula tokens entre todos os lotes
+    _total_input_tokens = 0
+    _total_output_tokens = 0
+    _modelo_usado = ""
 
     for lote in lotes:
         content = []
@@ -1055,6 +1059,13 @@ Se TODAS as fotos pertencem ao ambiente "{nome_ambiente}", retorne "ambientes_ex
                 print(f"[AI] <<< Tokens input: {response.usage.input_tokens}", flush=True)
                 print(f"[AI] <<< Tokens output: {response.usage.output_tokens}", flush=True)
                 print(f"[AI] <<< Duracao: {time.time() - _ai_inicio:.2f}s", flush=True)
+                # Acumular tokens para calculo de custo (task #71)
+                try:
+                    _total_input_tokens += int(response.usage.input_tokens or 0)
+                    _total_output_tokens += int(response.usage.output_tokens or 0)
+                    _modelo_usado = modelo_atual
+                except Exception:
+                    pass
                 texto = response.content[0].text.strip()
                 texto = re.sub(r'```json\s*', '', texto)
                 texto = re.sub(r'```\s*', '', texto)
@@ -1096,6 +1107,11 @@ Se TODAS as fotos pertencem ao ambiente "{nome_ambiente}", retorne "ambientes_ex
         estado = "Regular"
 
     result = {"resumo": resumo_final, "estado_geral": estado, "success": bool(resumo_final), "ambientes_extras": all_extras}
+    # Expor tokens/model para calcular_custo_ia no server.py (task #71)
+    result["provider"] = "claude"
+    result["model"] = _modelo_usado or "claude-sonnet-4-6"
+    result["input_tokens"] = _total_input_tokens
+    result["output_tokens"] = _total_output_tokens
     if not resumo_final and last_error:
         result["error"] = last_error
     return result
