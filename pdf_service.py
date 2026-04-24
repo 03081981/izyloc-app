@@ -260,11 +260,24 @@ def _badge_estado(estado):
 
 def add_cabecalho(story, s, titulo_doc, numero_doc):
     """Logo esquerda + tÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ­tulo direita, separados por linha bold."""
-    logo_cell = Paragraph(
-        '<font face="Helvetica" size="18" color="#2d7dd2">izy</font>'
-        '<font face="Helvetica-Bold" size="18">LAUDO</font>',
-        ParagraphStyle('logo', fontName='Helvetica', fontSize=18,
-                       textColor=PRETO, leading=22))
+    # Logo oficial via arquivo PNG renderizado a partir do SVG (task #90)
+    _logo_path = os.path.join(
+        os.path.dirname(os.path.abspath(__file__)),
+        'static', 'assets', 'izylaudo-logo-pdf.png'
+    )
+    _logo_h = 40
+    _logo_w = _logo_h * 4  # mantem aspect 4:1 do SVG original (220x55)
+    try:
+        logo_cell = Image(_logo_path, width=_logo_w, height=_logo_h)
+        logo_cell.hAlign = 'LEFT'
+    except Exception as _logo_e:
+        # Fallback defensivo: texto estilizado se a imagem nao carregar
+        print('[PDF] logo image load failed, falling back to text: ' + str(_logo_e), flush=True)
+        logo_cell = Paragraph(
+            '<font face="Helvetica" size="18" color="#2d7dd2">izy</font>'
+            '<font face="Helvetica-Bold" size="18" color="#1a2540">LAUDO</font>',
+            ParagraphStyle('logo', fontName='Helvetica', fontSize=18,
+                           textColor=PRETO, leading=22))
     titulo = Paragraph(titulo_doc,
         ParagraphStyle('td', fontName='Helvetica-Bold', fontSize=10,
                        textColor=PRETO, alignment=TA_RIGHT, leading=13,
@@ -272,14 +285,15 @@ def add_cabecalho(story, s, titulo_doc, numero_doc):
     numero = Paragraph(numero_doc,
         ParagraphStyle('nd', fontName='Helvetica', fontSize=8,
                        textColor=CINZA, alignment=TA_RIGHT, leading=11))
-    sub = Paragraph(u'Vistorias Imobili\u00e1rias',
-        ParagraphStyle('sub', fontName='Helvetica', fontSize=8,
-                       textColor=HexColor('#aaaaaa'), leading=11))
-    t = Table([[logo_cell, titulo], [sub, numero]],
+    # A tagline "Vistorias Imobiliarias" ja esta dentro da imagem da logo,
+    # entao o cabecalho agora usa 1 linha para logo + 2 linhas para titulo.
+    t = Table([[logo_cell, titulo], ['', numero]],
               colWidths=[TW*0.45, TW*0.55])
     t.setStyle(TableStyle([
         ('VALIGN',       (0,0), (-1,-1), 'BOTTOM'),
         ('ALIGN',        (1,0), (1,-1),  'RIGHT'),
+        # Logo ocupa ambas as linhas da coluna esquerda
+        ('SPAN',         (0,0), (0,1)),
         ('LEFTPADDING',  (0,0), (-1,-1), 0),
         ('RIGHTPADDING', (0,0), (-1,-1), 0),
         ('TOPPADDING',   (0,0), (-1,-1), 0),
