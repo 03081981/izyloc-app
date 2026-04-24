@@ -3590,13 +3590,15 @@ class BillingTransactionsHandler(BaseHandler):
 
         conn = get_conn()
         try:
-            # periodo_sql vem de whitelist; seguro interpolar diretamente
+            # periodo_sql vem de whitelist; seguro interpolar diretamente.
+            # Filtra por status='completed' para nao mostrar recargas
+            # pendentes/canceladas/falhadas no extrato.
             sql = (
                 "SELECT id, type, amount_cents, balance_after_cents, "
                 "description, status, analysis_type, photos_count, "
                 "created_at "
                 "FROM balance_transactions "
-                "WHERE user_id=? " + periodo_sql + " "
+                "WHERE user_id=? AND status='completed' " + periodo_sql + " "
                 "ORDER BY created_at DESC"
             )
             rows = conn.execute(sql, (user_id,)).fetchall()
@@ -3615,6 +3617,17 @@ class BillingTransactionsHandler(BaseHandler):
                     except Exception:
                         t['created_at'] = str(t['created_at'])
                 amt = int(t.get('amount_cents') or 0)
+
+                # Sanitiza descricao de recargas: remove ID interno do MP
+                # do formato "Compra de creditos R$ XX,XX|mp:123-abc..."
+                desc = t.get('description') or ''
+                is_recarga = amt > 0 or (t.get('type') or '') in (
+                    'credit', 'recarga', 'mp_credit'
+                )
+                if is_recarga and ('mp:' in desc or '|mp' in desc
+                                   or desc.strip() == ''):
+                    t['description'] = 'Recarga via Mercado Pago'
+
                 if amt > 0:
                     total_recargas += amt
                     count_recargas += 1
@@ -3660,15 +3673,25 @@ class BillingTransactionsPDFHandler(BaseHandler):
 
         conn = get_conn()
         try:
+            # Filtra status='completed' - mesma regra do endpoint JSON
             sql = (
                 "SELECT amount_cents, balance_after_cents, description, "
-                "analysis_type, photos_count, created_at "
+                "analysis_type, photos_count, created_at, type "
                 "FROM balance_transactions "
-                "WHERE user_id=? " + periodo_sql + " "
+                "WHERE user_id=? AND status='completed' " + periodo_sql + " "
                 "ORDER BY created_at DESC"
             )
             rows_raw = conn.execute(sql, (user_id,)).fetchall()
             rows = [self.row_to_dict(r) for r in rows_raw]
+            # Sanitiza descricao das recargas (remove ID interno do MP)
+            for _rr in rows:
+                _amt = int(_rr.get('amount_cents') or 0)
+                _desc = _rr.get('description') or ''
+                _is_rec = _amt > 0 or (_rr.get('type') or '') in (
+                    'credit', 'recarga', 'mp_credit')
+                if _is_rec and ('mp:' in _desc or '|mp' in _desc
+                                or _desc.strip() == ''):
+                    _rr['description'] = 'Recarga via Mercado Pago'
 
             urow = conn.execute(
                 "SELECT balance_cents, name, email FROM users WHERE id=?",

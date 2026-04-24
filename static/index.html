@@ -3088,60 +3088,8 @@ window._openFotoModal = function(imgSrc) {
 
     <!-- TAB: ESTATISTICAS -->
     <div id="dash-tab-estatisticas" class="dash-tab-content">
-      <div class="stats-section">
-        <div class="section-header" style="margin-top:0">
-          <span class="section-title">Fotos e consumo</span>
-        </div>
-        <div class="stats-grid-full">
-          <div class="stat-card stat-card-accent">
-            <div class="stat-card-icon stat-icon-blue">
-              <svg viewBox="0 0 20 20" fill="currentColor"><path d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z"/></svg>
-            </div>
-            <div class="stat-value" id="stat-total-2">0</div>
-            <div class="stat-label">Total de vistorias</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-card-icon stat-icon-green">
-              <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"/></svg>
-            </div>
-            <div class="stat-value" id="stat-credits">—</div>
-            <div class="stat-label">Fotos disponíveis</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-card-icon stat-icon-warn">
-              <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z"/></svg>
-            </div>
-            <div class="stat-value" id="stat-fotos-usadas">—</div>
-            <div class="stat-label">Fotos utilizadas</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-card-icon" style="background:#F3E8FF;color:#7C3AED">
-              <svg viewBox="0 0 20 20" fill="currentColor"><path d="M4 4a2 2 0 00-2 2v1h16V6a2 2 0 00-2-2H4zM2 11v3a2 2 0 002 2h12a2 2 0 002-2v-3H2z"/></svg>
-            </div>
-            <div class="stat-value" id="stat-andamento-2">0</div>
-            <div class="stat-label">Em andamento</div>
-          </div>
-        </div>
-        <div class="credits-panel" style="max-width:480px">
-          <div class="panel-header"><span class="panel-title">Recarregar créditos</span></div>
-          <div class="credits-balance-row">
-            <div>
-              <div class="credits-bal-label">Saldo atual</div>
-              <div class="credits-bal-value">— fotos</div>
-            </div>
-          </div>
-          <div class="pkg-grid" style="grid-template-columns:repeat(4,1fr)">
-            <button class="pkg-btn" onclick="this.closest('.pkg-grid').querySelectorAll('.pkg-btn').forEach(b=>b.classList.remove('selected'));this.classList.add('selected')">+100</button>
-            <button class="pkg-btn" onclick="this.closest('.pkg-grid').querySelectorAll('.pkg-btn').forEach(b=>b.classList.remove('selected'));this.classList.add('selected')">+300</button>
-            <button class="pkg-btn" onclick="this.closest('.pkg-grid').querySelectorAll('.pkg-btn').forEach(b=>b.classList.remove('selected'));this.classList.add('selected')">+500</button>
-            <button class="pkg-btn" onclick="this.closest('.pkg-grid').querySelectorAll('.pkg-btn').forEach(b=>b.classList.remove('selected'));this.classList.add('selected')">+1.000</button>
-          </div>
-          <button class="btn-recharge" onclick="showToast('Em breve: sistema de recarga','warn')">Recarregar agora</button>
-        </div>
-      </div>
-
       <!-- ===== Extrato Financeiro ===== -->
-      <div id="ext-secao" style="margin-top:24px;">
+      <div id="ext-secao">
         <!-- Cabecalho de impressao (oculto na tela) -->
         <div id="ext-print-header" style="display:none;margin-bottom:20px;">
           <div style="display:flex;justify-content:space-between;align-items:center;border-bottom:2px solid #1e3a5f;padding-bottom:12px;margin-bottom:16px;">
@@ -4154,7 +4102,7 @@ function switchTab(tab, el) {
   if (target) target.classList.add('active');
   document.querySelectorAll('.nav-item').forEach(function(n) { n.classList.remove('active'); });
   if (el) el.classList.add('active');
-  var titles = {vistorias:'Dashboard', estatisticas:'Fotos e consumo', perfil:'Configurações'};
+  var titles = {vistorias:'Dashboard', estatisticas:'Extrato financeiro', perfil:'Configurações'};
   var tt = document.getElementById('dash-topbar-title');
   if (tt) tt.textContent = titles[tab] || 'Dashboard';
   // Ao abrir Configuracoes, carregar o perfil do usuario (com retry para cobrir race de load)
