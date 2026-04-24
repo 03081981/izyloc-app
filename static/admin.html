@@ -277,12 +277,13 @@ body { background: #f1f5f9; color: #1e293b; }
         </tbody>
       </table>
       <!-- Taxa de câmbio -->
-      <div style="display:flex;align-items:center;gap:12px;padding-top:12px;border-top:1px solid #f1f5f9;">
+      <div style="display:flex;align-items:center;gap:12px;padding-top:12px;border-top:1px solid #f1f5f9;flex-wrap:wrap;">
         <label style="font-size:12px;color:#64748b;font-weight:500;">Taxa de câmbio USD/BRL:</label>
-        <input type="number" id="adm-usd-brl" step="0.01" style="width:90px;padding:6px 10px;
+        <input type="number" id="adm-usd-brl" step="0.0001" style="width:110px;padding:6px 10px;
           border:1px solid #e2e8f0;border-radius:6px;font-size:13px;">
         <button class="btn btn-blue" onclick="admSalvarCambio()" style="font-size:12px;">Salvar</button>
-        <span style="font-size:11px;color:#94a3b8;">Usado para converter custo USD → BRL</span>
+        <span id="adm-usd-brl-updated" style="font-size:11px;color:#16a34a;"></span>
+        <span style="font-size:11px;color:#94a3b8;">Atualizada automaticamente via AwesomeAPI</span>
       </div>
     </div>
   </div>
@@ -645,20 +646,37 @@ async function admCarregar(periodo, btn) {
   admCarregarIAPrecos();
 }
 
+function _fmtTsBr(isoOrStr) {
+  if (!isoOrStr) return '';
+  // Backend envia '2026-04-24 19:25:...+00:00' (UTC).
+  var s = String(isoOrStr);
+  var d = new Date(s.indexOf('T') > -1 ? s : s.replace(' ', 'T'));
+  if (isNaN(d.getTime())) return s.substring(0, 16).replace('T', ' ');
+  return d.toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' });
+}
+
 async function admCarregarIAPrecos() {
   const data = await admFetch('/api/admin/ia-prices?token=' + ADMIN_TOKEN);
   if (!data || !data.prices) return;
 
-  var rate = data.usd_brl_rate || 5.70;
+  var rate = Number(data.usd_brl_rate) || 5.70;
   var rateInput = document.getElementById('adm-usd-brl');
-  if (rateInput) rateInput.value = rate;
+  if (rateInput) rateInput.value = Number(rate.toFixed(4));
 
-  // Alerta se algum scraping falhou
+  // Carimbo de atualizacao da taxa
+  var upEl = document.getElementById('adm-usd-brl-updated');
+  if (upEl) {
+    upEl.textContent = data.usd_brl_updated_at
+      ? ('Atualizado em ' + _fmtTsBr(data.usd_brl_updated_at))
+      : '';
+  }
+
+  // Alerta so aparece quando pelo menos 1 fonte falhou
   var algumFalhou = data.prices.some(function(p) { return !p.scraping_ok; });
   var alertEl = document.getElementById('adm-scrape-alert');
   if (alertEl) alertEl.style.display = algumFalhou ? 'block' : 'none';
 
-  // Renderizar tabela de precos
+  // Tabela de precos
   var html = '';
   data.prices.forEach(function(p) {
     var inputUsd = parseFloat(p.input_price_usd || 0);
@@ -667,7 +685,7 @@ async function admCarregarIAPrecos() {
     var outputPerM = (outputUsd * 1000000).toFixed(4);
     var inputBRL = (inputUsd * 1000000 * rate).toFixed(4);
     var outputBRL = (outputUsd * 1000000 * rate).toFixed(4);
-    var updatedAt = p.updated_at ? String(p.updated_at).substring(0, 16).replace('T', ' ') : '—';
+    var updatedAt = _fmtTsBr(p.updated_at) || '—';
     var providerLabel = p.provider === 'claude' ? '🔵 Anthropic Claude' : '🟢 Google Gemini';
     var sourceUrl = p.source_url || '#';
     html += '<tr>' +
@@ -677,7 +695,7 @@ async function admCarregarIAPrecos() {
       '<td>$' + outputPerM + ' <span style="color:#94a3b8;font-size:11px;">(R$ ' + outputBRL + ')</span></td>' +
       '<td style="font-size:11px;color:#94a3b8;">' + updatedAt + '</td>' +
       '<td><span class="badge ' + (p.scraping_ok ? 'badge-ok' : 'badge-err') + '">' +
-        (p.scraping_ok ? '✓ Auto' : '⚠ Falhou') + '</span></td>' +
+        (p.scraping_ok ? '✅ OK' : '⚠️ Falhou') + '</span></td>' +
       '<td><a href="' + sourceUrl + '" target="_blank" rel="noopener" ' +
         'style="font-size:11px;color:#2d7dd2;">Ver oficial →</a></td>' +
     '</tr>';
@@ -688,15 +706,23 @@ async function admCarregarIAPrecos() {
   var lastUpdate = data.prices.length > 0 ? data.prices[0].updated_at : null;
   var statusEl = document.getElementById('adm-scrape-status');
   if (statusEl && lastUpdate) {
-    statusEl.textContent = 'Última atualização: ' + String(lastUpdate).substring(0, 16).replace('T', ' ');
+    statusEl.textContent = 'Última atualização: ' + _fmtTsBr(lastUpdate);
   }
 }
 
 async function admForceScraping() {
   var statusEl = document.getElementById('adm-scrape-status');
   if (statusEl) statusEl.textContent = 'Atualizando...';
-  await admFetch('/api/admin/ia-prices?token=' + ADMIN_TOKEN, 'POST', { action: 'scrape_now' });
+  var resp = await admFetch('/api/admin/ia-prices?token=' + ADMIN_TOKEN,
+                            'POST', { action: 'scrape_now' });
+  // Sempre recarrega a UI a partir do GET - o backend ja persistiu o estado
+  // correto (ok ou falha). Erros individuais sao refletidos pelos badges.
   await admCarregarIAPrecos();
+  if (resp && resp.ok) {
+    _admToast && _admToast('Preços e taxa de câmbio atualizados.', 'ok');
+  } else {
+    _admToast && _admToast('Falha ao atualizar. Veja os badges na tabela.', 'erro');
+  }
 }
 
 async function admSalvarCambio() {
@@ -704,7 +730,7 @@ async function admSalvarCambio() {
   if (isNaN(rate) || rate <= 0) { alert('Taxa inválida'); return; }
   var resp = await admFetch('/api/admin/ia-prices?token=' + ADMIN_TOKEN, 'POST', { usd_brl_rate: rate });
   if (resp && resp.ok) {
-    alert('Taxa de câmbio atualizada!');
+    if (typeof _admToast === 'function') _admToast('Taxa de câmbio salva.', 'ok');
     admCarregarIAPrecos();
   } else {
     alert('Erro ao salvar taxa.');

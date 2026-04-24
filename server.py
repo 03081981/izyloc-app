@@ -2233,82 +2233,118 @@ class AdminPricesHandler(AdminHandler):
 # IA prices scraping (task #72) — atualiza tabela ia_prices 1x/dia
 # ============================================================================
 
-def scrape_ia_prices():
-    """Scraping diario dos precos oficiais da Anthropic e Google Gemini.
+_LITELLM_PRICES_URL = (
+    'https://raw.githubusercontent.com/BerriAI/litellm/main/'
+    'model_prices_and_context_window.json'
+)
+_AWESOME_FX_URL = 'https://economia.awesomeapi.com.br/json/last/USD-BRL'
 
-    Atualiza a tabela ia_prices. Em caso de falha, apenas marca scraping_ok
-    como FALSE e mantem os valores anteriores (nao quebra cobranca).
+# LiteLLM usa multiplos aliases para o mesmo modelo. Mantemos listas ordenadas
+# por preferencia e usamos a primeira chave que existir no JSON.
+_LITELLM_KEYS = {
+    ('claude', 'claude-sonnet-4-6'): [
+        'claude-sonnet-4-6', 'claude-sonnet-4-5',
+        'claude-sonnet-4-5-20250929',
+        'claude-3-5-sonnet-latest', 'claude-3-5-sonnet-20241022',
+        'anthropic/claude-sonnet-4', 'anthropic/claude-sonnet-4-5',
+    ],
+    ('gemini', 'gemini-2.5-flash'): [
+        'gemini/gemini-2.5-flash', 'gemini-2.5-flash',
+        'vertex_ai/gemini-2.5-flash',
+    ],
+}
+
+
+def _fetch_litellm_prices():
+    """Baixa JSON do LiteLLM e devolve dict {(provider,model): (in_usd, out_usd)}.
+
+    Raise em erro de rede/HTTP/JSON - chamador decide se marca scraping_ok=False.
     """
-    import re as _re
     import requests as _req
+    _r = _req.get(_LITELLM_PRICES_URL, timeout=15,
+                  headers={'User-Agent': 'izyLAUDO-scraper/1.0'})
+    _r.raise_for_status()
+    data = _r.json()
+    out = {}
+    for (provider, model), candidates in _LITELLM_KEYS.items():
+        for key in candidates:
+            entry = data.get(key)
+            if not isinstance(entry, dict):
+                continue
+            try:
+                _in = float(entry.get('input_cost_per_token') or 0)
+                _ou = float(entry.get('output_cost_per_token') or 0)
+            except Exception:
+                continue
+            if _in > 0 and _ou > 0:
+                out[(provider, model)] = (_in, _ou, key)
+                print('[SCRAPE] LiteLLM matched ' + provider + '/' + model
+                      + ' via key=' + key
+                      + ' in=$%.10f out=$%.10f' % (_in, _ou), flush=True)
+                break
+        else:
+            print('[SCRAPE] LiteLLM: nenhuma chave conhecida encontrou '
+                  + provider + '/' + model + ' - mantendo valor anterior',
+                  flush=True)
+    return out
 
+
+def _fetch_usd_brl():
+    """Busca cotacao USD-BRL na AwesomeAPI (brasileira, gratuita).
+
+    Retorna float ou None em falha. Nunca raise.
+    """
+    try:
+        import requests as _req
+        _r = _req.get(_AWESOME_FX_URL, timeout=10,
+                      headers={'User-Agent': 'izyLAUDO-scraper/1.0'})
+        _r.raise_for_status()
+        _j = _r.json()
+        _row = _j.get('USDBRL') or {}
+        _bid = float(_row.get('bid'))
+        if _bid > 0:
+            return _bid
+    except Exception as _e:
+        print('[SCRAPE] FX usd-brl error: ' + str(_e), flush=True)
+    return None
+
+
+def scrape_ia_prices():
+    """Atualiza ia_prices + settings.usd_brl_rate usando LiteLLM + AwesomeAPI.
+
+    Retorna lista de dicts por modelo (para o endpoint admin) e um dict extra
+    'fx' com a cotacao USD-BRL se a busca foi bem sucedida.
+
+    Fail-safe: se alguma fonte falhar, marcamos scraping_ok=False mas preservamos
+    os valores anteriores no banco. Nunca zera precos.
+    """
     results = []
+    litellm = {}
 
-    # === ANTHROPIC ===
     try:
-        _r = _req.get(
-            'https://platform.claude.com/docs/en/about-claude/pricing',
-            timeout=15, headers={'User-Agent': 'Mozilla/5.0'},
-        )
-        _txt = _r.text or ''
-        _s_in = _re.search(
-            r'[Ss]onnet.*?\$(\d+\.?\d*)\s*(?:per million|/1M|/MTok)',
-            _txt, _re.DOTALL,
-        )
-        _s_out = _re.search(
-            r'[Ss]onnet.*?\$\d+\.?\d*.*?\$(\d+\.?\d*)\s*(?:per million|/1M|output)',
-            _txt, _re.DOTALL,
-        )
-        if _s_in and _s_out:
-            _in_usd = float(_s_in.group(1)) / 1_000_000
-            _out_usd = float(_s_out.group(1)) / 1_000_000
-            results.append({
-                'provider': 'claude', 'model': 'claude-sonnet-4-6',
-                'input_price_usd': _in_usd, 'output_price_usd': _out_usd,
-                'scraping_ok': True,
-            })
-            print('[SCRAPE] Anthropic Sonnet input=$%.8f output=$%.8f'
-                  % (_in_usd, _out_usd), flush=True)
-        else:
-            print('[SCRAPE] Anthropic: precos nao encontrados no HTML - mantendo valores', flush=True)
-            results.append({'provider': 'claude', 'model': 'claude-sonnet-4-6', 'scraping_ok': False})
+        litellm = _fetch_litellm_prices()
     except Exception as _e:
-        print('[SCRAPE] Anthropic error: ' + str(_e), flush=True)
-        results.append({'provider': 'claude', 'model': 'claude-sonnet-4-6', 'scraping_ok': False})
+        print('[SCRAPE] LiteLLM fetch error: ' + str(_e), flush=True)
 
-    # === GOOGLE GEMINI ===
-    try:
-        _r = _req.get(
-            'https://ai.google.dev/gemini-api/docs/pricing',
-            timeout=15, headers={'User-Agent': 'Mozilla/5.0'},
-        )
-        _txt = _r.text or ''
-        _f_in = _re.search(
-            r'2\.5\s*[Ff]lash.*?\$(\d+\.?\d*)\s*(?:per million|/1M)',
-            _txt, _re.DOTALL,
-        )
-        _f_out = _re.search(
-            r'2\.5\s*[Ff]lash.*?\$\d+\.?\d*.*?\$(\d+\.?\d*)\s*(?:per million|/1M|output)',
-            _txt, _re.DOTALL,
-        )
-        if _f_in and _f_out:
-            _in_usd = float(_f_in.group(1)) / 1_000_000
-            _out_usd = float(_f_out.group(1)) / 1_000_000
+    for (provider, model) in _LITELLM_KEYS.keys():
+        if (provider, model) in litellm:
+            _in, _ou, _src = litellm[(provider, model)]
             results.append({
-                'provider': 'gemini', 'model': 'gemini-2.5-flash',
-                'input_price_usd': _in_usd, 'output_price_usd': _out_usd,
-                'scraping_ok': True,
+                'provider': provider, 'model': model,
+                'input_price_usd': _in, 'output_price_usd': _ou,
+                'scraping_ok': True, 'source_key': _src,
             })
-            print('[SCRAPE] Gemini Flash input=$%.8f output=$%.8f'
-                  % (_in_usd, _out_usd), flush=True)
         else:
-            print('[SCRAPE] Gemini: precos nao encontrados - mantendo valores', flush=True)
-            results.append({'provider': 'gemini', 'model': 'gemini-2.5-flash', 'scraping_ok': False})
-    except Exception as _e:
-        print('[SCRAPE] Gemini error: ' + str(_e), flush=True)
-        results.append({'provider': 'gemini', 'model': 'gemini-2.5-flash', 'scraping_ok': False})
+            results.append({
+                'provider': provider, 'model': model, 'scraping_ok': False,
+            })
 
-    # Persistir no banco
+    # Taxa de cambio
+    usd_brl = _fetch_usd_brl()
+    if usd_brl:
+        print('[SCRAPE] AwesomeAPI USD-BRL = %.4f' % usd_brl, flush=True)
+
+    # Persistir
     try:
         conn = get_conn()
         try:
@@ -2326,18 +2362,31 @@ def scrape_ia_prices():
                          r['input_price_usd'], r['output_price_usd']),
                     )
                 else:
+                    # Mantem valores anteriores, so marca falha
                     conn.execute(
                         'UPDATE ia_prices SET scraping_ok = FALSE, updated_at = NOW() '
                         'WHERE provider = ? AND model = ?',
                         (r['provider'], r['model']),
                     )
+            # Atualiza cambio apenas se fetch OK
+            if usd_brl:
+                conn.execute(
+                    "INSERT INTO settings (key, value, value_type, category, updated_at) "
+                    "VALUES ('usd_brl_rate', ?, 'number', 'exchange', NOW()) "
+                    "ON CONFLICT (key) DO UPDATE SET "
+                    "  value = EXCLUDED.value, updated_at = NOW()",
+                    (('%.4f' % usd_brl),),
+                )
             conn.commit()
-            print('[SCRAPE] Precos salvos no banco', flush=True)
+            print('[SCRAPE] Precos e cambio salvos no banco', flush=True)
         finally:
             conn.close()
     except Exception as _e:
         print('[SCRAPE] DB persist error: ' + str(_e), flush=True)
 
+    # Anexar info do cambio para a resposta do admin /scrape_now
+    if usd_brl:
+        results.append({'fx': {'usd_brl': usd_brl}})
     return results
 
 
@@ -2378,14 +2427,21 @@ class AdminIAPricesHandler(AdminHandler):
                 prices.append(d)
 
             _rate_row = conn.execute(
-                "SELECT value FROM settings WHERE key = 'usd_brl_rate'"
+                "SELECT value, updated_at FROM settings WHERE key = 'usd_brl_rate'"
             ).fetchone()
             try:
                 usd_brl = float(_rate_row['value']) if (_rate_row and _rate_row.get('value')) else 5.70
             except Exception:
                 usd_brl = 5.70
+            usd_brl_updated_at = None
+            if _rate_row and _rate_row.get('updated_at') is not None:
+                usd_brl_updated_at = str(_rate_row['updated_at'])
 
-            self.ok({'prices': prices, 'usd_brl_rate': usd_brl})
+            self.ok({
+                'prices': prices,
+                'usd_brl_rate': usd_brl,
+                'usd_brl_updated_at': usd_brl_updated_at,
+            })
         finally:
             conn.close()
 
