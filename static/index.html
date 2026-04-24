@@ -7301,17 +7301,17 @@ window.addEventListener('resize', () => {
     // ── Ambientes (wstep-3) ──────────────────────────────────
     var _ambData = {
       residencial: {
-        dormitorio: {val:1, label:'Dorm. / Quarto', icon:'🛏️'},
-        banheiro:   {val:1, label:'Banheiro',        icon:'🚿'},
-        sala:       {val:1, label:'Sala',            icon:'🛋️'},
-        cozinha:    {val:1, label:'Cozinha',         icon:'🍳'},
+        dormitorio: {val:0, label:'Dorm. / Quarto', icon:'🛏️'},
+        banheiro:   {val:0, label:'Banheiro',        icon:'🚿'},
+        sala:       {val:0, label:'Sala',            icon:'🛋️'},
+        cozinha:    {val:0, label:'Cozinha',         icon:'🍳'},
         lavanderia: {val:0, label:'Lavanderia',      icon:'👕'},
         garagem:    {val:0, label:'Garagem',         icon:'🚗'},
         varanda:    {val:0, label:'Varanda',         icon:'🌿'}
       },
       comercial: {
-        salas:    {val:1, label:'Salas',          icon:'💼'},
-        banheiros:{val:1, label:'Banheiros',      icon:'🚿'},
+        salas:    {val:0, label:'Salas',          icon:'💼'},
+        banheiros:{val:0, label:'Banheiros',      icon:'🚿'},
         recepcao: {val:0, label:'Recepção',   icon:'📂'},
         copa:     {val:0, label:'Copa/Cozinha',   icon:'🍳'},
         deposito: {val:0, label:'Depósito',      icon:'📦'},
@@ -8577,7 +8577,7 @@ function renderAmbientesPorTipo() {
       h += _rowHtml(iSuite,'Suite','Com banheiro privativo','suite',0);
       h += _subRowHtml(iCloset,'Closet da suite','Sub-item da suite','closet_suite','suite');
     }
-    h += _rowHtml(iDorm,'Dormitorio','Quarto sem banheiro privativo','dormitorio',1);
+    h += _rowHtml(iDorm,'Dormitorio','Quarto sem banheiro privativo','dormitorio',0);
     h += _subRowHtml(iCloset,'Closet do dormitorio','Sub-item do dormitorio','closet_dorm','dormitorio');
     return h;
   }
@@ -8588,13 +8588,13 @@ function renderAmbientesPorTipo() {
   if (tipo.indexOf('casa') >= 0) {
     html += _secaoHtml(1,'Dormitorios',_dormitorios(true),'dormitorio');
     html += _secaoHtml(2,'Banheiros',
-      _rowHtml(iBanh,'Banheiro social','Banheiro de uso comum','banheiro',1)+
+      _rowHtml(iBanh,'Banheiro social','Banheiro de uso comum','banheiro',0)+
       _rowHtml(iLavabo,'Lavabo','Banheiro sem chuveiro','lavabo',0),'banheiro');
     html += _secaoHtml(3,'Social',
-      _rowHtml(iSala,'Sala de estar / jantar','Ambiente social principal','sala',1)+
+      _rowHtml(iSala,'Sala de estar / jantar','Ambiente social principal','sala',0)+
       _rowHtml(iEscrit,'Escritorio / home office','Ambiente de trabalho','escritorio',0),'ambiente social');
     html += _secaoHtml(4,'Cozinha e servicos',
-      _rowHtml(iCoz,'Cozinha','Cozinha principal','cozinha',1)+
+      _rowHtml(iCoz,'Cozinha','Cozinha principal','cozinha',0)+
       _rowHtml(iDesp,'Despensa','Deposito de alimentos','despensa',0)+
       _rowHtml(iServ,'Area de servico / lavanderia','Lavanderia e servicos','servico',0)+
       _rowHtml(iDep,'Dependencia de empregada','Quarto de servico','dependencia',0),'ambiente de servico');
@@ -8607,13 +8607,13 @@ function renderAmbientesPorTipo() {
   else if (tipo.indexOf('apart') >= 0 || tipo.indexOf('cobert') >= 0) {
     html += _secaoHtml(1,'Dormitorios',_dormitorios(true),'dormitorio');
     html += _secaoHtml(2,'Banheiros',
-      _rowHtml(iBanh,'Banheiro social','Banheiro de uso comum','banheiro',1)+
+      _rowHtml(iBanh,'Banheiro social','Banheiro de uso comum','banheiro',0)+
       _rowHtml(iLavabo,'Lavabo','Banheiro sem chuveiro','lavabo',0),'banheiro');
     html += _secaoHtml(3,'Social',
-      _rowHtml(iSala,'Sala de estar / jantar','Ambiente social principal','sala',1)+
+      _rowHtml(iSala,'Sala de estar / jantar','Ambiente social principal','sala',0)+
       _rowHtml(iEscrit,'Escritorio / home office','Ambiente de trabalho','escritorio',0),'ambiente social');
     html += _secaoHtml(4,'Cozinha e servicos',
-      _rowHtml(iCoz,'Cozinha','Cozinha principal','cozinha',1)+
+      _rowHtml(iCoz,'Cozinha','Cozinha principal','cozinha',0)+
       _rowHtml(iDesp,'Despensa','Deposito de alimentos','despensa',0)+
       _rowHtml(iServ,'Area de servico / lavanderia','Lavanderia','servico',0),'ambiente de servico');
     html += _secaoHtml(5,'Acesso e externas',
@@ -8624,12 +8624,12 @@ function renderAmbientesPorTipo() {
 
   else if (tipo.indexOf('studio') >= 0 || tipo.indexOf('kitnet') >= 0 || tipo.indexOf('kit') >= 0) {
     html += _secaoHtml(1,'Dormitorios',
-      _rowHtml(iDorm,'Dormitorio','Area de dormir','dormitorio',1)+
+      _rowHtml(iDorm,'Dormitorio','Area de dormir','dormitorio',0)+
       _subRowHtml(iCloset,'Closet','Sub-item do dormitorio','closet_dorm','dormitorio'),'dormitorio');
     html += _secaoHtml(2,'Banheiros',
-      _rowHtml(iBanh,'Banheiro','Banheiro do studio','banheiro',1),'banheiro');
+      _rowHtml(iBanh,'Banheiro','Banheiro do studio','banheiro',0),'banheiro');
     html += _secaoHtml(3,'Ambiente principal',
-      _rowHtml(iSala,'Ambiente integrado','Sala e area de estar','sala',1)+
+      _rowHtml(iSala,'Ambiente integrado','Sala e area de estar','sala',0)+
       _rowHtml(iCoz,'Cozinha / kitchenette','Area de cozinha','cozinha',0),'ambiente');
     html += _secaoHtml(4,'Acesso e externas',
       _toggleHtml(iExt,'Fachada / hall','Acesso ao imóvel','area_externa',true)+
@@ -8639,11 +8639,11 @@ function renderAmbientesPorTipo() {
 
   else if (tipo.indexOf('sala') >= 0 || tipo.indexOf('predio') >= 0) {
     html += _secaoHtml(1,'Areas de trabalho',
-      _rowHtml(iRecep,'Sala / escritorio','Escritorio ou sala','sala',1)+
+      _rowHtml(iRecep,'Sala / escritorio','Escritorio ou sala','sala',0)+
       _rowHtml(iRecep,'Recepcao / hall','Recepcao de clientes','recepcao',0)+
       _rowHtml(iEscrit,'Sala de reuniao','Sala de reunioes','reuniao',0),'ambiente de trabalho');
     html += _secaoHtml(2,'Banheiros',
-      _rowHtml(iBanh,'Banheiro','Banheiro do imóvel','banheiro',1),'banheiro');
+      _rowHtml(iBanh,'Banheiro','Banheiro do imóvel','banheiro',0),'banheiro');
     html += _secaoHtml(3,'Servicos',
       _rowHtml(iCopa,'Copa','Copa do imóvel','copa',0)+
       _rowHtml(iCoz,'Cozinha','Cozinha do imóvel','cozinha_com',0)+
@@ -8656,11 +8656,11 @@ function renderAmbientesPorTipo() {
 
   else if (tipo.indexOf('loja') >= 0 || tipo.indexOf('salao') >= 0) {
     html += _secaoHtml(1,'Areas comerciais',
-      _rowHtml(iVend,'Area de vendas','Piso de vendas principal','sala',1)+
+      _rowHtml(iVend,'Area de vendas','Piso de vendas principal','sala',0)+
       _rowHtml(iEscrit,'Provador','Cabine de prova','provador',0)+
       _rowHtml(iRecep,'Caixa / balcao','Area de atendimento','balcao',0),'ambiente comercial');
     html += _secaoHtml(2,'Banheiros',
-      _rowHtml(iBanh,'Banheiro','Banheiro do imóvel','banheiro',1),'banheiro');
+      _rowHtml(iBanh,'Banheiro','Banheiro do imóvel','banheiro',0),'banheiro');
     html += _secaoHtml(3,'Servicos',
       _rowHtml(iDepo,'Estoque / deposito','Area de estoque','deposito',0)+
       _rowHtml(iCopa,'Copa','Copa dos funcionarios','copa',0)+
@@ -8673,11 +8673,11 @@ function renderAmbientesPorTipo() {
 
   else if (tipo.indexOf('galp') >= 0 || tipo.indexOf('barra') >= 0) {
     html += _secaoHtml(1,'Areas operacionais',
-      _rowHtml(iGalp,'Area interna / producao','Area operacional principal','sala',1)+
+      _rowHtml(iGalp,'Area interna / producao','Area operacional principal','sala',0)+
       _rowHtml(iDepo,'Deposito / estoque','Area de estoque','deposito',0)+
       _rowHtml(iDoca,'Doca','Area de carga e descarga','doca',0),'ambiente operacional');
     html += _secaoHtml(2,'Banheiros e vestiarios',
-      _rowHtml(iBanh,'Banheiro','Banheiro do imóvel','banheiro',1)+
+      _rowHtml(iBanh,'Banheiro','Banheiro do imóvel','banheiro',0)+
       _rowHtml(iVest,'Vestiario','Vestiario dos funcionarios','vestiario',0),'banheiro');
     html += _secaoHtml(3,'Administrativo',
       _rowHtml(iEscrit,'Escritorio','Escritorio administrativo','escritorio',0)+
@@ -8693,13 +8693,13 @@ function renderAmbientesPorTipo() {
   else if (tipo.indexOf('terreno') >= 0) {
     html += _secaoHtml(1,'Areas do terreno',
       _toggleHtml(iTerr,'Frente / acesso','Entrada e frente do terreno','area_externa',true)+
-      _rowHtml(iPasto,'Area do terreno','Area total do terreno','sala',1),'area');
+      _rowHtml(iPasto,'Area do terreno','Area total do terreno','sala',0),'area');
   }
 
   else if (tipo.indexOf('chacar') >= 0 || tipo.indexOf('sitio') >= 0 || tipo.indexOf('rural') >= 0) {
     html += _secaoHtml(1,'Construcoes principais',
       _toggleHtml(iExt,'Fachada / acesso','Entrada principal','area_externa',true)+
-      _rowHtml(iExt,'Casa principal','Residencia principal','sala',1)+
+      _rowHtml(iExt,'Casa principal','Residencia principal','sala',0)+
       _rowHtml(iEdic,'Casa de caseiro / edicula','Construcao secundaria','edicula',0),'construcao');
     html += _secaoHtml(2,'Areas externas',
       _rowHtml(iPasto,'Area externa / pasto','Terreno e pasto','pasto',0)+
@@ -8716,8 +8716,8 @@ function renderAmbientesPorTipo() {
 
   else {
     html += _secaoHtml(1,'Ambientes',
-      _rowHtml(iSala,'Ambiente principal','Ambiente principal do imóvel','sala',1)+
-      _rowHtml(iBanh,'Banheiro','Banheiro do imóvel','banheiro',1)+
+      _rowHtml(iSala,'Ambiente principal','Ambiente principal do imóvel','sala',0)+
+      _rowHtml(iBanh,'Banheiro','Banheiro do imóvel','banheiro',0)+
       _rowHtml(iCopa,'Copa / cozinha','Area de alimentacao','cozinha',0)+
       _rowHtml(iDepo,'Deposito','Deposito geral','deposito',0),'ambiente');
     html += _secaoHtml(2,'Areas externas',
