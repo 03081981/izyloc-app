@@ -4545,12 +4545,77 @@ class SendToAutentiqueHandler(BaseHandler):
                 return self.err('Laudo nao encontrado', 404)
             insp = self.row_to_dict(insp_row)
 
-            # 2. Verificar se já foi enviado
+            # 2. Verificação rápida + LOCK atômico anti-duplicação (task #79)
+            # -----------------------------------------------------------------
+            # Antes do lock: se ja tem doc_id, aborta com mensagem clara.
             if insp.get('autentique_doc_id'):
                 return self.err(
                     'Este laudo ja foi enviado para assinatura',
                     400
                 )
+
+            # Lock: tenta marcar status='sending' atomicamente. So passa o
+            # request que conseguir mudar a linha. Outros requests concorrentes
+            # (duplo-clique) recebem 409 e nao chegam a chamar o Autentique.
+            # Aceita retomar se um 'sending' anterior travou ha > 5 min.
+            _now_str = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            _lock_row = conn.execute(
+                "UPDATE inspections SET "
+                "  autentique_status='sending', "
+                "  autentique_sent_at=NOW(), "
+                "  updated_at=? "
+                "WHERE id=? AND user_id=? "
+                "  AND (autentique_doc_id IS NULL OR autentique_doc_id='') "
+                "  AND ("
+                "    autentique_status IS NULL "
+                "    OR autentique_status NOT IN ('sending','sent','signed') "
+                "    OR (autentique_status='sending' "
+                "        AND (autentique_sent_at IS NULL "
+                "             OR autentique_sent_at < NOW() - INTERVAL '5 minutes'))"
+                "  ) "
+                "RETURNING id",
+                (_now_str, inspection_id, user_id),
+            ).fetchone()
+            if not _lock_row:
+                # Lock nao adquirido - alguem ja mandou ou esta mandando.
+                _cur = conn.execute(
+                    "SELECT autentique_doc_id, autentique_status "
+                    "FROM inspections WHERE id=? AND user_id=?",
+                    (inspection_id, user_id),
+                ).fetchone()
+                _c = dict(_cur) if _cur else {}
+                if _c.get('autentique_doc_id'):
+                    return self.err(
+                        'Este laudo ja foi enviado para assinatura', 400)
+                if (_c.get('autentique_status') or '') == 'sending':
+                    return self.err(
+                        'Envio em andamento - aguarde alguns segundos antes '
+                        'de tentar de novo.', 409)
+                return self.err('Nao foi possivel iniciar envio', 500)
+            conn.commit()  # commit do lock imediato para bloquear concorrentes
+
+            def _release_lock():
+                """Libera o lock se nao houve criacao de documento - usado em
+                erros graciosos (validacao GraphQL). NAO e chamado em erros de
+                rede/timeout: o lock permanece para impedir retry que duplicaria
+                documentos no Autentique; admin usa /api/admin/autentique/sync
+                para reconciliar."""
+                try:
+                    conn.execute(
+                        "UPDATE inspections SET "
+                        "  autentique_status=NULL, "
+                        "  autentique_sent_at=NULL, "
+                        "  updated_at=? "
+                        "WHERE id=? AND user_id=? "
+                        "  AND autentique_status='sending' "
+                        "  AND (autentique_doc_id IS NULL OR autentique_doc_id='')",
+                        (datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+                         inspection_id, user_id),
+                    )
+                    conn.commit()
+                except Exception as _rel_e:
+                    print('[AUTENTIQUE] release_lock_error insp='
+                          + inspection_id + ' err=' + str(_rel_e), flush=True)
 
             # 3. Montar lista de signatarios a partir dos campos/JSONs da inspeção
             signers = []
@@ -4624,6 +4689,7 @@ class SendToAutentiqueHandler(BaseHandler):
                   + repr(signers)[:500], flush=True)
 
             if not signers:
+                _release_lock()
                 return self.err(
                     'Nenhum signatario com email encontrado. Cadastre os emails '
                     'das partes na etapa 4.',
@@ -4633,6 +4699,7 @@ class SendToAutentiqueHandler(BaseHandler):
             # 4. Gerar PDF do laudo (reusa generate_pdf do pdf_service)
             pdf_bytes = self._gerar_pdf_bytes(conn, insp)
             if not pdf_bytes:
+                _release_lock()
                 return self.err('Erro ao gerar PDF do laudo', 500)
 
             # 5. Nome do documento
@@ -4682,22 +4749,35 @@ class SendToAutentiqueHandler(BaseHandler):
                     timeout=60
                 )
             except Exception as _net_e:
-                print('[AUTENTIQUE] NET_ERROR: ' + str(_net_e), flush=True)
-                return self.err('Falha de conexao com Autentique: '
-                                + str(_net_e), 502)
+                # Erro de rede/timeout: NAO liberar o lock. O doc pode ter
+                # sido criado no Autentique mesmo sem recebermos a resposta.
+                # Admin reconcilia via /api/admin/autentique/sync ou o lock
+                # expira em 5 min para permitir nova tentativa manual.
+                print('[AUTENTIQUE] NET_ERROR (lock retido) insp='
+                      + inspection_id + ': ' + str(_net_e), flush=True)
+                return self.err('Falha de conexao com Autentique. Se o '
+                                'problema persistir, contate o suporte antes '
+                                'de reenviar para evitar duplicacao.', 502)
 
             try:
                 result = resp.json()
             except Exception:
-                print('[AUTENTIQUE] invalid_json status=' + str(resp.status_code)
-                      + ' body=' + str(resp.text[:500]), flush=True)
+                # Resposta corrompida: status HTTP pode ter sido 2xx (doc
+                # criado) ou erro. Conservador: manter lock.
+                print('[AUTENTIQUE] invalid_json (lock retido) status='
+                      + str(resp.status_code) + ' body='
+                      + str(resp.text[:500]), flush=True)
                 return self.err(
                     'Resposta invalida do Autentique (status '
                     + str(resp.status_code) + ')', 502)
 
             if 'errors' in result:
-                print('[AUTENTIQUE] GQL_ERRORS: '
+                # Erro GraphQL retornado limpo: nenhum doc foi criado (validacao
+                # de schema/permissao). Seguro liberar lock para o usuario
+                # corrigir os dados e tentar de novo.
+                print('[AUTENTIQUE] GQL_ERRORS (lock liberado): '
                       + json.dumps(result.get('errors'))[:500], flush=True)
+                _release_lock()
                 msg = 'Erro no Autentique'
                 try:
                     msg = result['errors'][0].get('message', msg)
@@ -4708,11 +4788,14 @@ class SendToAutentiqueHandler(BaseHandler):
             doc = (result.get('data') or {}).get('createDocument') or {}
             autentique_id = doc.get('id')
             if not autentique_id:
+                # Resposta estranha - nao tem id nem errors. Conservador.
+                print('[AUTENTIQUE] no_id_in_response (lock retido) insp='
+                      + inspection_id, flush=True)
                 return self.err('Autentique nao retornou id do documento', 502)
 
-            # 7. Atualizar inspecao (status 'aguardando_assinatura' casa com
-            #    o que o frontend espera em _mlStatusKey — label
-            #    'Aguard. assinatura').
+            # 7. Gravar autentique_doc_id ATOMICAMENTE logo apos receber.
+            # Esta UPDATE e estreita (so doc_id + status + timestamps) para
+            # minimizar janela de falha entre receber o id e registrar.
             conn.execute(
                 "UPDATE inspections SET "
                 "autentique_doc_id=?, "
