@@ -4172,12 +4172,17 @@ function switchTab(tab, el) {
       if (el) el.textContent = letter;
     });
 
-    // Greeting
+    // Greeting — task #91: imobiliaria usa nome_imobiliaria se configurado
     var greet = document.getElementById('db-greeting');
     if (greet) {
       var hr = new Date().getHours();
       var sau = hr < 12 ? 'Bom dia' : hr < 18 ? 'Boa tarde' : 'Boa noite';
-      greet.textContent = sau + ', ' + nm.split(' ')[0] + '!';
+      var nomeSaudar = (window._dashProfile
+                        && window._dashProfile.tipo_perfil === 'imobiliaria'
+                        && window._dashProfile.nome_imobiliaria)
+                       ? window._dashProfile.nome_imobiliaria
+                       : (nm || '').split(' ')[0];
+      greet.textContent = sau + ', ' + nomeSaudar + '!';
     }
 
     // Sync stat-andamento
@@ -4897,6 +4902,29 @@ async function loadDashboard() {
 
   // Push 15: carregar precos atualizados (fire-and-forget, nao bloqueia)
   loadPrices();
+  // Task #91: carregar perfil para decidir saudacao (imobiliaria usa razao social)
+  try {
+    const _pf = await api('GET', '/api/config/profile');
+    if (_pf && _pf.ok && _pf.tipo_perfil) {
+      window._dashProfile = {
+        tipo_perfil: _pf.tipo_perfil,
+        nome_imobiliaria: _pf.nome_imobiliaria || '',
+      };
+      // Reaplica saudacao caso ja tenha renderizado com nome pessoal
+      try {
+        var _gr = document.getElementById('db-greeting');
+        if (_gr && currentUser && currentUser.name) {
+          var _hr = new Date().getHours();
+          var _sau = _hr < 12 ? 'Bom dia' : _hr < 18 ? 'Boa tarde' : 'Boa noite';
+          var _nmS = (window._dashProfile.tipo_perfil === 'imobiliaria'
+                      && window._dashProfile.nome_imobiliaria)
+                     ? window._dashProfile.nome_imobiliaria
+                     : (currentUser.name || '').split(' ')[0];
+          _gr.textContent = _sau + ', ' + _nmS + '!';
+        }
+      } catch(_eG){}
+    }
+  } catch(_ePf) { /* silent: sem perfil, mantem comportamento padrao */ }
 
   // Push 6: refresh user from /api/auth/me for latest balance + verification status
   try {
@@ -4932,7 +4960,12 @@ async function loadDashboard() {
         if(el) {
           var hr = new Date().getHours();
           var sau = hr<12?'Bom dia':hr<18?'Boa tarde':'Boa noite';
-          el.textContent = sau + ', ' + nm.split(' ')[0] + '!';
+          var _saudNm = (window._dashProfile
+                         && window._dashProfile.tipo_perfil === 'imobiliaria'
+                         && window._dashProfile.nome_imobiliaria)
+                        ? window._dashProfile.nome_imobiliaria
+                        : (nm || '').split(' ')[0];
+          el.textContent = sau + ', ' + _saudNm + '!';
         }
       })();
   // Null-safe: profile-company e profile-email foram removidos quando a
