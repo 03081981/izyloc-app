@@ -185,6 +185,30 @@ body { background: #f1f5f9; color: #1e293b; }
     </div>
   </div>
 
+  <!-- Cards financeiros detalhados (custo/lucro IA) -->
+  <div class="adm-grid" style="margin-top:0;">
+    <div class="adm-card verde">
+      <div class="adm-card-label">Receita bruta período</div>
+      <div class="adm-card-val" id="adm-receita-bruta">—</div>
+      <div class="adm-card-sub">Cobrado dos usuários</div>
+    </div>
+    <div class="adm-card vermelho">
+      <div class="adm-card-label">Custo IA período</div>
+      <div class="adm-card-val" id="adm-custo-ia">—</div>
+      <div class="adm-card-sub" id="adm-custo-ia-sub">Claude + Gemini</div>
+    </div>
+    <div class="adm-card azul">
+      <div class="adm-card-label">Lucro líquido período</div>
+      <div class="adm-card-val" id="adm-lucro">—</div>
+      <div class="adm-card-sub" id="adm-margem">Margem: —%</div>
+    </div>
+    <div class="adm-card">
+      <div class="adm-card-label">Custo médio por foto</div>
+      <div class="adm-card-val" id="adm-custo-foto">—</div>
+      <div class="adm-card-sub">Para o izyLAUDO (IA)</div>
+    </div>
+  </div>
+
   <!-- IA Usage -->
   <div class="adm-section">
     <div class="adm-section-header">
@@ -207,6 +231,54 @@ body { background: #f1f5f9; color: #1e293b; }
       <span class="adm-section-title">Laudos por tipo</span>
     </div>
     <div style="display:flex;gap:24px;padding:16px 20px;" id="adm-laudos-tipo">—</div>
+  </div>
+
+  <!-- Preços das IAs (atualizados por scraping diário) -->
+  <div class="adm-section">
+    <div class="adm-section-header">
+      <span class="adm-section-title">🤖 Preços das IAs — Atualização automática diária</span>
+      <div style="display:flex;gap:8px;align-items:center;">
+        <span id="adm-scrape-status" style="font-size:11px;color:#94a3b8;"></span>
+        <button class="btn btn-gray" onclick="admForceScraping()" style="font-size:11px;">🔄 Atualizar agora</button>
+      </div>
+    </div>
+    <div style="padding:16px 20px;">
+      <!-- Alerta se scraping falhou -->
+      <div id="adm-scrape-alert" style="display:none;background:#fef2f2;border:1px solid #fecaca;
+        border-radius:8px;padding:12px 16px;margin-bottom:16px;font-size:13px;color:#dc2626;">
+        ⚠️ <strong>Atenção:</strong> O scraping automático de preços falhou.
+        Verifique manualmente os preços oficiais:
+        <a href="https://platform.claude.com/docs/en/about-claude/pricing" target="_blank"
+          style="color:#dc2626;font-weight:600;margin-left:4px;">Anthropic →</a>
+        <a href="https://ai.google.dev/gemini-api/docs/pricing" target="_blank"
+          style="color:#dc2626;font-weight:600;margin-left:8px;">Google Gemini →</a>
+      </div>
+      <!-- Tabela de preços -->
+      <table class="adm-table" style="margin-bottom:16px;">
+        <thead>
+          <tr>
+            <th>Provedor</th>
+            <th>Modelo</th>
+            <th>Input (por M tokens)</th>
+            <th>Output (por M tokens)</th>
+            <th>Última atualização</th>
+            <th>Status</th>
+            <th>Link oficial</th>
+          </tr>
+        </thead>
+        <tbody id="adm-ia-prices-body">
+          <tr><td colspan="7" style="text-align:center;color:#94a3b8;padding:20px;">Carregando...</td></tr>
+        </tbody>
+      </table>
+      <!-- Taxa de câmbio -->
+      <div style="display:flex;align-items:center;gap:12px;padding-top:12px;border-top:1px solid #f1f5f9;">
+        <label style="font-size:12px;color:#64748b;font-weight:500;">Taxa de câmbio USD/BRL:</label>
+        <input type="number" id="adm-usd-brl" step="0.01" style="width:90px;padding:6px 10px;
+          border:1px solid #e2e8f0;border-radius:6px;font-size:13px;">
+        <button class="btn btn-blue" onclick="admSalvarCambio()" style="font-size:12px;">Salvar</button>
+        <span style="font-size:11px;color:#94a3b8;">Usado para converter custo USD → BRL</span>
+      </div>
+    </div>
   </div>
 
   <!-- Configuração de preços -->
@@ -420,10 +492,99 @@ async function admCarregar(periodo, btn) {
   document.getElementById('preco-prem').value = prem;
   document.getElementById('preco-bonus').value = bonus;
 
+  // Custo/lucro da IA (task #73)
+  if (data.custo_ia) {
+    var ci = data.custo_ia;
+    var elRecBruta = document.getElementById('adm-receita-bruta');
+    var elCustoIA = document.getElementById('adm-custo-ia');
+    var elCustoIASub = document.getElementById('adm-custo-ia-sub');
+    var elLucro = document.getElementById('adm-lucro');
+    var elMargem = document.getElementById('adm-margem');
+    var elCustoFoto = document.getElementById('adm-custo-foto');
+    if (elRecBruta) elRecBruta.textContent = fmt(data.financeiro.receita_periodo_cents || 0);
+    if (elCustoIA) elCustoIA.textContent = 'R$ ' + ((ci.total_brl || 0)).toFixed(2).replace('.', ',');
+    if (elCustoIASub) elCustoIASub.textContent = 'Claude: R$ ' + ((ci.claude_brl || 0)).toFixed(2).replace('.', ',')
+      + ' · Gemini: R$ ' + ((ci.gemini_brl || 0)).toFixed(2).replace('.', ',');
+    if (elLucro) {
+      elLucro.textContent = 'R$ ' + ((ci.lucro_brl || 0)).toFixed(2).replace('.', ',');
+      elLucro.style.color = (ci.lucro_brl || 0) >= 0 ? '#16a34a' : '#dc2626';
+    }
+    if (elMargem) elMargem.textContent = 'Margem: ' + (ci.margem_pct != null ? ci.margem_pct : 0) + '%';
+    if (elCustoFoto) elCustoFoto.textContent = 'R$ ' + ((ci.custo_medio_foto || 0)).toFixed(4).replace('.', ',');
+  }
+
   document.getElementById('adm-ultima-atualizacao').textContent = 'Atualizado: ' + new Date().toLocaleTimeString('pt-BR');
 
   // Carregar usuários
   admCarregarUsuarios();
+  // Carregar preços das IAs (task #73)
+  admCarregarIAPrecos();
+}
+
+async function admCarregarIAPrecos() {
+  const data = await admFetch('/api/admin/ia-prices?token=' + ADMIN_TOKEN);
+  if (!data || !data.prices) return;
+
+  var rate = data.usd_brl_rate || 5.70;
+  var rateInput = document.getElementById('adm-usd-brl');
+  if (rateInput) rateInput.value = rate;
+
+  // Alerta se algum scraping falhou
+  var algumFalhou = data.prices.some(function(p) { return !p.scraping_ok; });
+  var alertEl = document.getElementById('adm-scrape-alert');
+  if (alertEl) alertEl.style.display = algumFalhou ? 'block' : 'none';
+
+  // Renderizar tabela de precos
+  var html = '';
+  data.prices.forEach(function(p) {
+    var inputUsd = parseFloat(p.input_price_usd || 0);
+    var outputUsd = parseFloat(p.output_price_usd || 0);
+    var inputPerM = (inputUsd * 1000000).toFixed(4);
+    var outputPerM = (outputUsd * 1000000).toFixed(4);
+    var inputBRL = (inputUsd * 1000000 * rate).toFixed(4);
+    var outputBRL = (outputUsd * 1000000 * rate).toFixed(4);
+    var updatedAt = p.updated_at ? String(p.updated_at).substring(0, 16).replace('T', ' ') : '—';
+    var providerLabel = p.provider === 'claude' ? '🔵 Anthropic Claude' : '🟢 Google Gemini';
+    var sourceUrl = p.source_url || '#';
+    html += '<tr>' +
+      '<td><strong>' + providerLabel + '</strong></td>' +
+      '<td style="font-size:12px;color:#64748b;">' + (p.model || '') + '</td>' +
+      '<td>$' + inputPerM + ' <span style="color:#94a3b8;font-size:11px;">(R$ ' + inputBRL + ')</span></td>' +
+      '<td>$' + outputPerM + ' <span style="color:#94a3b8;font-size:11px;">(R$ ' + outputBRL + ')</span></td>' +
+      '<td style="font-size:11px;color:#94a3b8;">' + updatedAt + '</td>' +
+      '<td><span class="badge ' + (p.scraping_ok ? 'badge-ok' : 'badge-err') + '">' +
+        (p.scraping_ok ? '✓ Auto' : '⚠ Falhou') + '</span></td>' +
+      '<td><a href="' + sourceUrl + '" target="_blank" rel="noopener" ' +
+        'style="font-size:11px;color:#2d7dd2;">Ver oficial →</a></td>' +
+    '</tr>';
+  });
+  var body = document.getElementById('adm-ia-prices-body');
+  if (body) body.innerHTML = html || '<tr><td colspan="7" style="text-align:center;color:#94a3b8;padding:20px;">Nenhum preço cadastrado</td></tr>';
+
+  var lastUpdate = data.prices.length > 0 ? data.prices[0].updated_at : null;
+  var statusEl = document.getElementById('adm-scrape-status');
+  if (statusEl && lastUpdate) {
+    statusEl.textContent = 'Última atualização: ' + String(lastUpdate).substring(0, 16).replace('T', ' ');
+  }
+}
+
+async function admForceScraping() {
+  var statusEl = document.getElementById('adm-scrape-status');
+  if (statusEl) statusEl.textContent = 'Atualizando...';
+  await admFetch('/api/admin/ia-prices?token=' + ADMIN_TOKEN, 'POST', { action: 'scrape_now' });
+  await admCarregarIAPrecos();
+}
+
+async function admSalvarCambio() {
+  var rate = parseFloat(document.getElementById('adm-usd-brl').value);
+  if (isNaN(rate) || rate <= 0) { alert('Taxa inválida'); return; }
+  var resp = await admFetch('/api/admin/ia-prices?token=' + ADMIN_TOKEN, 'POST', { usd_brl_rate: rate });
+  if (resp && resp.ok) {
+    alert('Taxa de câmbio atualizada!');
+    admCarregarIAPrecos();
+  } else {
+    alert('Erro ao salvar taxa.');
+  }
 }
 
 async function admCarregarUsuarios() {

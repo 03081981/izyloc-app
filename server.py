@@ -1737,6 +1737,35 @@ class AdminStatsHandler(AdminHandler):
                 'AND created_at >= ' + periodo_sql
             ).fetchone()['c']
 
+            # ----- Custo IA no periodo (task #73) -----
+            _cost_row = conn.execute(
+                'SELECT '
+                '  COALESCE(SUM(ia_custo_brl), 0) AS custo_total_brl, '
+                "  COALESCE(SUM(CASE WHEN ia_provider='claude' THEN ia_custo_brl ELSE 0 END), 0) AS custo_claude_brl, "
+                "  COALESCE(SUM(CASE WHEN ia_provider='gemini' THEN ia_custo_brl ELSE 0 END), 0) AS custo_gemini_brl, "
+                '  COALESCE(SUM(photos_count), 0) AS total_fotos_custo '
+                'FROM balance_transactions '
+                "WHERE amount_cents < 0 AND status = 'completed' "
+                'AND ia_custo_brl > 0 '
+                'AND created_at >= ' + periodo_sql
+            ).fetchone()
+            custo_total_brl = float(_cost_row['custo_total_brl'] or 0)
+            custo_claude_brl = float(_cost_row['custo_claude_brl'] or 0)
+            custo_gemini_brl = float(_cost_row['custo_gemini_brl'] or 0)
+            total_fotos_custo = int(_cost_row['total_fotos_custo'] or 0)
+            receita_brl = float(receita_periodo or 0) / 100.0
+            lucro_brl = receita_brl - custo_total_brl
+            margem = round((lucro_brl / receita_brl * 100.0) if receita_brl > 0 else 0.0, 1)
+            custo_medio_foto = round(custo_total_brl / total_fotos_custo, 4) if total_fotos_custo > 0 else 0.0
+            custo_ia = {
+                'total_brl':        round(custo_total_brl, 4),
+                'claude_brl':       round(custo_claude_brl, 4),
+                'gemini_brl':       round(custo_gemini_brl, 4),
+                'lucro_brl':        round(lucro_brl, 2),
+                'margem_pct':       margem,
+                'custo_medio_foto': custo_medio_foto,
+            }
+
             # ----- Precos (mapear chaves reais -> chaves curtas do frontend) -----
             s_rows = conn.execute(
                 'SELECT key, value FROM settings WHERE key IN (?, ?, ?)',
@@ -1778,6 +1807,7 @@ class AdminStatsHandler(AdminHandler):
                     'reembolsos_periodo': reembolsos,
                 },
                 'precos': precos,
+                'custo_ia': custo_ia,
             })
         finally:
             conn.close()
