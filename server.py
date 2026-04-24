@@ -3455,6 +3455,8 @@ def _ensure_status_column():
             "ALTER TABLE balance_transactions ADD COLUMN IF NOT EXISTS created_at TIMESTAMPTZ DEFAULT NOW()",
             "ALTER TABLE balance_transactions ADD COLUMN IF NOT EXISTS tx_ref VARCHAR(64)",
             "CREATE INDEX IF NOT EXISTS idx_balance_tx_ref ON balance_transactions(tx_ref)",
+            # Admin panel: users.is_blocked (task #66)
+            "ALTER TABLE users ADD COLUMN IF NOT EXISTS is_blocked BOOLEAN DEFAULT FALSE",
         ]
         for _s in _mig:
             try:
