@@ -1804,20 +1804,47 @@ class AdminStatsHandler(AdminHandler):
                 'WHERE created_at >= ' + periodo_sql + ' AND amount_cents < 0'
             ).fetchone()['c']
 
-            # ----- Financeiro -----
-            receita_periodo = conn.execute(
+            # ----- Financeiro (task #92: separar recargas vs consumo) -----
+            # RECARGAS: dinheiro entrando de fato (MP credit_purchase).
+            # Nao inclui bonus de boas-vindas, admin_credit nem refund.
+            _RECARGA_TYPES_IN = (
+                "'credit_purchase','recarga','mp_credit','credit'"
+            )
+            recargas_periodo = conn.execute(
                 'SELECT COALESCE(SUM(amount_cents), 0) AS s FROM balance_transactions '
-                'WHERE created_at >= ' + periodo_sql + " AND amount_cents > 0 AND type != 'refund'"
+                'WHERE created_at >= ' + periodo_sql + " AND status='completed' "
+                'AND type IN (' + _RECARGA_TYPES_IN + ')'
             ).fetchone()['s']
-            receita_total = conn.execute(
+            recargas_total = conn.execute(
                 'SELECT COALESCE(SUM(amount_cents), 0) AS s FROM balance_transactions '
-                "WHERE amount_cents > 0 AND type != 'refund'"
+                "WHERE status='completed' AND type IN (" + _RECARGA_TYPES_IN + ')'
             ).fetchone()['s']
+            # CONSUMO: gasto efetivo em analise IA (type='analysis_debit').
+            # Usamos ABS porque amount_cents vem negativo no debito.
+            consumo_periodo = conn.execute(
+                'SELECT COALESCE(SUM(ABS(amount_cents)), 0) AS s FROM balance_transactions '
+                'WHERE created_at >= ' + periodo_sql
+                + " AND status='completed' AND type='analysis_debit'"
+            ).fetchone()['s']
+            consumo_total = conn.execute(
+                'SELECT COALESCE(SUM(ABS(amount_cents)), 0) AS s FROM balance_transactions '
+                "WHERE status='completed' AND type='analysis_debit'"
+            ).fetchone()['s']
+            # SALDO EM ABERTO: creditos ja pagos mas ainda nao consumidos.
+            # Passivo do sistema - dinheiro que ainda devemos "entregar" em analises.
+            saldo_aberto = conn.execute(
+                'SELECT COALESCE(SUM(balance_cents), 0) AS s '
+                'FROM users WHERE balance_cents > 0'
+            ).fetchone()['s']
+            # BACK-COMPAT: manter receita_* no retorno para nao quebrar UI antiga.
+            receita_periodo = recargas_periodo
+            receita_total = recargas_total
+            # TICKET MEDIO (por usuario que recarregou): usa so recargas reais.
             ticket_medio = conn.execute(
                 'SELECT COALESCE(AVG(user_total), 0) AS m FROM ('
                 '  SELECT user_id, SUM(amount_cents) AS user_total '
                 '  FROM balance_transactions '
-                "  WHERE amount_cents > 0 AND type != 'refund' "
+                "  WHERE status='completed' AND type IN (" + _RECARGA_TYPES_IN + ') '
                 '  GROUP BY user_id'
                 ') t'
             ).fetchone()['m']
@@ -1900,9 +1927,11 @@ class AdminStatsHandler(AdminHandler):
             custo_claude_brl = float(_cost_row['custo_claude_brl'] or 0)
             custo_gemini_brl = float(_cost_row['custo_gemini_brl'] or 0)
             total_fotos_custo = int(_cost_row['total_fotos_custo'] or 0)
-            receita_brl = float(receita_periodo or 0) / 100.0
-            lucro_brl = receita_brl - custo_total_brl
-            margem = round((lucro_brl / receita_brl * 100.0) if receita_brl > 0 else 0.0, 1)
+            # LUCRO REALIZADO (task #92): baseado no CONSUMO, nao nas recargas.
+            # Recargas ainda nao consumidas sao passivo (saldo em aberto).
+            consumo_brl = float(consumo_periodo or 0) / 100.0
+            lucro_brl = consumo_brl - custo_total_brl
+            margem = round((lucro_brl / consumo_brl * 100.0) if consumo_brl > 0 else 0.0, 1)
             custo_medio_foto = round(custo_total_brl / total_fotos_custo, 4) if total_fotos_custo > 0 else 0.0
             custo_ia = {
                 'total_brl':        round(custo_total_brl, 4),
@@ -1934,9 +1963,16 @@ class AdminStatsHandler(AdminHandler):
                     'ativos_periodo': usuarios_ativos,
                 },
                 'financeiro': {
+                    # Back-compat: receita_* agora reflete somente recargas reais
                     'receita_periodo_cents': int(receita_periodo or 0),
                     'receita_total_cents':   int(receita_total or 0),
                     'ticket_medio_cents':    int(ticket_medio or 0),
+                    # Task #92: separar recargas vs consumo
+                    'recargas_periodo_cents': int(recargas_periodo or 0),
+                    'recargas_total_cents':   int(recargas_total or 0),
+                    'consumo_periodo_cents':  int(consumo_periodo or 0),
+                    'consumo_total_cents':    int(consumo_total or 0),
+                    'saldo_aberto_cents':     int(saldo_aberto or 0),
                 },
                 'laudos': {
                     'total': total_laudos,

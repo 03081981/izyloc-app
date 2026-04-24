@@ -160,14 +160,14 @@ body { background: #f1f5f9; color: #1e293b; }
       <div class="adm-card-sub">Analisaram fotos no período</div>
     </div>
     <div class="adm-card verde">
-      <div class="adm-card-label">Receita no período</div>
+      <div class="adm-card-label">Consumo no período</div>
       <div class="adm-card-val" id="adm-receita-periodo">—</div>
-      <div class="adm-card-sub" id="adm-receita-total">Total: —</div>
+      <div class="adm-card-sub" id="adm-receita-total">Efetivo em análises</div>
     </div>
     <div class="adm-card verde">
-      <div class="adm-card-label">Ticket médio</div>
+      <div class="adm-card-label">Ticket médio recarga</div>
       <div class="adm-card-val" id="adm-ticket-medio">—</div>
-      <div class="adm-card-sub">Por usuário (total)</div>
+      <div class="adm-card-sub">Por usuário (recargas)</div>
     </div>
     <div class="adm-card azul">
       <div class="adm-card-label">Laudos gerados</div>
@@ -191,12 +191,22 @@ body { background: #f1f5f9; color: #1e293b; }
     </div>
   </div>
 
-  <!-- Cards financeiros detalhados (custo/lucro IA) -->
+  <!-- Cards financeiros detalhados (recargas/consumo/lucro) -->
   <div class="adm-grid" style="margin-top:0;">
     <div class="adm-card verde">
-      <div class="adm-card-label">Receita bruta período</div>
+      <div class="adm-card-label">Recargas no período</div>
       <div class="adm-card-val" id="adm-receita-bruta">—</div>
-      <div class="adm-card-sub">Cobrado dos usuários</div>
+      <div class="adm-card-sub" id="adm-recargas-sub">Total comprado (MP)</div>
+    </div>
+    <div class="adm-card" style="border-left:3px solid #2d7dd2;">
+      <div class="adm-card-label">Consumo no período</div>
+      <div class="adm-card-val" id="adm-consumo" style="color:#2d7dd2;">—</div>
+      <div class="adm-card-sub">Gasto real em análises</div>
+    </div>
+    <div class="adm-card laranja">
+      <div class="adm-card-label">Saldo em aberto</div>
+      <div class="adm-card-val" id="adm-saldo-aberto">—</div>
+      <div class="adm-card-sub">Passivo — créditos não usados</div>
     </div>
     <div class="adm-card vermelho">
       <div class="adm-card-label">Custo IA período</div>
@@ -204,9 +214,9 @@ body { background: #f1f5f9; color: #1e293b; }
       <div class="adm-card-sub" id="adm-custo-ia-sub">Claude + Gemini</div>
     </div>
     <div class="adm-card azul">
-      <div class="adm-card-label">Lucro líquido período</div>
+      <div class="adm-card-label">Lucro realizado período</div>
       <div class="adm-card-val" id="adm-lucro">—</div>
-      <div class="adm-card-sub" id="adm-margem">Margem: —%</div>
+      <div class="adm-card-sub" id="adm-margem">Margem: —% · Consumo − Custo IA</div>
     </div>
     <div class="adm-card">
       <div class="adm-card-label">Custo médio por foto</div>
@@ -555,10 +565,17 @@ async function admCarregar(periodo, btn) {
   document.getElementById('adm-novos-usuarios').textContent = data.usuarios.novos_periodo + ' novos no período';
   document.getElementById('adm-usuarios-ativos').textContent = data.usuarios.ativos_periodo;
 
-  // Financeiro
-  document.getElementById('adm-receita-periodo').textContent = fmt(data.financeiro.receita_periodo_cents);
-  document.getElementById('adm-receita-total').textContent = 'Total: ' + fmt(data.financeiro.receita_total_cents);
-  document.getElementById('adm-ticket-medio').textContent = fmt(data.financeiro.ticket_medio_cents);
+  // Financeiro — task #92: card superior "Consumo no período" usa consumo real
+  var _fin = data.financeiro || {};
+  var _consumoCents = (_fin.consumo_periodo_cents != null)
+    ? _fin.consumo_periodo_cents : _fin.receita_periodo_cents;
+  document.getElementById('adm-receita-periodo').textContent = fmt(_consumoCents);
+  // Sub desse card: mostra qual e o consumo total histórico
+  var _consumoTotalCents = (_fin.consumo_total_cents != null)
+    ? _fin.consumo_total_cents : _fin.receita_total_cents;
+  document.getElementById('adm-receita-total').textContent =
+    'Total histórico: ' + fmt(_consumoTotalCents);
+  document.getElementById('adm-ticket-medio').textContent = fmt(_fin.ticket_medio_cents);
 
   // Laudos
   document.getElementById('adm-laudos-periodo').textContent = data.laudos.periodo;
@@ -617,24 +634,39 @@ async function admCarregar(periodo, btn) {
   document.getElementById('preco-prem').value = prem;
   document.getElementById('preco-bonus').value = bonus;
 
-  // Custo/lucro da IA (task #73)
-  if (data.custo_ia) {
-    var ci = data.custo_ia;
+  // Custo/lucro da IA + recargas vs consumo (task #73 + task #92)
+  if (data.custo_ia || _fin) {
+    var ci = data.custo_ia || {};
     var elRecBruta = document.getElementById('adm-receita-bruta');
+    var elRecSub = document.getElementById('adm-recargas-sub');
+    var elConsumo = document.getElementById('adm-consumo');
+    var elSaldoAb = document.getElementById('adm-saldo-aberto');
     var elCustoIA = document.getElementById('adm-custo-ia');
     var elCustoIASub = document.getElementById('adm-custo-ia-sub');
     var elLucro = document.getElementById('adm-lucro');
     var elMargem = document.getElementById('adm-margem');
     var elCustoFoto = document.getElementById('adm-custo-foto');
-    if (elRecBruta) elRecBruta.textContent = fmt(data.financeiro.receita_periodo_cents || 0);
+    // Recargas do período (com fallback para receita_* legado)
+    var recCents = (_fin.recargas_periodo_cents != null)
+      ? _fin.recargas_periodo_cents : (_fin.receita_periodo_cents || 0);
+    var recTotalCents = (_fin.recargas_total_cents != null)
+      ? _fin.recargas_total_cents : (_fin.receita_total_cents || 0);
+    if (elRecBruta) elRecBruta.textContent = fmt(recCents);
+    if (elRecSub) elRecSub.textContent = 'Total histórico: ' + fmt(recTotalCents);
+    // Consumo do período (calculado no backend)
+    if (elConsumo) elConsumo.textContent = fmt(_fin.consumo_periodo_cents || 0);
+    // Saldo em aberto (passivo)
+    if (elSaldoAb) elSaldoAb.textContent = fmt(_fin.saldo_aberto_cents || 0);
+    // Custo IA
     if (elCustoIA) elCustoIA.textContent = 'R$ ' + ((ci.total_brl || 0)).toFixed(2).replace('.', ',');
     if (elCustoIASub) elCustoIASub.textContent = 'Claude: R$ ' + ((ci.claude_brl || 0)).toFixed(2).replace('.', ',')
       + ' · Gemini: R$ ' + ((ci.gemini_brl || 0)).toFixed(2).replace('.', ',');
+    // Lucro realizado (Consumo − Custo IA)
     if (elLucro) {
       elLucro.textContent = 'R$ ' + ((ci.lucro_brl || 0)).toFixed(2).replace('.', ',');
       elLucro.style.color = (ci.lucro_brl || 0) >= 0 ? '#16a34a' : '#dc2626';
     }
-    if (elMargem) elMargem.textContent = 'Margem: ' + (ci.margem_pct != null ? ci.margem_pct : 0) + '%';
+    if (elMargem) elMargem.textContent = 'Margem: ' + (ci.margem_pct != null ? ci.margem_pct : 0) + '% · Consumo − Custo IA';
     if (elCustoFoto) elCustoFoto.textContent = 'R$ ' + ((ci.custo_medio_foto || 0)).toFixed(4).replace('.', ',');
   }
 
