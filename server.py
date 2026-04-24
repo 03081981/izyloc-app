@@ -1543,6 +1543,346 @@ class AdminUsageHandler(AdminBase):
             self.finish(json.dumps({'ok': False, 'error': str(e)}))
 
 
+# ============================================================================
+# NEW ADMIN DASHBOARD (secret URL /admin/izylaudo2026)
+# ----------------------------------------------------------------------------
+# Token-baseado via header X-Admin-Token ou querystring ?token=izylaudo2026.
+# Sem login, sem JWT. As classes abaixo redefinem nomes anteriores por
+# design (Python: ultima definicao vence), substituindo o fluxo JWT antigo.
+# ============================================================================
+
+ADMIN_URL_TOKEN = 'izylaudo2026'
+
+_ADMIN_PRICE_MAP = {
+    'price_conv_cents': 'price_per_photo_convencional_cents',
+    'price_prem_cents': 'price_per_photo_premium_cents',
+    'bonus_boas_vindas_cents': 'welcome_bonus_cents',
+}
+
+
+class AdminHandler(tornado.web.RequestHandler):
+    """Base para endpoints admin via URL secreta.
+
+    Autenticacao via header X-Admin-Token ou parametro ?token=.
+    """
+    def require_admin(self):
+        token = (self.request.headers.get('X-Admin-Token', '')
+                 or self.get_argument('token', ''))
+        if token != ADMIN_URL_TOKEN:
+            self.set_status(403)
+            self.set_header('Content-Type', 'application/json')
+            self.finish(json.dumps({'ok': False, 'error': 'Acesso negado'}))
+            return False
+        return True
+
+    def ok(self, data):
+        self.set_header('Content-Type', 'application/json; charset=utf-8')
+        self.finish(json.dumps(data, default=str, ensure_ascii=False))
+
+
+class AdminStatsHandler(AdminHandler):
+    def get(self):
+        if not self.require_admin():
+            return
+        periodo = self.get_argument('periodo', '30d')
+        periodo_sql = {
+            '7d':   "NOW() - INTERVAL '7 days'",
+            '30d':  "NOW() - INTERVAL '30 days'",
+            '90d':  "NOW() - INTERVAL '90 days'",
+            'ano':  "date_trunc('year', NOW())",
+            'tudo': "'2000-01-01'::timestamp",
+        }.get(periodo, "NOW() - INTERVAL '30 days'")
+
+        conn = get_conn()
+        try:
+            # ----- Usuarios -----
+            total_usuarios = conn.execute(
+                'SELECT COUNT(*) AS c FROM users'
+            ).fetchone()['c']
+            novos_usuarios = conn.execute(
+                'SELECT COUNT(*) AS c FROM users WHERE created_at >= ' + periodo_sql
+            ).fetchone()['c']
+            usuarios_ativos = conn.execute(
+                'SELECT COUNT(DISTINCT user_id) AS c FROM balance_transactions '
+                'WHERE created_at >= ' + periodo_sql + ' AND amount_cents < 0'
+            ).fetchone()['c']
+
+            # ----- Financeiro -----
+            receita_periodo = conn.execute(
+                'SELECT COALESCE(SUM(amount_cents), 0) AS s FROM balance_transactions '
+                'WHERE created_at >= ' + periodo_sql + " AND amount_cents > 0 AND type != 'refund'"
+            ).fetchone()['s']
+            receita_total = conn.execute(
+                'SELECT COALESCE(SUM(amount_cents), 0) AS s FROM balance_transactions '
+                "WHERE amount_cents > 0 AND type != 'refund'"
+            ).fetchone()['s']
+            ticket_medio = conn.execute(
+                'SELECT COALESCE(AVG(user_total), 0) AS m FROM ('
+                '  SELECT user_id, SUM(amount_cents) AS user_total '
+                '  FROM balance_transactions '
+                "  WHERE amount_cents > 0 AND type != 'refund' "
+                '  GROUP BY user_id'
+                ') t'
+            ).fetchone()['m']
+
+            # ----- Laudos -----
+            total_laudos = conn.execute(
+                'SELECT COUNT(*) AS c FROM inspections'
+            ).fetchone()['c']
+            laudos_periodo = conn.execute(
+                'SELECT COUNT(*) AS c FROM inspections WHERE created_at >= ' + periodo_sql
+            ).fetchone()['c']
+            tipo_rows = conn.execute(
+                "SELECT COALESCE(type, 'outros') AS tipo, COUNT(*) AS c FROM inspections "
+                'WHERE created_at >= ' + periodo_sql + ' GROUP BY type'
+            ).fetchall()
+            laudos_tipo = {r['tipo']: r['c'] for r in tipo_rows}
+
+            # ----- Fotos -----
+            fotos_periodo = conn.execute(
+                'SELECT COALESCE(SUM(photos_count), 0) AS s FROM balance_transactions '
+                'WHERE amount_cents < 0 AND created_at >= ' + periodo_sql
+                + " AND status = 'completed'"
+            ).fetchone()['s']
+            fotos_total = conn.execute(
+                'SELECT COALESCE(SUM(photos_count), 0) AS s FROM balance_transactions '
+                "WHERE amount_cents < 0 AND status = 'completed'"
+            ).fetchone()['s']
+
+            # ----- Top 20 usuarios por uso no periodo -----
+            usuarios_uso_rows = conn.execute(
+                'SELECT u.email, u.name, '
+                '       COALESCE(SUM(bt.photos_count), 0) AS fotos, '
+                '       COALESCE(SUM(ABS(bt.amount_cents)), 0) AS gasto_cents, '
+                '       u.balance_cents '
+                'FROM users u '
+                'LEFT JOIN balance_transactions bt ON bt.user_id = u.id '
+                "  AND bt.amount_cents < 0 AND bt.status = 'completed' "
+                '  AND bt.created_at >= ' + periodo_sql + ' '
+                'GROUP BY u.id, u.email, u.name, u.balance_cents '
+                'ORDER BY fotos DESC LIMIT 20'
+            ).fetchall()
+            usuarios_uso = [dict(r) for r in usuarios_uso_rows]
+
+            # ----- IA usage (Claude vs Gemini via description) -----
+            ia_row = conn.execute(
+                'SELECT '
+                "  COALESCE(SUM(CASE WHEN description ILIKE '%gemini%' THEN photos_count ELSE 0 END), 0) AS gemini_fotos, "
+                "  COALESCE(SUM(CASE WHEN description IS NULL OR description NOT ILIKE '%gemini%' THEN photos_count ELSE 0 END), 0) AS claude_fotos "
+                'FROM balance_transactions '
+                "WHERE amount_cents < 0 AND status = 'completed' "
+                'AND created_at >= ' + periodo_sql
+            ).fetchone()
+            ia_usage = {
+                'claude': int(ia_row['claude_fotos'] or 0),
+                'gemini': int(ia_row['gemini_fotos'] or 0),
+            }
+
+            # ----- Alertas -----
+            saldo_baixo = conn.execute(
+                'SELECT COUNT(*) AS c FROM users WHERE balance_cents < 100 AND balance_cents >= 0'
+            ).fetchone()['c']
+            reembolsos = conn.execute(
+                "SELECT COUNT(*) AS c FROM balance_transactions WHERE type = 'refund' "
+                'AND created_at >= ' + periodo_sql
+            ).fetchone()['c']
+
+            # ----- Precos (mapear chaves reais -> chaves curtas do frontend) -----
+            s_rows = conn.execute(
+                'SELECT key, value FROM settings WHERE key IN (?, ?, ?)',
+                ('price_per_photo_convencional_cents',
+                 'price_per_photo_premium_cents',
+                 'welcome_bonus_cents')
+            ).fetchall()
+            s_map = {r['key']: r['value'] for r in s_rows}
+            precos = {
+                'price_conv_cents':        int(s_map.get('price_per_photo_convencional_cents') or 50),
+                'price_prem_cents':        int(s_map.get('price_per_photo_premium_cents') or 90),
+                'bonus_boas_vindas_cents': int(s_map.get('welcome_bonus_cents') or 500),
+            }
+
+            self.ok({
+                'usuarios': {
+                    'total': total_usuarios,
+                    'novos_periodo': novos_usuarios,
+                    'ativos_periodo': usuarios_ativos,
+                },
+                'financeiro': {
+                    'receita_periodo_cents': int(receita_periodo or 0),
+                    'receita_total_cents':   int(receita_total or 0),
+                    'ticket_medio_cents':    int(ticket_medio or 0),
+                },
+                'laudos': {
+                    'total': total_laudos,
+                    'periodo': laudos_periodo,
+                    'por_tipo': laudos_tipo,
+                },
+                'fotos': {
+                    'periodo': int(fotos_periodo or 0),
+                    'total':   int(fotos_total or 0),
+                },
+                'ia_usage':    ia_usage,
+                'usuarios_uso': usuarios_uso,
+                'alertas': {
+                    'saldo_baixo':        saldo_baixo,
+                    'reembolsos_periodo': reembolsos,
+                },
+                'precos': precos,
+            })
+        finally:
+            conn.close()
+
+
+class AdminUsersHandler(AdminHandler):
+    def get(self):
+        if not self.require_admin():
+            return
+        conn = get_conn()
+        try:
+            # Garante coluna is_blocked (idempotente)
+            try:
+                conn.execute('ALTER TABLE users ADD COLUMN IF NOT EXISTS is_blocked BOOLEAN DEFAULT FALSE')
+                conn.commit()
+            except Exception:
+                conn.rollback()
+
+            rows = conn.execute(
+                'SELECT u.id, u.name, u.email, u.balance_cents, u.created_at, '
+                '       COALESCE(u.is_blocked, FALSE) AS is_blocked, '
+                '       COUNT(DISTINCT i.id) AS total_laudos, '
+                '       COALESCE(SUM(bt.photos_count), 0) AS total_fotos '
+                'FROM users u '
+                'LEFT JOIN inspections i ON i.user_id = u.id '
+                'LEFT JOIN balance_transactions bt ON bt.user_id = u.id '
+                "  AND bt.amount_cents < 0 AND bt.status = 'completed' "
+                'GROUP BY u.id, u.name, u.email, u.balance_cents, u.created_at, u.is_blocked '
+                'ORDER BY u.created_at DESC'
+            ).fetchall()
+            users = []
+            for r in rows:
+                d = dict(r)
+                if d.get('created_at') is not None:
+                    d['created_at'] = str(d['created_at'])
+                users.append(d)
+            self.ok({'users': users})
+        finally:
+            conn.close()
+
+
+class AdminUserBlockHandler(AdminHandler):
+    def post(self, user_id):
+        if not self.require_admin():
+            return
+        try:
+            data = json.loads(self.request.body or b'{}')
+        except Exception:
+            data = {}
+        blocked = bool(data.get('blocked', True))
+        conn = get_conn()
+        try:
+            try:
+                conn.execute('ALTER TABLE users ADD COLUMN IF NOT EXISTS is_blocked BOOLEAN DEFAULT FALSE')
+                conn.commit()
+            except Exception:
+                conn.rollback()
+            conn.execute('UPDATE users SET is_blocked = ? WHERE id = ?', (blocked, user_id))
+            conn.commit()
+            self.ok({'ok': True, 'blocked': blocked})
+        finally:
+            conn.close()
+
+
+class AdminUserBalanceHandler(AdminHandler):
+    def post(self, user_id):
+        if not self.require_admin():
+            return
+        try:
+            data = json.loads(self.request.body or b'{}')
+        except Exception:
+            data = {}
+        try:
+            amount_cents = int(data.get('amount_cents') or 0)
+        except Exception:
+            amount_cents = 0
+        if not amount_cents:
+            self.set_status(400)
+            self.ok({'ok': False, 'error': 'amount_cents deve ser diferente de zero'})
+            return
+        reason = (data.get('reason') or 'Ajuste manual pelo admin').strip()
+        conn = get_conn()
+        try:
+            row = conn.execute(
+                'UPDATE users SET balance_cents = balance_cents + ? '
+                'WHERE id = ? RETURNING balance_cents',
+                (amount_cents, user_id),
+            ).fetchone()
+            if not row:
+                conn.rollback()
+                self.set_status(404)
+                self.ok({'ok': False, 'error': 'Usuario nao encontrado'})
+                return
+            new_balance = row['balance_cents']
+            tx_type = 'admin_credit' if amount_cents > 0 else 'admin_debit'
+            conn.execute(
+                'INSERT INTO balance_transactions '
+                '(user_id, type, amount_cents, balance_after_cents, description, status) '
+                'VALUES (?, ?, ?, ?, ?, ?)',
+                (user_id, tx_type, amount_cents, new_balance, reason, 'completed'),
+            )
+            conn.commit()
+            self.ok({'ok': True, 'new_balance_cents': new_balance})
+        finally:
+            conn.close()
+
+
+class AdminPricesHandler(AdminHandler):
+    def get(self):
+        if not self.require_admin():
+            return
+        conn = get_conn()
+        try:
+            rows = conn.execute(
+                'SELECT key, value FROM settings WHERE key IN (?, ?, ?)',
+                ('price_per_photo_convencional_cents',
+                 'price_per_photo_premium_cents',
+                 'welcome_bonus_cents'),
+            ).fetchall()
+            m = {r['key']: r['value'] for r in rows}
+            self.ok({
+                'price_conv_cents':        int(m.get('price_per_photo_convencional_cents') or 50),
+                'price_prem_cents':        int(m.get('price_per_photo_premium_cents') or 90),
+                'bonus_boas_vindas_cents': int(m.get('welcome_bonus_cents') or 500),
+            })
+        finally:
+            conn.close()
+
+    def post(self):
+        if not self.require_admin():
+            return
+        try:
+            data = json.loads(self.request.body or b'{}')
+        except Exception:
+            data = {}
+        conn = get_conn()
+        try:
+            for short_key, real_key in _ADMIN_PRICE_MAP.items():
+                if short_key in data and data.get(short_key) is not None:
+                    try:
+                        val = str(int(data[short_key]))
+                    except Exception:
+                        continue
+                    conn.execute(
+                        'INSERT INTO settings (key, value, value_type, category) '
+                        "VALUES (?, ?, 'integer', 'pricing') "
+                        'ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value, updated_at = NOW()',
+                        (real_key, val),
+                    )
+            conn.commit()
+            self.ok({'ok': True})
+        finally:
+            conn.close()
+
+
 class InspectionsHandler(BaseHandler):
     def get(self):
         user = self.require_auth()
@@ -4121,15 +4461,13 @@ def make_app():
         (r'/api/config/corretores', ConfigCorretoresHandler),
         (r'/api/config/corretores/([^/]+)', ConfigCorretorDeleteHandler),
         (r'/api/config/account', DeleteAccountHandler),
-        # Admin panel
-        (r'/admin', AdminPageHandler),
-        (r'/api/admin/login', AdminLoginHandler),
+        # Admin panel (URL secreta com token 'izylaudo2026')
+        (r'/admin/izylaudo2026', AdminPageHandler),
         (r'/api/admin/stats', AdminStatsHandler),
-        (r'/api/admin/clients', AdminClientsHandler),
-        (r'/api/admin/clients/([^/]+)', AdminClientHandler),
-        (r'/api/admin/plans', AdminPlansHandler),
-        (r'/api/admin/plans/([^/]+)', AdminPlanHandler),
-        (r'/api/admin/usage', AdminUsageHandler),
+        (r'/api/admin/users', AdminUsersHandler),
+        (r'/api/admin/users/([^/]+)/block', AdminUserBlockHandler),
+        (r'/api/admin/users/([^/]+)/balance', AdminUserBalanceHandler),
+        (r'/api/admin/settings/prices', AdminPricesHandler),
         # Inspections
         (r'/api/inspections', InspectionsHandler),
         (r'/api/inspections/([^/]+)', InspectionHandler),
