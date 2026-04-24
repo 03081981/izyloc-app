@@ -51,10 +51,107 @@ MP_ACCESS_TOKEN = os.environ.get('MP_ACCESS_TOKEN', '')
 MP_WEBHOOK_SECRET = os.environ.get('MP_WEBHOOK_SECRET', '')
 APP_BASE_URL = os.environ.get('APP_BASE_URL', 'https://izyloc-app-production.up.railway.app')
 AUTENTIQUE_TOKEN = os.environ.get('AUTENTIQUE_TOKEN', '7800e349d2e4353904f7749a3584af5d5d4ad35a3749df945cc84b6c5565893a')
+GEMINI_API_KEY = os.environ.get('GEMINI_API_KEY', 'AIzaSyBG_eDJuABkrF_S1dHHzj7bzpKBr5I7ZLw')
 UPLOAD_DIR = os.path.join(os.path.dirname(__file__), 'uploads')
 PDF_DIR = os.path.join(os.path.dirname(__file__), 'pdfs')
 Path(UPLOAD_DIR).mkdir(exist_ok=True)
 Path(PDF_DIR).mkdir(exist_ok=True)
+
+def analyze_with_gemini(images, ambiente, tipo_vistoria, tipo_analise):
+    """Fallback para Google Gemini 1.5 Flash quando Anthropic falha.
+
+    `images` aceita dois formatos:
+      - lista de strings base64 (ou data URL)
+      - lista de dicts {'base64': '...', 'mime_type': '...'} (formato usado
+        internamente em AnalisarBatchHandler)
+
+    Retorna dict no mesmo shape que analyze_batch: {success, resumo,
+    estado_geral, provider}.
+    """
+    try:
+        import google.generativeai as _genai
+        import base64 as _b64
+    except Exception as _imp_e:
+        print('[GEMINI] import_error: ' + str(_imp_e), flush=True)
+        return {
+            'success': False, 'resumo': '', 'provider': 'gemini',
+            'error': 'google-generativeai nao instalado: ' + str(_imp_e),
+        }
+
+    try:
+        _genai.configure(api_key=GEMINI_API_KEY)
+        model = _genai.GenerativeModel('gemini-1.5-flash')
+
+        detail_instr = (
+            'Use linguagem tecnica e detalhada para fins juridicos.'
+            if tipo_analise == 'premium'
+            else 'Use linguagem clara e objetiva.')
+
+        prompt_text = (
+            'Voce e um especialista em vistoria imobiliaria. Analise as '
+            'fotos do ambiente "' + str(ambiente or 'Ambiente')
+            + '" de uma vistoria de ' + str(tipo_vistoria or 'entrada') + '.\n\n'
+            'Descreva detalhadamente o estado de conservacao do ambiente, '
+            'incluindo:\n'
+            '- Estado geral das paredes, piso e teto\n'
+            '- Condicao de portas, janelas e esquadrias\n'
+            '- Moveis e equipamentos presentes (se houver)\n'
+            '- Defeitos, danos, manchas ou problemas visiveis\n'
+            '- Acabamentos e revestimentos\n\n'
+            + detail_instr + '\n\n'
+            'Responda APENAS com a descricao tecnica do ambiente, sem '
+            'introducoes ou conclusoes.'
+        )
+
+        parts = [prompt_text]
+
+        for img in (images or []):
+            # Aceita dict {base64, mime_type} ou string base64/data-URL
+            if isinstance(img, dict):
+                raw = img.get('base64') or img.get('data') or ''
+                mime = img.get('mime_type') or 'image/jpeg'
+            else:
+                raw = str(img or '')
+                mime = 'image/jpeg'
+            if not raw:
+                continue
+            if ',' in raw and raw.startswith('data:'):
+                raw = raw.split(',', 1)[1]
+            try:
+                img_bytes = _b64.b64decode(raw)
+            except Exception:
+                continue
+            parts.append({'mime_type': mime, 'data': img_bytes})
+
+        if len(parts) < 2:
+            return {
+                'success': False, 'resumo': '', 'provider': 'gemini',
+                'error': 'no_valid_images',
+            }
+
+        response = model.generate_content(parts)
+        resumo = (response.text or '').strip() if hasattr(response, 'text') else ''
+
+        if not resumo:
+            return {
+                'success': False, 'resumo': '', 'provider': 'gemini',
+                'error': 'empty_response',
+            }
+
+        return {
+            'success': True,
+            'resumo': resumo,
+            'estado_geral': 'Bom',
+            'provider': 'gemini',
+        }
+
+    except Exception as _e:
+        print('[GEMINI] ERROR: ' + str(_e), flush=True)
+        return {
+            'success': False, 'resumo': '', 'provider': 'gemini',
+            'error': str(_e),
+        }
+
 
 def hash_password(pwd):
     return hashlib.sha256(pwd.encode()).hexdigest()
@@ -2166,6 +2263,44 @@ class AnalisarBatchHandler(BaseHandler):
                           + ' success=' + str(_success_flag), flush=True)
 
             if ia_err is not None:
+                # === FALLBACK GEMINI ===
+                # Antes de reembolsar, tenta o Google Gemini 1.5 Flash.
+                # Usuario nao percebe diferenca se o fallback funcionar.
+                print('[AI] Claude falhou: ' + str(ia_err)[:120]
+                      + ' - tentando Gemini fallback', flush=True)
+                try:
+                    _gem = analyze_with_gemini(
+                        images=imagens,
+                        ambiente=ambiente,
+                        tipo_vistoria=tipo_vistoria,
+                        tipo_analise=tipo_analise,
+                    )
+                    if (_gem and _gem.get('success')
+                            and (_gem.get('resumo') or '').strip()):
+                        print('[GEMINI] OK fallback user=' + user_id
+                              + ' ambiente=' + str(ambiente)
+                              + ' len=' + str(len(_gem['resumo'])),
+                              flush=True)
+                        _gem_result = {
+                            'ok': True,
+                            'success': True,
+                            'resumo': _gem['resumo'],
+                            'estado_geral': _gem.get('estado_geral', 'Bom'),
+                            'provider': 'gemini',
+                            'balance_after_cents': new_balance,
+                            'debited_cents': total_cents,
+                            'photos_count': qtd_fotos,
+                        }
+                        self.write(_gem_result)
+                        return
+                    print('[GEMINI] fallback_also_failed user=' + user_id
+                          + ' err=' + str((_gem or {}).get('error'))[:200],
+                          flush=True)
+                except Exception as _gem_e:
+                    print('[GEMINI] fallback_exception user=' + user_id
+                          + ' err=' + str(_gem_e)[:200], flush=True)
+                # === FIM FALLBACK GEMINI ===
+
                 # Reembolso: devolve saldo + registra transacao de refund
                 try:
                     _conn_rf = get_conn()
