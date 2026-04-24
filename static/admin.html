@@ -94,9 +94,40 @@ body { background: #f1f5f9; color: #1e293b; }
 </style>
 </head>
 <body>
+
+<!-- Tela de login (aparece antes do painel) -->
+<div id="adm-login-screen" style="
+  position:fixed;inset:0;background:#f1f5f9;
+  display:flex;align-items:center;justify-content:center;z-index:999;">
+  <div style="background:#fff;border-radius:16px;padding:40px;width:340px;
+    box-shadow:0 8px 32px rgba(0,0,0,0.12);text-align:center;">
+    <div style="font-size:22px;font-weight:700;color:#1e3a5f;margin-bottom:4px;">
+      izy<span style="font-weight:300;">LAUDO</span>
+    </div>
+    <div style="font-size:12px;color:#94a3b8;margin-bottom:28px;">Painel Administrativo</div>
+    <input type="password" id="adm-senha-input"
+      placeholder="Digite a senha"
+      style="width:100%;padding:12px;border:1px solid #e2e8f0;border-radius:8px;
+        font-size:14px;margin-bottom:12px;outline:none;"
+      onkeydown="if(event.key==='Enter') admLogin()">
+    <button onclick="admLogin()" style="width:100%;padding:12px;background:#1e3a5f;
+      color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;">
+      Entrar
+    </button>
+    <div id="adm-login-erro" style="color:#dc2626;font-size:12px;margin-top:10px;display:none;">
+      Senha incorreta. Tente novamente.
+    </div>
+  </div>
+</div>
+
 <div class="adm-header">
   <h1>izyLAUDO — Painel Admin</h1>
-  <span id="adm-ultima-atualizacao">Carregando...</span>
+  <div style="display:flex;align-items:center;gap:16px;">
+    <span id="adm-ultima-atualizacao">Carregando...</span>
+    <button onclick="admLogout()" style="background:rgba(255,255,255,0.15);
+      color:#fff;border:none;border-radius:8px;padding:7px 14px;
+      font-size:12px;cursor:pointer;">Sair</button>
+  </div>
 </div>
 
 <div class="adm-body">
@@ -257,8 +288,40 @@ body { background: #f1f5f9; color: #1e293b; }
 
 <script>
 const ADMIN_TOKEN = 'izylaudo2026';
+const ADMIN_SENHA = 'izyAdmin@2026';
 let _admUsers = [];
 let _admUserSelecionado = null;
+
+function admLogin() {
+  var senha = document.getElementById('adm-senha-input').value;
+  if (senha === ADMIN_SENHA) {
+    sessionStorage.setItem('adm_auth', 'ok');
+    document.getElementById('adm-login-screen').style.display = 'none';
+    admCarregar('30d', document.querySelector('.adm-filtro.active'));
+  } else {
+    document.getElementById('adm-login-erro').style.display = 'block';
+    document.getElementById('adm-senha-input').value = '';
+    document.getElementById('adm-senha-input').focus();
+  }
+}
+
+function admLogout() {
+  sessionStorage.removeItem('adm_auth');
+  location.reload();
+}
+
+// Esconder login imediatamente se sessao ja autenticada (evita flash)
+(function() {
+  if (sessionStorage.getItem('adm_auth') === 'ok') {
+    var s = document.getElementById('adm-login-screen');
+    if (s) s.style.display = 'none';
+  } else {
+    setTimeout(function() {
+      var inp = document.getElementById('adm-senha-input');
+      if (inp) inp.focus();
+    }, 50);
+  }
+})();
 
 async function admFetch(path, method, body) {
   method = method || 'GET';
@@ -460,8 +523,10 @@ async function admSalvarPrecos() {
   admCarregar(periodo, null);
 }
 
-// Inicializar
-admCarregar('30d', document.querySelector('.adm-filtro.active'));
+// Inicializar apenas se ja autenticado (caso contrario aguarda login)
+if (sessionStorage.getItem('adm_auth') === 'ok') {
+  admCarregar('30d', document.querySelector('.adm-filtro.active'));
+}
 </script>
 </body>
 </html>
