@@ -7494,12 +7494,12 @@ async function generatePDF() {
             resumo: _sd.resumo || '',
             inventario: (_sd.inventario || {}),
             inventarioExtras: (_sd.inventarioExtras || []),
-            inventarioNomes: (typeof _getNomesInventario === 'function' ? _getNomesInventario(_subN) : {})
+            inventarioNomes: (typeof _getNomesInventario === 'function' ? _filterNomesInv(_getNomesInventario(_subN), _sd.inventarioRemovidos) : [])
           });
         });
-        _ambData.push({roomName: wizard.selectedRooms[_ai], isSuite: !!_d.isSuite, subAmbientes: _subAmbs, verificacoes:_verif, verificacoesObs:_verifObs, testesNomes:_tNomes, observacoes:_d.obs||'', inventario:(_d.inventario||{}),inventarioExtras:(_d.inventarioExtras||[]),inventarioNomes:_getNomesInventario(wizard.selectedRooms[_ai]),consolidated_text:(function(){var _rn=wizard.selectedRooms&&wizard.selectedRooms[_ai]?wizard.selectedRooms[_ai]:(window._wiz6Ambientes&&window._wiz6Ambientes[_ai]?window._wiz6Ambientes[_ai]:String(_ai));var _fs=window._fotoStore&&window._fotoStore[_rn];var _fdesc=_fs&&_fs[0]&&_fs[0].desc||'';return _fdesc||_d.resumo||_d.consolidatedText||_d.consolidated_text||_d.resumoIA||_d.aiDescription||'';})()||'',photos:(window._fotoStore&&window._fotoStore[_rn]?window._fotoStore[_rn]:[]).map(function(f){return{id:f.id||f.photoId||'',url:f.url||f.photoUrl||f.src||'',ai_description:f.desc||f.aiDescription||f.ai_description||f.descricao||'',condition:f.condition||f.estado||'',observation:f.obs||f.observation||''}})});
+        _ambData.push({roomName: wizard.selectedRooms[_ai], isSuite: !!_d.isSuite, subAmbientes: _subAmbs, verificacoes:_verif, verificacoesObs:_verifObs, testesNomes:_tNomes, observacoes:_d.obs||'', inventario:(_d.inventario||{}),inventarioExtras:(_d.inventarioExtras||[]),inventarioNomes:_filterNomesInv(_getNomesInventario(wizard.selectedRooms[_ai]), _d.inventarioRemovidos),consolidated_text:(function(){var _rn=wizard.selectedRooms&&wizard.selectedRooms[_ai]?wizard.selectedRooms[_ai]:(window._wiz6Ambientes&&window._wiz6Ambientes[_ai]?window._wiz6Ambientes[_ai]:String(_ai));var _fs=window._fotoStore&&window._fotoStore[_rn];var _fdesc=_fs&&_fs[0]&&_fs[0].desc||'';return _fdesc||_d.resumo||_d.consolidatedText||_d.consolidated_text||_d.resumoIA||_d.aiDescription||'';})()||'',photos:(window._fotoStore&&window._fotoStore[_rn]?window._fotoStore[_rn]:[]).map(function(f){return{id:f.id||f.photoId||'',url:f.url||f.photoUrl||f.src||'',ai_description:f.desc||f.aiDescription||f.ai_description||f.descricao||'',condition:f.condition||f.estado||'',observation:f.obs||f.observation||''}})});
       } else {
-        _ambData.push({roomName:wizard.selectedRooms[_ai],verificacoes:_verif,verificacoesObs:_verifObs,testesNomes:_tNomes,observacoes:_d.obs||'', inventario:(_d.inventario||{}),inventarioExtras:(_d.inventarioExtras||[]),inventarioNomes:_getNomesInventario(wizard.selectedRooms[_ai]),consolidated_text:(function(){var _rn=wizard.selectedRooms&&wizard.selectedRooms[_ai]?wizard.selectedRooms[_ai]:(window._wiz6Ambientes&&window._wiz6Ambientes[_ai]?window._wiz6Ambientes[_ai]:String(_ai));var _fs=window._fotoStore&&window._fotoStore[_rn];var _fdesc=_fs&&_fs[0]&&_fs[0].desc||'';return _fdesc||_d.resumo||_d.consolidatedText||_d.consolidated_text||_d.resumoIA||_d.aiDescription||'';})()||'',photos:(window._fotoStore&&(window._wiz6Ambientes&&window._fotoStore[window._wiz6Ambientes[_ai]]?window._fotoStore[window._wiz6Ambientes[_ai]]:window._fotoStore[wizard.selectedRooms&&wizard.selectedRooms[_ai]])||[]).map(function(f){return{id:f.id||f.photoId||'',url:f.url||f.photoUrl||f.src||'',ai_description:f.desc||f.aiDescription||f.ai_description||'',condition:f.condition||f.estado||'',observation:f.obs||f.observation||''}})});
+        _ambData.push({roomName:wizard.selectedRooms[_ai],verificacoes:_verif,verificacoesObs:_verifObs,testesNomes:_tNomes,observacoes:_d.obs||'', inventario:(_d.inventario||{}),inventarioExtras:(_d.inventarioExtras||[]),inventarioNomes:_filterNomesInv(_getNomesInventario(wizard.selectedRooms[_ai]), _d.inventarioRemovidos),consolidated_text:(function(){var _rn=wizard.selectedRooms&&wizard.selectedRooms[_ai]?wizard.selectedRooms[_ai]:(window._wiz6Ambientes&&window._wiz6Ambientes[_ai]?window._wiz6Ambientes[_ai]:String(_ai));var _fs=window._fotoStore&&window._fotoStore[_rn];var _fdesc=_fs&&_fs[0]&&_fs[0].desc||'';return _fdesc||_d.resumo||_d.consolidatedText||_d.consolidated_text||_d.resumoIA||_d.aiDescription||'';})()||'',photos:(window._fotoStore&&(window._wiz6Ambientes&&window._fotoStore[window._wiz6Ambientes[_ai]]?window._fotoStore[window._wiz6Ambientes[_ai]]:window._fotoStore[wizard.selectedRooms&&wizard.selectedRooms[_ai]])||[]).map(function(f){return{id:f.id||f.photoId||'',url:f.url||f.photoUrl||f.src||'',ai_description:f.desc||f.aiDescription||f.ai_description||'',condition:f.condition||f.estado||'',observation:f.obs||f.observation||''}})});
       };
     }
     // === Save ambientes_json to DB before PDF generation ===
@@ -7521,7 +7521,7 @@ async function generatePDF() {
             _sFotos.push({item:_sn,estado:_subEstado,desc:_subResumo,src:""});
           }
         });
-        _ambArr.push({nome:_bName,fotos:_sFotos,verificacoes:_bd.isSuite?{}:(_bd.testes||{}),observacoes:_bd.obs||"",inventario:(_bd.inventario||{}),inventarioExtras:(_bd.inventarioExtras||[]),inventarioNomes:(typeof _getNomesInventario==="function"?_getNomesInventario(_bName):[])});
+        _ambArr.push({nome:_bName,fotos:_sFotos,verificacoes:_bd.isSuite?{}:(_bd.testes||{}),observacoes:_bd.obs||"",inventario:(_bd.inventario||{}),inventarioExtras:(_bd.inventarioExtras||[]),inventarioNomes:(typeof _getNomesInventario==="function"?_filterNomesInv(_getNomesInventario(_bName), _bd.inventarioRemovidos):[])});
       } else {
         // Regular room: one item per photo, resumo on first
         var _bFotos=[];
@@ -7533,7 +7533,7 @@ async function generatePDF() {
         if((_bd.fotos||[]).length===0&&_bResumo){
           _bFotos.push({item:_bName,estado:_bEstado,desc:_bResumo,src:""});
         }
-        _ambArr.push({nome:_bName,fotos:_bFotos,verificacoes:_bd.testes||{},observacoes:_bd.obs||"",inventario:(_bd.inventario||{}),inventarioExtras:(_bd.inventarioExtras||[]),inventarioNomes:(typeof _getNomesInventario==="function"?_getNomesInventario(_bName):[])});
+        _ambArr.push({nome:_bName,fotos:_bFotos,verificacoes:_bd.testes||{},observacoes:_bd.obs||"",inventario:(_bd.inventario||{}),inventarioExtras:(_bd.inventarioExtras||[]),inventarioNomes:(typeof _getNomesInventario==="function"?_filterNomesInv(_getNomesInventario(_bName), _bd.inventarioRemovidos):[])});
       }
     }
     try{console.log('ambData inventario:',JSON.stringify(_ambArr.map(function(a){return {nome:a.nome,inv:a.inventario,nomes:a.inventarioNomes,extras:a.inventarioExtras};})));}catch(e){} await fetch("/api/inspections/"+wizard.inspectionId,{method:"PUT",headers:{"Content-Type":"application/json","Authorization":"Bearer "+localStorage.getItem("izylo_token")},body:JSON.stringify({ambientes_json:JSON.stringify(_ambArr)})});
@@ -10662,6 +10662,20 @@ function _getNomesInventario(nomeAmb) {
   return _itensPorAmb[_tipo] || _itensPorAmb['default'];
 }
 
+// Task #123: helper para filtrar nomes do inventario, removendo os que
+// foram excluidos pelo usuario via X. Aplicado antes de mandar pro PDF
+// para nao reaparecerem no laudo gerado.
+function _filterNomesInv(nomes, removidos) {
+  if (!Array.isArray(removidos) || !removidos.length) return nomes;
+  var _rmSet = {};
+  removidos.forEach(function(r){ _rmSet[r] = true; });
+  return (nomes || []).filter(function(item){
+    var _key = String(item).replace(/[\s\/\(\)\.]+/g, '_').toLowerCase();
+    return !_rmSet[_key];
+  });
+}
+window._filterNomesInv = _filterNomesInv;
+
 function _wiz6RenderInventario(idx, nomeAmb) {
   var _isTemp = wizard.tipo === 'temporada';
   var _isMob = wizard.mobiliado === true || wizard.mobiliado === 'true';
@@ -10849,8 +10863,19 @@ function _buildInvTable(idx, subNome, titulo, itens, extras, inv, fnEstado, fnQt
     _r += '</td></tr>';
     return _r;
   }
+  // Task #123: filtra itens marcados como removidos pelo usuario.
+  // Lista de keys removidas vive em wizard.itensData[idx].inventarioRemovidos
+  // (ou .subs[subNome].inventarioRemovidos para sub-ambientes).
+  var _removed = [];
+  try {
+    var _ctxData = subNome
+      ? ((wizard.itensData[idx] && wizard.itensData[idx].subs && wizard.itensData[idx].subs[subNome]) || {})
+      : (wizard.itensData[idx] || {});
+    _removed = _ctxData.inventarioRemovidos || [];
+  } catch(_e){ _removed = []; }
   itens.forEach(function(item) {
     var _key = item.replace(/[\s\/\(\)\.]+/g,'_').toLowerCase();
+    if (_removed.indexOf(_key) !== -1) return;  // pulou — usuario removeu
     html += _renderLinha(item, _key, false, null);
   });
   extras.forEach(function(item, ei) {
@@ -10898,11 +10923,20 @@ function wiz6InvEstado(idx, key, val) {
 }
 
 function wiz6InvClear(idx, key) {
-  if (!wizard.itensData[idx] || !wizard.itensData[idx].inventario) return;
+  if (!wizard.itensData[idx]) wizard.itensData[idx] = {};
+  if (!wizard.itensData[idx].inventario) wizard.itensData[idx].inventario = {};
   delete wizard.itensData[idx].inventario[key+'_qty'];
   delete wizard.itensData[idx].inventario[key+'_estado'];
   delete wizard.itensData[idx].inventario[key+'_obs'];
+  // Task #123: marca o item como removido permanentemente
+  if (!Array.isArray(wizard.itensData[idx].inventarioRemovidos)) {
+    wizard.itensData[idx].inventarioRemovidos = [];
+  }
+  if (wizard.itensData[idx].inventarioRemovidos.indexOf(key) === -1) {
+    wizard.itensData[idx].inventarioRemovidos.push(key);
+  }
   wiz6RenderAmbCard(idx);
+  try { if (typeof wizSaveSnapshot === 'function') wizSaveSnapshot(true); } catch(e){}
 }
 
 function wiz6InvObs(idx, key, val) {
@@ -10923,6 +10957,8 @@ function wiz6InvRemoverExtra(idx, ei) {
   if (!wizard.itensData[idx].inventarioExtras) return;
   wizard.itensData[idx].inventarioExtras.splice(ei,1);
   wiz6RenderAmbCard(idx);
+  // Task #123: persiste remocao
+  try { if (typeof wizSaveSnapshot === 'function') wizSaveSnapshot(true); } catch(e){}
 }
 
 function wiz6InvEstadoSub(idx, subNome, key, val) {
@@ -10934,12 +10970,17 @@ function wiz6InvEstadoSub(idx, subNome, key, val) {
 }
 
 function wiz6InvClearSub(idx, subNome, key) {
-  var sd = wizard.itensData[idx].subs[subNome];
-  if (!sd||!sd.inventario) return;
+  var sd = wizard.itensData[idx] && wizard.itensData[idx].subs && wizard.itensData[idx].subs[subNome];
+  if (!sd) return;
+  if (!sd.inventario) sd.inventario = {};
   delete sd.inventario[key+'_qty'];
   delete sd.inventario[key+'_estado'];
   delete sd.inventario[key+'_obs'];
+  // Task #123: marca como removido permanentemente
+  if (!Array.isArray(sd.inventarioRemovidos)) sd.inventarioRemovidos = [];
+  if (sd.inventarioRemovidos.indexOf(key) === -1) sd.inventarioRemovidos.push(key);
   wiz6RenderAmbCard(idx);
+  try { if (typeof wizSaveSnapshot === 'function') wizSaveSnapshot(true); } catch(e){}
 }
 
 function wiz6InvQtySub(idx, subNome, key, delta) {
@@ -10970,10 +11011,12 @@ function wiz6InvAdicionarExtraSub(idx, subNome) {
 }
 
 function wiz6InvRemoverExtraSub(idx, subNome, ei) {
-  var sd = wizard.itensData[idx].subs[subNome];
-  if (!sd.inventarioExtras) return;
+  var sd = wizard.itensData[idx] && wizard.itensData[idx].subs && wizard.itensData[idx].subs[subNome];
+  if (!sd || !sd.inventarioExtras) return;
   sd.inventarioExtras.splice(ei,1);
   wiz6RenderAmbCard(idx);
+  // Task #123: persiste remocao
+  try { if (typeof wizSaveSnapshot === 'function') wizSaveSnapshot(true); } catch(e){}
 }
 
 function _wiz6RenderInventarioSub(idx, subNome) {
