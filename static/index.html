@@ -4409,6 +4409,98 @@ async function api(method, path, body = null, isMultipart = false) {
   } catch { return { error: 'Erro de conexão', ok: false }; }
 }
 
+// ─── AUTO-SAVE DO WIZARD (task #104) ───────────────────────────────────────
+// Persiste o estado do wizard (snapshot + step + foto IA descricao) no servidor
+// para que o usuario possa fechar o navegador no meio do laudo e retomar do
+// ponto onde parou ao clicar Editar, sem perder fotos, descricoes ou cobrancas.
+let _wizSaveTO = null;
+let _wizLastSavedJson = '';
+function _wizCollectSnapshot() {
+  // Coleta estado essencial para retomar (NAO inclui base64 das fotos —
+  // estas vivem no banco via wizard_photos).
+  try {
+    var ws = (typeof wizard !== 'undefined') ? wizard : {};
+    var fs = (window._fotoStore || {});
+    // Para o snapshot, mantemos apenas referencias (id + url + desc), sem base64.
+    var fsLight = {};
+    Object.keys(fs).forEach(function(k){
+      fsLight[k] = (fs[k] || []).map(function(p){
+        return {
+          photoId: p.photoId || p.id || '',
+          url: p.url || '',
+          desc: p.desc || '',
+          item: p.item || '',
+          estado: p.estado || '',
+        };
+      });
+    });
+    return {
+      step: (typeof ws.step === 'number') ? ws.step : 0,
+      tipo: ws.tipo || '',
+      mobiliado: !!ws.mobiliado,
+      realizador: ws.realizador || '',
+      selectedRooms: ws.selectedRooms || [],
+      itensData: ws.itensData || {},
+      _wiz6Ambientes: window._wiz6Ambientes || [],
+      _ambStore: window._ambStore || {},
+      _fotoStoreLight: fsLight,
+      _ts: Date.now(),
+    };
+  } catch(e) { return {}; }
+}
+function wizSaveSnapshot(immediate) {
+  var ws = (typeof wizard !== 'undefined') ? wizard : null;
+  if (!ws || !ws.inspectionId) return;
+  var doSave = function() {
+    try {
+      var snap = _wizCollectSnapshot();
+      var json = JSON.stringify(snap);
+      // Skip se nada mudou
+      if (json === _wizLastSavedJson) return;
+      _wizLastSavedJson = json;
+      api('POST', '/api/inspections/' + ws.inspectionId + '/snapshot', {
+        wizard_snapshot: json,
+        last_step: snap.step || 0,
+      }).then(function(r){
+        if (!r || r.ok === false) console.warn('[wizSaveSnapshot] falha', r);
+      }).catch(function(e){ console.warn('[wizSaveSnapshot] erro', e); });
+    } catch(e) { console.warn('[wizSaveSnapshot] err', e); }
+  };
+  if (immediate) {
+    if (_wizSaveTO) { clearTimeout(_wizSaveTO); _wizSaveTO = null; }
+    doSave();
+  } else {
+    if (_wizSaveTO) clearTimeout(_wizSaveTO);
+    _wizSaveTO = setTimeout(doSave, 1500);  // debounce 1.5s
+  }
+}
+// Upload de uma foto base64 para o servidor; retorna {id, url} ou null.
+async function wizUploadPhoto(ambiente, idx, base64, mime, subAmbiente) {
+  var ws = (typeof wizard !== 'undefined') ? wizard : null;
+  if (!ws || !ws.inspectionId) return null;
+  try {
+    var r = await api('POST', '/api/inspections/' + ws.inspectionId + '/wiz-photo', {
+      ambiente: ambiente || '',
+      sub_ambiente: subAmbiente || '',
+      idx: idx || 0,
+      base64: base64 || '',
+      mime: mime || 'image/jpeg',
+    });
+    if (r && r.ok && r.id) return { id: r.id, url: r.url };
+  } catch(e) { console.warn('[wizUploadPhoto] err', e); }
+  return null;
+}
+async function wizDeletePhoto(photoId) {
+  var ws = (typeof wizard !== 'undefined') ? wizard : null;
+  if (!ws || !ws.inspectionId || !photoId) return;
+  try {
+    await api('DELETE', '/api/inspections/' + ws.inspectionId + '/wiz-photo/' + photoId);
+  } catch(e) { console.warn('[wizDeletePhoto] err', e); }
+}
+window.wizSaveSnapshot = wizSaveSnapshot;
+window.wizUploadPhoto = wizUploadPhoto;
+window.wizDeletePhoto = wizDeletePhoto;
+
 // ─── TOAST & LOADING ──────────────────────────────────────────────────────────
 let toastTO;
 function toast(msg, type = '') {
@@ -5293,7 +5385,86 @@ async function editarLaudo(id, origin) {
     showPage("page-wizard", "Editando laudo " + (wizard.codigo || ""));
     populateFields();
     if (typeof syncWizSidebar === "function") syncWizSidebar();
-    gotoWStep(6);
+    // Auto-save (task #104): restaura fotos + descricoes + step persistidos no servidor
+    try {
+      window._fotoStore = window._fotoStore || {};
+      var _wizPhs = r.wiz_photos || [];
+      // Agrupa por ambiente (e sub_ambiente quando presente).
+      var _byAmb = {};        // foto_store por ambiente principal
+      var _bySub = {};        // foto_store para sub_ambientes (Suite/etc.)
+      _wizPhs.forEach(function(wp){
+        var amb = wp.ambiente || '';
+        if (!amb) return;
+        if (wp.sub_ambiente) {
+          var key = amb + '|' + wp.sub_ambiente;
+          if (!_bySub[key]) _bySub[key] = [];
+          _bySub[key].push(wp);
+        } else {
+          if (!_byAmb[amb]) _byAmb[amb] = [];
+          _byAmb[amb].push(wp);
+        }
+      });
+      // Popula _fotoStore (formato esperado pela UI: src/url/desc/photoId)
+      Object.keys(_byAmb).forEach(function(amb){
+        window._fotoStore[amb] = _byAmb[amb].map(function(wp){
+          return {
+            id: wp.id, photoId: wp.id,
+            src: wp.url, url: wp.url, preview: wp.url,
+            desc: wp.ai_description || '',
+            base64: '',  // base64 nao disponivel; URL eh suficiente para exibicao
+            mime: wp.mime || 'image/jpeg',
+          };
+        });
+      });
+      // Reconstroi wizard.itensData[idx].fotos para o wiz6 mostrar miniaturas
+      try {
+        var _ambList = (wizard.selectedRooms||[]).slice();
+        _ambList.forEach(function(ambNm, ai){
+          if (!wizard.itensData[ai]) wizard.itensData[ai] = {};
+          var _itd = wizard.itensData[ai];
+          if (_byAmb[ambNm] && _byAmb[ambNm].length) {
+            _itd.fotos = _byAmb[ambNm].map(function(wp){
+              return {
+                preview: wp.url, url: wp.url, photoId: wp.id, id: wp.id,
+                base64: '', mime: wp.mime || 'image/jpeg',
+                desc: wp.ai_description || '',
+                novaAposAnálise: false,
+              };
+            });
+            // Se existe descricao IA, marca como ja analisado
+            var _hasAI = _itd.fotos.some(function(f){ return f.desc; });
+            if (_hasAI) {
+              _itd.jaAnalisou = true;
+              if (!_itd.resumo) {
+                _itd.resumo = (_itd.fotos.find(function(f){ return f.desc; }) || {}).desc || '';
+              }
+            }
+          }
+          // Sub-ambientes (Suite etc.)
+          if (_itd.subs) {
+            Object.keys(_itd.subs).forEach(function(subNm){
+              var k = ambNm + '|' + subNm;
+              if (_bySub[k] && _bySub[k].length) {
+                var sd = _itd.subs[subNm];
+                sd.fotos = _bySub[k].map(function(wp){
+                  return {preview: wp.url, url: wp.url, photoId: wp.id, id: wp.id, base64: '', mime: wp.mime||'image/jpeg', desc: wp.ai_description||'', novaAposAnálise:false};
+                });
+                if (sd.fotos.some(function(f){return f.desc;})) {
+                  sd.jaAnalisou = true;
+                  if (!sd.resumo) sd.resumo = (sd.fotos.find(function(f){return f.desc;})||{}).desc || '';
+                }
+              }
+            });
+          }
+        });
+      } catch(eIDR){ console.warn('[editarLaudo] itensData restore', eIDR); }
+      console.log('[editarLaudo] wiz_photos restored:', _wizPhs.length, 'fotos em', Object.keys(_byAmb).length, 'ambientes,', Object.keys(_bySub).length, 'sub-ambientes');
+    } catch(eWP){ console.warn('[editarLaudo] wiz_photos restore failed', eWP); }
+    // Decide qual step abrir: usa last_step se presente, senao 6
+    var _lastStep = (typeof r.last_step === 'number' && r.last_step > 0) ? r.last_step : 6;
+    if (_lastStep > 7) _lastStep = 6;  // assinaturas (8) nao faz sentido em editar
+    if (_lastStep < 3) _lastStep = 3;  // muito cedo, vai pro imovel
+    gotoWStep(_lastStep);
     try { if (typeof initAmbientes === "function") initAmbientes(); } catch(_eIA){ try{console.warn("[editarLaudo] initAmbientes",_eIA);}catch(__){} }
     try { if (typeof initItensEtapa === "function") initItensEtapa(); } catch(_eII){ try{console.warn("[editarLaudo] initItensEtapa",_eII);}catch(__){} }
     try { if (typeof window.initRevisao === "function") window.initRevisao(); } catch(e){ try { console.warn("[editarLaudo] initRevisao", e); } catch(e2){} }
@@ -7167,6 +7338,8 @@ window.addEventListener('resize', () => {
             window._autentiqueCliqueExplicito = false;
           } catch(e){}
         }
+        // Auto-save (task #104): salva snapshot ao avancar de etapa
+        try { if (typeof wizSaveSnapshot === 'function') wizSaveSnapshot(true); } catch(e){}
       }
     };
 
@@ -7185,6 +7358,8 @@ window.addEventListener('resize', () => {
       if (prev !== undefined) {
         gotoWStep(prev);
         if (prev === 2) wiz4AtualizarLabelsTemporada();
+        // Auto-save (task #104): salva snapshot ao voltar etapa
+        try { if (typeof wizSaveSnapshot === 'function') wizSaveSnapshot(true); } catch(e){}
       }
     };
 
@@ -10697,14 +10872,30 @@ function wiz6AddFotosSub(input, idx, subNome) {
     reader.onload = function(e) {
       var dataUrl = e.target.result;
       var base64 = dataUrl.split(',')[1];
-      sd.fotos.push({
+      var photoEntry = {
         preview: dataUrl,
         base64: base64,
         mime: file.type || 'image/jpeg',
         nome: file.name,
-        novaAposAnálise: jaAnalisou
-      });
+        novaAposAnálise: jaAnalisou,
+        photoId: null,
+        url: null,
+      };
+      sd.fotos.push(photoEntry);
+      var ambNome = (window._wiz6Ambientes && window._wiz6Ambientes[idx]) || (wizard.selectedRooms && wizard.selectedRooms[idx]) || '';
+      var fotoIdx = sd.fotos.length - 1;
       wiz6RenderAmbCard(_wiz6AmbIdx);
+      // Auto-save (task #104): upload imediato com sub_ambiente
+      try {
+        if (typeof wizUploadPhoto === 'function' && ambNome) {
+          wizUploadPhoto(ambNome, fotoIdx, base64, photoEntry.mime, subNome).then(function(r){
+            if (r && r.id) {
+              photoEntry.photoId = r.id;
+              photoEntry.url = r.url;
+            }
+          }).catch(function(e){ console.warn('[wiz6 sub upload]', e); });
+        }
+      } catch(e){}
     };
     reader.readAsDataURL(file);
   });
@@ -10713,7 +10904,14 @@ function wiz6AddFotosSub(input, idx, subNome) {
 
 function wiz6RemoverFotoSub(idx, subNome, fi) {
   var sd = wizard.itensData[idx] && wizard.itensData[idx].subs && wizard.itensData[idx].subs[subNome];
-  if (sd && sd.fotos) { sd.fotos.splice(fi, 1); wiz6RenderAmbCard(_wiz6AmbIdx); }
+  if (sd && sd.fotos) {
+    try {
+      var _ph = sd.fotos[fi];
+      if (_ph && _ph.photoId && typeof wizDeletePhoto === 'function') wizDeletePhoto(_ph.photoId);
+    } catch(e){}
+    sd.fotos.splice(fi, 1);
+    wiz6RenderAmbCard(_wiz6AmbIdx);
+  }
 }
 
 function wiz6AnalisarBatchSub(idx, subNome, si, modo = 'convencional') {
@@ -10736,12 +10934,15 @@ function wiz6AnalisarBatchSub(idx, subNome, si, modo = 'convencional') {
     return {base64: f.base64, mime_type: f.mime || 'image/jpeg'};
   });
   var _tok_ab_sub = (typeof localStorage !== 'undefined') ? (localStorage.getItem('izylo_token') || '') : '';
+  var _ambPaiSub = (window._wiz6Ambientes && window._wiz6Ambientes[idx]) || (wizard.selectedRooms && wizard.selectedRooms[idx]) || '';
   fetch('/api/analisar-batch', {
     method: 'POST',
     headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer ' + _tok_ab_sub},
     body: JSON.stringify({
       imagens: imagens,
-      ambiente: subNome,
+      ambiente: subNome,                 // contexto pra IA (ex: 'Banheiro Suite')
+      ambiente_pai: _ambPaiSub,          // pai pra match em wizard_photos (ex: 'Suite')
+      sub_ambiente: subNome,             // sub pra match em wizard_photos
       tipo_vistoria: (typeof wizard !== 'undefined' && wizard.tipo) || 'entrada',
       tipo_analise: modo,
       inspection_id: (typeof wizard !== 'undefined' && wizard.inspectionId) || null
@@ -10778,6 +10979,8 @@ function wiz6AnalisarBatchSub(idx, subNome, si, modo = 'convencional') {
     wiz6RenderAmbCard(_wiz6AmbIdx);
     wiz6AtualizarProgress();
     if (typeof wiz6DescontarCréditos === 'function') wiz6DescontarCréditos(imagens.length, modo);
+    // Auto-save (task #104): salva snapshot apos analise IA
+    try { if (typeof wizSaveSnapshot === 'function') wizSaveSnapshot(true); } catch(e){}
   })
   .catch(function(err) {
     console.error('Erro batch sub:', err);
@@ -11103,14 +11306,30 @@ function wiz6AddFotos(input, ambIdx) {
     reader.onload = function(e) {
       var dataUrl = e.target.result;
       var base64 = dataUrl.split(',')[1];
-      wizard.itensData[ambIdx].fotos.push({
+      var photoEntry = {
         preview: dataUrl,
         base64: base64,
         mime: file.type || 'image/jpeg',
         nome: file.name,
-        novaAposAnálise: jaAnalisou
-      });
+        novaAposAnálise: jaAnalisou,
+        photoId: null,  // sera preenchido apos upload
+        url: null,
+      };
+      wizard.itensData[ambIdx].fotos.push(photoEntry);
+      var ambNome = (window._wiz6Ambientes && window._wiz6Ambientes[ambIdx]) || (wizard.selectedRooms && wizard.selectedRooms[ambIdx]) || '';
+      var fotoIdx = wizard.itensData[ambIdx].fotos.length - 1;
       wiz6RenderAmbCard(ambIdx);
+      // Auto-save (task #104): upload imediato pra sobreviver fechamento do navegador
+      try {
+        if (typeof wizUploadPhoto === 'function' && ambNome) {
+          wizUploadPhoto(ambNome, fotoIdx, base64, photoEntry.mime, null).then(function(r){
+            if (r && r.id) {
+              photoEntry.photoId = r.id;
+              photoEntry.url = r.url;
+            }
+          }).catch(function(e){ console.warn('[wiz6 upload]', e); });
+        }
+      } catch(e){}
     };
     reader.readAsDataURL(file);
   });
@@ -11126,6 +11345,11 @@ function wiz6AddFotos(input, ambIdx) {
 
 function wiz6RemoverFoto(ambIdx, fotoIdx) {
   if (!wizard.itensData[ambIdx] || !wizard.itensData[ambIdx].fotos) return;
+  // Auto-save (task #104): tenta remover do servidor tambem
+  try {
+    var _ph = wizard.itensData[ambIdx].fotos[fotoIdx];
+    if (_ph && _ph.photoId && typeof wizDeletePhoto === 'function') wizDeletePhoto(_ph.photoId);
+  } catch(e){}
   wizard.itensData[ambIdx].fotos.splice(fotoIdx, 1);
   wiz6RenderAmbCard(ambIdx);
 }
@@ -11222,6 +11446,8 @@ function wiz6AnalisarBatch(ambIdx, modo = 'convencional') {
     wiz6DescontarCréditos(fotos.length, modo);
     wiz6RenderAmbCard(ambIdx);
     wiz6AtualizarProgress();
+    // Auto-save (task #104): salva snapshot apos analise IA principal
+    try { if (typeof wizSaveSnapshot === 'function') wizSaveSnapshot(true); } catch(e){}
 
     // Re-query statusEl because wiz6RenderAmbCard rebuilt the DOM
     statusEl = document.getElementById('wiz6-ai-status-' + ambIdx);

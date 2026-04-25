@@ -2970,6 +2970,37 @@ class InspectionHandler(BaseHandler):
                 result['wizard_snapshot'] = insp['wizard_snapshot'] if 'wizard_snapshot' in insp.keys() else None
             except Exception:
                 result['wizard_snapshot'] = None
+            # Auto-save (task #104): inclui last_step e wiz_photos
+            try:
+                result['last_step'] = int(insp['last_step']) if 'last_step' in insp.keys() and insp['last_step'] is not None else 0
+            except Exception:
+                result['last_step'] = 0
+            try:
+                _wp = conn.execute(
+                    'SELECT id, ambiente, sub_ambiente, idx, filename, mime, '
+                    '       ai_description, ai_provider, analyzed_at, created_at '
+                    'FROM wizard_photos WHERE inspection_id=? '
+                    'ORDER BY ambiente, sub_ambiente NULLS FIRST, idx, created_at',
+                    (insp_id,)
+                ).fetchall()
+                _wp_list = []
+                for _p in _wp:
+                    _pd = dict(_p) if not isinstance(_p, dict) else _p
+                    _fn = _pd.get('filename') or ''
+                    _wp_list.append({
+                        'id': _pd.get('id'),
+                        'ambiente': _pd.get('ambiente') or '',
+                        'sub_ambiente': _pd.get('sub_ambiente') or None,
+                        'idx': int(_pd.get('idx') or 0),
+                        'url': ('/uploads/' + _fn) if _fn else '',
+                        'mime': _pd.get('mime') or 'image/jpeg',
+                        'ai_description': _pd.get('ai_description') or '',
+                        'ai_provider': _pd.get('ai_provider') or '',
+                    })
+                result['wiz_photos'] = _wp_list
+            except Exception as _wpe:
+                print('[GET-INSP] wiz_photos err: ' + str(_wpe), flush=True)
+                result['wiz_photos'] = []
             self.ok(result)
         finally:
             conn.close()
@@ -3564,6 +3595,20 @@ class AnalisarBatchHandler(BaseHandler):
                             'debited_cents': total_cents,
                             'photos_count': qtd_fotos,
                         }
+                        # Auto-save (task #104): persiste descricao IA
+                        try:
+                            _isp = data.get('inspection_id') or data.get('inspectionId')
+                            if _isp:
+                                _sub_amb = data.get('sub_ambiente') or data.get('subAmbiente')
+                                # Quando ha sub_ambiente, ambiente_pai eh o ambiente real
+                                _amb_match = data.get('ambiente_pai') or data.get('ambientePai') or ambiente
+                                _persist_conn = get_conn()
+                                try:
+                                    _save_wiz_ai_description(_persist_conn, _isp, _amb_match, _sub_amb, _gem.get('resumo',''), 'gemini')
+                                finally:
+                                    _persist_conn.close()
+                        except Exception as _ws_e:
+                            print('[WIZ-AI-SAVE] gemini ' + str(_ws_e), flush=True)
                         self.write(_gem_result)
                         return
                     print('[GEMINI] fallback_also_failed user=' + user_id
@@ -3665,6 +3710,19 @@ class AnalisarBatchHandler(BaseHandler):
                 except Exception as _c_e:
                     print('[COST] update_error tx_id=' + str(tx_id)
                           + ' err=' + str(_c_e), flush=True)
+                # Auto-save (task #104): persiste descricao IA Claude tambem
+                try:
+                    _isp = data.get('inspection_id') or data.get('inspectionId')
+                    if _isp and resultado.get('resumo'):
+                        _sub_amb = data.get('sub_ambiente') or data.get('subAmbiente')
+                        _amb_match = data.get('ambiente_pai') or data.get('ambientePai') or ambiente
+                        _persist_conn = get_conn()
+                        try:
+                            _save_wiz_ai_description(_persist_conn, _isp, _amb_match, _sub_amb, resultado.get('resumo',''), resultado.get('provider') or 'claude')
+                        finally:
+                            _persist_conn.close()
+                except Exception as _ws_e:
+                    print('[WIZ-AI-SAVE] claude ' + str(_ws_e), flush=True)
             self.write(resultado)
         except Exception as e:
             self.set_status(500)
@@ -3816,6 +3874,237 @@ class ItemPhotosHandler(BaseHandler):
             self.ok({'photos': result})
         finally:
             conn.close()
+
+
+# ============================================================
+# AUTO-SAVE DO WIZARD (task #104)
+# ============================================================
+class WizardSnapshotHandler(BaseHandler):
+    """POST /api/inspections/{id}/snapshot — salva estado completo do wizard.
+
+    Body: { wizard_snapshot: <json string ou objeto>, last_step: int }
+    Idempotente. Sobrescreve o snapshot anterior.
+    """
+    def set_default_headers(self):
+        self.set_header("Access-Control-Allow-Origin", "*")
+        self.set_header("Access-Control-Allow-Headers", "Content-Type, Authorization")
+
+    def options(self, *args, **kwargs):
+        self.set_status(204)
+        self.finish()
+
+    def post(self, insp_id):
+        user = self.require_auth()
+        if not user:
+            return
+        try:
+            data = self.json_body() or {}
+        except Exception:
+            data = {}
+        snap = data.get('wizard_snapshot')
+        if snap is not None and not isinstance(snap, str):
+            try:
+                snap = json.dumps(snap, default=_jser)
+            except Exception:
+                snap = None
+        try:
+            last_step = int(data.get('last_step') or 0)
+        except Exception:
+            last_step = 0
+        conn = get_conn()
+        try:
+            row = conn.execute(
+                'SELECT id FROM inspections WHERE id=? AND user_id=?',
+                (insp_id, user['user_id'])
+            ).fetchone()
+            if not row:
+                self.set_status(404)
+                self.write({'ok': False, 'error': 'Inspecao nao encontrada'})
+                return
+            sets = ['snapshot_updated_at=NOW()']
+            params = []
+            if snap is not None:
+                sets.append('wizard_snapshot=?')
+                params.append(snap)
+            if last_step > 0:
+                sets.append('last_step=?')
+                params.append(last_step)
+            params.append(insp_id)
+            conn.execute(
+                'UPDATE inspections SET ' + ', '.join(sets) + ' WHERE id=?',
+                tuple(params)
+            )
+            conn.commit()
+            self.write({'ok': True})
+        except Exception as e:
+            try: conn.rollback()
+            except Exception: pass
+            self.set_status(500)
+            self.write({'ok': False, 'error': str(e)})
+        finally:
+            conn.close()
+
+
+class WizardPhotoHandler(BaseHandler):
+    """POST /api/inspections/{id}/wiz-photo — upload de uma foto do wizard.
+
+    Body: { ambiente: str, sub_ambiente?: str, idx: int, base64: str, mime?: str }
+    Salva no disco em UPLOAD_DIR e cria linha em wizard_photos.
+    Retorna { id, url, ambiente, sub_ambiente, idx }.
+
+    DELETE /api/inspections/{id}/wiz-photo/{photo_id} — remove a foto.
+    """
+    def set_default_headers(self):
+        self.set_header("Access-Control-Allow-Origin", "*")
+        self.set_header("Access-Control-Allow-Headers", "Content-Type, Authorization")
+
+    def options(self, *args, **kwargs):
+        self.set_status(204)
+        self.finish()
+
+    def post(self, insp_id):
+        user = self.require_auth()
+        if not user:
+            return
+        try:
+            data = self.json_body() or {}
+        except Exception:
+            data = {}
+        ambiente = (data.get('ambiente') or '').strip()
+        sub = (data.get('sub_ambiente') or '').strip() or None
+        try:
+            idx = int(data.get('idx') or 0)
+        except Exception:
+            idx = 0
+        b64 = data.get('base64') or ''
+        mime = (data.get('mime') or 'image/jpeg').strip() or 'image/jpeg'
+        if not ambiente or not b64:
+            self.set_status(400)
+            self.write({'ok': False, 'error': 'ambiente e base64 sao obrigatorios'})
+            return
+        # Strip data URL prefix se presente
+        if b64.startswith('data:'):
+            try:
+                b64 = b64.split(',', 1)[1]
+            except Exception:
+                pass
+        # Decode + persist no disco
+        try:
+            raw = base64.b64decode(b64)
+        except Exception as e:
+            self.set_status(400)
+            self.write({'ok': False, 'error': 'base64 invalido: ' + str(e)})
+            return
+        ext = '.jpg' if 'jpeg' in mime or 'jpg' in mime else (
+            '.png' if 'png' in mime else '.bin')
+        photo_id = str(uuid.uuid4())
+        filename = photo_id + ext
+        try:
+            with open(os.path.join(UPLOAD_DIR, filename), 'wb') as f:
+                f.write(raw)
+        except Exception as e:
+            self.set_status(500)
+            self.write({'ok': False, 'error': 'falha ao salvar foto: ' + str(e)})
+            return
+        conn = get_conn()
+        try:
+            row = conn.execute(
+                'SELECT id FROM inspections WHERE id=? AND user_id=?',
+                (insp_id, user['user_id'])
+            ).fetchone()
+            if not row:
+                self.set_status(404)
+                self.write({'ok': False, 'error': 'Inspecao nao encontrada'})
+                return
+            conn.execute(
+                'INSERT INTO wizard_photos '
+                '(id, inspection_id, ambiente, sub_ambiente, idx, filename, mime) '
+                'VALUES (?, ?, ?, ?, ?, ?, ?)',
+                (photo_id, insp_id, ambiente, sub, idx, filename, mime)
+            )
+            conn.commit()
+            self.write({
+                'ok': True,
+                'id': photo_id,
+                'url': '/uploads/' + filename,
+                'ambiente': ambiente,
+                'sub_ambiente': sub,
+                'idx': idx,
+            })
+        except Exception as e:
+            try: conn.rollback()
+            except Exception: pass
+            self.set_status(500)
+            self.write({'ok': False, 'error': str(e)})
+        finally:
+            conn.close()
+
+    def delete(self, insp_id, photo_id=None):
+        user = self.require_auth()
+        if not user:
+            return
+        if not photo_id:
+            self.set_status(400)
+            self.write({'ok': False, 'error': 'photo_id obrigatorio'})
+            return
+        conn = get_conn()
+        try:
+            r = conn.execute(
+                'SELECT wp.filename FROM wizard_photos wp '
+                'JOIN inspections i ON i.id=wp.inspection_id '
+                'WHERE wp.id=? AND wp.inspection_id=? AND i.user_id=?',
+                (photo_id, insp_id, user['user_id'])
+            ).fetchone()
+            if not r:
+                self.set_status(404)
+                self.write({'ok': False, 'error': 'Foto nao encontrada'})
+                return
+            try:
+                if r.get('filename'):
+                    fp = os.path.join(UPLOAD_DIR, r['filename'])
+                    if os.path.exists(fp):
+                        os.remove(fp)
+            except Exception:
+                pass
+            conn.execute('DELETE FROM wizard_photos WHERE id=?', (photo_id,))
+            conn.commit()
+            self.write({'ok': True})
+        except Exception as e:
+            try: conn.rollback()
+            except Exception: pass
+            self.set_status(500)
+            self.write({'ok': False, 'error': str(e)})
+        finally:
+            conn.close()
+
+
+def _save_wiz_ai_description(conn, insp_id, ambiente, sub_ambiente, descricao, provider):
+    """Atualiza ai_description em todas as wizard_photos do batch analisado.
+
+    Chamado por AnalisarBatchHandler apos sucesso da IA. Permite que
+    a descricao sobreviva ao fechamento do navegador.
+    """
+    try:
+        if sub_ambiente:
+            conn.execute(
+                'UPDATE wizard_photos SET ai_description=?, ai_provider=?, '
+                '  analyzed_at=NOW() '
+                'WHERE inspection_id=? AND ambiente=? AND sub_ambiente=?',
+                (descricao or '', provider or '', insp_id, ambiente, sub_ambiente)
+            )
+        else:
+            conn.execute(
+                'UPDATE wizard_photos SET ai_description=?, ai_provider=?, '
+                '  analyzed_at=NOW() '
+                'WHERE inspection_id=? AND ambiente=? '
+                "  AND (sub_ambiente IS NULL OR sub_ambiente='')",
+                (descricao or '', provider or '', insp_id, ambiente)
+            )
+        conn.commit()
+    except Exception as _e:
+        try: conn.rollback()
+        except Exception: pass
+        print('[WIZ-AI-SAVE] err: ' + str(_e), flush=True)
 
 
 class PhotoDeleteHandler(BaseHandler):
@@ -4410,6 +4699,25 @@ def _ensure_status_column():
             "ALTER TABLE rooms ADD COLUMN IF NOT EXISTS general_condition TEXT",
             "ALTER TABLE rooms ADD COLUMN IF NOT EXISTS verificacoes_json TEXT",
             "ALTER TABLE inspections ADD COLUMN IF NOT EXISTS wizard_snapshot TEXT",
+            # Auto-save (task #104): step atual + snapshot timestamp
+            "ALTER TABLE inspections ADD COLUMN IF NOT EXISTS last_step INTEGER DEFAULT 0",
+            "ALTER TABLE inspections ADD COLUMN IF NOT EXISTS snapshot_updated_at TIMESTAMPTZ",
+            # Auto-save: tabela de fotos do wizard (independente do fluxo de room_items)
+            """CREATE TABLE IF NOT EXISTS wizard_photos (
+                id TEXT PRIMARY KEY,
+                inspection_id TEXT NOT NULL REFERENCES inspections(id) ON DELETE CASCADE,
+                ambiente TEXT NOT NULL,
+                sub_ambiente TEXT,
+                idx INTEGER DEFAULT 0,
+                filename TEXT,
+                mime TEXT DEFAULT 'image/jpeg',
+                ai_description TEXT DEFAULT '',
+                ai_provider TEXT DEFAULT '',
+                analyzed_at TIMESTAMPTZ,
+                created_at TIMESTAMPTZ DEFAULT NOW()
+            )""",
+            "CREATE INDEX IF NOT EXISTS idx_wizard_photos_insp ON wizard_photos(inspection_id)",
+            "CREATE INDEX IF NOT EXISTS idx_wizard_photos_amb ON wizard_photos(inspection_id, ambiente)",
             "ALTER TABLE balance_transactions ADD COLUMN IF NOT EXISTS status VARCHAR(30) DEFAULT 'completed'",
             "ALTER TABLE balance_transactions ADD COLUMN IF NOT EXISTS created_at TIMESTAMPTZ DEFAULT NOW()",
             "ALTER TABLE balance_transactions ADD COLUMN IF NOT EXISTS tx_ref VARCHAR(64)",
@@ -5580,6 +5888,10 @@ def make_app():
         # Inspections
         (r'/api/inspections', InspectionsHandler),
         (r'/api/inspections/([^/]+)', InspectionHandler),
+        # Auto-save do wizard (task #104)
+        (r'/api/inspections/([^/]+)/snapshot', WizardSnapshotHandler),
+        (r'/api/inspections/([^/]+)/wiz-photo', WizardPhotoHandler),
+        (r'/api/inspections/([^/]+)/wiz-photo/([^/]+)', WizardPhotoHandler),
         # Rooms
         (r'/api/inspections/([^/]+)/rooms', RoomsHandler),
         (r'/api/rooms/([^/]+)', RoomHandler),
