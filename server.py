@@ -3913,13 +3913,24 @@ class WizardSnapshotHandler(BaseHandler):
             last_step = 0
         conn = get_conn()
         try:
+            # Task #114: leitura do status atual para nao sobrescrever
+            # laudos ja concluidos/assinados via snapshot debounced.
             row = conn.execute(
-                'SELECT id FROM inspections WHERE id=? AND user_id=?',
+                'SELECT id, status FROM inspections WHERE id=? AND user_id=?',
                 (insp_id, user['user_id'])
             ).fetchone()
             if not row:
                 self.set_status(404)
                 self.write({'ok': False, 'error': 'Inspecao nao encontrada'})
+                return
+            _terminal = ('concluido', 'concluído', 'aguardando_assinatura',
+                         'assinado_digital', 'assinado_fisico', 'assinado')
+            _cur_st = (row.get('status') if hasattr(row, 'get') else row['status']) or ''
+            _cur_st = str(_cur_st).lower()
+            if _cur_st in _terminal:
+                # Apenas log + 200 OK silencioso; nao mexe em nada.
+                print(f'[SNAPSHOT] skip {insp_id} status={_cur_st} (terminal)', flush=True)
+                self.write({'ok': True, 'skipped': True, 'status': _cur_st})
                 return
             sets = ['snapshot_updated_at=NOW()']
             params = []

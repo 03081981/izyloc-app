@@ -7070,6 +7070,13 @@ async function gerarLaudo() {
     });
     if (_locArr.length) body.locadores_json = JSON.stringify(_locArr);
     if (_tenArr.length) body.locatarios_json = JSON.stringify(_tenArr);
+    // Task #114: marca laudo como CONCLUIDO ao clicar Gerar laudo na etapa 7.
+    // Nao sobrescreve status mais avancados (assinado, aguardando_assinatura).
+    var _curStatus = (window.wizard && wizard.status) ? String(wizard.status).toLowerCase() : '';
+    if (_curStatus !== 'assinado' && _curStatus !== 'assinado_digital'
+        && _curStatus !== 'assinado_fisico' && _curStatus !== 'aguardando_assinatura') {
+      body.status = 'concluido';
+    }
     // Guard: restore inspectionId from localStorage if lost (prevents duplicate record creation)
     if (!wizard.inspectionId) {
       try { var _lsId = localStorage.getItem('izylo_current_inspection'); if (_lsId) { wizard.inspectionId = _lsId; console.log('[gerarLaudo] Restored inspectionId from localStorage:', _lsId); } } catch(_eGR){}
@@ -7085,6 +7092,10 @@ async function gerarLaudo() {
       localStorage.setItem('izylo_current_inspection', r.id);
     }
   }
+  // Task #114: atualiza status local + cancela snapshot pendente para
+  // nao sobrescrever o concluido recem-aplicado.
+  if (window.wizard && body.status) wizard.status = body.status;
+  try { if (typeof _wizSaveTO !== 'undefined' && _wizSaveTO) { clearTimeout(_wizSaveTO); _wizSaveTO = null; } } catch(_eC){}
   nextWizStep();
 }
 
