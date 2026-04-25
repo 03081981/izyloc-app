@@ -7575,8 +7575,9 @@ window.addEventListener('resize', () => {
         if (vName) window._ambStore[_ambNm].verificacoes[vName] = btn.textContent.trim();
       }
     };
+  }; // ← FIX: close window.initItensEtapa here so gerarPDF/initRevisao/_addFoto are at script-tag level
 
-    
+
     window.gerarPDF = async function() {
       var btn = event && event.target ? event.target : null;
       if (btn) { btn.textContent = 'Aguardando...'; btn.disabled = true; }
@@ -8111,9 +8112,6 @@ if (!window._fotoStore) window._fotoStore = {};
   };
   input.click();
 };
-
-    renderTab(0);
-  };
   // ── End Itens e Fotos ──
 
   // ── End Ambientes ────────────────────────────────────────
