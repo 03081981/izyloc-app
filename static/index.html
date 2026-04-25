@@ -5379,10 +5379,11 @@ async function editarLaudo(id, origin) {
           locs = [{name: r.locador_name, cpf: r.locador_cpf, phone: r.locador_phone, email: r.locador_email}];
         }
         var locCont = document.getElementById("locadores-container");
-        if (locCont && typeof mkBlock === "function") {
+        var _mkB = (typeof mkBlock === "function") ? mkBlock : (typeof window.mkBlock === "function" ? window.mkBlock : null);
+        if (locCont && _mkB) {
           locCont.innerHTML = "";
           locs.forEach(function(p, i){
-            var b = mkBlock("loc", i, "Locador", i > 0);
+            var b = _mkB("loc", i, "Locador", i > 0);
             locCont.appendChild(b);
             _sv("loc-name-"+i, p.name);
             _sv("loc-cpf-"+i, p.cpf);
@@ -5401,10 +5402,10 @@ async function editarLaudo(id, origin) {
           tens = [{name: r.locatario_name, cpf: r.locatario_cpf, rg: r.locatario_rg, phone: r.locatario_phone, email: r.locatario_email}];
         }
         var tenCont = document.getElementById("locatários-container");
-        if (tenCont && typeof mkBlock === "function") {
+        if (tenCont && _mkB) {
           tenCont.innerHTML = "";
           tens.forEach(function(p, i){
-            var b = mkBlock("locat", i, "Locatário", i > 0);
+            var b = _mkB("locat", i, "Locatário", i > 0);
             tenCont.appendChild(b);
             _sv("locat-name-"+i, p.name);
             _sv("locat-cpf-"+i, p.cpf);
@@ -7514,6 +7515,9 @@ window.addEventListener('resize', () => {
       d.innerHTML = h;
       return d;
     }
+    // Task #115: expoe mkBlock globalmente pra que editarLaudo (fora desta IIFE)
+    // possa renderizar locadores/locatarios ao restaurar partes salvas.
+    window.mkBlock = mkBlock;
 
     // ─── PF / PJ helpers (task #88) ─────────────────────────────────────
     window._pfPjGetTipo = function(prefix, idx) {
