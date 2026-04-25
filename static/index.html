@@ -10350,26 +10350,29 @@ function wiz6RenderAmbCard(idx) {
       '<span style="font-size:9px;color:#8898aa;margin-top:2px">vertical</span>' +
       '<input type="file" accept="image/*" multiple style="display:none" onchange="wiz6AddFotos(this,' + idx + ')">' +
     '</label>' +
-    // Task #125: novos botoes outline-blue com SVG inline (mobile)
+    // Task #125/#126: botoes outline-blue com SVG inline.
+    // pointer-events:none nos filhos garante que o clique vai pro <label>
+    // e abre o file picker tambem em iOS Safari (sem isso, o SVG
+    // interceptava o evento em alguns browsers mobile).
     '<div class="foto-mobile-only" style="flex-direction:row;aspect-ratio:4/3;gap:8px">' +
-      '<label style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#fff;border:2px solid #2d7dd2;border-radius:12px;cursor:pointer;padding:10px 8px;gap:6px">' +
-        '<svg viewBox="0 0 70 48" width="48" height="32" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">' +
+      '<label style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#fff;border:2px solid #2d7dd2;border-radius:12px;cursor:pointer;padding:10px 8px;gap:6px;-webkit-tap-highlight-color:rgba(45,125,210,0.15)">' +
+        '<svg viewBox="0 0 70 48" width="48" height="32" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" style="pointer-events:none">' +
           '<rect x="1" y="9" width="68" height="38" rx="6" fill="none" stroke="#2d7dd2" stroke-width="2.5"/>' +
           '<circle cx="35" cy="28" r="11" fill="none" stroke="#2d7dd2" stroke-width="2.5"/>' +
           '<circle cx="35" cy="28" r="4" fill="#2d7dd2"/>' +
           '<rect x="22" y="0" width="26" height="11" rx="3" fill="#2d7dd2"/>' +
         '</svg>' +
-        '<span style="font-size:12px;font-weight:600;color:#2d7dd2">C\u00e2mera</span>' +
+        '<span style="font-size:12px;font-weight:600;color:#2d7dd2;pointer-events:none">C\u00e2mera</span>' +
         '<input type="file" accept="image/*" capture="environment" multiple style="display:none" onchange="wiz6AddFotos(this,' + idx + ')">' +
       '</label>' +
-      '<label style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#fff;border:2px solid #2d7dd2;border-radius:12px;cursor:pointer;padding:10px 8px;gap:6px">' +
-        '<svg viewBox="0 0 75 52" width="48" height="32" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">' +
+      '<label style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#fff;border:2px solid #2d7dd2;border-radius:12px;cursor:pointer;padding:10px 8px;gap:6px;-webkit-tap-highlight-color:rgba(45,125,210,0.15)">' +
+        '<svg viewBox="0 0 75 52" width="48" height="32" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" style="pointer-events:none">' +
           '<rect x="1" y="1" width="73" height="50" rx="5" fill="none" stroke="#2d7dd2" stroke-width="2.5"/>' +
           '<rect x="6" y="8" width="24" height="18" rx="3" fill="#2d7dd2" opacity="0.3"/>' +
           '<rect x="36" y="8" width="32" height="18" rx="3" fill="#2d7dd2" opacity="0.3"/>' +
           '<rect x="6" y="32" width="62" height="14" rx="3" fill="#2d7dd2" opacity="0.3"/>' +
         '</svg>' +
-        '<span style="font-size:12px;font-weight:600;color:#2d7dd2">Galeria</span>' +
+        '<span style="font-size:12px;font-weight:600;color:#2d7dd2;pointer-events:none">Galeria</span>' +
         '<input type="file" accept="image/*" multiple style="display:none" onchange="wiz6AddFotos(this,' + idx + ')">' +
       '</label>' +
     '</div>';
