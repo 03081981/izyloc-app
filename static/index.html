@@ -5777,6 +5777,7 @@ function dashGerarPdf(id) {
 async function dashAbrirAutentique(id) {
   if (!id) {
     if (typeof showToast === 'function') showToast('ID do laudo nao informado', 'error');
+    else alert('ID do laudo nao informado');
     return;
   }
   var confirmMsg = 'Enviar laudo para assinatura digital pelo Autentique?\n\n'
@@ -5785,31 +5786,43 @@ async function dashAbrirAutentique(id) {
     + 'Após assinado, o laudo não poderá mais ser editado.';
   if (!confirm(confirmMsg)) return;
 
+  // Task #116: feedback robusto — sempre mostra resultado mesmo quando
+  // showToast falhar; sempre recarrega o dashboard pra refletir estado real.
   try { if (typeof showLoading === 'function') showLoading('Enviando para Autentique...'); } catch(e){}
+  console.log('[Autentique] POST send-to-autentique id=' + id);
+  var _shownFeedback = false;
+  function _feedback(msg, kind){
+    _shownFeedback = true;
+    try { if (typeof showToast === 'function') { showToast(msg, kind); return; } } catch(_){}
+    try { if (typeof toast === 'function') { toast(msg, kind); return; } } catch(_){}
+    try { alert(msg); } catch(_){}
+  }
   try {
     var result = await api('POST',
       '/api/inspections/' + encodeURIComponent(id) + '/send-to-autentique',
       {});
     try { if (typeof hideLoading === 'function') hideLoading(); } catch(e){}
+    try { console.log('[Autentique] response:', result); } catch(_){}
 
     if (result && result.ok && result.sent) {
       var n = result.signers_count || 0;
-      if (typeof showToast === 'function') {
-        showToast('Laudo enviado para ' + n + ' signatário(s)! '
-          + 'Cada um receberá um email para assinar.', 'success');
-      }
-      // Recarregar lista de laudos para refletir status atualizado
-      try { if (typeof renderMeusLaudos === 'function') renderMeusLaudos(); } catch(e){}
-      try { if (typeof loadDashboard === 'function') loadDashboard(); } catch(e){}
+      _feedback('✓ Laudo enviado para ' + n + ' signatário(s)! Cada um receberá um email.', 'success');
     } else {
-      var errMsg = (result && result.error) || 'Erro ao enviar para Autentique';
-      if (typeof showToast === 'function') showToast(errMsg, 'error');
+      var errMsg = (result && result.error) ? result.error : 'Erro ao enviar para Autentique';
+      _feedback('⚠ ' + errMsg, 'error');
     }
   } catch(e) {
     try { if (typeof hideLoading === 'function') hideLoading(); } catch(_){}
-    if (typeof showToast === 'function') {
-      showToast((e && e.message) || 'Erro ao enviar para Autentique', 'error');
-    }
+    try { console.error('[Autentique] erro:', e); } catch(_){}
+    _feedback('⚠ Erro inesperado: ' + ((e && e.message) || e), 'error');
+  }
+  // Sempre recarrega listas pra refletir o estado real do banco — independente
+  // do resultado, evita confusao do tipo "cliquei mas nada mudou".
+  try { if (typeof renderMeusLaudos === 'function') renderMeusLaudos(); } catch(_){}
+  try { if (typeof loadDashboard === 'function') loadDashboard(); } catch(_){}
+  if (!_shownFeedback) {
+    // Defesa final: se nada apareceu, alert simples
+    try { alert('Tentativa de envio concluida. Confira a listagem.'); } catch(_){}
   }
 }
 function dashExcluir(id) {
@@ -6242,6 +6255,102 @@ window._parseUtc = _parseUtc;
 window._fmtBR = _fmtBR;
 window.formatDate = formatDate;
 window.formatDateTime = formatDateTime;
+
+// === EMAIL VALIDATION (task #117) =================================
+// Detecta typos comuns que causam bounce no Autentique.
+// Retorna {ok, suggestion?, msg?}
+function _validateEmail(email) {
+  if (!email) return { ok: true };  // vazio eh aceito (campo opcional)
+  var s = String(email).trim().toLowerCase();
+  // Sintaxe basica
+  if (!/^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/.test(s)) {
+    return { ok: false, msg: 'Formato de e-mail invalido' };
+  }
+  var parts = s.split('@');
+  var dom = parts[1] || '';
+  // Mapa de typos comuns -> sugestao correta
+  var typos = {
+    'mail.com':       'gmail.com',  // dominio inexistente, comum confundir
+    'gmial.com':      'gmail.com',
+    'gnail.com':      'gmail.com',
+    'gmaill.com':     'gmail.com',
+    'gmal.com':       'gmail.com',
+    'gmai.com':       'gmail.com',
+    'gimail.com':     'gmail.com',
+    'gmail.co':       'gmail.com',
+    'gmail.con':      'gmail.com',
+    'hotmial.com':    'hotmail.com',
+    'hotmal.com':     'hotmail.com',
+    'hotmai.com':     'hotmail.com',
+    'hotnail.com':    'hotmail.com',
+    'hotmail.co':     'hotmail.com',
+    'yaho.com':       'yahoo.com',
+    'yahooo.com':     'yahoo.com',
+    'outlok.com':     'outlook.com',
+    'outloook.com':   'outlook.com',
+    'outllok.com':    'outlook.com',
+    'icloud.co':      'icloud.com',
+    'icould.com':     'icloud.com',
+    'live.con':       'live.com',
+    'uol.com':        'uol.com.br',
+    'bol.com':        'bol.com.br',
+    'terra.com':      'terra.com.br',
+  };
+  if (typos[dom]) {
+    return {
+      ok: false,
+      suggestion: parts[0] + '@' + typos[dom],
+      msg: '⚠ Você quis dizer ' + parts[0] + '@' + typos[dom] + '?'
+    };
+  }
+  return { ok: true };
+}
+// Aplica visual de aviso num input de email — chamada onblur
+function _checkEmailInput(el) {
+  if (!el) return;
+  var v = (el.value || '').trim();
+  // Remove status anterior
+  el.style.borderColor = '';
+  el.title = '';
+  // Procura/remove tag de aviso anterior
+  var prev = el.parentNode && el.parentNode.querySelector('.email-warn-tag');
+  if (prev) prev.remove();
+  if (!v) return;
+  var res = _validateEmail(v);
+  if (!res.ok) {
+    el.style.borderColor = '#f59e0b';
+    el.title = res.msg || 'E-mail invalido';
+    var tag = document.createElement('div');
+    tag.className = 'email-warn-tag';
+    tag.style.cssText = 'font-size:11px;color:#92400e;margin-top:4px;line-height:1.3';
+    if (res.suggestion) {
+      tag.innerHTML = '<span>' + (res.msg || '') + '</span> '
+        + '<button type="button" data-sugg="' + res.suggestion + '" style="margin-left:6px;padding:1px 8px;border:1px solid #f59e0b;background:#fff7ed;color:#92400e;border-radius:4px;font-size:10px;font-weight:600;cursor:pointer">aplicar</button>';
+      tag.querySelector('button').onclick = function(){
+        el.value = this.dataset.sugg;
+        _checkEmailInput(el);
+      };
+    } else {
+      tag.textContent = res.msg || 'E-mail invalido';
+    }
+    if (el.parentNode) el.parentNode.appendChild(tag);
+  }
+}
+window._validateEmail = _validateEmail;
+window._checkEmailInput = _checkEmailInput;
+// Liga onblur em todo input type=email da etapa 4 quando o DOM carrega
+document.addEventListener('DOMContentLoaded', function(){
+  document.addEventListener('blur', function(e){
+    var t = e.target;
+    if (t && t.tagName === 'INPUT' && t.type === 'email') {
+      // Aplica so em campos das etapas relevantes (locador/locatario/corretor/imob)
+      var id = t.id || '';
+      if (/^(loc|locat|ten)-email-/.test(id) || id === 'wi-corr-email' || id === 'wi-imob-email') {
+        try { _checkEmailInput(t); } catch(_){}
+      }
+    }
+  }, true);  // capture pra pegar antes do submit
+});
 
 // ─── NEW INSPECTION WIZARD ────────────────────────────────────────────────────
 function temDadosWizard() {

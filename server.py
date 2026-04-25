@@ -3018,6 +3018,25 @@ class InspectionHandler(BaseHandler):
             if not insp:
                 return self.err('Vistoria nao encontrada', 404)
 
+            # Task #117: protege status terminal contra downgrade via PUT.
+            # Quando o frontend envia status='concluido' (gerarLaudo) mas o
+            # laudo ja esta em estado mais avancado (aguardando_assinatura,
+            # assinado_*), removemos o campo do payload pra preservar.
+            try:
+                _cur_row = conn.execute(
+                    'SELECT status FROM inspections WHERE id=? AND user_id=?',
+                    (insp_id, user['user_id'])).fetchone()
+                if _cur_row:
+                    _cur_st = str((_cur_row.get('status') if hasattr(_cur_row,'get') else _cur_row['status']) or '').lower()
+                    _terminal = ('aguardando_assinatura', 'assinado_digital',
+                                 'assinado_fisico', 'assinado')
+                    if _cur_st in _terminal and 'status' in data:
+                        _new_st = str(data.get('status') or '').lower()
+                        if _new_st not in _terminal and _new_st != _cur_st:
+                            print(f'[INSP-PUT] preservando status={_cur_st}, ignorando downgrade pra {_new_st}', flush=True)
+                            data.pop('status', None)
+            except Exception as _e_st_g:
+                print(f'[INSP-PUT] status guard err: {_e_st_g}', flush=True)
             updatable = [
                 'property_address', 'property_type', 'property_area', 'inspection_date', 'status',
                 'locador_name', 'locador_cpf', 'locador_rg', 'locador_phone', 'locador_email',
@@ -4280,10 +4299,20 @@ class GeneratePDFHandler(BaseHandler):
                 except Exception:
                     _ano_c = datetime.now().year
                 _codigo = f'{_prefixo_c}-{_ano_c}-{str(insp_id)[:4].upper()}'
-                conn.execute("UPDATE inspections SET status='concluido', codigo=?, updated_at=? WHERE id=?",
-                    (_codigo, datetime.now().strftime('%Y-%m-%d %H:%M:%S'), insp_id))
+                # Task #117: NAO reverter status para 'concluido' se o laudo
+                # ja avancou para aguardando_assinatura / assinado / etc.
+                # Apenas atualiza codigo + updated_at nesse caso.
+                _terminal_st = ('aguardando_assinatura', 'assinado_digital',
+                                'assinado_fisico', 'assinado')
+                _cur_st = (inspection_data.get('status') or '').lower()
+                if _cur_st in _terminal_st:
+                    conn.execute("UPDATE inspections SET codigo=?, updated_at=? WHERE id=?",
+                        (_codigo, datetime.now().strftime('%Y-%m-%d %H:%M:%S'), insp_id))
+                else:
+                    conn.execute("UPDATE inspections SET status='concluido', codigo=?, updated_at=? WHERE id=?",
+                        (_codigo, datetime.now().strftime('%Y-%m-%d %H:%M:%S'), insp_id))
                 conn.commit()
-                _logging.warning(f'[PDF-SAVE-GET] COMMIT OK codigo={_codigo}')
+                _logging.warning(f'[PDF-SAVE-GET] COMMIT OK codigo={_codigo} status_preservado={_cur_st in _terminal_st}')
             except Exception as _save_err:
                 _logging.warning(f'[PDF-SAVE-GET] ERRO: {_save_err}')
                 _logging.warning(f'[PDF-SAVE-GET] TRACEBACK: {_tb_mod.format_exc()}')
@@ -4419,9 +4448,19 @@ class GeneratePDFHandler(BaseHandler):
                         _ano_c = datetime.now().year
                     _codigo = f'{_prefixo_c}-{_ano_c}-{str(insp_id)[:4].upper()}'
                     _logging.warning(f'[PDF-SAVE] codigo={_codigo}')
-                    conn.execute("UPDATE inspections SET status='concluido', codigo=?, updated_at=? WHERE id=?",
-                        (_codigo, datetime.now().strftime('%Y-%m-%d %H:%M:%S'), insp_id))
-                    _logging.warning('[PDF-SAVE] inspection UPDATE ok')
+                    # Task #117: NAO reverter status para 'concluido' se laudo
+                    # ja avancou para aguardando_assinatura/assinado/etc.
+                    _terminal_st = ('aguardando_assinatura', 'assinado_digital',
+                                    'assinado_fisico', 'assinado')
+                    _cur_st = (inspection_data.get('status') or '').lower()
+                    if _cur_st in _terminal_st:
+                        conn.execute("UPDATE inspections SET codigo=?, updated_at=? WHERE id=?",
+                            (_codigo, datetime.now().strftime('%Y-%m-%d %H:%M:%S'), insp_id))
+                        _logging.warning(f'[PDF-SAVE] preservou status={_cur_st}')
+                    else:
+                        conn.execute("UPDATE inspections SET status='concluido', codigo=?, updated_at=? WHERE id=?",
+                            (_codigo, datetime.now().strftime('%Y-%m-%d %H:%M:%S'), insp_id))
+                        _logging.warning('[PDF-SAVE] inspection UPDATE ok status=concluido')
                     for _ri, _room in enumerate(rooms_list):
                         _room_id = _room.get('id')
                         if not _room_id:
@@ -5237,11 +5276,33 @@ class SendToAutentiqueHandler(BaseHandler):
             signers = []
             seen_emails = set()
 
+            # Task #117: typos comuns que causam bounce — bloquear antes
+            _email_typos = {
+                'mail.com', 'gmial.com', 'gnail.com', 'gmaill.com',
+                'gmal.com', 'gmai.com', 'gimail.com', 'gmail.co',
+                'gmail.con', 'hotmial.com', 'hotmal.com', 'hotmai.com',
+                'hotnail.com', 'hotmail.co', 'yaho.com', 'yahooo.com',
+                'outlok.com', 'outloook.com', 'outllok.com', 'icloud.co',
+                'icould.com', 'live.con',
+            }
+            invalid_signers = []  # acumula emails ruins pra mostrar ao usuario
+
             def _add_signer(name, email):
                 if not email:
                     return
                 e = str(email).strip().lower()
                 if not e or '@' not in e or e in seen_emails:
+                    return
+                # Validacao de sintaxe basica
+                import re as _re
+                if not _re.match(r'^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$', e):
+                    invalid_signers.append({'name': name or '', 'email': email,
+                                            'reason': 'formato invalido'})
+                    return
+                _dom = e.split('@', 1)[1]
+                if _dom in _email_typos:
+                    invalid_signers.append({'name': name or '', 'email': email,
+                                            'reason': 'dominio com typo conhecido'})
                     return
                 seen_emails.add(e)
                 signers.append({
@@ -5304,6 +5365,19 @@ class SendToAutentiqueHandler(BaseHandler):
             print('[AUTENTIQUE_DEBUG] signers final: '
                   + repr(signers)[:500], flush=True)
 
+            # Task #117: se ha emails invalidos, bloqueia envio com mensagem
+            # detalhada — evita bounce silencioso no Autentique.
+            if invalid_signers:
+                _release_lock()
+                _det = '; '.join([
+                    (s.get('name') or '?') + ' (' + s.get('email','') + ')'
+                    for s in invalid_signers
+                ])
+                return self.err(
+                    'Emails invalidos detectados (' + str(len(invalid_signers))
+                    + '): ' + _det + '. Corrija na etapa 4 e tente novamente.',
+                    400
+                )
             if not signers:
                 _release_lock()
                 return self.err(
