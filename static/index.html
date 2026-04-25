@@ -10503,6 +10503,8 @@ function _wiz7RenderInventarioRev(idx, nomeAmb, dados) {
     var _qty = _inv[key + '_qty'] !== undefined ? _inv[key + '_qty'] : 0;
     var _estado = _inv[key + '_estado'] || '';
     var _obs = _inv[key + '_obs'] || '';
+    // Task #124: se qty>0, ignora estado='ausente' grudado de dados antigos
+    if (_estado === 'ausente' && parseInt(_qty) > 0) _estado = '';
     if (!isExtra && !_estado && (!_qty || _qty == 0) && !_obs) return;
     var _cor = _estado === 'bom' ? '#166534' : (_estado === 'avaria' ? '#991b1b' : '#475569');
     var _bg  = _estado === 'bom' ? '#f0fdf4' : (_estado === 'avaria' ? '#fef2f2' : '#f8fafc');
@@ -10908,7 +10910,13 @@ function wiz6InvQty(idx, key, delta) {
   var _cur = _inv[key+'_qty'] !== undefined ? parseInt(_inv[key+'_qty']) : 0;
   var _novo = Math.max(0, _cur + delta);
   _inv[key+'_qty'] = _novo;
-  if (_novo===0) _inv[key+'_estado'] = 'ausente';
+  // Task #124: estado 'ausente' so eh aplicado quando qty saiu de >0 pra 0
+  // (decisao real do usuario). Se qty>0 e estado estava 'ausente', limpa.
+  if (_novo === 0 && _cur > 0) {
+    _inv[key+'_estado'] = 'ausente';
+  } else if (_novo > 0 && _inv[key+'_estado'] === 'ausente') {
+    delete _inv[key+'_estado'];
+  }
   var _el = document.getElementById('inv-' + idx + '-' + key);
   if (_el) _el.textContent = _novo;
   else wiz6RenderAmbCard(idx);
@@ -10989,7 +10997,13 @@ function wiz6InvQtySub(idx, subNome, key, delta) {
   var _cur = sd.inventario[key+'_qty'] !== undefined ? parseInt(sd.inventario[key+'_qty']) : 0;
   var _novo = Math.max(0, _cur + delta);
   sd.inventario[key+'_qty'] = _novo;
-  if (_novo===0) sd.inventario[key+'_estado'] = 'ausente';
+  // Task #124: mesma logica do non-sub — so marca ausente se qty saiu de >0,
+  // e limpa ausente quando qty volta a ser >0.
+  if (_novo === 0 && _cur > 0) {
+    sd.inventario[key+'_estado'] = 'ausente';
+  } else if (_novo > 0 && sd.inventario[key+'_estado'] === 'ausente') {
+    delete sd.inventario[key+'_estado'];
+  }
   var _el = document.getElementById('inv-sub-'+idx+'-'+subNome.replace(/\W/g,'_')+'-'+key);
   if (_el) _el.textContent = _novo;
   else wiz6RenderAmbCard(idx);
