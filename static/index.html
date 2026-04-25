@@ -4969,7 +4969,12 @@ function saveSession(r) {
 }
 
 async function logout() {
-  if (!confirm('Deseja sair da sua conta?')) return;
+  if (!await customConfirm({
+    title: 'Sair da conta?',
+    message: 'Você precisará entrar novamente para acessar seus laudos.',
+    confirmText: 'Sair',
+    cancelText: 'Cancelar'
+  })) return;
 
   var _tok = currentToken || localStorage.getItem('izylo_token');
   if (_tok) {
@@ -6008,11 +6013,13 @@ async function dashAbrirAutentique(id) {
     else alert('ID do laudo nao informado');
     return;
   }
-  var confirmMsg = 'Enviar laudo para assinatura digital pelo Autentique?\n\n'
-    + 'Todos os signatários cadastrados na etapa 4 receberão um email '
-    + 'para assinar.\n\n'
-    + 'Após assinado, o laudo não poderá mais ser editado.';
-  if (!confirm(confirmMsg)) return;
+  var _ccOk = await customConfirm({
+    title: 'Enviar para assinatura digital?',
+    message: 'Todos os signatários cadastrados na etapa 4 receberão um email para assinar.\n\nApós assinado, o laudo não poderá mais ser editado.',
+    confirmText: 'Enviar',
+    cancelText: 'Cancelar'
+  });
+  if (!_ccOk) return;
 
   // Task #116: feedback robusto — sempre mostra resultado mesmo quando
   // showToast falhar; sempre recarrega o dashboard pra refletir estado real.
@@ -6053,11 +6060,17 @@ async function dashAbrirAutentique(id) {
     try { alert('Tentativa de envio concluida. Confira a listagem.'); } catch(_){}
   }
 }
-function dashExcluir(id) {
+async function dashExcluir(id) {
   var insp = (window._allInspections || []).find(function(x){ return x && x.id === id; }) || {};
   var st = (typeof _mlStatusKey === 'function') ? _mlStatusKey(insp) : ((insp.status || '').toLowerCase());
   if (typeof _mlOpenExcluir === 'function') { _mlOpenExcluir(id, st); return; }
-  if (!confirm('Excluir definitivamente?')) return;
+  if (!await customConfirm({
+    title: 'Excluir laudo definitivamente?',
+    message: 'Esta ação não pode ser desfeita.',
+    confirmText: 'Excluir',
+    cancelText: 'Cancelar',
+    danger: true
+  })) return;
   var hdr = Object.assign({}, window.getAuthHeaders ? window.getAuthHeaders() : {});
   fetch('/laudo/'+id, { method:'DELETE', credentials:'same-origin', headers: hdr })
     .then(function(r){ return r.json().catch(function(){ return {}; }); })
@@ -6512,8 +6525,10 @@ function closeMobileDrawer() {
   if (o) o.classList.remove('open');
 }
 function confirmLogout() {
-  if (confirm('Deseja realmente sair da sua conta?')) {
-    if (typeof logout === 'function') logout();
+  // logout() ja exibe o customConfirm internamente (task #139)
+  if (typeof logout === 'function') {
+    logout();
+    return;
   }
 }
 function _mdGo(action) {
@@ -6812,9 +6827,15 @@ function hardResetWizard() {
   console.log('[hardResetWizard] State fully cleared');
 }
 
-function showNewInspection() {
+async function showNewInspection() {
   if (temDadosWizard()) {
-    if (!confirm('Iniciar nova vistoria? Dados não salvos da vistoria atual serão perdidos.')) return;
+    var ok = await customConfirm({
+      title: 'Iniciar nova vistoria?',
+      message: 'Os dados não salvos da vistoria atual serão perdidos.',
+      confirmText: 'Iniciar',
+      cancelText: 'Cancelar'
+    });
+    if (!ok) return;
   }
   hardResetWizard();
   gotoWStep(0);
@@ -7313,7 +7334,14 @@ async function loadItemPhotos(itemId) {
 }
 
 async function deletePhoto(itemId, photoId) {
-  if (!confirm('Remover esta foto?')) return;
+  const ok = await customConfirm({
+    title: 'Remover esta foto?',
+    message: 'A foto será excluída permanentemente.',
+    confirmText: 'Remover',
+    cancelText: 'Cancelar',
+    danger: true
+  });
+  if (!ok) return;
   showLoading('Removendo foto...');
   const r = await api('DELETE', `/api/items/${itemId}/photos/${photoId}`);
   hideLoading();
@@ -7355,7 +7383,14 @@ async function saveDesc(itemId) {
 }
 
 async function deleteItem(itemId, roomId) {
-  if (!confirm('Remover este item?')) return;
+  const ok = await customConfirm({
+    title: 'Remover este item?',
+    message: 'O item será excluído desta vistoria.',
+    confirmText: 'Remover',
+    cancelText: 'Cancelar',
+    danger: true
+  });
+  if (!ok) return;
   showLoading('Removendo...');
   const r = await api('DELETE', `/api/items/${itemId}`);
   hideLoading();
@@ -10168,7 +10203,7 @@ function wiz6GoAmb(idx) {
 }
 
 // ── EXCLUIR AMBIENTE ────────────────────────────────
-function wiz6ExcluirAmb(idx) {
+async function wiz6ExcluirAmb(idx) {
   // Guard: garantir que itensData e outros sao arrays
   if (wizard.itensData && !Array.isArray(wizard.itensData)) {
     var _arr = [];
@@ -10182,7 +10217,13 @@ function wiz6ExcluirAmb(idx) {
              (_wiz6Ambientes && _wiz6Ambientes[idx]) ||
              'este ambiente';
 
-  if (!confirm('Excluir "' + nome + '"? Esta a\u00e7\u00e3o n\u00e3o pode ser desfeita.')) return;
+  if (!await customConfirm({
+    title: 'Excluir ambiente?',
+    message: 'Excluir "' + nome + '"? Esta a\u00e7\u00e3o n\u00e3o pode ser desfeita.',
+    confirmText: 'Excluir',
+    cancelText: 'Cancelar',
+    danger: true
+  })) return;
 
   // Remover dos 3 arrays
   if (wizard.selectedRooms) wizard.selectedRooms.splice(idx, 1);
@@ -11872,8 +11913,14 @@ function wiz6AnalisarSub(idx, subNome, modo) {
   var si = d.subAmbientes.indexOf(subNome);
   wiz6AnalisarBatchSub(idx, subNome, si >= 0 ? si : 0, modo || 'convencional');
 }
-function wiz6ExcluirSubAmb(idx, subNome) {
-  if (!confirm('Excluir sub-ambiente "' + subNome + '"?')) return;
+async function wiz6ExcluirSubAmb(idx, subNome) {
+  if (!await customConfirm({
+    title: 'Excluir sub-ambiente?',
+    message: 'Excluir "' + subNome + '"? Esta ação não pode ser desfeita.',
+    confirmText: 'Excluir',
+    cancelText: 'Cancelar',
+    danger: true
+  })) return;
   var d = wizard.itensData[idx];
   if (!d) return;
   d.subAmbientes = (d.subAmbientes || []).filter(function(s){ return s !== subNome; });
@@ -11959,8 +12006,15 @@ function wiz6RemoverFoto(ambIdx, fotoIdx) {
   wiz6RenderAmbCard(ambIdx);
 }
 
-function wiz6RemoverFotoPos(ambIdx, fotoIdx) {
-  if (!confirm('Esta foto j&aacute; foi analisada pela IA. O cr&eacute;dito foi consumido e n&atilde;o ser&aacute; devolvido. Deseja remover mesmo assim?')) return;
+async function wiz6RemoverFotoPos(ambIdx, fotoIdx) {
+  var ok = await customConfirm({
+    title: 'Remover foto já analisada?',
+    message: 'Esta foto já foi analisada pela IA. O crédito foi consumido e não será devolvido.\n\nDeseja remover mesmo assim?',
+    confirmText: 'Remover',
+    cancelText: 'Cancelar',
+    danger: true
+  });
+  if (!ok) return;
   if (!wizard.itensData[ambIdx] || !wizard.itensData[ambIdx].fotos) return;
   wizard.itensData[ambIdx].fotos.splice(fotoIdx, 1);
   wiz6RenderAmbCard(ambIdx);
@@ -12357,12 +12411,12 @@ async function wiz6UploadVideo(input) {
   var frames = _wiz6EstimarFrames(durSeg);
   var custo = (frames * 0.9).toFixed(2);
 
-  var confirmar = confirm(
-    '🎥 Vídeo: ' + Math.round(durSeg) + ' segundos\n'
-    + 'Frames estimados: ' + frames + '\n'
-    + 'Custo estimado: R$ ' + custo + ' (' + frames + ' créditos de vídeo)\n\n'
-    + 'Confirmar processamento?'
-  );
+  var confirmar = await customConfirm({
+    title: 'Confirmar processamento de vídeo?',
+    message: '🎥 Duração: ' + Math.round(durSeg) + ' segundos\nFrames estimados: ' + frames + '\nCusto estimado: R$ ' + custo + ' (' + frames + ' créditos de vídeo)',
+    confirmText: 'Processar',
+    cancelText: 'Cancelar'
+  });
   if (!confirmar) { input.value = ''; return; }
 
   document.getElementById('wiz6-video-upload-tela').style.display = 'none';
@@ -13014,6 +13068,74 @@ window._mobilePickerForward = _mobilePickerForward;
   </div>
 </div>
 
+<!-- Custom confirm modal (task #139) -->
+<style>
+#cc-modal { position:fixed; inset:0; z-index:10000; display:none; align-items:center; justify-content:center; background:rgba(15,23,42,0.55); padding:16px; }
+#cc-modal.open { display:flex; }
+#cc-modal .cc-box { background:#fff; width:100%; max-width:420px; border-radius:14px; padding:22px 22px 18px; box-shadow:0 12px 36px rgba(0,0,0,0.25); animation: ccPop .18s ease; }
+@keyframes ccPop { from { transform: scale(.94); opacity:0; } to { transform: scale(1); opacity:1; } }
+#cc-modal .cc-logo { display:block; margin:0 auto 12px; height:32px; }
+#cc-modal .cc-title { margin:0 0 6px; font-size:17px; font-weight:700; color:#0f172a; text-align:center; }
+#cc-modal .cc-msg { margin:0 0 18px; font-size:14px; color:#475569; text-align:center; line-height:1.45; white-space:pre-line; }
+#cc-modal .cc-btns { display:flex; gap:10px; justify-content:center; }
+#cc-modal .cc-btn { flex:1; padding:10px 16px; border-radius:9px; font-size:14px; font-weight:600; cursor:pointer; border:1px solid transparent; transition: all .12s; }
+#cc-modal .cc-cancel { background:#fff; color:#64748b; border-color:#e2e8f0; }
+#cc-modal .cc-cancel:hover { background:#f8fafc; }
+#cc-modal .cc-ok { background:#2d7dd2; color:#fff; }
+#cc-modal .cc-ok:hover { background:#1e6bbf; }
+#cc-modal .cc-ok.cc-danger { background:#dc2626; }
+#cc-modal .cc-ok.cc-danger:hover { background:#b91c1c; }
+</style>
+<div id="cc-modal" onclick="if(event.target===this)window._ccResolve&&window._ccResolve(false)">
+  <div class="cc-box" onclick="event.stopPropagation()">
+    <img class="cc-logo" src="/static/assets/izylaudo-logo-login.svg" alt="izyLAUDO">
+    <h3 class="cc-title">Confirmar</h3>
+    <p class="cc-msg"></p>
+    <div class="cc-btns">
+      <button type="button" class="cc-btn cc-cancel" onclick="window._ccResolve&&window._ccResolve(false)">Cancelar</button>
+      <button type="button" class="cc-btn cc-ok" onclick="window._ccResolve&&window._ccResolve(true)">Confirmar</button>
+    </div>
+  </div>
+</div>
+<script>
+// customConfirm({title, message, confirmText, cancelText, danger}) -> Promise<boolean>
+// Aceita string como atalho: customConfirm('mensagem')
+window.customConfirm = function(opts) {
+  if (typeof opts === 'string') opts = { message: opts };
+  opts = opts || {};
+  return new Promise(function(resolve){
+    var modal = document.getElementById('cc-modal');
+    if (!modal) { resolve(window.confirm(opts.message || '')); return; }
+    var titleEl = modal.querySelector('.cc-title');
+    var msgEl = modal.querySelector('.cc-msg');
+    var okBtn = modal.querySelector('.cc-ok');
+    var cancelBtn = modal.querySelector('.cc-cancel');
+    titleEl.textContent = opts.title || 'Confirmar';
+    msgEl.textContent = opts.message || '';
+    okBtn.textContent = opts.confirmText || 'Confirmar';
+    cancelBtn.textContent = opts.cancelText || 'Cancelar';
+    okBtn.classList.toggle('cc-danger', !!opts.danger);
+    var done = false;
+    function finish(result){
+      if (done) return;
+      done = true;
+      modal.classList.remove('open');
+      window._ccResolve = null;
+      document.removeEventListener('keydown', onKey);
+      resolve(!!result);
+    }
+    function onKey(e){
+      if (e.key === 'Escape') finish(false);
+      else if (e.key === 'Enter') finish(true);
+    }
+    window._ccResolve = finish;
+    document.addEventListener('keydown', onKey);
+    modal.classList.add('open');
+    setTimeout(function(){ try { okBtn.focus(); } catch(_){} }, 30);
+  });
+};
+</script>
+
 <!-- Overlay ajuda contextual -->
 <div id="ajuda-overlay" onclick="fecharAjuda()"></div>
 
@@ -13565,7 +13687,14 @@ async function adicionarCorretor() {
 }
 
 async function removerCorretor(id) {
-  if (!confirm('Remover este corretor?')) return;
+  var ok = await customConfirm({
+    title: 'Remover este corretor?',
+    message: 'O corretor será removido da sua lista de cadastros.',
+    confirmText: 'Remover',
+    cancelText: 'Cancelar',
+    danger: true
+  });
+  if (!ok) return;
   var res = await api('DELETE', '/api/config/corretores/' + encodeURIComponent(id));
   if (res && res.ok) {
     showToast('Corretor removido', 'success');
@@ -13607,8 +13736,22 @@ async function confirmarPerfil() {
 }
 
 async function excluirConta() {
-  if (!confirm('Tem certeza? Todos os seus laudos e dados serão apagados permanentemente.')) return;
-  if (!confirm('Esta ação é irreversível. Confirmar exclusão definitiva da conta?')) return;
+  var ok1 = await customConfirm({
+    title: 'Excluir sua conta?',
+    message: 'Todos os seus laudos e dados serão apagados permanentemente.',
+    confirmText: 'Continuar',
+    cancelText: 'Cancelar',
+    danger: true
+  });
+  if (!ok1) return;
+  var ok2 = await customConfirm({
+    title: 'Confirmar exclusão definitiva?',
+    message: 'Esta ação é irreversível.\n\nTem certeza absoluta de que deseja excluir sua conta?',
+    confirmText: 'Excluir conta',
+    cancelText: 'Cancelar',
+    danger: true
+  });
+  if (!ok2) return;
   var res = await api('DELETE', '/api/config/account');
   if (res && res.ok) {
     showToast('Conta excluída', 'success');
@@ -14105,11 +14248,13 @@ async function enviarParaAutentique() {
     return;
   }
 
-  var confirmMsg = 'Enviar laudo para assinatura digital pelo Autentique?\n\n'
-    + 'Todos os signatários cadastrados na etapa 4 receberão um email '
-    + 'para assinar.\n\n'
-    + 'Após assinado, o laudo não poderá mais ser editado.';
-  if (!confirm(confirmMsg)) return;
+  var _ccOk = await customConfirm({
+    title: 'Enviar para assinatura digital?',
+    message: 'Todos os signatários cadastrados na etapa 4 receberão um email para assinar.\n\nApós assinado, o laudo não poderá mais ser editado.',
+    confirmText: 'Enviar',
+    cancelText: 'Cancelar'
+  });
+  if (!_ccOk) return;
 
   var btn = document.getElementById('btn-enviar-autentique');
   if (btn) {
