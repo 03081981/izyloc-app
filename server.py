@@ -38,9 +38,23 @@ from pdf_service import generate_pdf
 from email_worker import start_email_worker
 
 def _jser(obj):
-    """JSON serializer for datetime and other non-serializable types."""
+    """JSON serializer for datetime and other non-serializable types.
+
+    Naive datetimes (sem tzinfo) sao assumidos como UTC e marcados com
+    sufixo 'Z' para que o frontend possa converter corretamente para o
+    fuso de Brasilia. Sem esse marcador, o JS interpretaria a string
+    como horario local, causando datas erradas em laudos criados perto
+    da meia-noite.
+    """
     if hasattr(obj, 'isoformat'):
-        return obj.isoformat()
+        s = obj.isoformat()
+        try:
+            # datetime / time naive -> tzinfo is None -> appendar 'Z'
+            if getattr(obj, 'tzinfo', 'no_attr') is None and 'T' in s:
+                s += 'Z'
+        except Exception:
+            pass
+        return s
     return str(obj)
 
 

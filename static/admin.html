@@ -680,11 +680,14 @@ async function admCarregar(periodo, btn) {
 
 function _fmtTsBr(isoOrStr) {
   if (!isoOrStr) return '';
-  // Backend envia '2026-04-24 19:25:...+00:00' (UTC).
+  // Backend envia naive UTC ('2026-04-24 19:25:...' ou '...T...Z').
+  // Garantimos sufixo de TZ pra JS nao interpretar como local.
   var s = String(isoOrStr);
-  var d = new Date(s.indexOf('T') > -1 ? s : s.replace(' ', 'T'));
+  var t = s.indexOf('T') > -1 ? s : s.replace(' ', 'T');
+  if (!/Z|[+-]\d{2}:?\d{2}$/.test(t)) t += 'Z';
+  var d = new Date(t);
   if (isNaN(d.getTime())) return s.substring(0, 16).replace('T', ' ');
-  return d.toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' });
+  return d.toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo', dateStyle: 'short', timeStyle: 'short' });
 }
 
 async function admCarregarIAPrecos() {

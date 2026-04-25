@@ -4994,10 +4994,16 @@ async function loadDashboard() {
   if (!r.ok) return;
   const list = r.inspections || [];
 
-  const now = new Date(), m = now.getMonth(), y = now.getFullYear();
+  // Fuso de Brasilia para comparar mes/ano: usar partes formatadas em pt-BR
+  const _nowBr = new Date().toLocaleDateString('en-CA', {timeZone:'America/Sao_Paulo'}); // YYYY-MM-DD
+  const m = parseInt(_nowBr.slice(5,7), 10) - 1;
+  const y = parseInt(_nowBr.slice(0,4), 10);
   const total = list.length;
   const estesMes = list.filter(i => {
-    const d = new Date(i.created_at); return d.getMonth()===m && d.getFullYear()===y;
+    const d = (typeof _parseUtc==='function'?_parseUtc(i.created_at):new Date(i.created_at));
+    if (isNaN(d.getTime())) return false;
+    const dBr = d.toLocaleDateString('en-CA', {timeZone:'America/Sao_Paulo'});
+    return parseInt(dBr.slice(5,7),10)-1===m && parseInt(dBr.slice(0,4),10)===y;
   }).length;
   // Status atuais validos:
   //   'em_andamento' | 'rascunho' | 'draft' | 'in_progress'  -> Em andamento
@@ -5090,7 +5096,9 @@ function _dashLaudoCode(i) {
   if (i.code) return i.code;
   // Fallback: build from type + year + id
   var prefix = i.type === 'entrada' ? 'VE' : (i.type === 'saida' ? 'VS' : (i.type === 'temporada' ? 'VT' : 'VX'));
-  var y = new Date(i.created_at || Date.now()).getFullYear();
+  // Ano em fuso de Brasilia (created_at vem em UTC)
+  var _dy = (typeof _parseUtc==='function')?_parseUtc(i.created_at||Date.now()):new Date(i.created_at||Date.now());
+  var y = parseInt(_dy.toLocaleDateString('en-CA', {timeZone:'America/Sao_Paulo'}).slice(0,4),10) || (new Date()).getFullYear();
   var id = String(i.id||'').slice(0, 4).toUpperCase();
   return prefix + '-' + y + '-' + id;
 }
@@ -5930,9 +5938,40 @@ function _mlConfirmExcluir() {
 
 
 
-function formatDate(str) {
-  try { return new Date(str).toLocaleDateString('pt-BR'); } catch { return str; }
+// === TIMEZONE HELPERS (Brasilia / UTC-3) ============================
+// Backend retorna `created_at` como ISO sem TZ (naive UTC) — agora marcado
+// com 'Z' por _jser. Mas datas vindas como "YYYY-MM-DD HH:MM:SS" (sem T,
+// sem Z) ainda precisam ser tratadas como UTC. Tambem cobrimos strings
+// ja com TZ (ex: '+00:00') ou apenas data (DD/MM/YYYY) sem alterar.
+function _parseUtc(str) {
+  if (!str) return new Date(NaN);
+  if (str instanceof Date) return str;
+  var s = String(str);
+  // Ja tem marcador de TZ? usa direto
+  if (/Z|[+-]\d{2}:?\d{2}$/.test(s)) return new Date(s);
+  // Formato "YYYY-MM-DD HH:MM:SS" — vira ISO e marca UTC
+  if (/^\d{4}-\d{2}-\d{2}[ T]\d{2}:\d{2}/.test(s)) {
+    return new Date(s.replace(' ', 'T') + 'Z');
+  }
+  return new Date(s);
 }
+function formatDate(str) {
+  try {
+    return _parseUtc(str).toLocaleDateString('pt-BR', {timeZone: 'America/Sao_Paulo'});
+  } catch { return str; }
+}
+function formatDateTime(str) {
+  try {
+    return _parseUtc(str).toLocaleString('pt-BR', {
+      timeZone: 'America/Sao_Paulo',
+      day: '2-digit', month: '2-digit', year: 'numeric',
+      hour: '2-digit', minute: '2-digit'
+    });
+  } catch { return str; }
+}
+window._parseUtc = _parseUtc;
+window.formatDate = formatDate;
+window.formatDateTime = formatDateTime;
 
 // ─── NEW INSPECTION WIZARD ────────────────────────────────────────────────────
 function temDadosWizard() {
@@ -12850,9 +12889,9 @@ function _extRenderLista(transactions) {
   var html = '';
   var mesAtual = '';
   transactions.forEach(function(t) {
-    var dt = new Date((t.created_at || '').replace(' ', 'T'));
+    var dt = (typeof _parseUtc==='function') ? _parseUtc(t.created_at||'') : new Date((t.created_at||'').replace(' ','T'));
     if (isNaN(dt.getTime())) dt = new Date();
-    var mesStr = dt.toLocaleDateString('pt-BR', {month:'long', year:'numeric'});
+    var mesStr = dt.toLocaleDateString('pt-BR', {timeZone:'America/Sao_Paulo', month:'long', year:'numeric'});
     mesStr = mesStr.charAt(0).toUpperCase() + mesStr.slice(1);
     if (mesStr !== mesAtual) {
       mesAtual = mesStr;
@@ -12867,8 +12906,8 @@ function _extRenderLista(transactions) {
     var valorSign = isRec ? '+' : '\u2212';
     var valorFmt = _extFmtBrl(Math.abs(amt));
     var saldoFmt = _extFmtBrl(t.balance_after_cents || 0);
-    var dataFmt = dt.toLocaleDateString('pt-BR');
-    var horaFmt = dt.toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'});
+    var dataFmt = dt.toLocaleDateString('pt-BR', {timeZone:'America/Sao_Paulo'});
+    var horaFmt = dt.toLocaleTimeString('pt-BR', {timeZone:'America/Sao_Paulo', hour:'2-digit', minute:'2-digit'});
     var desc = t.description || (isRec ? 'Recarga via Mercado Pago' : 'An\u00e1lise de fotos');
     var sub = (!isRec && t.photos_count) ? (t.photos_count + ' foto' + (t.photos_count !== 1 ? 's' : '')) : '';
     html += '<div class="ext-linha">'

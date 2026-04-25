@@ -102,7 +102,14 @@ def _fmt_cidade_uf(cidade, estado):
     return u'\u2014'
 
 
-from datetime import datetime
+from datetime import datetime, timedelta, timezone
+
+# Fuso de Brasilia (UTC-3): usado para datas exibidas no PDF
+TZ_BR = timezone(timedelta(hours=-3))
+
+def _now_br():
+    """datetime atual em Brasilia (naive, sem tzinfo) para strftime."""
+    return datetime.now(TZ_BR).replace(tzinfo=None)
 
 # Debug collector for diagnostics
 logger = logging.getLogger(__name__)
@@ -1473,14 +1480,27 @@ def gerar_laudo_modelo6(dados_imovel, dados_locador, dados_locatario,
 
 def _parse_date(date_str):
     if not date_str:
-        return datetime.now()
+        return _now_br()
+    s = str(date_str).strip()
+    # Strings ISO com Z ou offset (UTC) — converter para Brasilia
+    if 'T' in s and (s.endswith('Z') or '+' in s[10:] or s[-6:-3] == ':-' or s[-6:-3] == ':+'):
+        try:
+            iso = s.replace('Z', '+00:00')
+            dt = datetime.fromisoformat(iso)
+            return dt.astimezone(TZ_BR).replace(tzinfo=None)
+        except Exception:
+            pass
     for fmt in ('%d/%m/%Y', '%Y-%m-%d', '%Y-%m-%dT%H:%M:%S',
                 '%d/%m/%Y %H:%M', '%Y-%m-%d %H:%M:%S'):
         try:
-            return datetime.strptime(date_str.strip(), fmt)
+            dt = datetime.strptime(s, fmt)
+            # Se tem componente de hora, eh UTC do banco -> converter pra BR
+            if '%H' in fmt:
+                dt = dt.replace(tzinfo=timezone.utc).astimezone(TZ_BR).replace(tzinfo=None)
+            return dt
         except (ValueError, AttributeError):
             continue
-    return datetime.now()
+    return _now_br()
 
 def _format_date_extenso(dt):
     return f'{dt.day} DE {MESES_PT.get(dt.month, "")} DE {dt.year}'
