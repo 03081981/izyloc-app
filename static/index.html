@@ -12899,13 +12899,14 @@ function wiz6Concluir() {
 })();
 // ========== FIM ETAPA 6 ==========
 
-// === MOBILE FOTO PICKER (task #132) ===========================
-// Bottom sheet unificado que aparece quando usuario toca no card
-// '+ Foto' no mobile, oferecendo Camera ou Galeria. Mantem o card
-// desktop intacto e elimina duplicacao de botoes inline.
+// === MOBILE FOTO PICKER (task #132/#133) =====================
+// Bottom sheet unificado. Abordagem: cada botao do picker eh um
+// <label> envolvendo seu proprio <input type="file"> visivel pelo
+// label — o toque do usuario abre o file picker DENTRO do mesmo
+// gesture (iOS/Chrome bloqueiam .click() programatico apos timeout).
+// Os arquivos selecionados sao transferidos via DataTransfer pro
+// <input> original do ambiente, mantendo o onchange existente.
 (function(){
-  // Captura clicks em qualquer label de upload na fase de captura,
-  // antes do navegador disparar o file picker do <input>.
   document.addEventListener('click', function(e){
     if (window.innerWidth > 768) return;  // desktop: comportamento normal
     var lbl = e.target.closest('.wiz6-foto-upload');
@@ -12918,29 +12919,39 @@ function wiz6Concluir() {
     window._mobileFotoTargetInput = realInput;
     var sheet = document.getElementById('mobile-foto-picker');
     if (sheet) sheet.classList.add('open');
-  }, true);  // capture phase pra interceptar antes do label triggar input
+  }, true);
+  // Wire change events nos inputs dedicados do picker (uma vez).
+  document.addEventListener('DOMContentLoaded', function(){
+    ['picker-input-camera', 'picker-input-galeria'].forEach(function(id){
+      var inp = document.getElementById(id);
+      if (!inp) return;
+      inp.addEventListener('change', function(e){
+        _closeMobileFotoPicker();
+        var tgt = window._mobileFotoTargetInput;
+        if (!tgt || !e.target.files || !e.target.files.length) {
+          e.target.value = '';
+          return;
+        }
+        try {
+          var dt = new DataTransfer();
+          for (var i = 0; i < e.target.files.length; i++) {
+            dt.items.add(e.target.files[i]);
+          }
+          tgt.files = dt.files;
+          tgt.dispatchEvent(new Event('change', { bubbles: true }));
+        } catch(err) {
+          console.warn('[mobile picker] DataTransfer falhou:', err);
+        }
+        e.target.value = '';  // reset pra permitir mesma foto outra vez
+      });
+    });
+  });
 })();
 function _closeMobileFotoPicker() {
   var s = document.getElementById('mobile-foto-picker');
   if (s) s.classList.remove('open');
 }
-function _mobileFotoCamera() {
-  var i = window._mobileFotoTargetInput;
-  _closeMobileFotoPicker();
-  if (!i) return;
-  i.setAttribute('capture', 'environment');
-  setTimeout(function(){ i.click(); }, 60);
-}
-function _mobileFotoGaleria() {
-  var i = window._mobileFotoTargetInput;
-  _closeMobileFotoPicker();
-  if (!i) return;
-  i.removeAttribute('capture');
-  setTimeout(function(){ i.click(); }, 60);
-}
 window._closeMobileFotoPicker = _closeMobileFotoPicker;
-window._mobileFotoCamera = _mobileFotoCamera;
-window._mobileFotoGaleria = _mobileFotoGaleria;
 </script>
 <!-- Mobile foto picker (task #132) -->
 <style>
@@ -12959,12 +12970,16 @@ window._mobileFotoGaleria = _mobileFotoGaleria;
   <div class="mfp-sheet" onclick="event.stopPropagation()">
     <div class="mfp-title">Adicionar foto</div>
     <div class="mfp-row">
-      <button type="button" class="mfp-btn" onclick="_mobileFotoCamera()">
+      <!-- Task #133: cada botao eh <label> com seu <input type=file> dentro,
+           preservando o user gesture (iOS bloqueia .click() programatico). -->
+      <label class="mfp-btn" for="picker-input-camera">
         <span class="mfp-ic">📷</span><span class="mfp-lbl">Câmera</span>
-      </button>
-      <button type="button" class="mfp-btn" onclick="_mobileFotoGaleria()">
+        <input id="picker-input-camera" type="file" accept="image/*" capture="environment" multiple style="display:none">
+      </label>
+      <label class="mfp-btn" for="picker-input-galeria">
         <span class="mfp-ic">🖼️</span><span class="mfp-lbl">Galeria</span>
-      </button>
+        <input id="picker-input-galeria" type="file" accept="image/*" multiple style="display:none">
+      </label>
     </div>
     <button type="button" class="mfp-cancel" onclick="_closeMobileFotoPicker()">Cancelar</button>
   </div>
