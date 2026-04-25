@@ -12132,10 +12132,144 @@ async function wiz6DescontarCréditos(qtd, tipo) {
 }
 
 // ── CONCLUIR VISTORIA ────────────────────────────────────
-function wiz6Concluir() {
+// ── VALIDACAO ANTES DE FINALIZAR (task #109) ────────────────────
+// Verifica todos os ambientes / sub-ambientes; bloqueia avanco e
+// mostra modal com lista de problemas se encontrar alguma pendencia.
+function wiz6ColetarPendencias() {
+  // Retorna array de {ambIdx, subNome|null, nome, kind:'sem_fotos'|'sem_analise'}
+  var pend = [];
+  var lista = (window._wiz6Ambientes && window._wiz6Ambientes.length)
+    ? window._wiz6Ambientes
+    : (wizard.selectedRooms || []);
+  lista.forEach(function(_amb, i) {
+    var d = (wizard.itensData && wizard.itensData[i]) || {};
+    var nomeAmb = _amb || ('Ambiente ' + (i+1));
+    if (d.isSuite && d.subAmbientes && d.subAmbientes.length > 0) {
+      d.subAmbientes.forEach(function(sn) {
+        var sd = (d.subs && d.subs[sn]) || {};
+        var nf = (sd.fotos || []).length;
+        if (nf === 0) {
+          pend.push({ambIdx: i, subNome: sn, nome: sn, parent: nomeAmb, kind: 'sem_fotos'});
+        } else if (!sd.jaAnalisou) {
+          pend.push({ambIdx: i, subNome: sn, nome: sn, parent: nomeAmb, kind: 'sem_analise'});
+        }
+      });
+    } else {
+      var nf = (d.fotos || []).length;
+      if (nf === 0) {
+        pend.push({ambIdx: i, subNome: null, nome: nomeAmb, parent: null, kind: 'sem_fotos'});
+      } else if (!d.jaAnalisou) {
+        pend.push({ambIdx: i, subNome: null, nome: nomeAmb, parent: null, kind: 'sem_analise'});
+      }
+    }
+  });
+  return pend;
+}
+
+function wiz6IrAoAmbiente(ambIdx) {
+  try { wiz6PendModalFechar(); } catch(e){}
+  if (typeof wiz6GoAmb === 'function') wiz6GoAmb(ambIdx);
+  setTimeout(function(){
+    var card = document.getElementById('wiz6-amb-card');
+    if (card) card.scrollIntoView({behavior:'smooth', block:'start'});
+  }, 100);
+}
+
+function wiz6ExcluirEReavaliar(ambIdx) {
+  try {
+    if (typeof wiz6ExcluirAmb === 'function') wiz6ExcluirAmb(ambIdx);
+  } catch(e){ console.warn('[wiz6 excluir]', e); }
+  // Re-validar e re-mostrar modal apos remover
+  setTimeout(function(){
+    try {
+      var pend = wiz6ColetarPendencias();
+      if (pend.length === 0) {
+        wiz6PendModalFechar();
+        if (typeof toast === 'function') {
+          toast('Ambiente excluído. Clique em Finalizar vistoria novamente para prosseguir.', 'success');
+        }
+      } else {
+        wiz6MostrarModalPendencias(pend);
+      }
+    } catch(e){ console.warn('[wiz6 reaval]', e); }
+  }, 50);
+}
+
+function wiz6PendModalFechar() {
+  var m = document.getElementById('wiz6-pend-modal');
+  if (m) m.remove();
+}
+
+function wiz6MostrarModalPendencias(pend) {
+  wiz6PendModalFechar();
+  var overlay = document.createElement('div');
+  overlay.id = 'wiz6-pend-modal';
+  overlay.style.cssText = 'position:fixed;inset:0;background:rgba(15,23,42,0.55);display:flex;align-items:center;justify-content:center;z-index:9999;padding:16px';
+  overlay.onclick = function(e){ if (e.target === overlay) wiz6PendModalFechar(); };
+  var box = document.createElement('div');
+  box.style.cssText = 'background:#fff;border-radius:12px;max-width:560px;width:100%;max-height:85vh;overflow-y:auto;box-shadow:0 12px 32px rgba(0,0,0,0.25)';
+  var hdr = '<div style="padding:18px 20px;border-bottom:1px solid #e2e8f0;display:flex;align-items:center;gap:10px">'
+    + '<div style="font-size:24px">⚠</div>'
+    + '<div style="flex:1">'
+      + '<div style="font-size:16px;font-weight:700;color:#0f172a">Pendências antes de finalizar</div>'
+      + '<div style="font-size:12px;color:#64748b">Resolva os ' + pend.length + ' item' + (pend.length!==1?'s':'') + ' abaixo antes de prosseguir.</div>'
+    + '</div>'
+    + '<button onclick="wiz6PendModalFechar()" style="background:none;border:none;font-size:22px;color:#94a3b8;cursor:pointer;padding:0 4px;line-height:1">×</button>'
+    + '</div>';
+  var body = '<div style="padding:14px 20px;display:flex;flex-direction:column;gap:10px">';
+  pend.forEach(function(p){
+    var rotuloFull = p.parent ? (p.parent + ' → ' + p.nome) : p.nome;
+    if (p.kind === 'sem_fotos') {
+      body += '<div style="background:#fef2f2;border:1.5px solid #dc2626;border-radius:10px;padding:14px 16px">'
+        + '<div style="color:#dc2626;font-weight:700;font-size:13px;margin-bottom:4px">⛔ Não é possível finalizar a vistoria</div>'
+        + '<div style="color:#7f1d1d;font-size:12px;margin-bottom:10px">O ambiente <strong>' + _esc6(rotuloFull) + '</strong> não possui fotos. Adicione fotos e analise com IA — ou exclua o ambiente se ele não fizer parte deste imóvel.</div>'
+        + '<div style="display:flex;gap:8px;flex-wrap:wrap">'
+          + '<button onclick="wiz6IrAoAmbiente(' + p.ambIdx + ')" style="padding:7px 14px;background:#dc2626;color:#fff;border:none;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer">Ir ao ambiente</button>'
+          + (p.subNome ? '' : '<button onclick="wiz6ExcluirEReavaliar(' + p.ambIdx + ')" style="padding:7px 14px;background:#fff;color:#dc2626;border:1px solid #dc2626;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer">Excluir ambiente</button>')
+        + '</div>'
+      + '</div>';
+    } else {
+      body += '<div style="background:#fef9ec;border:1.5px solid #f59e0b;border-radius:10px;padding:14px 16px">'
+        + '<div style="color:#92400e;font-weight:700;font-size:13px;margin-bottom:4px">⚠ Análise da IA pendente</div>'
+        + '<div style="color:#78350f;font-size:12px;margin-bottom:10px">O ambiente <strong>' + _esc6(rotuloFull) + '</strong> possui fotos mas ainda não foi analisado pela IA. Vá ao ambiente e clique em <strong>Analisar com IA</strong> para gerar a descrição.</div>'
+        + '<div style="display:flex;gap:8px;flex-wrap:wrap">'
+          + '<button onclick="wiz6IrAoAmbiente(' + p.ambIdx + ')" style="padding:7px 14px;background:#f59e0b;color:#fff;border:none;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer">Ir ao ambiente</button>'
+        + '</div>'
+      + '</div>';
+    }
+  });
+  body += '</div>';
+  var ftr = '<div style="padding:12px 20px;border-top:1px solid #e2e8f0;display:flex;justify-content:flex-end">'
+    + '<button onclick="wiz6PendModalFechar()" style="padding:8px 18px;background:#fff;color:#64748b;border:1px solid #e2e8f0;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer">Continuar editando</button>'
+    + '</div>';
+  box.innerHTML = hdr + body + ftr;
+  overlay.appendChild(box);
+  document.body.appendChild(overlay);
+}
+
+window.wiz6IrAoAmbiente = wiz6IrAoAmbiente;
+window.wiz6ExcluirEReavaliar = wiz6ExcluirEReavaliar;
+window.wiz6PendModalFechar = wiz6PendModalFechar;
+window.wiz6MostrarModalPendencias = wiz6MostrarModalPendencias;
+window.wiz6ColetarPendencias = wiz6ColetarPendencias;
+
+// Concluir REAL — chamado quando passou pela validacao
+function wiz6ConcluirReal() {
   _wiz6AmbDone[_wiz6AmbIdx] = true;
   wiz6AtualizarProgress();
   if (typeof nextWizStep === 'function') nextWizStep();
+}
+
+function wiz6Concluir() {
+  // Task #109: valida antes de avancar para Etapa 7
+  try {
+    var pend = wiz6ColetarPendencias();
+    if (pend.length > 0) {
+      wiz6MostrarModalPendencias(pend);
+      return;
+    }
+  } catch(e){ console.warn('[wiz6Concluir] validacao err', e); }
+  wiz6ConcluirReal();
 }
 
 // ── HOOK NA ETAPA 6 ──────────────────────────────────────
