@@ -10326,6 +10326,56 @@ function wiz6AceitarMoverExtras(ambIdx) {
   }
 }
 
+// Task #135: helper unico para o painel "X fotos prontas para analise +
+// Adicionar mais + Analisar IA + Premium". Garante visual identico em
+// ambientes regulares, Suite, sub-ambientes (Banheiro Suite, Closet, etc).
+function _wiz6FotoActionPanel(opts) {
+  var ambIdx = opts.ambIdx;
+  var subNome = opts.subNome || null;
+  var si = (typeof opts.si === 'number') ? opts.si : 0;
+  var nFotos = opts.nFotos;
+  var jaAnalisou = !!opts.jaAnalisou;
+  var addCall, analyseCall, btnConvId, btnPremId;
+  if (subNome) {
+    var subEsc = String(subNome).replace(/'/g, "\\'");
+    addCall = "wiz6AddFotosSub(this," + ambIdx + ",'" + subEsc + "')";
+    analyseCall = function(modo) {
+      return "wiz6AnalisarBatchSub(" + ambIdx + ",'" + subEsc + "'," + si + ",'" + modo + "')";
+    };
+    btnConvId = 'btnConv_sub_' + ambIdx + '_' + si;
+    btnPremId = 'btnPrem_sub_' + ambIdx + '_' + si;
+  } else {
+    addCall = "wiz6AddFotos(this," + ambIdx + ")";
+    analyseCall = function(modo) { return "wiz6AnalisarBatch(" + ambIdx + ",'" + modo + "')"; };
+    btnConvId = 'btnConv_' + ambIdx;
+    btnPremId = 'btnPrem_' + ambIdx;
+  }
+  var labelConv = jaAnalisou ? '🔄 Re-analisar com IA' : '🤖 Analisar com IA';
+  var labelPrem = (jaAnalisou ? '🔄 Re-analisar IA PREMIUM' : '🤖 Analisar IA PREMIUM');
+  var priceConv = (typeof window.pricePerPhotoLabel === 'function') ? window.pricePerPhotoLabel('convencional') : '';
+  var pricePrem = (typeof window.pricePerPhotoLabel === 'function') ? window.pricePerPhotoLabel('premium') : '';
+  var h = '<div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:10px;padding:14px;margin-bottom:14px;text-align:center">';
+  h += '<div style="font-size: var(--fs-sm);color:#166534;font-weight: var(--fw-semibold);margin-bottom:8px">'
+    + nFotos + ' foto' + (nFotos!==1?'s':'') + ' prontas para análise</div>';
+  h += '<div class="wiz6-acao-row" style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;align-items:center">';
+  // Adicionar mais fotos — universal (desktop e mobile, picker intercepta no mobile)
+  h += '<label class="wiz6-foto-upload" style="padding:10px 18px;background:#fff;color:#2d7dd2;border:1px solid #2d7dd2;border-radius:8px;font-size: var(--fs-xs);font-weight: var(--fw-medium);cursor:pointer">'
+    + '+ Adicionar mais fotos'
+    + '<input type="file" accept="image/*" multiple style="display:none" onchange="' + addCall + '">'
+    + '</label>';
+  // Analisar IA convencional
+  h += '<button id="' + btnConvId + '" class="wiz6-btn-analisar" onclick="confirmarAnalise(\'convencional\',' + nFotos + ',function(){' + analyseCall('convencional') + ';}).catch(console.error)" style="padding:10px 24px;background:#2d7dd2;color:#fff;border:none;border-radius:8px;font-size: var(--fs-sm);font-weight: var(--fw-bold);cursor:pointer;white-space:nowrap">'
+    + labelConv + ' — ' + priceConv
+    + '</button>';
+  // Analisar IA Premium
+  h += '<button id="' + btnPremId + '" class="wiz6-btn-analisar wiz6-btn-premium" onclick="confirmarAnalise(\'premium\',' + nFotos + ',function(){' + analyseCall('premium') + ';}).catch(console.error)" style="padding:10px 24px;background:#9333ea;color:#fff;border:none;border-radius:8px;font-size: var(--fs-sm);font-weight: var(--fw-bold);cursor:pointer;white-space:nowrap">⭐ '
+    + labelPrem + ' — ' + pricePrem
+    + '</button>';
+  h += '</div></div>';
+  return h;
+}
+window._wiz6FotoActionPanel = _wiz6FotoActionPanel;
+
 function wiz6RenderAmbCard(idx) {
   var card = document.getElementById('wiz6-amb-card');
   if (!card) return;
@@ -10469,23 +10519,9 @@ function wiz6RenderAmbCard(idx) {
       ((!jaAnalisou && fotos.length === 0) ? htmlBtnFoto : '') +
     '</div>' +
 
+    // Task #135: painel unificado via _wiz6FotoActionPanel
     (fotos.length > 0
-      ? '<div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:10px;padding:14px;margin-bottom:14px;text-align:center">' +
-          '<div style="font-size: var(--fs-sm);color:#166534;font-weight: var(--fw-semibold);margin-bottom:8px">' + fotos.length + ' foto' + (fotos.length!==1?'s':'') + ' prontas para an&aacute;lise</div>' +
-          '<div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap">' +
-            '<label class="wiz6-foto-upload" style="padding:10px 18px;background:#fff;color:#2d7dd2;border:1px solid #2d7dd2;border-radius:8px;font-size: var(--fs-xs);font-weight: var(--fw-medium);cursor:pointer">' +
-              '+ Adicionar mais fotos' +
-              '<input type="file" accept="image/*" multiple style="display:none" onchange="wiz6AddFotos(this,' + idx + ')">' +
-            '</label>' +
-            '' +
-            '<button id="btnConv_' + idx + '" onclick="confirmarAnalise(\'convencional\',' + fotos.length + ',function(){wiz6AnalisarBatch(' + idx + ',\'convencional\');}).catch(console.error)" style="padding:10px 24px;background:#2d7dd2;color:#fff;border:none;border-radius:8px;font-size: var(--fs-sm);font-weight: var(--fw-bold);cursor:pointer;margin-right:8px">' +
-              (jaAnalisou ? '\ud83d\udd04 Re-analisar com IA' : '\ud83e\udd16 Analisar com IA') + ' \u2014 ' + window.pricePerPhotoLabel('convencional') +
-            '</button>' +
-            '<button id="btnPrem_' + idx + '" onclick="confirmarAnalise(\'premium\',' + fotos.length + ',function(){wiz6AnalisarBatch(' + idx + ',\'premium\');}).catch(console.error)" style="padding:10px 24px;background:#9333ea;color:#fff;border:none;border-radius:8px;font-size: var(--fs-sm);font-weight: var(--fw-bold);cursor:pointer">' +
-              '\u2b50 ' + (jaAnalisou ? 'Re-analisar com IA PREMIUM' : 'Analisar com IA PREMIUM') + ' \u2014 ' + window.pricePerPhotoLabel('premium') +
-            '</button>' +
-          '</div>' +
-        '</div>'
+      ? _wiz6FotoActionPanel({ambIdx: idx, nFotos: fotos.length, jaAnalisou: jaAnalisou})
       : '') +
 
     '<div id="wiz6-ai-status-' + idx + '" style="display:none;background:#eef4ff;border-left:3px solid #2d7dd2;border-radius:0 8px 8px 0;padding:12px 14px;margin-bottom:14px;font-size: var(--fs-xs);color:#185fa5;line-height:1.6"></div>' +
@@ -11323,24 +11359,9 @@ function wiz6BuildSuiteHtml(idx) {
     if (!jaAnalisou && fotos.length === 0) h += htmlBtnFoto;
     h += '</div>';
 
-    // === GREEN BOX with fotos count + Analyze button - same as regular room ===
+    // Task #135: painel unificado via _wiz6FotoActionPanel (sub-ambiente Suite)
     if (fotos.length > 0) {
-      h += '<div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:10px;padding:14px;margin-bottom:14px;text-align:center">';
-      h += '<div style="font-size: var(--fs-sm);color:#166534;font-weight: var(--fw-semibold);margin-bottom:8px">' + fotos.length + ' foto' + (fotos.length!==1?'s':'') + ' prontas para an\u00e1lise</div>';
-      h += '<div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap">';
-      h += '<label class="wiz6-foto-upload" style="padding:10px 18px;background:#fff;color:#2d7dd2;border:1px solid #2d7dd2;border-radius:8px;font-size: var(--fs-xs);font-weight: var(--fw-medium);cursor:pointer">';
-      h += '+ Adicionar mais fotos';
-      h += '<input type="file" accept="image/*" multiple style="display:none" onchange="wiz6AddFotosSub(this,' + idx + ',\'' + subNome.replace(/'/g,"\\\'") + '\')">';
-      h += '</label>';
-      h += '';
-      // Botao Convencional
-      h += '<button onclick="confirmarAnalise(\'convencional\',' + fotos.length + ',function(){wiz6AnalisarBatchSub(' + idx + ',\'' + subNome.replace(/'/g,"\\\'") + '\',' + si + ',\'convencional\');}).catch(console.error)" style="padding:10px 24px;background:#2d7dd2;color:#fff;border:none;border-radius:8px;font-size: var(--fs-sm);font-weight: var(--fw-bold);cursor:pointer;margin-right:8px">';
-      h += (jaAnalisou ? '\ud83d\udd04 Re-analisar com IA' : '\ud83e\udd16 Analisar com IA') + ' \u2014 ' + window.pricePerPhotoLabel('convencional');
-      h += '</button>';
-      // Botao Premium (task #98: antes faltava para Suite / sub-ambientes)
-      h += '<button onclick="confirmarAnalise(\'premium\',' + fotos.length + ',function(){wiz6AnalisarBatchSub(' + idx + ',\'' + subNome.replace(/'/g,"\\\'") + '\',' + si + ',\'premium\');}).catch(console.error)" style="padding:10px 24px;background:#9333ea;color:#fff;border:none;border-radius:8px;font-size: var(--fs-sm);font-weight: var(--fw-bold);cursor:pointer">';
-      h += '\u2b50 ' + (jaAnalisou ? 'Re-analisar com IA PREMIUM' : 'Analisar com IA PREMIUM') + ' \u2014 ' + window.pricePerPhotoLabel('premium');
-      h += '</button></div></div>';
+      h += _wiz6FotoActionPanel({ambIdx: idx, subNome: subNome, si: si, nFotos: fotos.length, jaAnalisou: jaAnalisou});
     }
 
     // AI status
@@ -11773,23 +11794,10 @@ function _wiz6RenderSubsBlock(ambIdx, dados) {
       h += '';
     }
     h += '</div>';
-    // IA BUTTON
+    // Task #135: painel unificado via _wiz6FotoActionPanel (sub-ambiente do usuario)
     if (fotos.length > 0) {
-      h += '<div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:8px;padding:10px;margin-bottom:10px;text-align:center">';
-      h += '<div style="font-size: var(--fs-xxs);color:#166534;margin-bottom:7px">' + fotos.length + ' foto(s) pronta(s) para an\u00e1lise</div>';
-      // Task #131: container marcado com classe pra CSS mobile reorganizar
-      // botoes em coluna full-width.
-      h += '<div class="wiz6-sub-acoes" style="display:flex;gap:8px;justify-content:center;align-items:center;flex-wrap:wrap">';
-      // Task #132: '+ Adicionar mais fotos' agora universal (desktop + mobile).
-      // No mobile, o picker bottom-sheet eh acionado via event delegation.
-      h += '<label class="wiz6-foto-upload" style="display:flex;align-items:center;gap:6px;padding:7px 12px;border:0.5px solid #e2e8f0;border-radius:7px;background:#fff;font-size: var(--fs-xxs);color:#8898aa;cursor:pointer">+ Adicionar mais fotos<input type="file" accept="image/*" multiple style="display:none" onchange="wiz6AddFotosSub(this,' + ambIdx + ',\'' + subNome.replace(/'/g,"\\\'") + '\')">';
-      h += '</label>';
-      // Botoes de analise \u2014 recebem classe wiz6-btn-analisar pra ficar full-width no mobile
-      h += '<button class="wiz6-btn-analisar" onclick="confirmarAnalise(\'convencional\',' + fotos.length + ',function(){wiz6AnalisarSub(' + ambIdx + ',\'' + subNome.replace(/'/g,"\\\'") + '\',\'convencional\');}).catch(console.error)" style="background:#2d7dd2;color:#fff;border:none;border-radius:7px;padding:7px 14px;font-size: var(--fs-xxs);font-weight: var(--fw-semibold);cursor:pointer;white-space:nowrap">' + (sd.jaAnalisou ? '\ud83d\udd04 Re-analisar com IA' : '\ud83e\udd16 Analisar com IA') + ' \u2014 ' + window.pricePerPhotoLabel('convencional') + '</button>';
-      h += '<button class="wiz6-btn-analisar wiz6-btn-premium" onclick="confirmarAnalise(\'premium\',' + fotos.length + ',function(){wiz6AnalisarSub(' + ambIdx + ',\'' + subNome.replace(/'/g,"\\\'") + '\',\'premium\');}).catch(console.error)" style="background:#9333ea;color:#fff;border:none;border-radius:7px;padding:7px 14px;font-size: var(--fs-xxs);font-weight: var(--fw-semibold);cursor:pointer;white-space:nowrap">\u2b50 ' + (sd.jaAnalisou ? 'Re-analisar IA PREMIUM' : 'Analisar IA PREMIUM') + ' \u2014 ' + window.pricePerPhotoLabel('premium') + '</button>';
-      h += '</div>';
+      h += _wiz6FotoActionPanel({ambIdx: ambIdx, subNome: subNome, si: _subSi, nFotos: fotos.length, jaAnalisou: sd.jaAnalisou});
       h += '<div id="wiz6-ai-status-sub-' + ambIdx + '-' + _subSi + '" style="display:none;background:#eef4ff;border-left:3px solid #2d7dd2;border-radius:0 8px 8px 0;padding:12px 14px;margin-bottom:14px;font-size: var(--fs-xs);color:#185fa5;line-height:1.6"></div>';
-      h += '</div>';
     }
     // DESCRI\u00c7\u00c3O DA IA
     if (sd.resumo) {
