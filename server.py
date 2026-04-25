@@ -4340,6 +4340,35 @@ class GeneratePDFHandler(BaseHandler):
                         room_dict['amb_photos'] = amb.get('photos') or []
                         print('[DEBUG inv]', room_dict.get('inventarioNomes', [])[:2], 'inv keys:', list(room_dict.get('inventario', {}).keys())[:5])
                     rooms_list.append(room_dict)
+                # Task #111: novo fluxo wiz6 nao cria registros na tabela 'rooms'.
+                # Garante que ambientes vindos so via amb_data (POST body) tambem
+                # cheguem ao pdf_service com subAmbientes preservado, para que a
+                # expansao de Suite no pdf_service.py funcione corretamente.
+                _existing_names = {r.get('name', '') for r in rooms_list}
+                for _amb in amb_data:
+                    _amb_name = _amb.get('roomName') or _amb.get('name') or ''
+                    if not _amb_name or _amb_name in _existing_names:
+                        continue
+                    _synth = {
+                        'id': '',
+                        'name': _amb_name,
+                        'items': [],
+                        'verificacoes': _amb.get('verificacoes', {}),
+                        'verificacoes_obs': _amb.get('verificacoesObs', {}),
+                        'testes_nomes': _amb.get('testesNomes', {}),
+                        'observacoes': _amb.get('observacoes', ''),
+                        'inventario': _amb.get('inventario') or {},
+                        'inventarioExtras': _amb.get('inventarioExtras') or [],
+                        'inventarioNomes': _amb.get('inventarioNomes') or [],
+                        'consolidated_text': _amb.get('consolidated_text') or _amb.get('consolidatedText') or '',
+                        'amb_photos': _amb.get('photos') or [],
+                    }
+                    if _amb.get('isSuite'):
+                        _synth['isSuite'] = True
+                    if _amb.get('subAmbientes'):
+                        _synth['subAmbientes'] = _amb.get('subAmbientes')
+                    rooms_list.append(_synth)
+                    _existing_names.add(_amb_name)
                 sigs = conn.execute(
                     'SELECT * FROM signatures WHERE inspection_id=?', (insp_id,)).fetchall()
                 signatures_list = self.rows_to_list(sigs)
