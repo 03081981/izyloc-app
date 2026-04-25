@@ -5490,11 +5490,11 @@ async function editarLaudo(id, origin) {
     showLoading && showLoading("Carregando laudo...");
     const r = await api("GET", "/api/inspections/" + id);
     hideLoading && hideLoading();
-    if (!r || !r.ok) { alert("Erro ao carregar laudo para edição."); return; }
+    if (!r || !r.ok) { await customAlert({type:'error', title:'Não foi possível abrir o laudo', message:'Erro ao carregar laudo para edição.'}); return; }
     // Task #112: Validacao de integridade — backend deve devolver o mesmo id
     if (r.id && String(r.id) !== String(id)) {
       console.error('[editarLaudo] MISMATCH: pediu', id, 'recebeu', r.id);
-      alert('Erro de integridade ao carregar laudo. Tente novamente.');
+      await customAlert({type:'error', title:'Erro de integridade', message:'Não conseguimos abrir esse laudo. Tente novamente.'});
       return;
     }
     if(r && r.wizard_snapshot){try{var _snap=(typeof r.wizard_snapshot==="string")?JSON.parse(r.wizard_snapshot):r.wizard_snapshot; if(_snap && typeof _snap==="object"){_snap._forInspId=id; window._wizSnap=_snap; var _snapNames=(_snap.selectedRooms||[]).filter(Boolean); if(_snapNames.length){var _fs=_snap.fotoStore||{}; var _id=_snap.itensData||{}; r.rooms=_snapNames.map(function(nm, idx){var it=_id[idx]||_id[nm]||{}; var fotosArr=(it.fotos && it.fotos.length)?it.fotos:(_fs[nm]||[]); var phs=fotosArr.map(function(p){var _src=p.url||p.src||p.preview||(p.base64?("data:image/jpeg;base64,"+p.base64):""); return {id:p.id||"",url:_src,photo_url:_src,ai_description:p.desc||p.description||p.ai_description||"",description:p.desc||p.description||"",item_name:p.item||p.item_name||"",base64:p.base64||""};}); return {id:nm,name:nm,items:it.items||[],photos:phs,consolidated_text:it.consolidatedText||it.resumo||"",ai_description:it.consolidatedText||it.resumo||"",observation:it.obs||"",testes:it.testes||{},inventario:it.inventario||{}};});} if(_snap.fotoStore){window._fotoStore=Object.assign({},_snap.fotoStore);} try{console.log("[editarLaudo] snapshot synthed rooms = "+((r.rooms||[]).length)+" from "+_snapNames.length+" selectedRooms, first room items="+((r.rooms[0]||{}).items||[]).length+" photos="+((r.rooms[0]||{}).photos||[]).length+" desc="+(((r.rooms[0]||{}).consolidated_text||"").length));}catch(e){}}}catch(e){console.warn("[editarLaudo] snapshot parse failed",e);}}
@@ -5778,7 +5778,7 @@ async function editarLaudo(id, origin) {
     } catch(e){} }, 700);
   } catch (e) {
     hideLoading && hideLoading();
-    alert("Erro ao carregar laudo para edição.");
+    try { customAlert({type:'error', title:'Não foi possível abrir o laudo', message:'Erro ao carregar laudo para edição.'}); } catch(_){}
     console.error("[editarLaudo]", e);
   }
 }
@@ -6005,12 +6005,12 @@ function dashSetFiltro(tipo, btn) {
 }
 function dashGerarPdf(id) {
   try { if (typeof openInspection === 'function') { openInspection(id); setTimeout(function(){ if (typeof gerarLaudoPDF === 'function') gerarLaudoPDF(); }, 400); return; } } catch(e){}
-  alert('Abra o laudo e gere o PDF.');
+  customAlert({type:'info', title:'Abrir laudo', message:'Abra o laudo e gere o PDF.'});
 }
 async function dashAbrirAutentique(id) {
   if (!id) {
     if (typeof showToast === 'function') showToast('ID do laudo nao informado', 'error');
-    else alert('ID do laudo nao informado');
+    else customAlert({type:'error', message:'ID do laudo não informado.'});
     return;
   }
   var _ccOk = await customConfirm({
@@ -6030,7 +6030,7 @@ async function dashAbrirAutentique(id) {
     _shownFeedback = true;
     try { if (typeof showToast === 'function') { showToast(msg, kind); return; } } catch(_){}
     try { if (typeof toast === 'function') { toast(msg, kind); return; } } catch(_){}
-    try { alert(msg); } catch(_){}
+    try { customAlert({type: (kind === 'error' ? 'error' : 'info'), message: msg}); } catch(_){}
   }
   try {
     var result = await api('POST',
@@ -6056,8 +6056,8 @@ async function dashAbrirAutentique(id) {
   try { if (typeof renderMeusLaudos === 'function') renderMeusLaudos(); } catch(_){}
   try { if (typeof loadDashboard === 'function') loadDashboard(); } catch(_){}
   if (!_shownFeedback) {
-    // Defesa final: se nada apareceu, alert simples
-    try { alert('Tentativa de envio concluida. Confira a listagem.'); } catch(_){}
+    // Defesa final: se nada apareceu, mostra modal informativo
+    try { customAlert({type:'info', title:'Envio concluído', message:'Tentativa de envio concluída. Confira a listagem.'}); } catch(_){}
   }
 }
 async function dashExcluir(id) {
@@ -6075,7 +6075,7 @@ async function dashExcluir(id) {
   fetch('/laudo/'+id, { method:'DELETE', credentials:'same-origin', headers: hdr })
     .then(function(r){ return r.json().catch(function(){ return {}; }); })
     .then(function(){ if (typeof loadDashboard === 'function') loadDashboard(); })
-    .catch(function(e){ alert('Erro ao excluir: '+e); });
+    .catch(function(e){ customAlert({type:'error', title:'Erro ao excluir', message:String(e)}); });
 }
 
 // === MEUS LAUDOS PAGE ===
@@ -6271,7 +6271,7 @@ function _mlActionBtns(insp, statusKey) {
 
 function _mlEnviarAssinar(id) {
   if (typeof dashAbrirAutentique === "function") { dashAbrirAutentique(id); return; }
-  alert("Abrindo envio para assinatura...");
+  customAlert({type:'info', message:'Abrindo envio para assinatura...'});
 }
 
 function _mlOpenFisico(id) {
@@ -6286,7 +6286,7 @@ async function _mlConfirmFisico() {
   var el = document.getElementById("mfisico-data"); var data = el ? el.value : "";
   if (!data) {
     if (typeof showToast === "function") showToast("Informe a data da assinatura", "error");
-    else alert("Informe a data da assinatura.");
+    else customAlert({type:'warning', message:'Informe a data da assinatura.'});
     return;
   }
   // Usa o helper api() para que o token (currentToken) seja incluido
@@ -6306,7 +6306,7 @@ async function _mlConfirmFisico() {
       if (typeof showToast === "function") {
         showToast((res && res.error) || "Erro ao marcar como f\u00edsico. Tente novamente.", "error");
       } else {
-        alert("Erro ao marcar como f\u00edsico");
+        customAlert({type:'error', message:'Erro ao marcar como f\u00edsico.'});
       }
     }
   } catch (e) {
@@ -6314,7 +6314,7 @@ async function _mlConfirmFisico() {
     if (typeof showToast === "function") {
       showToast("Erro ao marcar como f\u00edsico. Tente novamente.", "error");
     } else {
-      alert("Erro: " + e);
+      customAlert({type:'error', title:'Erro', message:String(e)});
     }
   }
 }
@@ -6407,7 +6407,7 @@ function _mlConfirmExcluirBulk(){
   fetch("/laudo/bulk-delete", { method:"POST", credentials:"same-origin", headers: hdr, body: JSON.stringify({ids: ids}) })
     .then(function(r){ if (!r.ok) throw new Error("HTTP "+r.status); return r.json().catch(function(){ return {}; }); })
     .then(function(j){ window._mlSelected = {}; window._mlState.bulkIds = null; _mlCloseExcluir(); renderMeusLaudos(); if (typeof loadDashboard === "function") loadDashboard(); })
-    .catch(function(e){ alert("Erro ao excluir em lote: " + (e.message || e)); });
+    .catch(function(e){ customAlert({type:'error', title:'Erro ao excluir em lote', message: (e.message || String(e))}); });
 }
 
 function _mlCloseExcluir() { var m = document.getElementById("modal-excluir-laudo"); if (m) m.style.display = "none"; window._mlState.excluirId = null; }
@@ -6428,7 +6428,7 @@ function _mlConfirmExcluir() {
   fetch("/laudo/"+id, { method:"DELETE", credentials:"same-origin", headers: hdr })
     .then(function(r){ if (!r.ok) throw new Error("HTTP "+r.status); return r.json().catch(function(){ return {}; }); })
     .then(function(){ _mlCloseExcluir(); renderMeusLaudos(); if (typeof loadDashboard === "function") loadDashboard(); })
-    .catch(function(e){ alert("Erro ao excluir: "+(e.message||e)); });
+    .catch(function(e){ customAlert({type:'error', title:'Erro ao excluir', message:(e.message||String(e))}); });
 }
 
 // URL-based entry: /meus-laudos
@@ -7573,7 +7573,7 @@ async function gerarLaudo() {
 async function generatePDF() {
   showLoading('📄 Gerando laudo PDF...');
   try{ console.log('[generatePDF] START', {inspId: (window.wizard||{}).inspectionId, ts: Date.now(), rooms: ((window.wizard||{}).selectedRooms||[]).length}); }catch(_sL){}
-  var _lsId = localStorage.getItem('izylo_current_inspection') || ''; if (!window.wizard) { window.wizard = {}; } if (!window.wizard.inspectionId && _lsId) { window.wizard.inspectionId = _lsId; } try{ console.log('[generatePDF] inspId resolved:', window.wizard.inspectionId, 'from:', (_lsId && window.wizard.inspectionId === _lsId ? 'localStorage' : 'wizard')); }catch(_li){} if(!window.wizard.inspectionId){ hideLoading(); try{toast('⚠️ Laudo ainda não foi salvo. Clique em "Gerar Laudo →" primeiro.','error');}catch(_t1){} try{alert('⚠️ Laudo ainda não foi salvo. Clique em "Gerar Laudo →" antes de "Baixar PDF".');}catch(_a1){} return; }
+  var _lsId = localStorage.getItem('izylo_current_inspection') || ''; if (!window.wizard) { window.wizard = {}; } if (!window.wizard.inspectionId && _lsId) { window.wizard.inspectionId = _lsId; } try{ console.log('[generatePDF] inspId resolved:', window.wizard.inspectionId, 'from:', (_lsId && window.wizard.inspectionId === _lsId ? 'localStorage' : 'wizard')); }catch(_li){} if(!window.wizard.inspectionId){ hideLoading(); try{toast('⚠️ Laudo ainda não foi salvo. Clique em "Gerar Laudo →" primeiro.','error');}catch(_t1){} try{customAlert({type:'warning', title:'Laudo ainda não foi salvo', message:'Clique em "Gerar Laudo →" antes de "Baixar PDF".'});}catch(_a1){} return; }
   try {
     var _eMap={'ok':'Funcionando','nok':'Não Funcionando','nao':'Não Funcionando','nt':'Não Testado','na':'N/A','nexiste':'N/A'};
     var _ambData=[];
@@ -7675,7 +7675,7 @@ async function generatePDF() {
       try{console.error('[generatePDF] /pdf falhou',resp.status,_errTxt);}catch(_e5){}
       toast('Erro ao gerar PDF: HTTP '+resp.status,'error');
     }
-  } catch(e){ hideLoading(); try{console.error('[generatePDF] exceção:',e,e&&e.stack);}catch(_ec3){} try{toast('Erro ao gerar PDF: '+((e&&e.message)||'erro desconhecido'),'error');}catch(_t2){} try{alert('Erro ao gerar PDF: '+((e&&e.message)||'erro desconhecido'));}catch(_a2){} }
+  } catch(e){ hideLoading(); try{console.error('[generatePDF] exceção:',e,e&&e.stack);}catch(_ec3){} try{toast('Erro ao gerar PDF: '+((e&&e.message)||'erro desconhecido'),'error');}catch(_t2){} try{customAlert({type:'error', title:'Erro ao gerar PDF', message:((e&&e.message)||'erro desconhecido')});}catch(_a2){} }
 }
 
 // ─── DETAIL PAGE ──────────────────────────────────────────────────────────────
@@ -8429,7 +8429,7 @@ window.addEventListener('resize', () => {
         tries++;
       }
       if (!wizard.inspectionId) {
-        alert('Erro: inspe&ccedil;&atilde;o n&atilde;o foi salva. Tente novamente.');
+        await customAlert({type:'error', title:'Inspeção não foi salva', message:'Não conseguimos salvar o laudo. Tente novamente.'});
         if (btn) { btn.textContent = 'Baixar PDF'; btn.disabled = false; }
         return;
       }
@@ -8463,7 +8463,7 @@ window.addEventListener('resize', () => {
         setTimeout(function(){ try{document.body.removeChild(a);}catch(_e2){} try{URL.revokeObjectURL(url);}catch(_e3){} }, 4000);
         localStorage.removeItem('izylo_current_inspection'); if (window.wizard && wizard.isEditing) { setTimeout(function(){ try { _laudoVoltarOrigem(); } catch(e){} }, 400); }
       } catch(e) {
-        alert('Erro ao gerar PDF: ' + e.message);
+        await customAlert({type:'error', title:'Erro ao gerar PDF', message: e.message || String(e)});
       }
       if (btn) { btn.textContent = 'Baixar PDF'; btn.disabled = false; }
     };
@@ -9059,8 +9059,8 @@ function _normAmb(s) {
 }
 
 // Adicionar ambiente personalizado por seção
-function adicionarOutro(secao, containerId, customId) {
-  var nome = prompt('Nome do ambiente:');
+async function adicionarOutro(secao, containerId, customId) {
+  var nome = await customPrompt({title:'Adicionar ambiente', label:'Nome do ambiente:', placeholder:'Ex: Quintal'});
   if (!nome || nome.trim() === '') return;
   nome = _normAmb(nome);
   var key = 'custom_' + secao + '_' + Date.now();
@@ -9185,8 +9185,8 @@ function wizToggle(row, key) {
   wizUpdateResumo();
 }
 
-function wizCriarNovoAmbiente(btn) {
-  var nome = prompt('Nome do novo ambiente:');
+async function wizCriarNovoAmbiente(btn) {
+  var nome = await customPrompt({title:'Adicionar ambiente', label:'Nome do novo ambiente:', placeholder:'Ex: Sacada'});
   if (!nome || !nome.trim()) return;
   nome = _normAmb(nome);
   var key = 'custom_' + Date.now();
@@ -9284,8 +9284,8 @@ function wizAtualizarCasa(num, val) {
   wizUpdateResumo();
 }
 
-function wizAdicionarOutro(btn) {
-  var nome = prompt('Nome do ambiente:');
+async function wizAdicionarOutro(btn) {
+  var nome = await customPrompt({title:'Adicionar ambiente', label:'Nome do ambiente:', placeholder:'Ex: Lavabo'});
   if (!nome || !nome.trim()) return;
   nome = _normAmb(nome);
   var row = document.createElement('div');
@@ -11087,8 +11087,8 @@ function wiz6InvObs(idx, key, val) {
   wizard.itensData[idx].inventario[key+'_obs'] = val;
 }
 
-function wiz6InvAdicionarExtra(idx) {
-  var nome = prompt('Nome do item:');
+async function wiz6InvAdicionarExtra(idx) {
+  var nome = await customPrompt({title:'Adicionar item ao inventário', label:'Nome do item:', placeholder:'Ex: Espelho'});
   if (!nome||!nome.trim()) return;
   if (!wizard.itensData[idx].inventarioExtras) wizard.itensData[idx].inventarioExtras = [];
   wizard.itensData[idx].inventarioExtras.push(nome.trim());
@@ -11149,8 +11149,8 @@ function wiz6InvObsSub(idx, subNome, key, val) {
   sd.inventario[key+'_obs'] = val;
 }
 
-function wiz6InvAdicionarExtraSub(idx, subNome) {
-  var nome = prompt('Nome do item:');
+async function wiz6InvAdicionarExtraSub(idx, subNome) {
+  var nome = await customPrompt({title:'Adicionar item ao inventário', label:'Nome do item:', placeholder:'Ex: Espelho'});
   if (!nome||!nome.trim()) return;
   var sd = wizard.itensData[idx].subs[subNome];
   if (!sd.inventarioExtras) sd.inventarioExtras = [];
@@ -11661,8 +11661,8 @@ function wiz6TesteObsSub(idx, subNome, key, val) {
   if (!sd.testes) sd.testes = {};
   sd.testes[key + '_obs'] = val;
 }
-function wiz6AdicionarTesteSub(ambIdx, subNome) {
-  var nome = prompt('Nome do teste funcional:');
+async function wiz6AdicionarTesteSub(ambIdx, subNome) {
+  var nome = await customPrompt({title:'Adicionar teste funcional', label:'Nome do teste:', placeholder:'Ex: Aquecedor'});
   if (!nome || !nome.trim()) return;
   var key = nome.trim().toLowerCase().replace(/[^a-z0-9]/g,'_');
   var sd = wizard.itensData[ambIdx] && wizard.itensData[ambIdx].subs && wizard.itensData[ambIdx].subs[subNome];
@@ -12228,8 +12228,8 @@ function wiz6AnalisarBatch(ambIdx, modo = 'convencional') {
   });
 }
 
-function wiz6AdicionarTeste(ambIdx) {
-  var nome = prompt('Nome do teste funcional:');
+async function wiz6AdicionarTeste(ambIdx) {
+  var nome = await customPrompt({title:'Adicionar teste funcional', label:'Nome do teste:', placeholder:'Ex: Aquecedor'});
   if (!nome || !nome.trim()) return;
   var key = nome.trim().toLowerCase().replace(/[^a-z0-9]/g,'_');
   if (!wizard.itensData[ambIdx]) wizard.itensData[ambIdx] = {};
@@ -13132,6 +13132,149 @@ window.customConfirm = function(opts) {
     document.addEventListener('keydown', onKey);
     modal.classList.add('open');
     setTimeout(function(){ try { okBtn.focus(); } catch(_){} }, 30);
+  });
+};
+</script>
+
+<!-- Custom alert + prompt modals (task #140) -->
+<style>
+#ca-modal { position:fixed; inset:0; z-index:10000; display:none; align-items:center; justify-content:center; background:rgba(15,23,42,0.55); padding:16px; }
+#ca-modal.open { display:flex; }
+#ca-modal .ca-box { background:#fff; width:100%; max-width:420px; border-radius:14px; padding:22px 22px 18px; box-shadow:0 12px 36px rgba(0,0,0,0.25); animation: ccPop .18s ease; border-top:4px solid #2d7dd2; }
+#ca-modal.ca-info  .ca-box { border-top-color:#2d7dd2; }
+#ca-modal.ca-success .ca-box { border-top-color:#16a34a; }
+#ca-modal.ca-warning .ca-box { border-top-color:#f59e0b; }
+#ca-modal.ca-error .ca-box { border-top-color:#dc2626; }
+#ca-modal .ca-logo { display:block; margin:0 auto 8px; height:32px; }
+#ca-modal .ca-icon { display:block; margin:0 auto 8px; font-size:30px; line-height:1; text-align:center; }
+#ca-modal .ca-title { margin:0 0 6px; font-size:17px; font-weight:700; color:#0f172a; text-align:center; }
+#ca-modal.ca-success .ca-title { color:#15803d; }
+#ca-modal.ca-warning .ca-title { color:#b45309; }
+#ca-modal.ca-error .ca-title { color:#b91c1c; }
+#ca-modal .ca-msg { margin:0 0 18px; font-size:14px; color:#475569; text-align:center; line-height:1.45; white-space:pre-line; }
+#ca-modal .ca-btns { display:flex; gap:10px; justify-content:center; }
+#ca-modal .ca-btn { min-width:120px; padding:10px 18px; border-radius:9px; font-size:14px; font-weight:600; cursor:pointer; border:1px solid transparent; transition: all .12s; background:#2d7dd2; color:#fff; }
+#ca-modal .ca-btn:hover { background:#1e6bbf; }
+#ca-modal.ca-success .ca-btn { background:#16a34a; }
+#ca-modal.ca-success .ca-btn:hover { background:#15803d; }
+#ca-modal.ca-warning .ca-btn { background:#f59e0b; }
+#ca-modal.ca-warning .ca-btn:hover { background:#d97706; }
+#ca-modal.ca-error .ca-btn { background:#dc2626; }
+#ca-modal.ca-error .ca-btn:hover { background:#b91c1c; }
+
+#cp-modal { position:fixed; inset:0; z-index:10000; display:none; align-items:center; justify-content:center; background:rgba(15,23,42,0.55); padding:16px; }
+#cp-modal.open { display:flex; }
+#cp-modal .cp-box { background:#fff; width:100%; max-width:420px; border-radius:14px; padding:22px 22px 18px; box-shadow:0 12px 36px rgba(0,0,0,0.25); animation: ccPop .18s ease; }
+#cp-modal .cp-logo { display:block; margin:0 auto 12px; height:32px; }
+#cp-modal .cp-title { margin:0 0 6px; font-size:17px; font-weight:700; color:#0f172a; text-align:center; }
+#cp-modal .cp-label { display:block; margin:0 0 6px; font-size:13px; color:#64748b; }
+#cp-modal .cp-input { width:100%; box-sizing:border-box; padding:10px 12px; border:1px solid #cbd5e1; border-radius:8px; font-size:14px; color:#0f172a; outline:none; transition: border-color .12s, box-shadow .12s; margin-bottom:16px; }
+#cp-modal .cp-input:focus { border-color:#2d7dd2; box-shadow:0 0 0 3px rgba(45,125,210,0.15); }
+#cp-modal .cp-btns { display:flex; gap:10px; justify-content:center; }
+#cp-modal .cp-btn { flex:1; padding:10px 16px; border-radius:9px; font-size:14px; font-weight:600; cursor:pointer; border:1px solid transparent; transition: all .12s; }
+#cp-modal .cp-cancel { background:#fff; color:#64748b; border-color:#e2e8f0; }
+#cp-modal .cp-cancel:hover { background:#f8fafc; }
+#cp-modal .cp-ok { background:#2d7dd2; color:#fff; }
+#cp-modal .cp-ok:hover { background:#1e6bbf; }
+</style>
+<div id="ca-modal" class="ca-info" onclick="if(event.target===this)window._caResolve&&window._caResolve()">
+  <div class="ca-box" onclick="event.stopPropagation()">
+    <img class="ca-logo" src="/static/assets/izylaudo-logo-login.svg" alt="izyLAUDO">
+    <div class="ca-icon" aria-hidden="true">ℹ️</div>
+    <h3 class="ca-title">Aviso</h3>
+    <p class="ca-msg"></p>
+    <div class="ca-btns">
+      <button type="button" class="ca-btn" onclick="window._caResolve&&window._caResolve()">OK</button>
+    </div>
+  </div>
+</div>
+<div id="cp-modal" onclick="if(event.target===this)window._cpResolve&&window._cpResolve(null)">
+  <div class="cp-box" onclick="event.stopPropagation()">
+    <img class="cp-logo" src="/static/assets/izylaudo-logo-login.svg" alt="izyLAUDO">
+    <h3 class="cp-title">Informe um valor</h3>
+    <label class="cp-label"></label>
+    <input class="cp-input" type="text" autocomplete="off">
+    <div class="cp-btns">
+      <button type="button" class="cp-btn cp-cancel" onclick="window._cpResolve&&window._cpResolve(null)">Cancelar</button>
+      <button type="button" class="cp-btn cp-ok" onclick="window._cpResolve&&window._cpResolve(document.querySelector('#cp-modal .cp-input').value)">OK</button>
+    </div>
+  </div>
+</div>
+<script>
+// customAlert({title, message, type, okText}) -> Promise<void>
+// type: 'info' (default), 'success', 'warning', 'error'
+// Aceita string como atalho: customAlert('mensagem')
+window.customAlert = function(opts) {
+  if (typeof opts === 'string') opts = { message: opts };
+  opts = opts || {};
+  return new Promise(function(resolve){
+    var modal = document.getElementById('ca-modal');
+    if (!modal) { try { window.alert(opts.message || ''); } catch(_){} resolve(); return; }
+    var type = opts.type || 'info';
+    modal.classList.remove('ca-info','ca-success','ca-warning','ca-error');
+    modal.classList.add('ca-' + type);
+    var iconMap = { info:'ℹ️', success:'✅', warning:'⚠️', error:'❌' };
+    var titleMap = { info:'Aviso', success:'Sucesso', warning:'Atenção', error:'Erro' };
+    modal.querySelector('.ca-icon').textContent = iconMap[type] || iconMap.info;
+    modal.querySelector('.ca-title').textContent = opts.title || titleMap[type] || 'Aviso';
+    modal.querySelector('.ca-msg').textContent = opts.message || '';
+    var okBtn = modal.querySelector('.ca-btn');
+    okBtn.textContent = opts.okText || 'OK';
+    var done = false;
+    function finish(){
+      if (done) return;
+      done = true;
+      modal.classList.remove('open');
+      window._caResolve = null;
+      document.removeEventListener('keydown', onKey);
+      resolve();
+    }
+    function onKey(e){
+      if (e.key === 'Escape' || e.key === 'Enter') finish();
+    }
+    window._caResolve = finish;
+    document.addEventListener('keydown', onKey);
+    modal.classList.add('open');
+    setTimeout(function(){ try { okBtn.focus(); } catch(_){} }, 30);
+  });
+};
+
+// customPrompt({title, label, placeholder, defaultValue, okText}) -> Promise<string|null>
+// Retorna o valor digitado ou null se cancelado
+window.customPrompt = function(opts) {
+  if (typeof opts === 'string') opts = { label: opts };
+  opts = opts || {};
+  return new Promise(function(resolve){
+    var modal = document.getElementById('cp-modal');
+    if (!modal) { resolve(window.prompt(opts.label || opts.title || '', opts.defaultValue || '')); return; }
+    modal.querySelector('.cp-title').textContent = opts.title || 'Informe um valor';
+    var lbl = modal.querySelector('.cp-label');
+    lbl.textContent = opts.label || '';
+    lbl.style.display = opts.label ? 'block' : 'none';
+    var input = modal.querySelector('.cp-input');
+    input.placeholder = opts.placeholder || '';
+    input.value = opts.defaultValue || '';
+    var okBtn = modal.querySelector('.cp-ok');
+    var cancelBtn = modal.querySelector('.cp-cancel');
+    okBtn.textContent = opts.okText || 'OK';
+    cancelBtn.textContent = opts.cancelText || 'Cancelar';
+    var done = false;
+    function finish(value){
+      if (done) return;
+      done = true;
+      modal.classList.remove('open');
+      window._cpResolve = null;
+      document.removeEventListener('keydown', onKey);
+      resolve(value);
+    }
+    function onKey(e){
+      if (e.key === 'Escape') finish(null);
+      else if (e.key === 'Enter') { e.preventDefault(); finish(input.value); }
+    }
+    window._cpResolve = finish;
+    document.addEventListener('keydown', onKey);
+    modal.classList.add('open');
+    setTimeout(function(){ try { input.focus(); input.select(); } catch(_){} }, 30);
   });
 };
 </script>
