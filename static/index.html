@@ -2186,7 +2186,7 @@ textarea.obs-geral{width:100%;background:#f8fafc;border:.5px solid #dce3ed;borde
 .wiz6-modo-title{font-size: var(--fs-sm);font-weight: var(--fw-semibold);color:#1a2540}
 .wiz6-modo-sub{font-size: var(--fs-xxs);color:#8898aa;margin-top:2px}
 .wiz6-amb-tab{padding:8px 16px;border-radius:20px;font-size: var(--fs-xs);font-weight: var(--fw-medium);cursor:pointer;border:1px solid #e2e8f0;background:#fff;color:#5a6a7e;white-space:nowrap;transition:all .15s}
-.wiz6-amb-tab.active{background:#2d7dd2;border-color:#2d7dd2;color:#fff}
+.wiz6-amb-tab.active{background:#1a3a6e;border-color:#2d7dd2;color:#fff}
 .wiz6-amb-tab.done{border-color:#059669;color:#059669;background:#d1fae5}
 .wiz6-grupo{background:#fff;border-radius:12px;border:0.5px solid #e2e8f0;margin-bottom:10px;overflow:hidden}
 .wiz6-grupo-header{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;cursor:pointer;user-select:none}
@@ -3879,21 +3879,10 @@ window._openFotoModal = function(imgSrc) {
         <span style="display:inline-flex;align-items:center;gap:6px;background:rgba(45,125,210,0.25);border:1px solid rgba(45,125,210,0.5);color:#7ec8f7;border-radius:999px;padding:5px 12px;font-size:11px;font-weight:500">📱 Pelo celular ou 💻 upload pelo computador</span>
       </div>
 
-      <!-- ESCOLHA DE MODO (aparece só na primeira vez) -->
-      <div style="margin-bottom:12px"><button onclick="prevWizStep ? prevWizStep() : null" style="display:inline-flex;align-items:center;gap:6px;padding:7px 14px;background:#fff;border:0.5px solid #e2e8f0;border-radius:8px;font-size: var(--fs-xs);color:#8898aa;cursor:pointer"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M19 12H5M12 5l-7 7 7 7" stroke="#8898aa" stroke-width="1.5" stroke-linecap="round"/></svg>&larr; Voltar para ambientes</button></div><div id="wiz6-escolha-modo" style="margin-bottom:16px">
-  <div style="font-size: var(--fs-xxs);font-weight: var(--fw-bold);color:#8898aa;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:10px">Como deseja registrar a vistoria?</div>
-  <div style="display:flex;gap:10px;align-items:stretch">
-    <div class="wiz6-modo-btn active" id="wiz6-btn-foto" onclick="wiz6SelecionarModo('foto')" style="display:flex;align-items:center;gap:12px;padding:12px 16px;max-width:220px">
-      <div class="wiz6-modo-icon">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><rect x="3" y="6" width="18" height="14" rx="2" fill="#dbeafe" stroke="#2d7dd2" stroke-width="1.5"/><circle cx="12" cy="13" r="4" fill="#93c5fd" stroke="#2d7dd2" stroke-width="1"/><circle cx="17" cy="9" r="1.5" fill="#2d7dd2"/></svg>
-      </div>
-      <div>
-        <div class="wiz6-modo-title">Foto por foto</div>
-        <div class="wiz6-modo-sub">Ambiente a ambiente</div>
-      </div>
-    </div>
-  </div>
-</div>>
+      <!-- BOTAO VOLTAR (modo agora eh ativado automaticamente no entry) -->
+      <div style="margin-bottom:12px"><button onclick="prevWizStep ? prevWizStep() : null" style="display:inline-flex;align-items:center;gap:6px;padding:7px 14px;background:#fff;border:0.5px solid #e2e8f0;border-radius:8px;font-size: var(--fs-xs);color:#8898aa;cursor:pointer"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M19 12H5M12 5l-7 7 7 7" stroke="#8898aa" stroke-width="1.5" stroke-linecap="round"/></svg>&larr; Voltar para ambientes</button></div>
+      <!-- placeholder oculto: mantido apenas porque #wiz6-btn-foto eh referenciado em wiz6SelecionarModo('foto') -->
+      <div id="wiz6-btn-foto" style="display:none"></div>
 
       <!-- AVISO DE CRÉDITOS -->
       <div id="wiz6-créditos-warn" class="wiz6-créditos-warn" style="display:none">
@@ -9531,11 +9520,11 @@ function wiz6RenderTabs() {
     tab.innerHTML = '<span style="font-size: var(--fs-tiny);opacity:.5;cursor:grab">\u2847</span>' + _checkPill + nome + '<span onclick="event.stopPropagation();wiz6ExcluirAmb(' + i + ')" style="font-size: var(--fs-xxs);color:' + (isActive?'rgba(255,255,255,.7)':'#94a3b8') + ';cursor:pointer;margin-left:2px;line-height:1;padding:0 2px" title="Excluir ambiente">\u00d7</span>';
     tabs.appendChild(tab);
   });
-  // Bot\u00e3o "+ Amb"
+  // Bot\u00e3o "+ Ambiente"
   var btnAmb = document.createElement('button');
   btnAmb.onclick = function(){ wiz6AdicionarNovoAmb(); };
-  btnAmb.style.cssText = 'padding:6px 12px;border-radius:20px;font-size: var(--fs-xs);font-weight: var(--fw-semibold);cursor:pointer;border:0.5px dashed #2d7dd2;background:#f0f7ff;color:#2d7dd2;white-space:nowrap;flex-shrink:0';
-  btnAmb.textContent = '+ Amb';
+  btnAmb.style.cssText = 'padding:6px 12px;border-radius:20px;font-size: var(--fs-xs);font-weight: var(--fw-semibold);cursor:pointer;border:0.5px dashed #1a5fa8;background:#f0f7ff;color:#1a5fa8;white-space:nowrap;flex-shrink:0';
+  btnAmb.textContent = '+ Ambiente';
   tabs.appendChild(btnAmb);
 }
 
@@ -12141,8 +12130,13 @@ function wiz6Concluir() {
         try {
           // Forcar modo foto ANTES do init
           if (typeof _wiz6Modo !== 'undefined') _wiz6Modo = 'foto';
-          wiz6Init();
-          // click removido: wiz6Init já configura modo foto inline
+          // Task #106: chama wiz6SelecionarModo direto pra garantir toggle
+          // dos elementos do modo (wiz6-modo-foto visivel) e tambem wiz6Init.
+          if (typeof wiz6SelecionarModo === 'function') {
+            wiz6SelecionarModo('foto');
+          } else {
+            wiz6Init();
+          }
         } catch(e) { console.warn('[hook wiz6] err', e); }
       }, 300);
     }
