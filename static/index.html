@@ -9246,10 +9246,25 @@ function wiz6RenderTabs() {
     tab.ondrop = (function(idx){ return function(e){ wiz6Drop(e, idx); }; })(i);
     tab.onclick = (function(idx){ return function(){ wiz6GoAmb(idx); }; })(i);
     var isActive = (i === _wiz6AmbIdx);
-    // Status real: derivado de wizard.itensData[i].jaAnalisou (task #99)
+    // Status real: derivado de wizard.itensData[i].jaAnalisou; agrega subs em
+    // ambientes tipo Suite que tem isSuite=true (task #100).
     var _ambDados = (wizard.itensData && wizard.itensData[i]) || {};
-    var _ambFotos = (_ambDados.fotos || []).length;
-    var isDone = !!_ambDados.jaAnalisou || !!_wiz6AmbDone[i];
+    var _ambFotos = 0;
+    var isDone = false;
+    if (_ambDados.isSuite) {
+      var _subAmbsT = _ambDados.subAmbientes || [];
+      var _subDoneT = 0;
+      _subAmbsT.forEach(function(_snT) {
+        var _sdT = (_ambDados.subs && _ambDados.subs[_snT]) || {};
+        _ambFotos += (_sdT.fotos || []).length;
+        if (_sdT.jaAnalisou) _subDoneT++;
+      });
+      isDone = (_subAmbsT.length > 0 && _subDoneT === _subAmbsT.length);
+    } else {
+      _ambFotos = (_ambDados.fotos || []).length;
+      isDone = !!_ambDados.jaAnalisou;
+    }
+    isDone = isDone || !!_wiz6AmbDone[i];
     var hasFotosNaoAnalisadas = (_ambFotos > 0 && !isDone);
     tab.style.cssText = 'padding:6px 14px;border-radius:20px;font-size: var(--fs-xs);font-weight: var(--fw-medium);cursor:pointer;border:0.5px solid ' + (isActive?'#2d7dd2':'#e2e8f0') + ';background:' + (isActive?'#2d7dd2':'#fff') + ';color:' + (isActive?'#fff':'#8898aa') + ';display:flex;align-items:center;gap:5px;user-select:none';
     var _checkPill = isDone
@@ -9639,7 +9654,7 @@ function wiz6RenderAmbCard(idx) {
   } else if (fotos.length > 0) {
     _hdrGrad = 'linear-gradient(135deg,#92400e,#f59e0b)';
     _hdrSubColor = '#fed7aa';
-    _hdrSubText = '\u26a0 ' + fotos.length + ' foto' + (fotos.length!==1?'s':'') + ' adicionada' + (fotos.length!==1?'s':'') + ' \u2014 clique em Analisar com IA!';
+    _hdrSubText = '\u26a0 ' + fotos.length + ' foto' + (fotos.length!==1?'s':'') + ' adicionada' + (fotos.length!==1?'s':'') + ' \u2014 Ap\u00f3s enviar todas as fotos deste ambiente, clique em Analisar com IA para seguir para o pr\u00f3ximo ambiente.';
   } else {
     _hdrGrad = 'linear-gradient(135deg,#1e3a5f,#2d7dd2)';
     _hdrSubColor = '#93c5fd';
@@ -10387,17 +10402,38 @@ function wiz6BuildSuiteHtml(idx) {
   if (!d || !d.isSuite) return '';
   var subs = d.subAmbientes || [];
   var concluidos = 0;
-  subs.forEach(function(sn) { if (d.subs[sn] && d.subs[sn].jaAnalisou) concluidos++; });
+  var totalFotosSuite = 0;
+  subs.forEach(function(sn) {
+    var _s = d.subs[sn] || {};
+    if (_s.jaAnalisou) concluidos++;
+    totalFotosSuite += (_s.fotos || []).length;
+  });
   var suiteName = (wizard.selectedRooms && wizard.selectedRooms[idx]) || _wiz6Ambientes[idx] || 'Su\u00EDte';
   var icone = _wiz6AmbIcon(suiteName);
 
+  // Cor do header da Suite agregando sub-ambientes (task #100)
+  var _sHdrGrad, _sHdrSubColor, _sHdrSubText;
+  var _todoConcluido = (subs.length > 0 && concluidos === subs.length);
+  if (_todoConcluido) {
+    _sHdrGrad = 'linear-gradient(135deg,#14532d,#16a34a)';
+    _sHdrSubColor = '#bbf7d0';
+    _sHdrSubText = '\u2713 An\u00e1lise conclu\u00edda \u2014 ' + subs.length + ' de ' + subs.length + ' sub-ambientes';
+  } else if (totalFotosSuite > 0) {
+    _sHdrGrad = 'linear-gradient(135deg,#92400e,#f59e0b)';
+    _sHdrSubColor = '#fed7aa';
+    _sHdrSubText = '\u26a0 ' + totalFotosSuite + ' foto' + (totalFotosSuite!==1?'s':'') + ' adicionada' + (totalFotosSuite!==1?'s':'') + ' \u2014 Ap\u00f3s enviar todas as fotos deste ambiente, clique em Analisar com IA para seguir para o pr\u00f3ximo ambiente.';
+  } else {
+    _sHdrGrad = 'linear-gradient(135deg,#1e3a5f,#2d7dd2)';
+    _sHdrSubColor = '#93c5fd';
+    _sHdrSubText = concluidos + ' de ' + subs.length + ' sub-ambientes conclu\u00eddos';
+  }
+
   var h = '';
-  // Suite header - same style as regular room
-  h += '<div style="background:linear-gradient(135deg,#1e3a5f,#2d7dd2);padding:14px 18px;border-radius:12px 12px 0 0;display:flex;align-items:center;gap:10px">';
+  h += '<div style="background:' + _sHdrGrad + ';padding:14px 18px;border-radius:12px 12px 0 0;display:flex;align-items:center;gap:10px;transition:background .25s">';
   h += '<span style="font-size: var(--fs-h3)">' + icone + '</span>';
   h += '<div style="flex:1">';
   h += '<div style="font-size: var(--fs-lg);font-weight: var(--fw-bold);color:#fff">' + suiteName + '</div>';
-  h += '<div style="font-size: var(--fs-xxs);color:#93c5fd">' + concluidos + ' de ' + subs.length + ' sub-ambientes conclu\u00EDdos</div>';
+  h += '<div style="font-size: var(--fs-xxs);color:' + _sHdrSubColor + ';font-weight:500">' + _sHdrSubText + '</div>';
   h += '</div></div>';
 
   h += '<div style="padding:16px">';
@@ -10409,14 +10445,22 @@ function wiz6BuildSuiteHtml(idx) {
     var jaAnalisou = sd.jaAnalisou || false;
     var resumo = sd.resumo || '';
 
-    // Sub-ambiente header bar
+    // Sub-ambiente header bar — cor por estado (task #100)
     var badge = '';
-    if (jaAnalisou) badge = '<span style="background:#f0fdf4;color:#166534;border:0.5px solid #bbf7d0;border-radius:10px;font-size: var(--fs-tiny);padding:2px 8px">Conclu\u00EDdo</span>';
-    else if (fotos.length > 0) badge = '<span style="background:#fffbeb;color:#92400e;border:0.5px solid #fed7aa;border-radius:10px;font-size: var(--fs-tiny);padding:2px 8px">Em andamento</span>';
-    else badge = '<span style="background:#f8fafc;color:#8898aa;border:0.5px solid #e2e8f0;border-radius:10px;font-size: var(--fs-tiny);padding:2px 8px">N\u00e3o iniciado</span>';
+    var _subHdrBg;
+    if (jaAnalisou) {
+      badge = '<span style="background:#f0fdf4;color:#166534;border:0.5px solid #bbf7d0;border-radius:10px;font-size: var(--fs-tiny);padding:2px 8px">\u2713 Conclu\u00EDdo</span>';
+      _subHdrBg = 'linear-gradient(135deg,#14532d,#16a34a)';
+    } else if (fotos.length > 0) {
+      badge = '<span style="background:#fffbeb;color:#92400e;border:0.5px solid #fed7aa;border-radius:10px;font-size: var(--fs-tiny);padding:2px 8px">\u26a0 Em andamento</span>';
+      _subHdrBg = 'linear-gradient(135deg,#92400e,#f59e0b)';
+    } else {
+      badge = '<span style="background:#f8fafc;color:#8898aa;border:0.5px solid #e2e8f0;border-radius:10px;font-size: var(--fs-tiny);padding:2px 8px">N\u00e3o iniciado</span>';
+      _subHdrBg = '#2d5a8e';
+    }
 
     h += '<div style="border:1px solid #e2e8f0;border-radius:10px;margin-bottom:14px;overflow:hidden">';
-    h += '<div style="background:#2d5a8e;padding:10px 16px;display:flex;align-items:center;justify-content:space-between">';
+    h += '<div style="background:' + _subHdrBg + ';padding:10px 16px;display:flex;align-items:center;justify-content:space-between;transition:background .25s">';
     h += '<span style="font-size: var(--fs-sm);font-weight: var(--fw-semibold);color:#fff">' + subNome + '</span>' + badge;
     h += '</div>';
 
