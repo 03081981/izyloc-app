@@ -1456,6 +1456,101 @@ canvas { display: block; }
   border-top: 1px solid rgba(255,255,255,0.15);
   margin: 0 0 16px 0;
 }
+/* Task #120: mobile — botao 'Comprar creditos' alinhado a direita do saldo */
+@media (max-width: 600px) {
+  .db-card-top {
+    flex-wrap: nowrap;
+    align-items: center;
+  }
+  .db-saldo-valor { font-size: 22px; }
+  .btn-comprar-mp {
+    padding: 6px 10px;
+    font-size: 11px;
+    gap: 6px;
+    flex-shrink: 0;
+  }
+  .btn-comprar-mp-badge img { height: 26px; }
+}
+
+/* === MENU MOBILE (task #120) ============================== */
+.mobile-menu-btn {
+  display: none;
+  background: none;
+  border: none;
+  color: #1a2540;
+  font-size: 22px;
+  cursor: pointer;
+  padding: 6px 10px;
+  line-height: 1;
+}
+@media (max-width: 768px) {
+  .mobile-menu-btn { display: inline-block; }
+}
+#mobile-drawer-overlay {
+  position: fixed; inset: 0;
+  background: rgba(15,23,42,0.55);
+  display: none;
+  z-index: 9998;
+}
+#mobile-drawer-overlay.open { display: block; }
+#mobile-drawer {
+  position: fixed; top: 0; right: 0; bottom: 0;
+  width: 280px; max-width: 85vw;
+  background: #1a2540;
+  color: #fff;
+  z-index: 9999;
+  transform: translateX(100%);
+  transition: transform .25s ease;
+  display: flex;
+  flex-direction: column;
+  box-shadow: -4px 0 24px rgba(0,0,0,0.3);
+  overflow-y: auto;
+}
+#mobile-drawer.open { transform: translateX(0); }
+.md-header {
+  padding: 18px 16px 14px;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+.md-header img { height: 32px; display: block; margin-bottom: 10px; }
+.md-user-name { font-size: 14px; font-weight: 600; color: #fff; }
+.md-user-saldo {
+  font-size: 12px; color: #93c5fd; margin-top: 4px;
+}
+.md-section {
+  padding: 12px 0 4px;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+.md-section-label {
+  padding: 0 16px 6px;
+  font-size: 10px; text-transform: uppercase;
+  color: rgba(255,255,255,0.45);
+  letter-spacing: .8px; font-weight: 600;
+}
+.md-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 11px 16px;
+  font-size: 14px;
+  color: rgba(255,255,255,0.85);
+  cursor: pointer;
+  border-left: 3px solid transparent;
+}
+.md-item:hover { background: rgba(255,255,255,0.05); }
+.md-item.active { background: #2563eb33; border-left-color: #2d7dd2; color: #fff; }
+.md-item .md-ic { font-size: 16px; width: 22px; text-align: center; }
+.md-close-btn {
+  position: absolute; top: 10px; right: 10px;
+  background: none; border: none; color: rgba(255,255,255,0.7);
+  font-size: 22px; cursor: pointer; line-height: 1;
+}
+.md-saldo-pill {
+  margin: 0 16px 8px;
+  padding: 8px 12px;
+  background: rgba(45,125,210,0.15);
+  border: 1px solid rgba(45,125,210,0.3);
+  border-radius: 8px;
+  font-size: 12px;
+}
+.md-saldo-pill strong { color: #fff; font-size: 14px; }
 .db-fotos-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -2728,9 +2823,41 @@ window._openFotoModal = function(imgSrc) {
     </span>
   </div>
   <div class="topbar-right">
-    <button class="btn-logout" id="btn-logout" onclick="logout()" title="Sair" style="display:none">⏏</button>
+    <button class="mobile-menu-btn" id="mobile-menu-btn" onclick="openMobileDrawer()" title="Menu" aria-label="Menu">☰</button>
+    <button class="btn-logout" id="btn-logout" onclick="confirmLogout()" title="Sair" style="display:none">⏏</button>
   </div>
 </div>
+
+<!-- Task #120: MENU MOBILE DRAWER -->
+<div id="mobile-drawer-overlay" onclick="closeMobileDrawer()"></div>
+<aside id="mobile-drawer" aria-hidden="true">
+  <button class="md-close-btn" onclick="closeMobileDrawer()" aria-label="Fechar">×</button>
+  <div class="md-header">
+    <img src="/static/assets/izylaudo-logo.svg" alt="izyLAUDO">
+    <div class="md-user-name" id="md-user-name">—</div>
+    <div class="md-user-saldo">Saldo: <span id="md-user-saldo">R$ 0,00</span></div>
+  </div>
+  <div class="md-section">
+    <div class="md-section-label">Navegação</div>
+    <div class="md-item" onclick="_mdGo('painel')"><span class="md-ic">📊</span>Painel</div>
+    <div class="md-item" onclick="_mdGo('laudos')"><span class="md-ic">📋</span>Meus laudos</div>
+  </div>
+  <div class="md-section">
+    <div class="md-section-label">Fotos e créditos</div>
+    <div class="md-saldo-pill">Saldo: <strong id="md-saldo-pill">R$ 0,00</strong></div>
+    <div class="md-item" onclick="_mdGo('comprar')"><span class="md-ic">➕</span>Adicionar créditos</div>
+    <div class="md-item" onclick="_mdGo('extrato')"><span class="md-ic">📄</span>Extrato de uso</div>
+  </div>
+  <div class="md-section">
+    <div class="md-section-label">Ajuda</div>
+    <div class="md-item" onclick="_mdGo('manual')"><span class="md-ic">📖</span>Manual do usuário</div>
+  </div>
+  <div class="md-section">
+    <div class="md-section-label">Conta</div>
+    <div class="md-item" onclick="_mdGo('config')"><span class="md-ic">⚙️</span>Configurações</div>
+    <div class="md-item" onclick="_mdGo('sair')" style="color:#fca5a5"><span class="md-ic">🚪</span>Sair</div>
+  </div>
+</aside>
 
 
 <!-- ══════════════ PAGE: AUTH ══════════════ -->
@@ -6255,6 +6382,81 @@ window._parseUtc = _parseUtc;
 window._fmtBR = _fmtBR;
 window.formatDate = formatDate;
 window.formatDateTime = formatDateTime;
+
+// === MOBILE DRAWER (task #120) =====================================
+function openMobileDrawer() {
+  var d = document.getElementById('mobile-drawer');
+  var o = document.getElementById('mobile-drawer-overlay');
+  if (!d || !o) return;
+  // Atualiza dados do usuario + saldo no drawer antes de abrir
+  try {
+    var nm = (document.getElementById('profile-name')||{}).textContent
+          || (document.getElementById('topbar-user-name')||{}).textContent
+          || (window.currentUser && (currentUser.name||currentUser.email)) || '';
+    var saldo = (document.getElementById('db-saldo-valor')||{}).textContent
+             || (document.getElementById('nav-saldo-fotos')||{}).textContent
+             || 'R$ 0,00';
+    var n1 = document.getElementById('md-user-name'); if (n1) n1.textContent = nm.trim() || 'Usuário';
+    var s1 = document.getElementById('md-user-saldo'); if (s1) s1.textContent = saldo.trim() || 'R$ 0,00';
+    var s2 = document.getElementById('md-saldo-pill'); if (s2) s2.textContent = saldo.trim() || 'R$ 0,00';
+  } catch(e){}
+  o.classList.add('open');
+  d.classList.add('open');
+  d.setAttribute('aria-hidden', 'false');
+}
+function closeMobileDrawer() {
+  var d = document.getElementById('mobile-drawer');
+  var o = document.getElementById('mobile-drawer-overlay');
+  if (d) { d.classList.remove('open'); d.setAttribute('aria-hidden', 'true'); }
+  if (o) o.classList.remove('open');
+}
+function confirmLogout() {
+  if (confirm('Deseja realmente sair da sua conta?')) {
+    if (typeof logout === 'function') logout();
+  }
+}
+function _mdGo(action) {
+  closeMobileDrawer();
+  // Pequeno delay pra animacao de fechamento + DOM da pagina destino estar pronto
+  setTimeout(function(){
+    try {
+      switch(action) {
+        case 'painel':
+          if (typeof showPage === 'function') showPage('page-dashboard');
+          if (typeof switchTab === 'function') switchTab('vistorias', document.getElementById('nav-dash'));
+          break;
+        case 'laudos':
+          if (typeof showMeusLaudosPage === 'function') showMeusLaudosPage();
+          break;
+        case 'comprar':
+          if (typeof abrirModalComprarCreditos === 'function') abrirModalComprarCreditos();
+          break;
+        case 'extrato':
+          if (typeof showPage === 'function') showPage('page-dashboard');
+          if (typeof switchTab === 'function') switchTab('estatisticas', document.getElementById('nav-extrato'));
+          break;
+        case 'manual':
+          if (typeof showManual === 'function') showManual();
+          break;
+        case 'config':
+          if (typeof showPage === 'function') showPage('page-dashboard');
+          if (typeof switchTab === 'function') switchTab('perfil', document.getElementById('nav-config'));
+          break;
+        case 'sair':
+          confirmLogout();
+          break;
+      }
+    } catch(e){ console.warn('[mobileDrawer] action err', e); }
+  }, 220);
+}
+window.openMobileDrawer = openMobileDrawer;
+window.closeMobileDrawer = closeMobileDrawer;
+window.confirmLogout = confirmLogout;
+window._mdGo = _mdGo;
+// ESC fecha drawer
+document.addEventListener('keydown', function(e){
+  if (e.key === 'Escape') closeMobileDrawer();
+});
 
 // === EMAIL VALIDATION (task #117) =================================
 // Detecta typos comuns que causam bounce no Autentique.
