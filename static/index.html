@@ -5330,6 +5330,7 @@ async function editarLaudo(id, origin) {
     wizard.tipo             = (r.type || "entrada");
     wizard.mobiliado        = !!(r.mobiliado || r.is_furnished);
     wizard.codigo           = codigo;
+    wizard.status           = String(r.status || '').toLowerCase();  // task #113
     wizard.rooms            = r.rooms || [];
     wizard.parties          = (function(){
       var arr = [];
@@ -5565,10 +5566,21 @@ function _applyEditUiToWstepRev(step) {
   var sub = wrev.querySelector(".wstep-sub");
   var nextBtn = wrev.querySelector(".btn-wiz-next");
   var isEd = !!(window.wizard && wizard.isEditing);
+  // Task #113 BUG 1: 'Re-gerar' SO SE laudo ja foi gerado antes (concluido,
+  // assinado, etc). Em laudos em_andamento/rascunho que estamos retomando
+  // via Editar, o botao deve continuar como "Gerar laudo →".
+  var _st = (window.wizard && wizard.status) ? String(wizard.status).toLowerCase() : '';
+  var jaGerado = isEd && (_st === 'concluido' || _st === 'concluído' ||
+                          _st === 'aguardando_assinatura' ||
+                          _st === 'assinado_digital' || _st === 'assinado');
   if (title) title.textContent = isEd ? ("✏ Revisão — Editando laudo " + (wizard.codigo || "")) : "Revisão do laudo";
-  if (sub) sub.textContent = isEd ? "Ajuste os dados e regere o PDF — o código do laudo será mantido." : "Confira os dados antes de prosseguir para a assinatura.";
+  if (sub) {
+    if (jaGerado) sub.textContent = "Ajuste os dados e regere o PDF — o código do laudo será mantido.";
+    else if (isEd) sub.textContent = "Continue de onde parou. Confira os dados antes de gerar o laudo.";
+    else sub.textContent = "Confira os dados antes de prosseguir para a assinatura.";
+  }
   if (nextBtn) {
-    if (isEd) {
+    if (jaGerado) {
       if (!nextBtn.dataset.origHtml) nextBtn.dataset.origHtml = nextBtn.innerHTML;
       nextBtn.innerHTML = "🔄 Regerar PDF";
     } else if (nextBtn.dataset.origHtml) {
@@ -6310,10 +6322,40 @@ function hardResetWizard() {
 
   ['wi-address','wi-area','wi-cep','wi-bairro','wi-cidade','wi-estado','wi-complemento','wi-prop-type',
    'wi-imob-name','wi-imob-cnpj','wi-imob-phone','wi-imob-email','wi-imob-address',
-   'wi-loc-name','wi-loc-cpf','wi-loc-rg','wi-loc-phone','wi-loc-email',
-   'wi-locat-name','wi-locat-cpf','wi-locat-rg','wi-locat-phone','wi-locat-email',
-   'wi-corr-name','wi-corr-creci','wi-corr-phone','wi-corr-email','wi-corr-cpf','wi-obs'
+   'wi-corr-name','wi-corr-creci','wi-corr-phone','wi-corr-email','wi-corr-cpf','wi-obs',
+   // Imovel: numero/numero (ambos as variantes existem no DOM)
+   'wi-número','wi-numero','wi-number',
+   // Hora da vistoria
+   'wi-hora'
   ].forEach(function(id) { var el = document.getElementById(id); if(el) el.value=''; });
+
+  // Task #113 BUG 2: limpar TODOS os blocos de locador/locatario/ten dinamicos.
+  // Os campos reais usam loc-{kind}-N (loc-name-0, loc-cpf-0, locat-rg-2, ten-email-1, etc).
+  try {
+    // Remove blocos extras (>0) - mantem apenas o primeiro vazio
+    document.querySelectorAll('#locadores-container .person-block').forEach(function(b){
+      if (b.id && b.id !== 'loc-block-0') { try { b.remove(); } catch(e){} }
+    });
+    var _tenContRst = document.getElementById('locatários-container');
+    if (_tenContRst) {
+      _tenContRst.querySelectorAll('.person-block').forEach(function(b){
+        if (b.id && b.id !== 'locat-block-0' && b.id !== 'ten-block-0') { try { b.remove(); } catch(e){} }
+      });
+    }
+    // Limpa inputs e selects DENTRO dos containers de partes
+    ['#locadores-container', '#locatários-container'].forEach(function(sel){
+      document.querySelectorAll(sel + ' input, ' + sel + ' textarea').forEach(function(el){
+        try { el.value = ''; } catch(e){}
+      });
+      document.querySelectorAll(sel + ' select').forEach(function(el){
+        try { el.selectedIndex = 0; } catch(e){}
+      });
+      // Reseta toggles PF/PJ pra PF (default)
+      document.querySelectorAll(sel + ' input[type=radio][value=pf]').forEach(function(el){
+        try { el.checked = true; } catch(e){}
+      });
+    });
+  } catch(_eParts){ console.warn('[hardResetWizard] partes', _eParts); }
 
   document.querySelectorAll('.room-check-item').forEach(function(el) {
     el.classList.remove('checked');
@@ -6323,6 +6365,14 @@ function hardResetWizard() {
 
   try { document.getElementById('wi-date').value = new Date().toISOString().split('T')[0]; } catch(e) {}
   try { document.getElementById('rooms-list').innerHTML = ''; } catch(e) {}
+
+  // Task #113 BUG 2: tambem limpa contadores/counters da etapa 5 (ambientes)
+  try {
+    document.querySelectorAll('[id^="wiz-val-"]').forEach(function(el){
+      if (el.tagName === 'INPUT') { el.value = ''; }
+      else { el.textContent = '0'; }
+    });
+  } catch(e){}
 
   console.log('[hardResetWizard] State fully cleared');
 }
