@@ -5465,6 +5465,29 @@ async function editarLaudo(id, origin) {
     if (_lastStep > 7) _lastStep = 6;  // assinaturas (8) nao faz sentido em editar
     if (_lastStep < 3) _lastStep = 3;  // muito cedo, vai pro imovel
     gotoWStep(_lastStep);
+    // Auto-save (task #105): se voltou na etapa 6 (vistoria), seleciona modo
+    // 'foto por foto' automaticamente para que o usuario veja as fotos sem
+    // precisar clicar em nada.
+    if (_lastStep === 4 || _lastStep === 6) {
+      var _selecionarFoto = function(){
+        try {
+          if (typeof wiz6SelecionarModo === 'function') {
+            wiz6SelecionarModo('foto');
+          } else {
+            // Fallback: forca _wiz6Modo + dispara init manualmente
+            try { window._wiz6Modo = 'foto'; } catch(e){}
+            var _bf = document.getElementById('wiz6-btn-foto');
+            var _mf = document.getElementById('wiz6-modo-foto');
+            if (_bf) _bf.classList.add('active');
+            if (_mf) _mf.style.display = 'block';
+            if (typeof wiz6Init === 'function') wiz6Init();
+          }
+        } catch(e){ console.warn('[editarLaudo] auto-foto', e); }
+      };
+      // Aguarda DOM da etapa 6 estar pronto (gotoWStep + wiz6Init tem
+      // setTimeout 300ms internamente — esperamos um pouco mais).
+      setTimeout(_selecionarFoto, 450);
+    }
     try { if (typeof initAmbientes === "function") initAmbientes(); } catch(_eIA){ try{console.warn("[editarLaudo] initAmbientes",_eIA);}catch(__){} }
     try { if (typeof initItensEtapa === "function") initItensEtapa(); } catch(_eII){ try{console.warn("[editarLaudo] initItensEtapa",_eII);}catch(__){} }
     try { if (typeof window.initRevisao === "function") window.initRevisao(); } catch(e){ try { console.warn("[editarLaudo] initRevisao", e); } catch(e2){} }
