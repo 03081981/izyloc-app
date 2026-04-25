@@ -11314,7 +11314,10 @@ function wiz6BuildSuiteHtml(idx) {
 
     h += '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px">';
     h += htmlFotos;
-    if (!jaAnalisou) h += htmlBtnFoto;
+    // Task #128: htmlBtnFoto so quando NAO tem fotos (mesmo fix da task #127
+    // aplicado para sub-ambientes da Suite). Quando ja existe foto, o bloco
+    // '+ Adicionar mais fotos' abaixo cuida disso.
+    if (!jaAnalisou && fotos.length === 0) h += htmlBtnFoto;
     h += '</div>';
 
     // === GREEN BOX with fotos count + Analyze button - same as regular room ===
