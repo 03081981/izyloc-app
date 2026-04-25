@@ -6484,6 +6484,28 @@ function hardResetWizard() {
     });
   } catch(e){}
 
+  // Task #118: restaura botao 'Gerar laudo →' caso uma edicao previa
+  // tenha trocado pra 'Regerar PDF'.
+  try {
+    var _grBtn = document.querySelector('#wstep-rev .btn-wiz-next');
+    if (_grBtn) {
+      if (_grBtn.dataset.origHtml) {
+        _grBtn.innerHTML = _grBtn.dataset.origHtml;
+        delete _grBtn.dataset.origHtml;
+      } else if (_grBtn.innerHTML.indexOf('Regerar') !== -1) {
+        _grBtn.innerHTML = 'Gerar laudo → <svg viewBox="0 0 20 20" fill="currentColor" width="16" height="16"><path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z"/></svg>';
+      }
+    }
+    // Subtitulo + titulo da revisao tambem voltam pro padrao
+    var _wrev = document.getElementById('wstep-rev');
+    if (_wrev) {
+      var _t = _wrev.querySelector('.wstep-title');
+      var _s = _wrev.querySelector('.wstep-sub');
+      if (_t) _t.textContent = 'Revisão do laudo';
+      if (_s) _s.textContent = 'Confira os dados antes de prosseguir para a assinatura.';
+    }
+  } catch(_e){}
+
   console.log('[hardResetWizard] State fully cleared');
 }
 
@@ -7563,6 +7585,11 @@ window.addEventListener('resize', () => {
         }
         if (next === 5 && typeof initItensEtapa === 'function') initItensEtapa();
         if (next === 6 && typeof window.initRevisao === 'function') window.initRevisao();
+        // Task #118: garante que botao Gerar/Regerar reflete wizard.isEditing
+        // + status atual (evita ficar 'Regerar PDF' sticky em laudo novo).
+        if (next === 6 && typeof _applyEditUiToWstepRev === 'function') {
+          try { _applyEditUiToWstepRev(6); } catch(_eR){}
+        }
         if (next === 7) {
           // Reset visual do botao Autentique na entrada da Etapa 8
           try {
