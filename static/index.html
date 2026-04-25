@@ -5437,7 +5437,7 @@ function _dashRenderCard(i) {
   var icon = '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="4" y="3" width="16" height="18" rx="2" fill="#dbeafe" stroke="#2d7dd2" stroke-width="1.5"/><line x1="8" y1="8" x2="16" y2="8" stroke="#2d7dd2" stroke-width="1.3" stroke-linecap="round"/><line x1="8" y1="12" x2="16" y2="12" stroke="#2d7dd2" stroke-width="1.3" stroke-linecap="round"/><line x1="8" y1="16" x2="13" y2="16" stroke="#2d7dd2" stroke-width="1.3" stroke-linecap="round"/></svg>';
   var st = _dashStatusInfo(i.status);
   var code = _dashLaudoCode(i);
-  var date = i.inspection_date || formatDate(i.created_at);
+  var date = i.inspection_date ? _fmtBR(i.inspection_date) : formatDate(i.created_at);
   var addr = i.property_address || 'Endereço não informado';
   var extras = [tipo, date].filter(Boolean).join(' · ');
   var codeBadge = '<span style="font-family:monospace;font-size: var(--fs-tiny);font-weight: var(--fw-bold);background:#e8f2fd;color:#1e6bbf;padding:2px 6px;border-radius:3px;letter-spacing:0.2px;flex-shrink:0;">'+code+'</span>';
@@ -5712,7 +5712,7 @@ function _mlRenderCard(insp, statusKey) {
   var cli = insp.tenant_name || insp.cliente || insp.client || "";
   var tipoRaw = (insp.type || insp.tipo || "").toString().toLowerCase();
   var tipo = tipoRaw === "entrada" ? "Entrada" : (tipoRaw === "saida" ? "Saída" : (tipoRaw === "temporada" ? "Temporada" : (tipoRaw ? tipoRaw.charAt(0).toUpperCase()+tipoRaw.slice(1) : "")));
-  var date = insp.inspection_date || (typeof formatDate === "function" ? formatDate(insp.created_at) : (insp.created_at || ""));
+  var date = insp.inspection_date ? (typeof _fmtBR==="function" ? _fmtBR(insp.inspection_date) : insp.inspection_date) : (typeof formatDate === "function" ? formatDate(insp.created_at) : (insp.created_at || ""));
   var actions = _mlActionBtns(insp, statusKey);
   var subparts = [];
   if (cli) subparts.push(cli);
@@ -5955,6 +5955,26 @@ function _parseUtc(str) {
   }
   return new Date(s);
 }
+// Normaliza qualquer string de data para DD/MM/YYYY.
+// Aceita: "YYYY-MM-DD", "DD/MM/YYYY", ISO completo, ou objeto Date.
+function _fmtBR(str) {
+  if (!str) return '';
+  var s = String(str).trim();
+  // Ja esta em DD/MM/YYYY
+  var mBr = s.match(/^(\d{2})\/(\d{2})\/(\d{4})/);
+  if (mBr) return mBr[1] + '/' + mBr[2] + '/' + mBr[3];
+  // YYYY-MM-DD (com ou sem hora)
+  var mIso = s.match(/^(\d{4})-(\d{2})-(\d{2})/);
+  if (mIso) return mIso[3] + '/' + mIso[2] + '/' + mIso[1];
+  // Fallback: parse + format
+  try {
+    var d = _parseUtc(s);
+    if (!isNaN(d.getTime())) {
+      return d.toLocaleDateString('pt-BR', {timeZone:'America/Sao_Paulo'});
+    }
+  } catch(e) {}
+  return s;
+}
 function formatDate(str) {
   try {
     return _parseUtc(str).toLocaleDateString('pt-BR', {timeZone: 'America/Sao_Paulo'});
@@ -5970,6 +5990,7 @@ function formatDateTime(str) {
   } catch { return str; }
 }
 window._parseUtc = _parseUtc;
+window._fmtBR = _fmtBR;
 window.formatDate = formatDate;
 window.formatDateTime = formatDateTime;
 
@@ -6691,7 +6712,7 @@ async function gerarLaudo() {
     property_address: (function(){var _a=(document.getElementById('wi-address')||{value:''}).value.trim();var _n=(document.getElementById('wi-n\u00famero')||document.getElementById('wi-numero')||document.getElementById('wi-number')||{value:''}).value.trim();if(!_n)return _a;var _suf=', '+_n;if(_a&&_a.length>_suf.length&&_a.substring(_a.length-_suf.length)===_suf)return _a;return _a+_suf;})(),
     property_type: document.getElementById('wi-prop-type').value,
     property_area: (document.getElementById('wi-area') || {}).value || '',
-    inspection_date: document.getElementById('wi-date').value,
+    inspection_date: (function(){var _v=(document.getElementById('wi-date')||{}).value||'';return _v?(typeof _fmtBR==='function'?_fmtBR(_v):_v):'';})(),
     mobiliado: wizard.mobiliado ? true : false,
     bairro: (document.getElementById('wi-bairro') || {}).value || '',
     complemento: (document.getElementById('wi-complemento') || {}).value || '',
@@ -6917,7 +6938,7 @@ function renderDetail(insp) {
     if (city) cityLine += (cityLine ? ' / ' : '') + city;
     if (uf) cityLine += (cityLine ? ' · ' : '') + uf;
     var ptype = insp.property_type || '-';
-    var date = insp.inspection_date || insp.created_at || '-';
+    var date = insp.inspection_date ? (typeof _fmtBR==='function'?_fmtBR(insp.inspection_date):insp.inspection_date) : (insp.created_at ? (typeof formatDate==='function'?formatDate(insp.created_at):insp.created_at) : '-');
     function initials(name) {
       if (!name) return '';
       var p = String(name).trim().split(/\s+/);
@@ -8207,7 +8228,7 @@ function mostrarTodosLaudos() {
       : '<svg width="32" height="26" viewBox="0 0 56 44" fill="none"><rect x="6" y="8" width="36" height="30" rx="3" fill="#dbeafe" stroke="#2d7dd2" stroke-width="1.5"/><rect x="6" y="8" width="36" height="10" rx="3" fill="#2d7dd2"/><circle cx="16" cy="26" r="2" fill="#2d7dd2"/><circle cx="24" cy="26" r="2" fill="#2d7dd2"/><circle cx="46" cy="10" r="5" fill="#fbbf24"/></svg>';
     var statusLabel = i.status === 'concluído' ? 'Concluida' : i.status === 'rascunho' ? 'Em andamento' : i.status === 'assinado' ? 'Assinado' : i.status;
     var badgeClass = i.status === 'concluído' ? 'badge-concluído' : i.status === 'rascunho' ? 'badge-rascunho' : 'badge-andamento';
-    var date = i.inspection_date || formatDate(i.created_at);
+    var date = i.inspection_date ? _fmtBR(i.inspection_date) : formatDate(i.created_at);
     return '<div class="insp-card" onclick="openInspection(\''+ i.id +'\')"><div class="insp-thumb" style="background:#eef4ff;border-radius:8px;width:48px;height:48px;display:flex;align-items:center;justify-content:center;flex-shrink:0">' + icon + '</div><div class="insp-info"><div class="insp-address">' + (i.property_address || 'Endereço nao informado') + '</div><div class="insp-meta"><span>' + tipo + '</span><span>' + date + '</span></div></div><div class="insp-right"><span class="insp-badge ' + badgeClass + '">' + statusLabel + '</span></div></div>';
   }).join('');
 }
