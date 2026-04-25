@@ -2824,7 +2824,6 @@ window._openFotoModal = function(imgSrc) {
   </div>
   <div class="topbar-right">
     <button class="mobile-menu-btn" id="mobile-menu-btn" onclick="openMobileDrawer()" title="Menu" aria-label="Menu">☰</button>
-    <button class="btn-logout" id="btn-logout" onclick="confirmLogout()" title="Sair" style="display:none">⏏</button>
   </div>
 </div>
 
@@ -4481,7 +4480,7 @@ function showPage(id, title = null, addHistory = true) {
 
   const topbar = document.getElementById('topbar');
   const btnBack = document.getElementById('btn-back');
-  const btnLogout = document.getElementById('btn-logout');
+  const btnLogout = document.getElementById('btn-logout');  // pode nao existir mais (task #121)
   const titleEl = document.getElementById('topbar-title');
 
   if (id === 'page-auth') {
@@ -4490,7 +4489,7 @@ function showPage(id, title = null, addHistory = true) {
   }
 
   topbar.classList.add('visible');
-  btnLogout.style.display = (id === 'page-auth') ? 'none' : 'flex';
+  if (btnLogout) btnLogout.style.display = (id === 'page-auth') ? 'none' : 'flex';
 
   if (id === 'page-dashboard') {
     btnBack.classList.add('hidden');
