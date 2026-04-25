@@ -3893,12 +3893,9 @@ window._openFotoModal = function(imgSrc) {
       <!-- MODO FOTO -->
       <div id="wiz6-modo-foto">
         <!-- TABS DE AMBIENTES -->
-        <div style="padding-bottom:0;margin-bottom:8px">
+        <div style="padding-bottom:0;margin-bottom:16px">
           <div id="wiz6-tabs" style="display:flex;flex-wrap:wrap;gap:8px"></div>
         </div>
-
-        <!-- FAIXA DE AVISO POR ESTADO (task #107) — oculto inicialmente -->
-        <div id="wiz6-status-banner" style="display:none;border-radius:6px;padding:8px 12px;font-size:13px;margin-bottom:12px"></div>
 
         <!-- PROGRESS BAR -->
         <div class="wiz6-progress-bar">
@@ -9608,7 +9605,6 @@ function wiz6GoAmb(idx) {
   wiz6RenderTabs();
   wiz6RenderAmbCard(idx);
   // Task #107: atualiza faixa de status para o novo ambiente ativo
-  try { if (typeof wiz6AtualizarStatusBanner === 'function') wiz6AtualizarStatusBanner(); } catch(e){}
 }
 
 // ── EXCLUIR AMBIENTE ────────────────────────────────
@@ -9898,13 +9894,14 @@ function wiz6RenderAmbCard(idx) {
   var btnProx = '<button id="wiz6-btn-prox-amb" onclick="wiz6ProxAmb()" style="padding:12px 24px;background:#2d7dd2;color:#fff;border:none;border-radius:10px;font-size: var(--fs-body);font-weight: var(--fw-semibold);cursor:pointer;flex:1">' + txtProx + '</button>';
   var btnAnterior = idx > 0 ? '<button onclick="wiz6AmbAnterior()" style="padding:12px 20px;background:#fff;color:#8898aa;border:0.5px solid #e2e8f0;border-radius:10px;font-size: var(--fs-sm);cursor:pointer">&larr; Anterior</button>' : '';
 
-  // Task #107: header sempre azul navy. Status agora vai na faixa
-  // _wiz6StatusBanner que aparece logo abaixo das tabs.
+  // Task #107: header sempre azul navy.
   var _hdrGrad = 'linear-gradient(135deg,#1e3a5f,#2d7dd2)';
   var _hdrSubColor = '#93c5fd';
   var _hdrSubText = jaAnalisou
     ? ('\u2713 An\u00e1lise conclu\u00edda \u2014 ' + fotos.length + ' foto' + (fotos.length!==1?'s':'') + ' analisada' + (fotos.length!==1?'s':'') + ' pela IA')
     : (fotos.length + ' foto' + (fotos.length!==1?'s':'') + ' adicionada' + (fotos.length!==1?'s':''));
+  // Task #108: aviso amarelo logo abaixo do header se houver fotos sem analise
+  var _avisoUploadHtml = (fotos.length >= 1 && !jaAnalisou) ? wiz6AvisoUploadHtml(nome) : '';
   card.innerHTML =
     '<div style="background:' + _hdrGrad + ';padding:14px 18px;border-radius:12px 12px 0 0;display:flex;align-items:center;gap:10px">' +
       '<span style="font-size: var(--fs-h3)">' + icone + '</span>' +
@@ -9913,6 +9910,7 @@ function wiz6RenderAmbCard(idx) {
         '<div style="font-size: var(--fs-xxs);color:' + _hdrSubColor + ';font-weight:500">' + _hdrSubText + '</div>' +
       '</div>' +
     '</div>' +
+    _avisoUploadHtml +
 
     '<div style="padding:16px">' +
 
@@ -10672,6 +10670,12 @@ function wiz6BuildSuiteHtml(idx) {
   h += '<div style="font-size: var(--fs-lg);font-weight: var(--fw-bold);color:#fff">' + suiteName + '</div>';
   h += '<div style="font-size: var(--fs-xxs);color:' + _sHdrSubColor + ';font-weight:500">' + _sHdrSubText + '</div>';
   h += '</div></div>';
+  // Task #108: aviso amarelo agregado da Suite (qualquer sub com fotos sem analise)
+  var _sHasUnanalyzed = subs.some(function(sn){
+    var _ssd = (d.subs && d.subs[sn]) || {};
+    return ((_ssd.fotos||[]).length >= 1 && !_ssd.jaAnalisou);
+  });
+  if (_sHasUnanalyzed) h += wiz6AvisoUploadHtml(suiteName);
 
   h += '<div style="padding:16px">';
 
@@ -10700,6 +10704,10 @@ function wiz6BuildSuiteHtml(idx) {
     h += '<div style="background:' + _subHdrBg + ';padding:10px 16px;display:flex;align-items:center;justify-content:space-between;transition:background .25s">';
     h += '<span style="font-size: var(--fs-sm);font-weight: var(--fw-semibold);color:#fff">' + subNome + '</span>' + badge;
     h += '</div>';
+    // Task #108: aviso amarelo por sub-ambiente quando ha fotos sem analise
+    if (fotos.length >= 1 && !jaAnalisou) {
+      h += '<div style="background:#fef9ec;border:1.5px solid #f59e0b;border-radius:8px;padding:10px 14px;margin:10px 14px 4px;font-size:13px;font-weight:600;color:#92400e">⚠ Adicione todas as fotos de <strong>' + _esc6(subNome) + '</strong> e depois clique em <strong>Analisar com IA</strong> &mdash; só então passe para o próximo ambiente.</div>';
+    }
 
     h += '<div style="padding:14px 16px">';
 
@@ -10924,7 +10932,6 @@ function wiz6AnalisarBatchSub(idx, subNome, si, modo = 'convencional') {
   var fotos = sd.fotos;
   // task #107: marca _analyzing pra faixa
   sd._analyzing = true;
-  if (typeof wiz6AtualizarStatusBanner === 'function') wiz6AtualizarStatusBanner();
   var statusEl = document.getElementById('wiz6-ai-status-sub-' + idx + '-' + si);
   if (statusEl) {
     statusEl.style.display = 'block';
@@ -10974,7 +10981,6 @@ function wiz6AnalisarBatchSub(idx, subNome, si, modo = 'convencional') {
       }
       sd.jaAnalisou = false;
       sd._analyzing = false;  // task #107
-      if (typeof wiz6AtualizarStatusBanner === 'function') wiz6AtualizarStatusBanner();
       wiz6RenderAmbCard(_wiz6AmbIdx);
       // Recarrega saldo da sidebar (foi reembolsado)
       if (typeof wiz6DescontarCréditos === 'function') {
@@ -10994,7 +11000,6 @@ function wiz6AnalisarBatchSub(idx, subNome, si, modo = 'convencional') {
   })
   .catch(function(err) {
     sd._analyzing = false;  // task #107
-    if (typeof wiz6AtualizarStatusBanner === 'function') wiz6AtualizarStatusBanner();
     console.error('Erro batch sub:', err);
     statusEl = document.getElementById('wiz6-ai-status-sub-' + idx + '-' + si);
     if (statusEl) { statusEl.innerHTML = '\u26a0 Erro ao analisar. Tente novamente.'; statusEl.style.background = '#fef2f2'; statusEl.style.color = '#991b1b'; }
@@ -11381,8 +11386,6 @@ function wiz6AnalisarBatch(ambIdx, modo = 'convencional') {
   // Task #107: marca _analyzing pra faixa de status mostrar 'Analisando...'
   if (!wizard.itensData[ambIdx]) wizard.itensData[ambIdx] = {};
   wizard.itensData[ambIdx]._analyzing = true;
-  if (typeof wiz6AtualizarStatusBanner === 'function') wiz6AtualizarStatusBanner();
-
   var statusEl = document.getElementById('wiz6-ai-status-' + ambIdx);
   if (statusEl) {
     statusEl.style.display = 'block';
@@ -11455,7 +11458,6 @@ function wiz6AnalisarBatch(ambIdx, modo = 'convencional') {
       }
       // task #107: limpa _analyzing tambem no refund
       if (wizard.itensData[ambIdx]) wizard.itensData[ambIdx]._analyzing = false;
-      if (typeof wiz6AtualizarStatusBanner === 'function') wiz6AtualizarStatusBanner();
       wiz6RenderAmbCard(ambIdx);
       return;
     }
@@ -11576,7 +11578,6 @@ function wiz6AnalisarBatch(ambIdx, modo = 'convencional') {
     if (!wizard.itensData[ambIdx]) wizard.itensData[ambIdx] = {};
     wizard.itensData[ambIdx].jaAnalisou = false;
     wizard.itensData[ambIdx]._analyzing = false;  // task #107
-    if (typeof wiz6AtualizarStatusBanner === 'function') wiz6AtualizarStatusBanner();
     wiz6RenderAmbCard(ambIdx);
   });
 }
@@ -11740,58 +11741,19 @@ function wiz6AtualizarProgress() {
       txt.textContent = done + ' de ' + total + ' ambientes concluídos';
     }
   }
-  // Atualiza a faixa contextual
-  if (typeof wiz6AtualizarStatusBanner === 'function') wiz6AtualizarStatusBanner();
-}
-
-function wiz6AtualizarStatusBanner() {
-  // Task #107: faixa contextual abaixo das tabs, baseada no ambiente ATIVO.
-  // Estado 1 (sem fotos): oculta. Estado 2 (fotos sem analise): amarelo.
-  // Estado 3 (analisando): azul. Estado 4 (analisado): oculta.
-  var el = document.getElementById('wiz6-status-banner');
-  if (!el) return;
-  var idx = (typeof _wiz6AmbIdx === 'number') ? _wiz6AmbIdx : 0;
-  var nome = (_wiz6Ambientes && _wiz6Ambientes[idx]) || (wizard.selectedRooms && wizard.selectedRooms[idx]) || 'este ambiente';
-  var d = (wizard.itensData && wizard.itensData[idx]) || {};
-  // Para Suite: agrega estado dos sub-ambientes
-  var totalFotos = 0, hasUnanalyzed = false, allDone = true, anyAnalyzing = false, contextNome = nome;
-  if (d.isSuite && d.subAmbientes && d.subAmbientes.length > 0) {
-    d.subAmbientes.forEach(function(sn) {
-      var sd = (d.subs && d.subs[sn]) || {};
-      var nf = (sd.fotos || []).length;
-      totalFotos += nf;
-      if (sd._analyzing) anyAnalyzing = true;
-      if (!sd.jaAnalisou) allDone = false;
-      if (nf > 0 && !sd.jaAnalisou && !sd._analyzing) hasUnanalyzed = true;
-    });
-  } else {
-    totalFotos = (d.fotos || []).length;
-    if (d._analyzing) anyAnalyzing = true;
-    if (!d.jaAnalisou) allDone = false;
-    if (totalFotos > 0 && !d.jaAnalisou && !d._analyzing) hasUnanalyzed = true;
-  }
-  // Sem fotos OU ja concluido -> esconde
-  if (anyAnalyzing) {
-    el.style.display = 'block';
-    el.style.background = '#eff6ff';
-    el.style.border = '1px solid #2d7dd2';
-    el.style.color = '#1a5fa8';
-    el.innerHTML = '⏳ Analisando ' + _esc6(contextNome) + ' com IA...';
-  } else if (hasUnanalyzed) {
-    el.style.display = 'block';
-    el.style.background = '#fef9ec';
-    el.style.border = '1px solid #f59e0b';
-    el.style.color = '#92400e';
-    el.innerHTML = '⚠ ' + _esc6(contextNome) + ' — Após enviar todas as fotos, clique em <strong>Analisar com IA</strong> para concluir este ambiente.';
-  } else {
-    el.style.display = 'none';
-    el.innerHTML = '';
-  }
+  // Task #108: aviso de upload agora vai DENTRO de cada card (renderizado
+  // por wiz6RenderAmbCard / wiz6BuildSuiteHtml), nao mais numa faixa global.
 }
 function _esc6(s){
   return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
-window.wiz6AtualizarStatusBanner = wiz6AtualizarStatusBanner;
+// Helper compartilhado: HTML do aviso amarelo "Adicione todas as fotos..."
+function wiz6AvisoUploadHtml(nomeAmb) {
+  return '<div style="background:#fef9ec;border:1.5px solid #f59e0b;border-radius:8px;padding:10px 14px;margin:8px 16px 4px;font-size:13px;font-weight:600;color:#92400e">'
+    + '⚠ Adicione todas as fotos de <strong>' + _esc6(nomeAmb) + '</strong> e depois clique em <strong>Analisar com IA</strong> &mdash; só então passe para o próximo ambiente.'
+    + '</div>';
+}
+window.wiz6AvisoUploadHtml = wiz6AvisoUploadHtml;
 
 // ── MODO VÍDEO ───────────────────────────────────────────
 async function wiz6UploadVideo(input) {
