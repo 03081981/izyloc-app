@@ -1866,6 +1866,29 @@ canvas { display: block; }
     line-height: 1.3;
   }
 }
+/* Task #131: sub-ambiente — Camera/Galeria + botoes Analisar empilhados
+   no mobile, full-width, sem quebra de texto */
+@media (max-width: 600px) {
+  .wiz6-sub-acoes {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 8px !important;
+  }
+  .wiz6-sub-cam-row {
+    display: flex !important;
+    flex-direction: row !important;
+    width: 100%;
+  }
+  .wiz6-btn-analisar {
+    width: 100%;
+    text-align: center;
+    font-size: 12px !important;
+    padding: 10px 8px !important;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
 /* Task #130: verificacoes tecnicas em coluna no mobile (label em cima,
    botoes embaixo em wrap horizontal) */
 @media (max-width: 600px) {
@@ -11824,10 +11847,24 @@ function _wiz6RenderSubsBlock(ambIdx, dados) {
     if (fotos.length > 0) {
       h += '<div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:8px;padding:10px;margin-bottom:10px;text-align:center">';
       h += '<div style="font-size: var(--fs-xxs);color:#166534;margin-bottom:7px">' + fotos.length + ' foto(s) pronta(s) para an\u00e1lise</div>';
-      h += '<div style="display:flex;gap:8px;justify-content:center;align-items:center">';
-      h += '<label style="display:flex;align-items:center;gap:6px;padding:7px 12px;border:0.5px solid #e2e8f0;border-radius:7px;background:#fff;font-size: var(--fs-xxs);color:#8898aa;cursor:pointer">+ Adicionar mais fotos<input type="file" accept="image/*" multiple style="display:none" onchange="wiz6AddFotosSub(this,' + ambIdx + ',\'' + subNome.replace(/'/g,"\\\'") + '\')">';
+      // Task #131: container marcado com classe pra CSS mobile reorganizar
+      // botoes em coluna full-width.
+      h += '<div class="wiz6-sub-acoes" style="display:flex;gap:8px;justify-content:center;align-items:center;flex-wrap:wrap">';
+      // Desktop: '+ Adicionar mais fotos' compacto (oculto no mobile)
+      h += '<label class="foto-desktop-only" style="display:flex;align-items:center;gap:6px;padding:7px 12px;border:0.5px solid #e2e8f0;border-radius:7px;background:#fff;font-size: var(--fs-xxs);color:#8898aa;cursor:pointer">+ Adicionar mais fotos<input type="file" accept="image/*" multiple style="display:none" onchange="wiz6AddFotosSub(this,' + ambIdx + ',\'' + subNome.replace(/'/g,"\\\'") + '\')">';
       h += '</label>';
-      h += '<div style="display:flex;gap:8px;flex-wrap:wrap">' + '<button onclick="confirmarAnalise(\'convencional\',' + fotos.length + ',function(){wiz6AnalisarSub(' + ambIdx + ',\'' + subNome.replace(/'/g,"\\\'") + '\',\'convencional\');}).catch(console.error)" style="background:#2d7dd2;color:#fff;border:none;border-radius:7px;padding:7px 14px;font-size: var(--fs-xxs);font-weight: var(--fw-semibold);cursor:pointer">' + (sd.jaAnalisou ? '\ud83d\udd04 Re-analisar com IA' : '\ud83e\udd16 Analisar com IA') + ' \u2014 ' + window.pricePerPhotoLabel('convencional') + '</button>' + '<button onclick="confirmarAnalise(\'premium\',' + fotos.length + ',function(){wiz6AnalisarSub(' + ambIdx + ',\'' + subNome.replace(/'/g,"\\\'") + '\',\'premium\');}).catch(console.error)" style="background:#9333ea;color:#fff;border:none;border-radius:7px;padding:7px 14px;font-size: var(--fs-xxs);font-weight: var(--fw-semibold);cursor:pointer">' + (sd.jaAnalisou ? '\ud83d\udd04 Re-analisar com IA PREMIUM' : '\ud83e\udd16 Analisar com IA PREMIUM') + ' \u2014 ' + window.pricePerPhotoLabel('premium') + '</button>' + '</div>';
+      // Mobile: Camera + Galeria lado a lado
+      h += '<div class="foto-mobile-only wiz6-sub-cam-row" style="gap:6px;width:100%">';
+      h += '<label style="flex:1;display:inline-flex;align-items:center;justify-content:center;gap:4px;padding:8px 10px;background:#fff;color:#2d7dd2;border:1px solid #2d7dd2;border-radius:7px;font-size:11px;font-weight:600;cursor:pointer">\ud83d\udcf7 C\u00e2mera';
+      h += '<input type="file" accept="image/*" capture="environment" multiple style="display:none" onchange="wiz6AddFotosSub(this,' + ambIdx + ',\'' + subNome.replace(/'/g,"\\\'") + '\')">';
+      h += '</label>';
+      h += '<label style="flex:1;display:inline-flex;align-items:center;justify-content:center;gap:4px;padding:8px 10px;background:#fff;color:#2d7dd2;border:1px solid #2d7dd2;border-radius:7px;font-size:11px;font-weight:600;cursor:pointer">\ud83d\uddbc\ufe0f Galeria';
+      h += '<input type="file" accept="image/*" multiple style="display:none" onchange="wiz6AddFotosSub(this,' + ambIdx + ',\'' + subNome.replace(/'/g,"\\\'") + '\')">';
+      h += '</label>';
+      h += '</div>';
+      // Botoes de analise \u2014 recebem classe wiz6-btn-analisar pra ficar full-width no mobile
+      h += '<button class="wiz6-btn-analisar" onclick="confirmarAnalise(\'convencional\',' + fotos.length + ',function(){wiz6AnalisarSub(' + ambIdx + ',\'' + subNome.replace(/'/g,"\\\'") + '\',\'convencional\');}).catch(console.error)" style="background:#2d7dd2;color:#fff;border:none;border-radius:7px;padding:7px 14px;font-size: var(--fs-xxs);font-weight: var(--fw-semibold);cursor:pointer;white-space:nowrap">' + (sd.jaAnalisou ? '\ud83d\udd04 Re-analisar com IA' : '\ud83e\udd16 Analisar com IA') + ' \u2014 ' + window.pricePerPhotoLabel('convencional') + '</button>';
+      h += '<button class="wiz6-btn-analisar wiz6-btn-premium" onclick="confirmarAnalise(\'premium\',' + fotos.length + ',function(){wiz6AnalisarSub(' + ambIdx + ',\'' + subNome.replace(/'/g,"\\\'") + '\',\'premium\');}).catch(console.error)" style="background:#9333ea;color:#fff;border:none;border-radius:7px;padding:7px 14px;font-size: var(--fs-xxs);font-weight: var(--fw-semibold);cursor:pointer;white-space:nowrap">\u2b50 ' + (sd.jaAnalisou ? 'Re-analisar IA PREMIUM' : 'Analisar IA PREMIUM') + ' \u2014 ' + window.pricePerPhotoLabel('premium') + '</button>';
       h += '</div>';
       h += '<div id="wiz6-ai-status-sub-' + ambIdx + '-' + _subSi + '" style="display:none;background:#eef4ff;border-left:3px solid #2d7dd2;border-radius:0 8px 8px 0;padding:12px 14px;margin-bottom:14px;font-size: var(--fs-xs);color:#185fa5;line-height:1.6"></div>';
       h += '</div>';
