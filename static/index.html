@@ -10430,7 +10430,11 @@ function wiz6RenderAmbCard(idx) {
 
     '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px">' +
       htmlFotos +
-      (!jaAnalisou ? htmlBtnFoto : '') +
+      // Task #127: htmlBtnFoto so quando NAO tem fotos ainda — quando ja
+      // existem, o bloco abaixo (fotos.length > 0) renderiza os botoes
+      // compactos '+ Adicionar mais fotos' / Camera / Galeria. Antes os
+      // dois apareciam ao mesmo tempo.
+      ((!jaAnalisou && fotos.length === 0) ? htmlBtnFoto : '') +
     '</div>' +
 
     (fotos.length > 0
