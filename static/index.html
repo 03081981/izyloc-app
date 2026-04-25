@@ -4447,14 +4447,23 @@ function _wizCollectSnapshot() {
 function wizSaveSnapshot(immediate) {
   var ws = (typeof wizard !== 'undefined') ? wizard : null;
   if (!ws || !ws.inspectionId) return;
+  // Task #112: pin do id no momento da chamada — se o id mudar durante
+  // o debounce (usuario abriu outro laudo), abortamos para nao vazar
+  // dados de um laudo no snapshot de outro.
+  var _pinnedId = ws.inspectionId;
   var doSave = function() {
     try {
+      var ws2 = (typeof wizard !== 'undefined') ? wizard : null;
+      if (!ws2 || ws2.inspectionId !== _pinnedId) {
+        console.warn('[wizSaveSnapshot] aborting — inspectionId mudou de', _pinnedId, 'para', (ws2 && ws2.inspectionId));
+        return;
+      }
       var snap = _wizCollectSnapshot();
       var json = JSON.stringify(snap);
       // Skip se nada mudou
       if (json === _wizLastSavedJson) return;
       _wizLastSavedJson = json;
-      api('POST', '/api/inspections/' + ws.inspectionId + '/snapshot', {
+      api('POST', '/api/inspections/' + _pinnedId + '/snapshot', {
         wizard_snapshot: json,
         last_step: snap.step || 0,
       }).then(function(r){
@@ -5222,10 +5231,40 @@ function dashEditar(id) { if (typeof editarLaudo === "function") editarLaudo(id,
 // === EDIT MODE (Revisao step) ===
 async function editarLaudo(id, origin) {
   try {
+    // Task #112 (CRITICO SEGURANCA): RESET COMPLETO antes de carregar
+    // qualquer laudo. Evita que estado global de uma edicao anterior
+    // (especialmente _wizSnap, _fotoStore, _ambStore) vaze para o novo
+    // laudo via setTimeouts/Object.assign abaixo.
+    try {
+      window._wizSnap = null;
+      window._editSnapshot = null;
+      window._fotoStore = {};
+      window._ambStore = {};
+      window._wiz6Ambientes = [];
+      try { if (typeof _wiz6AmbDone !== 'undefined') _wiz6AmbDone = {}; } catch(_e1){}
+      try { if (typeof _wiz6AmbIdx !== 'undefined') _wiz6AmbIdx = 0; } catch(_e2){}
+      try { if (typeof _wizSaveTO !== 'undefined' && _wizSaveTO) { clearTimeout(_wizSaveTO); _wizSaveTO = null; } } catch(_e3){}
+      try { _wizLastSavedJson = ''; } catch(_e4){}
+      window.wizard = window.wizard || {};
+      wizard.itensData = {};
+      wizard.selectedRooms = [];
+      wizard.rooms = [];
+      wizard.parties = [];
+      wizard.inspectionId = id;        // pinned imediatamente
+      wizard.isEditing = true;
+      wizard.editOrigin = origin || 'dashboard';
+    } catch(_eRst){ console.warn('[editarLaudo] reset err', _eRst); }
     showLoading && showLoading("Carregando laudo...");
     const r = await api("GET", "/api/inspections/" + id);
     hideLoading && hideLoading();
-    if (!r || !r.ok) { alert("Erro ao carregar laudo para edição."); return; } if(r && r.wizard_snapshot){try{var _snap=(typeof r.wizard_snapshot==="string")?JSON.parse(r.wizard_snapshot):r.wizard_snapshot; if(_snap && typeof _snap==="object"){window._wizSnap=_snap; var _snapNames=(_snap.selectedRooms||[]).filter(Boolean); if(_snapNames.length){var _fs=_snap.fotoStore||{}; var _id=_snap.itensData||{}; r.rooms=_snapNames.map(function(nm, idx){var it=_id[idx]||_id[nm]||{}; var fotosArr=(it.fotos && it.fotos.length)?it.fotos:(_fs[nm]||[]); var phs=fotosArr.map(function(p){var _src=p.url||p.src||p.preview||(p.base64?("data:image/jpeg;base64,"+p.base64):""); return {id:p.id||"",url:_src,photo_url:_src,ai_description:p.desc||p.description||p.ai_description||"",description:p.desc||p.description||"",item_name:p.item||p.item_name||"",base64:p.base64||""};}); return {id:nm,name:nm,items:it.items||[],photos:phs,consolidated_text:it.consolidatedText||it.resumo||"",ai_description:it.consolidatedText||it.resumo||"",observation:it.obs||"",testes:it.testes||{},inventario:it.inventario||{}};});} if(_snap.fotoStore){window._fotoStore=Object.assign({},_snap.fotoStore);} try{console.log("[editarLaudo] snapshot synthed rooms = "+((r.rooms||[]).length)+" from "+_snapNames.length+" selectedRooms, first room items="+((r.rooms[0]||{}).items||[]).length+" photos="+((r.rooms[0]||{}).photos||[]).length+" desc="+(((r.rooms[0]||{}).consolidated_text||"").length));}catch(e){}}}catch(e){console.warn("[editarLaudo] snapshot parse failed",e);}}
+    if (!r || !r.ok) { alert("Erro ao carregar laudo para edição."); return; }
+    // Task #112: Validacao de integridade — backend deve devolver o mesmo id
+    if (r.id && String(r.id) !== String(id)) {
+      console.error('[editarLaudo] MISMATCH: pediu', id, 'recebeu', r.id);
+      alert('Erro de integridade ao carregar laudo. Tente novamente.');
+      return;
+    }
+    if(r && r.wizard_snapshot){try{var _snap=(typeof r.wizard_snapshot==="string")?JSON.parse(r.wizard_snapshot):r.wizard_snapshot; if(_snap && typeof _snap==="object"){_snap._forInspId=id; window._wizSnap=_snap; var _snapNames=(_snap.selectedRooms||[]).filter(Boolean); if(_snapNames.length){var _fs=_snap.fotoStore||{}; var _id=_snap.itensData||{}; r.rooms=_snapNames.map(function(nm, idx){var it=_id[idx]||_id[nm]||{}; var fotosArr=(it.fotos && it.fotos.length)?it.fotos:(_fs[nm]||[]); var phs=fotosArr.map(function(p){var _src=p.url||p.src||p.preview||(p.base64?("data:image/jpeg;base64,"+p.base64):""); return {id:p.id||"",url:_src,photo_url:_src,ai_description:p.desc||p.description||p.ai_description||"",description:p.desc||p.description||"",item_name:p.item||p.item_name||"",base64:p.base64||""};}); return {id:nm,name:nm,items:it.items||[],photos:phs,consolidated_text:it.consolidatedText||it.resumo||"",ai_description:it.consolidatedText||it.resumo||"",observation:it.obs||"",testes:it.testes||{},inventario:it.inventario||{}};});} if(_snap.fotoStore){window._fotoStore=Object.assign({},_snap.fotoStore);} try{console.log("[editarLaudo] snapshot synthed rooms = "+((r.rooms||[]).length)+" from "+_snapNames.length+" selectedRooms, first room items="+((r.rooms[0]||{}).items||[]).length+" photos="+((r.rooms[0]||{}).photos||[]).length+" desc="+(((r.rooms[0]||{}).consolidated_text||"").length));}catch(e){}}}catch(e){console.warn("[editarLaudo] snapshot parse failed",e);}}
     try { console.log("[editarLaudo] DADOS RECEBIDOS:", r); } catch(e){}
     try { console.log("[editarLaudo] rooms:", JSON.stringify((r.rooms||[]).map(function(x){return {id:x.id,name:x.name,items_count:(x.items||[]).length};}))); } catch(e){}
     // Snapshot local para resistir a resets por initRevisao / gotoWStep
@@ -5494,7 +5533,14 @@ async function editarLaudo(id, origin) {
     try { _applyEditUiToWstepRev(6); } catch(e){}
     setTimeout(function(){ try { wizard.rooms = _rooms; wizard.parties = _parties; console.log("[editarLaudo pre-render 200ms] rooms.length=", (wizard.rooms||[]).length); window._wiz6Ambientes = _rooms.map(function(rm){ return rm.name||''; }); wizard.selectedRooms = window._wiz6Ambientes.slice(); var __okInner=false; try { if(typeof window.initRevisao==="function"){ window.initRevisao(); __okInner=true; } } catch(_ei2){ try{console.warn("[editarLaudo inner] initRevisao",_ei2);}catch(__){} } if(!__okInner){ renderRevisaoFromWizard(_rooms, _parties, r); } _applyEditUiToWstepRev(6); } catch(e){} }, 200);
     setTimeout(function(){ try { wizard.rooms = _rooms; wizard.parties = _parties; window._wiz6Ambientes = _rooms.map(function(rm){ return rm.name||''; }); wizard.selectedRooms = window._wiz6Ambientes.slice(); var __okInner=false; try { if(typeof window.initRevisao==="function"){ window.initRevisao(); __okInner=true; } } catch(_ei2){ try{console.warn("[editarLaudo inner] initRevisao",_ei2);}catch(__){} } if(!__okInner){ renderRevisaoFromWizard(_rooms, _parties, r); } _applyEditUiToWstepRev(6); } catch(e){} }, 500);
-    setTimeout(function(){ try { if(window._wizSnap && window._wizSnap.itensData){ wizard.itensData = Object.assign({}, wizard.itensData||{}, window._wizSnap.itensData); } if(window._wizSnap && window._wizSnap.selectedRooms && window._wizSnap.selectedRooms.length){ wizard.selectedRooms = window._wizSnap.selectedRooms.slice(); window._wiz6Ambientes = wizard.selectedRooms.slice(); } if(window._wizSnap && window._wizSnap.fotoStore){ window._fotoStore = Object.assign({}, window._fotoStore||{}, window._wizSnap.fotoStore); } var _ok=false; try{ if(typeof window.initRevisao==="function"){ window.initRevisao(); _ok=true; } }catch(e){ try{console.warn("[editG] initRevisao",e);}catch(e2){} } if(!_ok){ try{ renderRevisaoFromWizard(wizard.rooms||[], wizard.parties||[], r); }catch(e){} } try{ _applyEditUiToWstepRev(6); }catch(e){} } catch(e){} }, 700);
+    setTimeout(function(){ try {
+      // Task #112: aplicar snap SO SE pertencer a este laudo (id matching)
+      var _snapOk = window._wizSnap && window._wizSnap._forInspId === id && wizard.inspectionId === id;
+      if(_snapOk && window._wizSnap.itensData){ wizard.itensData = Object.assign({}, wizard.itensData||{}, window._wizSnap.itensData); }
+      if(_snapOk && window._wizSnap.selectedRooms && window._wizSnap.selectedRooms.length){ wizard.selectedRooms = window._wizSnap.selectedRooms.slice(); window._wiz6Ambientes = wizard.selectedRooms.slice(); }
+      if(_snapOk && window._wizSnap.fotoStore){ window._fotoStore = Object.assign({}, window._fotoStore||{}, window._wizSnap.fotoStore); }
+      var _ok=false; try{ if(typeof window.initRevisao==="function"){ window.initRevisao(); _ok=true; } }catch(e){ try{console.warn("[editG] initRevisao",e);}catch(e2){} } if(!_ok){ try{ renderRevisaoFromWizard(wizard.rooms||[], wizard.parties||[], r); }catch(e){} } try{ _applyEditUiToWstepRev(6); }catch(e){}
+    } catch(e){} }, 700);
   } catch (e) {
     hideLoading && hideLoading();
     alert("Erro ao carregar laudo para edição.");
@@ -6246,6 +6292,9 @@ function hardResetWizard() {
   window._wiz7Locs = [];
   window._wiz7Tens = [];
   window._editSnapshot = null;
+  // Task #112: limpa snapshot e ambStore para evitar vazamento entre laudos
+  window._wizSnap = null;
+  window._ambStore = {};
 
   try { currentInspection = null; } catch(e) {}
   try {
