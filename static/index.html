@@ -1456,20 +1456,42 @@ canvas { display: block; }
   border-top: 1px solid rgba(255,255,255,0.15);
   margin: 0 0 16px 0;
 }
-/* Task #120: mobile — botao 'Comprar creditos' alinhado a direita do saldo */
+/* Task #120/#122: mobile — botao 'Comprar creditos' alinhado a direita do saldo,
+   suportando ate R$ 999,99 sem quebra */
 @media (max-width: 600px) {
   .db-card-top {
-    flex-wrap: nowrap;
+    display: flex;
+    flex-direction: row;
     align-items: center;
+    justify-content: space-between;
+    flex-wrap: nowrap;
+    gap: 8px;
   }
-  .db-saldo-valor { font-size: 22px; }
+  /* Coluna esquerda (saldo) — minimum content width sem flex-grow exagerado */
+  .db-card-top > div:first-child {
+    flex: 0 1 auto;
+    min-width: 0;
+  }
+  .db-saldo-label {
+    font-size: 10px;
+    white-space: nowrap;
+  }
+  /* Valor do saldo: nunca quebra, tamanho que cabe R$ 999,99 */
+  .db-saldo-valor {
+    font-size: 24px;
+    white-space: nowrap;
+    line-height: 1.1;
+  }
   .btn-comprar-mp {
     padding: 6px 10px;
     font-size: 11px;
     gap: 6px;
+    flex: 0 0 auto;
     flex-shrink: 0;
+    white-space: nowrap;
   }
-  .btn-comprar-mp-badge img { height: 26px; }
+  .btn-comprar-mp-badge img,
+  .btn-comprar-mp img { height: 22px !important; }
 }
 
 /* === MENU MOBILE (task #120) ============================== */
