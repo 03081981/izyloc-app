@@ -1866,6 +1866,38 @@ canvas { display: block; }
     line-height: 1.3;
   }
 }
+/* Task #130: verificacoes tecnicas em coluna no mobile (label em cima,
+   botoes embaixo em wrap horizontal) */
+@media (max-width: 600px) {
+  .wiz6-verif-row {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 6px !important;
+  }
+  .wiz6-verif-row > .wiz6-verif-row-inner {
+    flex-direction: column !important;
+    align-items: stretch !important;
+  }
+  .wiz6-verif-label {
+    font-size: 12px !important;
+    font-weight: 600 !important;
+    margin-bottom: 2px !important;
+    flex: none !important;
+  }
+  .wiz6-verif-btns {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 4px !important;
+    width: 100%;
+  }
+  .wiz6-verif-btns > button {
+    flex: 1 1 auto !important;
+    min-width: 70px;
+    font-size: 11px !important;
+    padding: 5px 8px !important;
+    text-align: center;
+  }
+}
 .loading-text { font-size: var(--fs-body); color: var(--text-2); font-weight: var(--fw-medium); }
 
 /* ─── TOAST ─── */
@@ -10372,9 +10404,9 @@ function wiz6RenderAmbCard(idx) {
     var obsVal = testesSalvos[t.k+'_obs'] || '';
     htmlTestes +=
       '<div style="padding:9px 12px;background:#f8fafc;border:0.5px solid #e2e8f0;border-radius:9px;margin-bottom:5px">' +
-        '<div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:' + (val!=='nt'?'6':'0') + 'px">' +
-          '<span style="font-size: var(--fs-xs);color:#1a2540;flex:1;min-width:0">' + t.n + '</span>' +
-          '<div style="display:flex;gap:4px;flex-wrap:wrap">' +
+        '<div class="wiz6-verif-row" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:' + (val!=='nt'?'6':'0') + 'px">' +
+          '<span class="wiz6-verif-label" style="font-size: var(--fs-xs);color:#1a2540;flex:1;min-width:0">' + t.n + '</span>' +
+          '<div class="wiz6-verif-btns" style="display:flex;gap:4px;flex-wrap:wrap">' +
             '<button onclick="wiz6Teste(' + idx + ',\'' + t.k + '\',\'nt\')" style="padding:4px 7px;border-radius:6px;font-size: var(--fs-tiny);border:0.5px solid;cursor:pointer;font-weight: var(--fw-medium);' + (val==='nt'?'background:#1e3a5f;color:#fff;border-color:#1e3a5f':'background:#f8fafc;color:#8898aa;border-color:#e2e8f0') + '">\u25a1 N&atilde;o testado</button>' +
             '<button onclick="wiz6Teste(' + idx + ',\'' + t.k + '\',\'ok\')" style="padding:4px 7px;border-radius:6px;font-size: var(--fs-tiny);border:0.5px solid;cursor:pointer;font-weight: var(--fw-medium);' + (val==='ok'?'background:#16a34a;color:#fff;border-color:#16a34a':'background:#f0fdf4;color:#166534;border-color:#bbf7d0') + '">\u2713 Funcionando</button>' +
             '<button onclick="wiz6Teste(' + idx + ',\'' + t.k + '\',\'nok\')" style="padding:4px 7px;border-radius:6px;font-size: var(--fs-tiny);border:0.5px solid;cursor:pointer;font-weight: var(--fw-medium);' + (val==='nok'?'background:#ef4444;color:#fff;border-color:#ef4444':'background:#fef2f2;color:#991b1b;border-color:#fca5a5') + '">\u2717 Com problema</button>' +
@@ -11386,9 +11418,9 @@ function wiz6BuildSuiteHtml(idx) {
       var val = testesSalvos[t.k] || 'nt';
       var obsVal = testesSalvos[t.k+'_obs'] || '';
       h += '<div style="padding:9px 12px;background:#f8fafc;border:0.5px solid #e2e8f0;border-radius:9px;margin-bottom:5px">';
-      h += '<div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:' + (val!=='nt'?'6':'0') + 'px">';
-      h += '<span style="font-size: var(--fs-xs);color:#1a2540;flex:1;min-width:0">' + t.n + '</span>';
-      h += '<div style="display:flex;gap:4px;flex-wrap:wrap">';
+      h += '<div class="wiz6-verif-row" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:' + (val!=='nt'?'6':'0') + 'px">';
+      h += '<span class="wiz6-verif-label" style="font-size: var(--fs-xs);color:#1a2540;flex:1;min-width:0">' + t.n + '</span>';
+      h += '<div class="wiz6-verif-btns" style="display:flex;gap:4px;flex-wrap:wrap">';
       h += '<button onclick="wiz6TesteSub(' + idx + ',\'' + subNome.replace(/'/g,"\\\'") + '\',\'' + t.k + '\',\'nt\')" style="padding:4px 7px;border-radius:6px;font-size: var(--fs-tiny);border:0.5px solid;cursor:pointer;font-weight: var(--fw-medium);' + (val==='nt'?'background:#1e3a5f;color:#fff;border-color:#1e3a5f':'background:#f8fafc;color:#8898aa;border-color:#e2e8f0') + '">\u25a1 N&atilde;o testado</button>';
       h += '<button onclick="wiz6TesteSub(' + idx + ',\'' + subNome.replace(/'/g,"\\\'") + '\',\'' + t.k + '\',\'ok\')" style="padding:4px 7px;border-radius:6px;font-size: var(--fs-tiny);border:0.5px solid;cursor:pointer;font-weight: var(--fw-medium);' + (val==='ok'?'background:#16a34a;color:#fff;border-color:#16a34a':'background:#f0fdf4;color:#166534;border-color:#bbf7d0') + '">\u2713 Funcionando</button>';
       h += '<button onclick="wiz6TesteSub(' + idx + ',\'' + subNome.replace(/'/g,"\\\'") + '\',\'' + t.k + '\',\'nok\')" style="padding:4px 7px;border-radius:6px;font-size: var(--fs-tiny);border:0.5px solid;cursor:pointer;font-weight: var(--fw-medium);' + (val==='nok'?'background:#ef4444;color:#fff;border-color:#ef4444':'background:#fef2f2;color:#991b1b;border-color:#fca5a5') + '">\u2717 Com problema</button>';
@@ -11764,12 +11796,28 @@ function _wiz6RenderSubsBlock(ambIdx, dados) {
       h += '</div>';
     });
     if (fotos.length < 9) {
-      h += '<label style="display:flex;flex-direction:column;align-items:center;justify-content:center;aspect-ratio:4/3;border:2px dashed #bfdbfe;border-radius:8px;cursor:pointer;background:#f8fbff">';
+      // Task #130: split desktop ('+ Foto') vs mobile (Camera/Galeria)
+      // — antes este bloco mostrava so o placeholder desktop em todos
+      //  os clientes (sub-ambientes adicionados pelo usuario como Closet,
+      //  Varanda, Despensa).
+      h += '<label class="foto-desktop-only" style="display:flex;flex-direction:column;align-items:center;justify-content:center;aspect-ratio:4/3;border:2px dashed #bfdbfe;border-radius:8px;cursor:pointer;background:#f8fbff">';
       h += '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="3" y="6" width="18" height="14" rx="2" fill="#dbeafe" stroke="#2d7dd2" stroke-width="1.5"/><circle cx="12" cy="13" r="4" fill="#93c5fd" stroke="#2d7dd2" stroke-width="1"/><circle cx="17" cy="9" r="1.5" fill="#2d7dd2"/></svg>';
       h += '<span style="font-size: var(--fs-xxs);color:#2d7dd2;font-weight: var(--fw-semibold);margin-top:6px">+ Foto</span>';
       h += '<span style="font-size:9px;color:#8898aa;margin-top:2px">vertical</span>';
       h += '<input type="file" accept="image/*" multiple style="display:none" onchange="wiz6AddFotosSub(this,' + ambIdx + ',\'' + subNome.replace(/'/g,"\\\'") + '\')">';
       h += '</label>';
+      h += '<div class="foto-mobile-only" style="flex-direction:row;aspect-ratio:4/3;gap:6px">';
+      h += '<label style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;border:2px dashed #bfdbfe;border-radius:8px;cursor:pointer;background:#f8fbff;padding:4px">';
+      h += '<span style="font-size:22px">📷</span>';
+      h += '<span style="font-size:10px;color:#2d7dd2;font-weight:600;margin-top:3px;text-align:center">Câmera</span>';
+      h += '<input type="file" accept="image/*" capture="environment" multiple style="display:none" onchange="wiz6AddFotosSub(this,' + ambIdx + ',\'' + subNome.replace(/'/g,"\\\'") + '\')">';
+      h += '</label>';
+      h += '<label style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;border:2px dashed #bfdbfe;border-radius:8px;cursor:pointer;background:#f8fbff;padding:4px">';
+      h += '<span style="font-size:22px">🖼️</span>';
+      h += '<span style="font-size:10px;color:#2d7dd2;font-weight:600;margin-top:3px;text-align:center">Galeria</span>';
+      h += '<input type="file" accept="image/*" multiple style="display:none" onchange="wiz6AddFotosSub(this,' + ambIdx + ',\'' + subNome.replace(/'/g,"\\\'") + '\')">';
+      h += '</label>';
+      h += '</div>';
     }
     h += '</div>';
     // IA BUTTON
@@ -11811,10 +11859,10 @@ function _wiz6RenderSubsBlock(ambIdx, dados) {
       var val = (sd.testes && sd.testes[t.k]) || 'nt';
       var obsVal = (sd.testes && sd.testes[t.k+'_obs']) || '';
       var obsId = 'obs-sub-' + ambIdx + '-' + subNome.replace(/\W/g,'_') + '-' + t.k;
-      h += '<div style="padding:7px 0;border-bottom:0.5px solid #f1f5f9">';
-      h += '<div style="display:flex;align-items:center;gap:4px">';
-      h += '<span style="flex:1;font-size: var(--fs-xs);color:#1a2540">' + t.n + '</span>';
-      h += '<div style="display:flex;gap:3px">';
+      h += '<div class="wiz6-verif-row" style="padding:7px 0;border-bottom:0.5px solid #f1f5f9">';
+      h += '<div class="wiz6-verif-row-inner" style="display:flex;align-items:center;gap:4px">';
+      h += '<span class="wiz6-verif-label" style="flex:1;font-size: var(--fs-xs);color:#1a2540">' + t.n + '</span>';
+      h += '<div class="wiz6-verif-btns" style="display:flex;gap:3px">';
       [{v:'nt',label:'\u25a1 N\u00e3o testado'},{v:'ok',label:'\u2713 Funcionando'},{v:'nao',label:'\u2717 Com problema'},{v:'nexiste',label:'N\u00e3o existe'}].forEach(function(btn) {
         var isAtivo = val === btn.v;
         var cor = isAtivo ? (btn.v==='nt'?'background:#1e3a5f;color:#fff;border:0.5px solid #1e3a5f':btn.v==='ok'?'background:#16a34a;color:#fff;border:0.5px solid #16a34a':btn.v==='nao'?'background:#ef4444;color:#fff;border:0.5px solid #ef4444':'background:#6b7280;color:#fff;border:0.5px solid #6b7280') : (btn.v==='nt'?'background:#f1f5f9;color:#64748b;border:0.5px solid #cbd5e1':btn.v==='ok'?'background:#f0fdf4;color:#166534;border:0.5px solid #bbf7d0':btn.v==='nao'?'background:#fef2f2;color:#991b1b;border:0.5px solid #fca5a5':'background:#f8fafc;color:#8898aa;border:0.5px solid #e2e8f0');
