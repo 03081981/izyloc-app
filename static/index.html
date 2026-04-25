@@ -1729,6 +1729,13 @@ canvas { display: block; }
   margin-bottom: 14px;
 }
 @keyframes spin { to { transform: rotate(360deg); } }
+/* Task #110: pulso na mensagem 'IA analisando...' */
+@keyframes pulso {
+  0%   { opacity: 1; }
+  50%  { opacity: 0.3; }
+  100% { opacity: 1; }
+}
+.ia-analisando { animation: pulso 1.5s ease-in-out infinite; }
 .loading-text { font-size: var(--fs-body); color: var(--text-2); font-weight: var(--fw-medium); }
 
 /* ─── TOAST ─── */
@@ -10935,6 +10942,7 @@ function wiz6AnalisarBatchSub(idx, subNome, si, modo = 'convencional') {
   var statusEl = document.getElementById('wiz6-ai-status-sub-' + idx + '-' + si);
   if (statusEl) {
     statusEl.style.display = 'block';
+    statusEl.classList.add('ia-analisando');  // task #110: pulso
     statusEl.innerHTML = '\u23f3 IA analisando ' + fotos.length + ' foto' + (fotos.length !== 1 ? 's' : '') + ' de ' + subNome + '... aguarde.';
   }
   var MAX_FOTOS_IA = 18;
@@ -11002,7 +11010,7 @@ function wiz6AnalisarBatchSub(idx, subNome, si, modo = 'convencional') {
     sd._analyzing = false;  // task #107
     console.error('Erro batch sub:', err);
     statusEl = document.getElementById('wiz6-ai-status-sub-' + idx + '-' + si);
-    if (statusEl) { statusEl.innerHTML = '\u26a0 Erro ao analisar. Tente novamente.'; statusEl.style.background = '#fef2f2'; statusEl.style.color = '#991b1b'; }
+    if (statusEl) { statusEl.classList.remove('ia-analisando'); statusEl.innerHTML = '\u26a0 Erro ao analisar. Tente novamente.'; statusEl.style.background = '#fef2f2'; statusEl.style.color = '#991b1b'; }
     sd.jaAnalisou = false;
     wiz6RenderAmbCard(_wiz6AmbIdx);
   });
@@ -11389,6 +11397,7 @@ function wiz6AnalisarBatch(ambIdx, modo = 'convencional') {
   var statusEl = document.getElementById('wiz6-ai-status-' + ambIdx);
   if (statusEl) {
     statusEl.style.display = 'block';
+    statusEl.classList.add('ia-analisando');  // task #110: pulso
     statusEl.innerHTML = '\u23f3 IA analisando ' + fotos.length + ' foto' + (fotos.length!==1?'s':'') + ' do ' + nome + '... aguarde.';
   }
 
@@ -11428,6 +11437,7 @@ function wiz6AnalisarBatch(ambIdx, modo = 'convencional') {
       if (!wizard.itensData[ambIdx]) wizard.itensData[ambIdx] = {};
       wizard.itensData[ambIdx].jaAnalisou = false;
       if (statusEl) {
+        statusEl.classList.remove('ia-analisando');  // task #110
         statusEl.innerHTML = '\u26a0 Saldo insuficiente';
         statusEl.style.background = '#fef2f2';
         statusEl.style.color = '#991b1b';
@@ -11445,6 +11455,7 @@ function wiz6AnalisarBatch(ambIdx, modo = 'convencional') {
       if (!wizard.itensData[ambIdx]) wizard.itensData[ambIdx] = {};
       wizard.itensData[ambIdx].jaAnalisou = false;
       if (statusEl) {
+        statusEl.classList.remove('ia-analisando');  // task #110
         statusEl.innerHTML = '\u26a0 IA sobrecarregada - saldo estornado';
         statusEl.style.background = '#fef2f2';
         statusEl.style.color = '#991b1b';
@@ -11571,6 +11582,7 @@ function wiz6AnalisarBatch(ambIdx, modo = 'convencional') {
   .catch(function(err) {
     console.error('Erro batch:', err);
     if (statusEl) {
+      statusEl.classList.remove('ia-analisando');  // task #110
       statusEl.innerHTML = '\u26a0 Erro ao analisar. Tente novamente.';
       statusEl.style.background = '#fef2f2';
       statusEl.style.color = '#991b1b';
