@@ -5181,6 +5181,308 @@ class DeleteAccountHandler(BaseHandler):
                 pass
 
 
+# ============================================================================
+# Task #143 — Helper para reconstruir rooms_list rico a partir do
+# wizard_snapshot, espelhando a montagem de _ambData / _ambArr feita pelo
+# cliente em static/index.html (ver L7600-7672 do index.html).
+#
+# Motivacao: SendToAutentiqueHandler regenera o PDF e antes lia apenas
+# a tabela rooms (sem isSuite/subAmbientes/testes_nomes). Isso quebrava
+# Suite/sub-ambientes e mostrava verifs com keys cruas no PDF do
+# Autentique. Esta funcao garante que o backend tenha a mesma riqueza
+# de dados que o cliente envia em "Baixar PDF".
+# ============================================================================
+
+# Espelha _eMap (static/index.html L7575). Mapeia codigo do estado
+# para o rotulo humanizado mostrado no PDF.
+_E_MAP = {
+    'ok': 'Funcionando',
+    'nok': 'Não Funcionando',
+    'nao': 'Não Funcionando',
+    'nt': 'Não Testado',
+    'na': 'N/A',
+    'nexiste': 'N/A',
+}
+
+# Espelha _stdNomes (static/index.html L7606). Nomes "humanizados" das
+# verificacoes tecnicas padrao. Usado quando o snapshot nao traz
+# explicitamente o testesNomes para uma key.
+_STD_NOMES = {
+    'porta': 'Porta — maçaneta e fechadura',
+    'chaves': 'Chaves da porta',
+    'tomadas': 'Tomadas e interruptores',
+    'ac': 'Ar condicionado',
+    'janela': 'Janela — abre, fecha e trava',
+    'torneira': 'Torneira — abre e fecha',
+    'chuveiro': 'Chuveiro — pressão e temperatura',
+    'descarga': 'Descarga — funciona',
+    'ralo': 'Ralo — escoa bem',
+    'iluminacao': 'Iluminação',
+    'piso': 'Piso',
+    'teto': 'Teto',
+    'parede': 'Parede',
+    'janelas': 'Janelas',
+    'portas': 'Portas',
+}
+
+
+def _verifs_from_testes(testes, testes_extras):
+    """Converte um dict {key: 'ok'|'nok'|...} + lista de extras
+    [{k, n}] em (verificacoes, verificacoes_obs, testes_nomes) — mesma
+    saida que o cliente monta em _verif/_verifObs/_tNomes.
+    """
+    v = {}
+    vo = {}
+    tn = {}
+    for k, val in (testes or {}).items():
+        if not val:
+            continue
+        if isinstance(k, str) and len(k) > 4 and k.endswith('_obs'):
+            vo[k[:-4]] = val
+        else:
+            v[k] = _E_MAP.get(val, val)
+    for ex in (testes_extras or []):
+        if isinstance(ex, dict) and ex.get('k'):
+            tn[ex['k']] = ex.get('n') or ex['k']
+    # Preenche nomes padrao para keys que nao tem nome custom
+    for sk, sn in _STD_NOMES.items():
+        if sk not in tn:
+            tn[sk] = sn
+    return v, vo, tn
+
+
+def _photo_src_from_snap(f):
+    """Retorna data: URL para foto do snapshot. Espelha a logica do
+    cliente: prefere base64 -> data URL, senao usa preview."""
+    if not isinstance(f, dict):
+        return ''
+    if f.get('base64'):
+        mime = f.get('mime') or 'image/jpeg'
+        return 'data:' + mime + ';base64,' + f['base64']
+    return f.get('preview') or f.get('url') or f.get('src') or ''
+
+
+def _add_amb_fotos(amb_entry_fotos, item_nome, fotos_list, resumo, estado):
+    """Acrescenta fotos no amb_entry['fotos'] (formato _ambArr). Apenas
+    a primeira foto carrega resumo/estado — espelha o cliente L7647."""
+    fotos_list = fotos_list or []
+    estado = estado or 'Bom'
+    for fi, f in enumerate(fotos_list):
+        amb_entry_fotos.append({
+            'item': item_nome,
+            'estado': estado if fi == 0 else '',
+            'desc': resumo if fi == 0 else '',
+            'src': _photo_src_from_snap(f),
+        })
+    if not fotos_list and resumo:
+        amb_entry_fotos.append({
+            'item': item_nome, 'estado': estado, 'desc': resumo, 'src': '',
+        })
+
+
+def _build_rich_rooms_from_snapshot(insp):
+    """Le insp['wizard_snapshot'] (JSON) e devolve uma tupla
+    (rooms_list, ambientes_json_str, used_snapshot, stats) com:
+
+    - rooms_list: lista de dicts no mesmo formato que o
+      GeneratePDFHandler.post produz (com isSuite, subAmbientes,
+      verificacoes, verificacoes_obs/verificacoesObs, testes_nomes/testesNomes,
+      consolidated_text, observacoes, inventario, amb_photos).
+    - ambientes_json_str: JSON string equivalente ao _ambArr do cliente,
+      pronto para ser usado como insp['ambientes_json'] pelo pdf_service
+      (com fotos data:URL inline indexadas por nome de sub-ambiente).
+    - used_snapshot: True se a reconstrucao foi feita; False se o
+      snapshot estava ausente/invalido.
+    - stats: dict com {'rooms', 'suites', 'sub_ambientes'} para log.
+
+    Quando used_snapshot=False o chamador deve usar o caminho legacy
+    (le apenas tabela rooms/room_items).
+    """
+    stats = {'rooms': 0, 'suites': 0, 'sub_ambientes': 0}
+    snap_raw = insp.get('wizard_snapshot') if isinstance(insp, dict) else None
+    if not snap_raw:
+        return None, None, False, stats
+    try:
+        snap = json.loads(snap_raw) if isinstance(snap_raw, str) else snap_raw
+    except Exception:
+        return None, None, False, stats
+    if not isinstance(snap, dict):
+        return None, None, False, stats
+    selected_rooms = snap.get('selectedRooms') or []
+    itens_data = snap.get('itensData') or {}
+    foto_store = snap.get('fotoStore') or {}
+    if not isinstance(selected_rooms, list) or not selected_rooms:
+        return None, None, False, stats
+
+    rooms_list = []
+    amb_arr = []
+
+    for i, room_name in enumerate(selected_rooms):
+        # itensData pode ter chaves string ou int (depende de como o JSON
+        # foi serializado — ambos sao usados no front/back)
+        d = itens_data.get(str(i))
+        if d is None:
+            d = itens_data.get(i)
+        if d is None and isinstance(itens_data, dict):
+            # alguns snapshots indexam por nome do ambiente
+            d = itens_data.get(room_name)
+        d = d or {}
+
+        # === Verificacoes do ambiente principal ===
+        v, vo, tn = _verifs_from_testes(
+            d.get('testes') or {}, d.get('testesExtras') or []
+        )
+
+        # === Fotos via fotoStore (chave por nome de ambiente) ===
+        fs = foto_store.get(room_name) or []
+        first_desc = ''
+        if fs and isinstance(fs, list) and isinstance(fs[0], dict):
+            first_desc = fs[0].get('desc') or ''
+        consolidated_text = (
+            first_desc
+            or d.get('resumo')
+            or d.get('consolidatedText')
+            or d.get('consolidated_text')
+            or d.get('resumoIA')
+            or d.get('aiDescription')
+            or ''
+        )
+
+        amb_photos = []
+        for f in fs:
+            if not isinstance(f, dict):
+                continue
+            amb_photos.append({
+                'id': f.get('id') or f.get('photoId') or '',
+                'url': f.get('url') or f.get('photoUrl') or f.get('src') or '',
+                'ai_description': (f.get('desc') or f.get('aiDescription')
+                                   or f.get('ai_description')
+                                   or f.get('descricao') or ''),
+                'condition': f.get('condition') or f.get('estado') or '',
+                'observation': f.get('obs') or f.get('observation') or '',
+            })
+
+        is_suite = bool(d.get('isSuite'))
+        sub_names = d.get('subAmbientes') or []
+        subs_data = d.get('subs') or {}
+
+        # === Inventario do ambiente principal ===
+        inv = d.get('inventario') or {}
+        inv_extras = d.get('inventarioExtras') or []
+        # Aproximacao de inventarioNomes: usa as keys com qty>0 do inventario
+        # (o cliente faz uma derivacao mais sofisticada via _getNomesInventario,
+        # mas pra geracao do PDF as keys com qty>0 sao suficientes pois o
+        # pdf_service ja filtra)
+        inv_nomes = list(inv.keys()) if isinstance(inv, dict) else []
+
+        # === room_dict (mesmo formato do GeneratePDFHandler.post) ===
+        room_dict = {
+            'id': '',
+            'name': room_name,
+            'items': [],
+            # snake_case (lido pelo merge da L1739-1744 do pdf_service)
+            'verificacoes': v,
+            'verificacoes_obs': vo,
+            'testes_nomes': tn,
+            # camelCase tambem (lido pelo branch !isSuite+subAmbientes
+            # da L1779-1781 do pdf_service)
+            'verificacoesObs': vo,
+            'testesNomes': tn,
+            'observacoes': d.get('obs') or '',
+            'inventario': inv,
+            'inventarioExtras': inv_extras,
+            'inventarioNomes': inv_nomes,
+            'consolidated_text': consolidated_text,
+            'amb_photos': amb_photos,
+        }
+
+        # === amb_entry (formato _ambArr) — vai pro ambientes_json ===
+        amb_entry = {
+            'nome': room_name,
+            'fotos': [],
+            # _ambArr.verificacoes guarda as keys cruas (ok/nok/...) — eh
+            # como o cliente faz; o mapeamento humanizado vem via
+            # rooms_data[i]['verificacoes'] no merge do pdf_service.
+            'verificacoes': {} if is_suite else (d.get('testes') or {}),
+            'observacoes': d.get('obs') or '',
+            'inventario': inv,
+            'inventarioExtras': inv_extras,
+            'inventarioNomes': inv_nomes,
+        }
+
+        # === Caso Suite ou ambiente com sub-ambientes ===
+        if (is_suite or sub_names) and subs_data:
+            stats['suites'] += 1
+            sub_objs = []
+
+            # Quando NAO eh Suite mas tem subAmbientes, o cliente tambem
+            # adiciona as fotos do ambiente PAI no _ambArr (ver L7647)
+            if not is_suite:
+                _add_amb_fotos(
+                    amb_entry['fotos'], room_name,
+                    d.get('fotos') or [],
+                    d.get('resumo') or '',
+                    d.get('estado_geral') or 'Bom',
+                )
+
+            for sub_n in sub_names:
+                sd = subs_data.get(sub_n) or {}
+                sv, svo, stn = _verifs_from_testes(
+                    sd.get('testes') or {}, sd.get('testesExtras') or []
+                )
+                sub_inv = sd.get('inventario') or {}
+                sub_inv_extras = sd.get('inventarioExtras') or []
+                sub_inv_nomes = (list(sub_inv.keys())
+                                 if isinstance(sub_inv, dict) else [])
+                sub_objs.append({
+                    'nome': sub_n,
+                    'verificacoes': sv,
+                    # camelCase: pdf_service L1810 le 'verificacoesObs'
+                    'verificacoesObs': svo,
+                    'verificacoes_obs': svo,
+                    'testesNomes': stn,
+                    'testes_nomes': stn,
+                    'observacoes': sd.get('obs') or '',
+                    'resumo': sd.get('resumo') or '',
+                    'inventario': sub_inv,
+                    'inventarioExtras': sub_inv_extras,
+                    'inventarioNomes': sub_inv_nomes,
+                })
+                stats['sub_ambientes'] += 1
+                # Adiciona fotos do sub-ambiente no amb_entry['fotos'].
+                # IMPORTANTE: 'item' aqui e o NOME DO SUB-AMBIENTE — eh
+                # como o pdf_service indexa _foto_lookup (ver L1764-1770).
+                _add_amb_fotos(
+                    amb_entry['fotos'], sub_n,
+                    sd.get('fotos') or [],
+                    sd.get('resumo') or '',
+                    sd.get('estado_geral') or 'Bom',
+                )
+
+            room_dict['isSuite'] = is_suite
+            room_dict['subAmbientes'] = sub_objs
+
+        else:
+            # === Ambiente regular (sem sub-ambientes) ===
+            _add_amb_fotos(
+                amb_entry['fotos'], room_name,
+                d.get('fotos') or [],
+                d.get('resumo') or '',
+                d.get('estado_geral') or 'Bom',
+            )
+
+        rooms_list.append(room_dict)
+        amb_arr.append(amb_entry)
+        stats['rooms'] += 1
+
+    try:
+        amb_json = json.dumps(amb_arr, ensure_ascii=False)
+    except Exception:
+        amb_json = None
+
+    return rooms_list, amb_json, True, stats
+
+
 # ─── Autentique: envio de laudo para assinatura digital ──────────────────────
 class SendToAutentiqueHandler(BaseHandler):
     def post(self, inspection_id):
@@ -5528,7 +5830,18 @@ class SendToAutentiqueHandler(BaseHandler):
 
     def _gerar_pdf_bytes(self, conn, insp):
         """Reusa generate_pdf() do pdf_service para gerar o PDF em disco e
-        retornar os bytes. Mesma logica do GeneratePDFHandler.get()."""
+        retornar os bytes.
+
+        Task #143: agora reconstroi rooms_list rico a partir de
+        wizard_snapshot (mesma riqueza que o cliente envia em ambData
+        no fluxo de baixar PDF), garantindo que Suite/sub-ambientes,
+        nomes humanizados das verificacoes, fotos por sub-ambiente e
+        consolidated_text sejam identicos ao PDF baixado.
+
+        Fallback: se wizard_snapshot estiver ausente/invalido (laudos
+        antigos), volta ao comportamento legacy lendo apenas tabelas
+        rooms/room_items.
+        """
         try:
             from pdf_service import generate_pdf as _gen_pdf
         except Exception as _e:
@@ -5536,19 +5849,47 @@ class SendToAutentiqueHandler(BaseHandler):
             return None
         try:
             insp_id = insp.get('id')
-            rooms = conn.execute(
-                'SELECT * FROM rooms WHERE inspection_id=? ORDER BY order_num',
-                (insp_id,)
-            ).fetchall()
-            rooms_list = []
-            for room in rooms:
-                room_dict = self.row_to_dict(room)
-                items = conn.execute(
-                    'SELECT * FROM room_items WHERE room_id=? ORDER BY created_at',
-                    (room['id'],)
+
+            # === Tenta usar wizard_snapshot (caminho rico) ===
+            rooms_list, amb_json, used_snap, _stats = _build_rich_rooms_from_snapshot(insp)
+
+            # Log de diagnostico (task #143)
+            try:
+                print(
+                    '[AUTENTIQUE_PDF] insp=' + str(insp_id)[:12]
+                    + ' usando snapshot? ' + ('sim' if used_snap else 'nao')
+                    + ' — ' + str(_stats.get('rooms', 0)) + ' rooms, '
+                    + str(_stats.get('suites', 0)) + ' suites, '
+                    + str(_stats.get('sub_ambientes', 0)) + ' sub-ambientes',
+                    flush=True,
+                )
+            except Exception:
+                pass
+
+            if used_snap:
+                # Sobrescreve insp['ambientes_json'] com a versao
+                # reconstruida do snapshot — essa eh a fonte canonica
+                # mais atualizada (autosave grava no snapshot a cada
+                # mudanca via PUT /api/inspections/{id}/snapshot).
+                insp = dict(insp)
+                if amb_json:
+                    insp['ambientes_json'] = amb_json
+            else:
+                # === Caminho legacy: le apenas rooms + room_items ===
+                rooms = conn.execute(
+                    'SELECT * FROM rooms WHERE inspection_id=? ORDER BY order_num',
+                    (insp_id,)
                 ).fetchall()
-                room_dict['items'] = self.rows_to_list(items)
-                rooms_list.append(room_dict)
+                rooms_list = []
+                for room in rooms:
+                    room_dict = self.row_to_dict(room)
+                    items = conn.execute(
+                        'SELECT * FROM room_items WHERE room_id=? ORDER BY created_at',
+                        (room['id'],)
+                    ).fetchall()
+                    room_dict['items'] = self.rows_to_list(items)
+                    rooms_list.append(room_dict)
+
             sigs = conn.execute(
                 'SELECT * FROM signatures WHERE inspection_id=?',
                 (insp_id,)
@@ -5565,7 +5906,13 @@ class SendToAutentiqueHandler(BaseHandler):
             with open(pdf_path, 'rb') as f:
                 return f.read()
         except Exception as _e:
+            import traceback as _tb
             print('[AUTENTIQUE] PDF_ERROR: ' + str(_e), flush=True)
+            try:
+                print('[AUTENTIQUE] PDF_ERROR_TRACEBACK: '
+                      + _tb.format_exc(), flush=True)
+            except Exception:
+                pass
             return None
 
 
