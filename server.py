@@ -63,7 +63,7 @@ load_dotenv()
 SECRET_KEY = os.environ.get('SECRET_KEY', 'izylo-secret-key-change-in-production-2024')
 MP_ACCESS_TOKEN = os.environ.get('MP_ACCESS_TOKEN', '')
 MP_WEBHOOK_SECRET = os.environ.get('MP_WEBHOOK_SECRET', '')
-APP_BASE_URL = os.environ.get('APP_BASE_URL', 'https://izyloc-app-production.up.railway.app')
+APP_BASE_URL = os.environ.get('APP_BASE_URL', 'https://app.izylaudo.com.br')
 AUTENTIQUE_TOKEN = os.environ.get('AUTENTIQUE_TOKEN', '7800e349d2e4353904f7749a3584af5d5d4ad35a3749df945cc84b6c5565893a')
 GEMINI_API_KEY = os.environ.get('GEMINI_API_KEY', '')
 UPLOAD_DIR = os.path.join(os.path.dirname(__file__), 'uploads')
@@ -309,7 +309,9 @@ def generate_verification_token():
 
 def enqueue_verification_email(conn, user_id, to_email, name, vtoken):
     """Enfileira e-mail de verificacao na email_queue."""
-    verify_link = f'https://izyloc-app-production.up.railway.app/verify-email?token={vtoken}'
+    # Task #153: usa APP_BASE_URL (env var) em vez de hardcoded — facilita
+    # migracao de dominio e mantem consistencia com o resto do codigo.
+    verify_link = f'{APP_BASE_URL.rstrip("/")}/verify-email?token={vtoken}'
     subject = 'Confirme seu e-mail e ganhe R$ 5,00 para testar o izyLAUDO!'
     body_html = f'''<!DOCTYPE html>
 <html><body style="font-family:Arial,sans-serif;max-width:600px;
@@ -2645,10 +2647,9 @@ class AdminForgotPasswordHandler(tornado.web.RequestHandler):
         alphabet = _string.ascii_letters + _string.digits + '!@#$'
         nova = ''.join(_secrets.choice(alphabet) for _ in range(12))
 
-        base_url = os.environ.get(
-            'APP_BASE_URL',
-            'https://izyloc-app-production.up.railway.app',
-        )
+        # Task #153: usa a constante global APP_BASE_URL (que ja faz o
+        # fallback pra app.izylaudo.com.br se a env var nao estiver setada)
+        base_url = APP_BASE_URL
         _html = (
             '<div style="font-family:Arial,sans-serif;max-width:480px;margin:0 auto;">'
             '<div style="background:#1e3a5f;padding:24px;border-radius:8px 8px 0 0;">'
