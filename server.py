@@ -5394,6 +5394,114 @@ _STD_NOMES = {
 }
 
 
+# Task #149: tabela de inventario padrao por tipo de ambiente.
+# Espelho 1:1 do _itensPorAmb em static/index.html L10692-10806. O cliente
+# usa _getNomesInventario(nomeAmb) para inferir os nomes humanos do
+# inventario padrao a serem exibidos no PDF; antes do task #149 o backend
+# usava list(inventario.keys()) que retornava as keys cruas
+# (lençóis_jogo_qty, lençóis_jogo_obs, ...) e o pdf_service nao
+# conseguia mapear de volta pro nome humano — resultado: itens padrao
+# sumiam do PDF do Autentique, restando so os "extras" custom.
+_INVENTARIO_PADRAO = {
+    'sala': [
+        'TV', 'Sofá', 'Poltrona', 'Mesa de centro', 'Mesa de jantar',
+        'Cadeiras', 'Tapete', 'Controle remoto TV', 'Controle remoto AC',
+    ],
+    'cozinha': [
+        'Pratos fundos', 'Pratos rasos', 'Pratos de sobremesa', 'Copos',
+        'Taças', 'Xícaras', 'Colheres', 'Garfos', 'Facas', 'Panelas',
+        'Frigideiras', 'Escorredor', 'Abridor de lata', 'Saca-rolhas',
+        'Utensilios de cozinha', 'Cafeteira', 'Liquidificador',
+        'Torradeira', 'Micro-ondas',
+    ],
+    'dormit': [
+        'Cama (estrutura/cabeceira)', 'Colchão', 'Travesseiros',
+        'Fronhas', 'Lençóis (jogo)', 'Cobertores', 'Edredom',
+        'Toalhas de banho', 'Toalhas de rosto', 'Cabides',
+    ],
+    'suite': [
+        'Cama (estrutura/cabeceira)', 'Colchão', 'Travesseiros',
+        'Fronhas', 'Lençóis (jogo)', 'Cobertores', 'Edredom',
+        'Toalhas de banho', 'Toalhas de rosto', 'Cabides',
+    ],
+    'banheiro': [
+        'Toalhas de banho', 'Toalhas de rosto', 'Tapete de banheiro',
+        'Secador de cabelo',
+    ],
+    'closet': [
+        'Cabides', 'Gavetas/prateleiras', 'Sapateira', 'Espelho',
+    ],
+    'varanda': [
+        'Mesa', 'Cadeiras', 'Espreguicadeira', 'Guarda-sol', 'Rede',
+    ],
+    'lazer': [
+        'Boias', 'Brinquedos aquáticos', 'Rodo de piscina',
+        'Peneira/puçá', 'Grelha de churrasqueira', 'Espetos', 'Pegador',
+        'Faca de churrasco', 'Tábua de corte', 'Mesa', 'Cadeiras',
+        'Espreguicadeiras', 'Guarda-sol', 'Rede',
+    ],
+    'servico': [
+        'Vassoura', 'Rodo', 'Esfregao', 'Pano de chão', 'Balde',
+        'Detergente', 'Esponja',
+    ],
+    'escritorio': [
+        'Mesa', 'Cadeira executiva', 'Computador', 'Impressora',
+        'Luminária',
+    ],
+    'default': [
+        'Chaves do imóvel', 'Controles remotos', 'Manual de equipamentos',
+        'Guia da casa',
+    ],
+}
+
+
+def _inventario_tipo_for_amb(nome_amb):
+    """Replica a logica do switch em _getNomesInventario (static/index.html
+    L10807-10817). Determina o "tipo" do ambiente a partir do nome."""
+    n = (nome_amb or '').lower()
+    if 'banheiro' in n:
+        return 'banheiro'
+    if 'suíte' in n or 'suite' in n:
+        return 'suite'
+    if 'dorm' in n or 'quarto' in n:
+        return 'dormit'
+    if 'cozinha' in n:
+        return 'cozinha'
+    if 'sala' in n:
+        return 'sala'
+    if 'closet' in n:
+        return 'closet'
+    if 'varanda' in n:
+        return 'varanda'
+    if 'lazer' in n or 'piscina' in n or 'churras' in n:
+        return 'lazer'
+    if 'escrit' in n:
+        return 'escritorio'
+    if 'servi' in n or 'lavand' in n:
+        return 'servico'
+    return 'default'
+
+
+def _build_inventario_nomes(nome_amb, item_data):
+    """Replica _getNomesInventario + _filterNomesInv do client. Retorna
+    a lista de nomes de inventario padrao para o tipo de ambiente,
+    filtrada removendo os que o usuario excluiu via X (registrado em
+    item_data.inventarioRemovidos)."""
+    tipo = _inventario_tipo_for_amb(nome_amb)
+    nomes = _INVENTARIO_PADRAO.get(tipo) or _INVENTARIO_PADRAO['default']
+    removidos = (item_data or {}).get('inventarioRemovidos') or []
+    if not removidos:
+        return list(nomes)
+    rm_set = set(str(r) for r in removidos)
+    out = []
+    for item in nomes:
+        # Mesma normalizacao do client (static/index.html L10829)
+        key = re.sub(r'[\s\/\(\)\.]+', '_', str(item)).lower()
+        if key not in rm_set:
+            out.append(item)
+    return out
+
+
 def _verifs_from_testes(testes, testes_extras):
     """Converte um dict {key: 'ok'|'nok'|...} + lista de extras
     [{k, n}] em (verificacoes, verificacoes_obs, testes_nomes) — mesma
@@ -5564,11 +5672,13 @@ def _build_rich_rooms_from_snapshot(insp):
         # === Inventario do ambiente principal ===
         inv = d.get('inventario') or {}
         inv_extras = d.get('inventarioExtras') or []
-        # Aproximacao de inventarioNomes: usa as keys com qty>0 do inventario
-        # (o cliente faz uma derivacao mais sofisticada via _getNomesInventario,
-        # mas pra geracao do PDF as keys com qty>0 sao suficientes pois o
-        # pdf_service ja filtra)
-        inv_nomes = list(inv.keys()) if isinstance(inv, dict) else []
+        # Task #149: usa _build_inventario_nomes (porte de
+        # _getNomesInventario+_filterNomesInv do client) para inferir os
+        # nomes humanos do inventario padrao a partir do tipo de ambiente.
+        # Antes: list(inv.keys()) -> retornava as keys cruas
+        # ('lençóis_jogo_qty', etc) e o pdf_service nao conseguia
+        # mapear pro nome humano, sumindo todos os itens padrao do PDF.
+        inv_nomes = _build_inventario_nomes(room_name, d)
 
         # === room_dict (mesmo formato do GeneratePDFHandler.post) ===
         room_dict = {
@@ -5627,8 +5737,10 @@ def _build_rich_rooms_from_snapshot(insp):
                 )
                 sub_inv = sd.get('inventario') or {}
                 sub_inv_extras = sd.get('inventarioExtras') or []
-                sub_inv_nomes = (list(sub_inv.keys())
-                                 if isinstance(sub_inv, dict) else [])
+                # Task #149: mesma logica do _build_inventario_nomes
+                # para sub-ambientes (Suite -> Dormitorio suite -> tem
+                # tipo 'suite', Banheiro suite -> 'banheiro', etc).
+                sub_inv_nomes = _build_inventario_nomes(sub_n, sd)
                 sub_objs.append({
                     'nome': sub_n,
                     'verificacoes': sv,
