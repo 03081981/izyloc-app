@@ -2938,6 +2938,51 @@ textarea.obs-geral{width:100%;background:#f8fafc;border:.5px solid #dce3ed;borde
   .pwa-hint-login { font-size: 11px; padding: 12px 14px; }
   .pwa-hint-card { font-size: 12px; padding: 10px 38px 10px 14px; }
 }
+
+/* Task #158: botao olho 👁 pra mostrar/ocultar senha (login + cadastro) */
+.pw-wrap {
+  position: relative;
+  display: block;
+}
+.pw-wrap .form-input {
+  /* reserva espaço pro botão olho à direita; não desloca o layout */
+  padding-right: 44px;
+}
+.pw-toggle {
+  position: absolute;
+  top: 50%;
+  right: 8px;
+  transform: translateY(-50%);
+  width: 32px;
+  height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: 0;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+  color: #888;
+  border-radius: 6px;
+  transition: color .12s, background .12s;
+}
+.pw-toggle:hover {
+  color: #1a2e4a;
+  background: rgba(26, 46, 74, 0.06);
+}
+.pw-toggle:focus-visible {
+  outline: 2px solid #2d7dd2;
+  outline-offset: 1px;
+}
+.pw-toggle.is-on {
+  color: #1a2e4a;
+}
+.pw-toggle svg {
+  width: 20px;
+  height: 20px;
+  display: block;
+}
 </style>
 <script>
 window._openFotoModal = function(imgSrc) {
@@ -3027,7 +3072,12 @@ window._openFotoModal = function(imgSrc) {
       </div>
       <div class="form-group">
         <label class="form-label">Senha</label>
-        <input class="form-input" id="login-password" type="password" placeholder="Sua senha" autocomplete="current-password"/>
+        <span class="pw-wrap">
+          <input class="form-input" id="login-password" type="password" placeholder="Sua senha" autocomplete="current-password"/>
+          <button type="button" class="pw-toggle" data-target="login-password" aria-label="Mostrar senha" onclick="_togglePassword(this)">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+          </button>
+        </span>
       </div>
       <div style="text-align:right;margin-bottom:20px">
         <button class="auth-link" onclick="showForgotForm(true)">Esqueceu a senha?</button>
@@ -3069,11 +3119,21 @@ window._openFotoModal = function(imgSrc) {
       </div>
       <div class="form-group">
         <label class="form-label">Senha</label>
-        <input class="form-input" id="reg-password" type="password" placeholder="Mínimo 8 caracteres" autocomplete="new-password"/>
+        <span class="pw-wrap">
+          <input class="form-input" id="reg-password" type="password" placeholder="Mínimo 8 caracteres" autocomplete="new-password"/>
+          <button type="button" class="pw-toggle" data-target="reg-password" aria-label="Mostrar senha" onclick="_togglePassword(this)">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+          </button>
+        </span>
       </div>
       <div class="form-group">
         <label class="form-label">Confirmar senha</label>
-        <input class="form-input" id="reg-password-confirm" type="password" placeholder="Repita a senha" autocomplete="new-password"/>
+        <span class="pw-wrap">
+          <input class="form-input" id="reg-password-confirm" type="password" placeholder="Repita a senha" autocomplete="new-password"/>
+          <button type="button" class="pw-toggle" data-target="reg-password-confirm" aria-label="Mostrar senha" onclick="_togglePassword(this)">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+          </button>
+        </span>
       </div>
       <div class="form-group" style="display:flex;align-items:flex-start;gap:10px;margin-top:4px">
         <input type="checkbox" id="reg-terms" style="margin-top:3px;cursor:pointer"/>
@@ -14616,6 +14676,27 @@ async function enviarParaAutentique() {
     try { localStorage.setItem('pwa_hint_dismissed', 'true'); } catch(_){}
     var card = document.getElementById('pwa-hint-card');
     if (card) card.style.display = 'none';
+  };
+
+  // Task #158: alterna mostrar/ocultar senha. Troca o type do input
+  // (password <-> text) e o icone (olho fechado <-> olho aberto) +
+  // aria-label pra acessibilidade.
+  var SVG_EYE_OFF = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>';
+  var SVG_EYE_ON  = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>';
+  window._togglePassword = function(btn){
+    if (!btn) return;
+    var id = btn.getAttribute('data-target');
+    var input = id ? document.getElementById(id) : null;
+    if (!input) {
+      // fallback: pega o input dentro do mesmo wrapper
+      input = btn.parentNode && btn.parentNode.querySelector('input');
+    }
+    if (!input) return;
+    var showing = input.type === 'text';
+    input.type = showing ? 'password' : 'text';
+    btn.classList.toggle('is-on', !showing);
+    btn.innerHTML = showing ? SVG_EYE_OFF : SVG_EYE_ON;
+    btn.setAttribute('aria-label', showing ? 'Mostrar senha' : 'Ocultar senha');
   };
 
   function init(){
