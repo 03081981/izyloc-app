@@ -3566,7 +3566,7 @@ window._openFotoModal = function(imgSrc) {
       </div>
       <nav class="sidebar-nav">
         <div class="nav-item" onclick="showPage('page-dashboard')">Painel</div>
-        <div class="nav-item active">+ Nova vistoria</div>
+        <div class="nav-item active" onclick="showNewInspectionFromWizard()" style="cursor:pointer">+ Nova vistoria</div>
         <div class="nav-item" onclick="showMeusLaudosPage()">Meus laudos</div>
         <div class="nav-divider"></div>
         <div class="nav-section-label">Fotos e créditos</div>
@@ -6842,6 +6842,26 @@ async function showNewInspection() {
   showPage('page-wizard', 'Nova Vistoria');
   syncWizSidebar();
 }
+
+// Task #142: chamada a partir do menu lateral DENTRO do wizard.
+// Aqui o usuário ja esta com uma vistoria em andamento, entao mostramos
+// um aviso explicito de perda de dados (danger:true) em vez da mensagem
+// de boas-vindas.
+async function showNewInspectionFromWizard() {
+  var ok = await customConfirm({
+    title: 'Iniciar nova vistoria?',
+    message: 'Os dados não salvos da vistoria atual serão perdidos.',
+    confirmText: 'Iniciar',
+    cancelText: 'Cancelar',
+    danger: true
+  });
+  if (!ok) return;
+  hardResetWizard();
+  gotoWStep(0);
+  showPage('page-wizard', 'Nova Vistoria');
+  syncWizSidebar();
+}
+window.showNewInspectionFromWizard = showNewInspectionFromWizard;
 
 function selectRealizaCard(card) {
   document.querySelectorAll('.realiza-card').forEach(function(c) {
