@@ -6851,6 +6851,43 @@ class TermosUsoHandler(tornado.web.RequestHandler):
             self.write(f.read())
 
 
+# Task #154: PWA — manifest.json e service worker servidos a partir da
+# raiz do dominio. Servir de /manifest.json e /sw.js (em vez de
+# /static/...) eh proposital: o scope do service worker eh determinado
+# pela URL onde ele e servido — pra interceptar fetches da app inteira
+# o sw.js precisa estar na raiz.
+class ManifestHandler(tornado.web.RequestHandler):
+    def get(self):
+        path = os.path.join(
+            os.path.dirname(__file__), 'static', 'manifest.json')
+        if not os.path.exists(path):
+            self.set_status(404)
+            return
+        # application/manifest+json eh o MIME oficial de web app manifest
+        self.set_header('Content-Type', 'application/manifest+json')
+        self.set_header('Cache-Control', 'public, max-age=3600')
+        with open(path, 'rb') as f:
+            self.write(f.read())
+
+
+class ServiceWorkerHandler(tornado.web.RequestHandler):
+    def get(self):
+        path = os.path.join(os.path.dirname(__file__), 'static', 'sw.js')
+        if not os.path.exists(path):
+            self.set_status(404)
+            return
+        self.set_header('Content-Type', 'application/javascript')
+        # SW NAO pode ser cacheado agressivamente — navegadores modernos
+        # ignoram Cache-Control e fazem revalidacao no install/update,
+        # mas nao custa enfatizar.
+        self.set_header('Cache-Control', 'no-cache, no-store, must-revalidate')
+        # Service-Worker-Allowed permite scope acima do path do arquivo;
+        # nao necessario aqui (sw.js esta na raiz) mas explicita a intencao.
+        self.set_header('Service-Worker-Allowed', '/')
+        with open(path, 'rb') as f:
+            self.write(f.read())
+
+
 def make_app():
     static_dir = os.path.join(os.path.dirname(__file__), 'static')
     upload_dir = UPLOAD_DIR
@@ -6928,6 +6965,9 @@ def make_app():
         # Politica de Privacidade e Termos de Uso (PDFs estaticos, task #152)
         (r'/politica-de-privacidade', PoliticaPrivacidadeHandler),
         (r'/termos-de-uso', TermosUsoHandler),
+        # PWA — manifest e service worker na raiz (task #154)
+        (r'/manifest\.json', ManifestHandler),
+        (r'/sw\.js', ServiceWorkerHandler),
         # Laudos (custom routes)
         (r'/laudo/([^/]+)/status', LaudoStatusHandler),
         (r'/laudo/bulk-delete', LaudoBulkDeleteHandler),

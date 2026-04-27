@@ -3,11 +3,14 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-<meta name="theme-color" content="#1565E8"/>
+<!-- Task #154: PWA — manifest, theme-color, apple-touch-icon -->
+<link rel="manifest" href="/manifest.json"/>
+<meta name="theme-color" content="#1a2e4a"/>
+<link rel="apple-touch-icon" href="/static/icons/apple-touch-icon.png"/>
 <meta name="apple-mobile-web-app-capable" content="yes"/>
-<meta name="apple-mobile-web-app-status-bar-style" content="default"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="apple-mobile-web-app-title" content="izyLAUDO"/>
 <title>izyLAUDO – Vistorias Imobiliárias</title>
-<link rel="manifest" href="/static/manifest.json"/>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/signature_pad/4.1.7/signature_pad.umd.min.js"></script>
 
 <style>
@@ -14478,6 +14481,17 @@ async function enviarParaAutentique() {
     }
   }
 }
+</script>
+<!-- Task #154: PWA — registra service worker pra habilitar instalacao no
+     celular (banner "Instalar app" no Chrome Android, Add to Home Screen
+     no Safari iOS) e cache offline minimo. SW eh servido de /sw.js (raiz)
+     pra ter scope na app inteira. -->
+<script>
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/sw.js').catch(function(e){
+      try { console.warn('[PWA] sw register failed:', e); } catch(_){}
+    });
+  }
 </script>
 </body>
 </html>
