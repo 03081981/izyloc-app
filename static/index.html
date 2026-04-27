@@ -2891,6 +2891,53 @@ textarea.obs-geral{width:100%;background:#f8fafc;border:.5px solid #dce3ed;borde
   text-align: left;
 }
 .autentique-enviado-info strong { display: inline; }
+
+/* Task #157: PWA install hint banners (login footer + dashboard card) */
+.pwa-hint-login {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  background: #1a2e4a;
+  color: #fff;
+  padding: 14px 20px;
+  font-size: 12px;
+  line-height: 1.45;
+  text-align: center;
+  z-index: 9000;
+  border-top: 1px solid rgba(255,255,255,0.08);
+  box-shadow: 0 -4px 16px rgba(0,0,0,0.18);
+}
+.pwa-hint-card {
+  background: #1a2e4a;
+  color: #fff;
+  padding: 12px 44px 12px 16px;
+  border-radius: 10px;
+  font-size: 13px;
+  line-height: 1.45;
+  position: relative;
+  margin: 0 0 16px 0;
+}
+.pwa-hint-card .pwa-hint-close {
+  position: absolute;
+  top: 6px;
+  right: 8px;
+  width: 28px; height: 28px;
+  background: transparent;
+  border: 0;
+  color: rgba(255,255,255,0.7);
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+  border-radius: 4px;
+  padding: 0;
+}
+.pwa-hint-card .pwa-hint-close:hover {
+  color: #fff;
+  background: rgba(255,255,255,0.08);
+}
+@media (max-width: 480px) {
+  .pwa-hint-login { font-size: 11px; padding: 12px 14px; }
+  .pwa-hint-card { font-size: 12px; padding: 10px 38px 10px 14px; }
+}
 </style>
 <script>
 window._openFotoModal = function(imgSrc) {
@@ -3057,6 +3104,10 @@ window._openFotoModal = function(imgSrc) {
       </div>
     </div>
   </div>
+  <!-- Task #157: PWA install hint — banner fixo no rodape da tela de login.
+       Sem botao de fechar; oculto se ja instalado (display-mode: standalone).
+       Texto preenchido pelo JS conforme dispositivo. -->
+  <div id="pwa-hint-login" class="pwa-hint-login" style="display:none"></div>
 </div>
 
 <!-- ══════════════ PAGE: RESET ══════════════ -->
@@ -3166,6 +3217,14 @@ window._openFotoModal = function(imgSrc) {
 
     <!-- TAB: VISTORIAS (main dashboard) -->
     <div id="dash-tab-vistorias" class="dash-tab-content active">
+
+      <!-- Task #157: PWA install hint — card dispensavel via X (persistido
+           em localStorage). Oculto se ja instalado ou ja dispensado. -->
+      <div id="pwa-hint-card" class="pwa-hint-card" style="display:none">
+        <button type="button" class="pwa-hint-close"
+                onclick="_pwaCloseHintCard()" aria-label="Fechar">✕</button>
+        <span id="pwa-hint-card-text"></span>
+      </div>
 
       <!-- TOPBAR -->
       <!-- Push 6: E-mail verification banner -->
@@ -14492,6 +14551,83 @@ async function enviarParaAutentique() {
       try { console.warn('[PWA] sw register failed:', e); } catch(_){}
     });
   }
+</script>
+
+<!-- Task #157: banner inteligente de instalacao do PWA, com texto
+     adaptado por dispositivo (Android / iOS Safari / iOS Chrome /
+     Desktop). Login: footer fixo, sem fechar. Dashboard: card dispensavel
+     via X (persistido em localStorage). Ambos ocultos quando ja instalado
+     (display-mode: standalone). -->
+<script>
+(function(){
+  function _pwaIsInstalled(){
+    try {
+      if (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) return true;
+      // iOS Safari: indicador legado
+      if (window.navigator.standalone === true) return true;
+    } catch(_){}
+    return false;
+  }
+
+  function _pwaTextForDevice(){
+    var ua = navigator.userAgent || '';
+    var isAndroid = /Android/.test(ua);
+    var isIOS = /iPhone|iPad|iPod/.test(ua);
+    // Detecta Safari "puro" — exclui Chrome (Chrome/CriOS), Firefox (FxiOS),
+    // Edge (EdgiOS) e outros baseados em WebKit no iOS
+    var isSafari = /Safari/.test(ua) && !/Chrome|CriOS|FxiOS|EdgiOS|OPiOS/.test(ua);
+    var isIOSChrome = isIOS && !isSafari;
+
+    if (isAndroid) {
+      return '📱 Use como app! Toque em ⋮ → "Instalar aplicativo" para acesso rápido em campo.';
+    }
+    if (isIOS && isSafari) {
+      return '📱 Use como app! Toque em ⬆️ → "Adicionar à Tela de Início" para acesso rápido em campo.';
+    }
+    if (isIOSChrome) {
+      return '📱 Use como app! Abra este site no Safari → toque em ⬆️ → "Adicionar à Tela de Início".';
+    }
+    // Desktop fallback
+    return '💡 Em campo? Acesse app.izylaudo.com.br pelo celular e instale como app para fazer vistorias com mais agilidade.';
+  }
+
+  function _pwaShowLoginBanner(){
+    if (_pwaIsInstalled()) return;
+    var el = document.getElementById('pwa-hint-login');
+    if (!el) return;
+    el.textContent = _pwaTextForDevice();
+    el.style.display = 'block';
+  }
+
+  function _pwaShowDashboardCard(){
+    if (_pwaIsInstalled()) return;
+    try {
+      if (localStorage.getItem('pwa_hint_dismissed') === 'true') return;
+    } catch(_){}
+    var card = document.getElementById('pwa-hint-card');
+    var txt = document.getElementById('pwa-hint-card-text');
+    if (!card || !txt) return;
+    txt.textContent = _pwaTextForDevice();
+    card.style.display = 'block';
+  }
+
+  // Exposto globalmente pra ser chamado pelo onclick do botao ✕
+  window._pwaCloseHintCard = function(){
+    try { localStorage.setItem('pwa_hint_dismissed', 'true'); } catch(_){}
+    var card = document.getElementById('pwa-hint-card');
+    if (card) card.style.display = 'none';
+  };
+
+  function init(){
+    _pwaShowLoginBanner();
+    _pwaShowDashboardCard();
+  }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+})();
 </script>
 </body>
 </html>
