@@ -4531,9 +4531,21 @@ class GeneratePDFHandler(BaseHandler):
                     # Match by name only (positional match caused cross-contamination).
                     amb = amb_by_name.get(room_dict.get('name', ''), {}) or None
                     if amb:
-                        room_dict['verificacoes'] = amb.get('verificacoes', {})
-                        room_dict['verificacoes_obs'] = amb.get('verificacoesObs', {})
-                        room_dict['testes_nomes'] = amb.get('testesNomes', {})
+                        _v = amb.get('verificacoes', {})
+                        _vo = amb.get('verificacoesObs', {})
+                        _tn = amb.get('testesNomes', {})
+                        room_dict['verificacoes'] = _v
+                        room_dict['verificacoes_obs'] = _vo
+                        room_dict['testes_nomes'] = _tn
+                        # Task #150: pdf_service le AMBOS os formatos de
+                        # chave dependendo do caminho de expansao.
+                        # L1739-1744 le snake_case (fluxo normal); L1780-1781
+                        # le camelCase quando expandindo non-isSuite com
+                        # subAmbientes (ex: DORMITORIO com Closet). Sem
+                        # popular camelCase aqui, esse caso edge perdia
+                        # OBS e nomes humanos das verifs no PDF baixado.
+                        room_dict['verificacoesObs'] = _vo
+                        room_dict['testesNomes'] = _tn
                         room_dict['observacoes'] = amb.get('observacoes', '')
                         # Pass suite/sub-ambiente data through to pdf_service
                         if amb.get('isSuite'):
@@ -4564,6 +4576,10 @@ class GeneratePDFHandler(BaseHandler):
                         'verificacoes': _amb.get('verificacoes', {}),
                         'verificacoes_obs': _amb.get('verificacoesObs', {}),
                         'testes_nomes': _amb.get('testesNomes', {}),
+                        # Task #150: tambem popular camelCase (ver comentario
+                        # acima no enrich do room_dict)
+                        'verificacoesObs': _amb.get('verificacoesObs', {}),
+                        'testesNomes': _amb.get('testesNomes', {}),
                         'observacoes': _amb.get('observacoes', ''),
                         'inventario': _amb.get('inventario') or {},
                         'inventarioExtras': _amb.get('inventarioExtras') or [],
