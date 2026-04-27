@@ -8981,8 +8981,16 @@ if (!window._fotoStore) window._fotoStore = {};
   
 // — Como funciona modal —
 function showManual() {
-  var m = document.getElementById('modal-como-funciona');
-  if (m) { m.style.display = 'flex'; document.body.style.overflow = 'hidden'; }
+  // Task #151: abre o Manual do Usuário (PDF servido pelo backend em
+  // /manual-usuario) em nova aba do navegador. Antes abria o modal
+  // interno "Como funciona" (que so resumia as 8 etapas); agora
+  // oferece o manual completo em PDF para download/leitura.
+  try {
+    window.open('/manual-usuario', '_blank', 'noopener,noreferrer');
+  } catch (e) {
+    // Fallback: navegacao na mesma aba se popup foi bloqueada
+    window.location.href = '/manual-usuario';
+  }
 }
 function fecharComoFunciona() {
   var m = document.getElementById('modal-como-funciona');

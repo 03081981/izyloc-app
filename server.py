@@ -6786,6 +6786,31 @@ class BillingTransactionsPDFHandler(BaseHandler):
         self.finish(pdf_bytes)
 
 
+# Task #151: serve o Manual do Usuario (PDF estatico) com Content-Type
+# correto e disposition 'inline' pra abrir em nova aba do navegador
+# em vez de baixar. Endpoint publico (sem auth) — o manual eh material
+# de orientacao geral.
+class ManualUsuarioHandler(tornado.web.RequestHandler):
+    def get(self):
+        path = os.path.join(
+            os.path.dirname(__file__),
+            'static', 'assets', 'Manual_Usuario_izyLAUDO.pdf')
+        if not os.path.exists(path):
+            self.set_status(404)
+            self.write({'error': 'Manual nao encontrado'})
+            return
+        self.set_header('Content-Type', 'application/pdf')
+        # 'inline' faz o navegador renderizar em vez de baixar (target=_blank
+        # do <a> abre em nova aba e o usuario ve o PDF). Cabecalho de cache
+        # de 1h pra reduzir trafego em refreshes.
+        self.set_header(
+            'Content-Disposition',
+            'inline; filename="Manual_Usuario_izyLAUDO.pdf"')
+        self.set_header('Cache-Control', 'public, max-age=3600')
+        with open(path, 'rb') as f:
+            self.write(f.read())
+
+
 def make_app():
     static_dir = os.path.join(os.path.dirname(__file__), 'static')
     upload_dir = UPLOAD_DIR
@@ -6858,6 +6883,8 @@ def make_app():
         # Static files
         (r'/uploads/(.*)', tornado.web.StaticFileHandler, {'path': upload_dir}),
         (r'/static/(.*)', tornado.web.StaticFileHandler, {'path': static_dir}),
+        # Manual do usuario (PDF estatico, task #151)
+        (r'/manual-usuario', ManualUsuarioHandler),
         # Laudos (custom routes)
         (r'/laudo/([^/]+)/status', LaudoStatusHandler),
         (r'/laudo/bulk-delete', LaudoBulkDeleteHandler),
