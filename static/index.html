@@ -2983,6 +2983,70 @@ textarea.obs-geral{width:100%;background:#f8fafc;border:.5px solid #dce3ed;borde
   height: 20px;
   display: block;
 }
+
+/* Task #159: modal fullscreen do Manual do Usuário (PDF embed) — pra
+   PWA mobile não perder a navegação ao abrir nova aba. */
+.manual-modal {
+  display: none;
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  z-index: 9999;
+  background: #fff;
+  flex-direction: column;
+}
+.manual-modal.open { display: flex; }
+.manual-modal-header {
+  flex: 0 0 auto;
+  background: #1a2e4a;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 8px 0 16px;
+  height: 52px;
+  /* Respeita safe area do iOS (notch/dynamic island) */
+  padding-top: env(safe-area-inset-top, 0);
+  height: calc(52px + env(safe-area-inset-top, 0px));
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+}
+.manual-modal-title {
+  font-size: 15px;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.manual-modal-close {
+  background: transparent;
+  border: 0;
+  color: #fff;
+  font-size: 22px;
+  line-height: 1;
+  padding: 8px 14px;
+  cursor: pointer;
+  border-radius: 6px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.manual-modal-close:hover { background: rgba(255,255,255,0.12); }
+.manual-modal-body {
+  flex: 1 1 auto;
+  width: 100%;
+  background: #525659; /* cinza neutro padrão dos viewers de PDF */
+  overflow: hidden;
+}
+.manual-modal-body iframe {
+  width: 100%;
+  height: 100%;
+  border: 0;
+  display: block;
+}
+@media (max-width: 480px) {
+  .manual-modal-title { font-size: 14px; }
+  .manual-modal-close { font-size: 18px; padding: 8px 12px; }
+}
 </style>
 <script>
 window._openFotoModal = function(imgSrc) {
@@ -9103,17 +9167,45 @@ if (!window._fotoStore) window._fotoStore = {};
   
 // — Como funciona modal —
 function showManual() {
-  // Task #151: abre o Manual do Usuário (PDF servido pelo backend em
-  // /manual-usuario) em nova aba do navegador. Antes abria o modal
-  // interno "Como funciona" (que so resumia as 8 etapas); agora
-  // oferece o manual completo em PDF para download/leitura.
-  try {
-    window.open('/manual-usuario', '_blank', 'noopener,noreferrer');
-  } catch (e) {
-    // Fallback: navegacao na mesma aba se popup foi bloqueada
-    window.location.href = '/manual-usuario';
+  // Task #159: abre o Manual do Usuário em modal fullscreen DENTRO do
+  // app (iframe embed) em vez de window.open / nova aba. Motivo: no PWA
+  // mobile (standalone) abrir nova aba/janela leva o usuário pra fora
+  // da app sem botão voltar. Modal interno preserva a navegação.
+  // Anteriormente (task #151): window.open('/manual-usuario','_blank')
+  // — descontinuado em prol da experiência mobile.
+  var modal = document.getElementById('manual-modal');
+  var frame = document.getElementById('manual-modal-frame');
+  if (!modal || !frame) {
+    // Fallback se algo der errado com o DOM do modal
+    try { window.open('/manual-usuario', '_blank', 'noopener,noreferrer'); }
+    catch (e) { window.location.href = '/manual-usuario'; }
+    return;
   }
+  // Lazy-load: só seta o src quando abrir, evita carregar 4MB no boot
+  if (frame.src !== window.location.origin + '/manual-usuario'
+      && !/\/manual-usuario(\?|#|$)/.test(frame.src)) {
+    frame.src = '/manual-usuario';
+  }
+  modal.classList.add('open');
+  modal.setAttribute('aria-hidden', 'false');
+  document.body.style.overflow = 'hidden';
 }
+
+window._closeManualModal = function() {
+  var modal = document.getElementById('manual-modal');
+  if (!modal) return;
+  modal.classList.remove('open');
+  modal.setAttribute('aria-hidden', 'true');
+  document.body.style.overflow = '';
+};
+
+// Esc fecha o modal
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') {
+    var m = document.getElementById('manual-modal');
+    if (m && m.classList.contains('open')) window._closeManualModal();
+  }
+});
 function fecharComoFunciona() {
   var m = document.getElementById('modal-como-funciona');
   if (m) { m.style.display = 'none'; document.body.style.overflow = ''; }
@@ -14601,6 +14693,21 @@ async function enviarParaAutentique() {
   }
 }
 </script>
+<!-- Task #159: modal fullscreen do Manual do Usuario — abre PDF dentro
+     do app (sem perder navegacao do PWA mobile, que nao tem botao voltar). -->
+<div id="manual-modal" class="manual-modal" aria-hidden="true" role="dialog" aria-label="Manual do usuário">
+  <div class="manual-modal-header">
+    <div class="manual-modal-title">Manual do usuário</div>
+    <button type="button" class="manual-modal-close" onclick="_closeManualModal()" aria-label="Fechar">
+      <span aria-hidden="true">✕</span>
+      <span>Fechar</span>
+    </button>
+  </div>
+  <div class="manual-modal-body">
+    <iframe id="manual-modal-frame" title="Manual do usuário" src="about:blank"></iframe>
+  </div>
+</div>
+
 <!-- Task #154: PWA — registra service worker pra habilitar instalacao no
      celular (banner "Instalar app" no Chrome Android, Add to Home Screen
      no Safari iOS) e cache offline minimo. SW eh servido de /sw.js (raiz)
