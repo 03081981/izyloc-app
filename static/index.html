@@ -9181,10 +9181,13 @@ function showManual() {
     catch (e) { window.location.href = '/manual-usuario'; }
     return;
   }
-  // Lazy-load: só seta o src quando abrir, evita carregar 4MB no boot
-  if (frame.src !== window.location.origin + '/manual-usuario'
-      && !/\/manual-usuario(\?|#|$)/.test(frame.src)) {
-    frame.src = '/manual-usuario';
+  // Lazy-load: só seta o src quando abrir, evita carregar no boot.
+  // Task #160: usa versão HTML (/manual-usuario-html) em vez do PDF —
+  // PDF não renderiza inline em iframe no Chrome Android, mostrando tela
+  // em branco. /manual-usuario (PDF) continua disponível pra desktop.
+  if (frame.src !== window.location.origin + '/manual-usuario-html'
+      && !/\/manual-usuario-html(\?|#|$)/.test(frame.src)) {
+    frame.src = '/manual-usuario-html';
   }
   modal.classList.add('open');
   modal.setAttribute('aria-hidden', 'false');
