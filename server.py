@@ -6811,6 +6811,45 @@ class ManualUsuarioHandler(tornado.web.RequestHandler):
             self.write(f.read())
 
 
+# Task #152: Politica de Privacidade e Termos de Uso (PDFs estaticos).
+# Mesmo padrao do ManualUsuarioHandler: publico, inline, cache de 1h.
+# Linkados na tela de cadastro (/login pagina, formulario de registro).
+class PoliticaPrivacidadeHandler(tornado.web.RequestHandler):
+    def get(self):
+        path = os.path.join(
+            os.path.dirname(__file__),
+            'static', 'assets', 'izyLAUDO_Politica_de_Privacidade.pdf')
+        if not os.path.exists(path):
+            self.set_status(404)
+            self.write({'error': 'Politica de Privacidade nao encontrada'})
+            return
+        self.set_header('Content-Type', 'application/pdf')
+        self.set_header(
+            'Content-Disposition',
+            'inline; filename="Politica_de_Privacidade_izyLAUDO.pdf"')
+        self.set_header('Cache-Control', 'public, max-age=3600')
+        with open(path, 'rb') as f:
+            self.write(f.read())
+
+
+class TermosUsoHandler(tornado.web.RequestHandler):
+    def get(self):
+        path = os.path.join(
+            os.path.dirname(__file__),
+            'static', 'assets', 'izyLAUDO_Termos_de_Uso.pdf')
+        if not os.path.exists(path):
+            self.set_status(404)
+            self.write({'error': 'Termos de Uso nao encontrados'})
+            return
+        self.set_header('Content-Type', 'application/pdf')
+        self.set_header(
+            'Content-Disposition',
+            'inline; filename="Termos_de_Uso_izyLAUDO.pdf"')
+        self.set_header('Cache-Control', 'public, max-age=3600')
+        with open(path, 'rb') as f:
+            self.write(f.read())
+
+
 def make_app():
     static_dir = os.path.join(os.path.dirname(__file__), 'static')
     upload_dir = UPLOAD_DIR
@@ -6885,6 +6924,9 @@ def make_app():
         (r'/static/(.*)', tornado.web.StaticFileHandler, {'path': static_dir}),
         # Manual do usuario (PDF estatico, task #151)
         (r'/manual-usuario', ManualUsuarioHandler),
+        # Politica de Privacidade e Termos de Uso (PDFs estaticos, task #152)
+        (r'/politica-de-privacidade', PoliticaPrivacidadeHandler),
+        (r'/termos-de-uso', TermosUsoHandler),
         # Laudos (custom routes)
         (r'/laudo/([^/]+)/status', LaudoStatusHandler),
         (r'/laudo/bulk-delete', LaudoBulkDeleteHandler),
