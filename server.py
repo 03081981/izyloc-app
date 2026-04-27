@@ -5706,7 +5706,15 @@ class SendToAutentiqueHandler(BaseHandler):
             pdf_bytes = self._gerar_pdf_bytes(conn, insp)
             if not pdf_bytes:
                 _release_lock()
-                return self.err('Erro ao gerar PDF do laudo', 500)
+                # Task #145: usa self._pdf_error_msg setado pelo
+                # _gerar_pdf_bytes pra dar mensagem especifica (snapshot
+                # vazio, placeholder detectado, etc.)
+                _msg = (getattr(self, '_pdf_error_msg', None)
+                        or 'Erro ao gerar PDF do laudo')
+                # Se a mensagem orienta o usuario a refazer/sincronizar,
+                # devolve 400 (problema de dados) em vez de 500.
+                _status = 400 if 'Volte ao laudo' in _msg else 500
+                return self.err(_msg, _status)
 
             # 5. Nome do documento
             tipo_v = (insp.get('type') or 'entrada').capitalize()
@@ -5881,31 +5889,49 @@ class SendToAutentiqueHandler(BaseHandler):
                 out.append(room_dict)
             return out
 
+        # Task #145: mensagens de erro especificas. O handler le
+        # self._pdf_error_msg quando _gerar_pdf_bytes retorna None pra
+        # mostrar a causa real ao usuario em vez de "Erro ao gerar PDF
+        # do laudo" generico.
+        self._pdf_error_msg = None
+
+        def _has_useful_ambientes_json(s):
+            """Retorna True se a string parece ter um array nao-vazio
+            com pelo menos um ambiente populado."""
+            if not s or not isinstance(s, str):
+                return False
+            t = s.strip()
+            if not t or t in ('[]', '{}', 'null', 'None'):
+                return False
+            try:
+                arr = json.loads(t)
+                if not isinstance(arr, list) or not arr:
+                    return False
+                # Pelo menos um item com 'nome' nao vazio
+                return any(isinstance(x, dict) and (x.get('nome') or '').strip()
+                           for x in arr)
+            except Exception:
+                return False
+
         try:
             insp_id = insp.get('id')
 
             # === Tenta usar wizard_snapshot (caminho rico) ===
             # Task #144: try/except defensivo em volta da reconstrucao.
-            # Se algo der errado dentro de _build_rich_rooms_from_snapshot
-            # (snapshot malformado, dados parciais, etc), em vez de
-            # propagar a excecao a gente cai no caminho legacy e o
-            # usuario recebe um PDF, mesmo que sem a riqueza de
-            # sub-ambientes.
-            rooms_list = None
-            amb_json = None
+            rich_rooms = None
+            rich_amb_json = None
             used_snap = False
             _stats = {'rooms': 0, 'suites': 0, 'sub_ambientes': 0}
             try:
-                rooms_list, amb_json, used_snap, _stats = (
+                rich_rooms, rich_amb_json, used_snap, _stats = (
                     _build_rich_rooms_from_snapshot(insp)
                 )
             except Exception as _snap_err:
                 used_snap = False
-                rooms_list = None
+                rich_rooms = None
                 print(
                     '[AUTENTIQUE_PDF] erro no snapshot insp='
-                    + str(insp_id)[:12] + ' — usando fallback legacy: '
-                    + str(_snap_err),
+                    + str(insp_id)[:12] + ': ' + str(_snap_err),
                     flush=True,
                 )
                 try:
@@ -5914,30 +5940,66 @@ class SendToAutentiqueHandler(BaseHandler):
                 except Exception:
                     pass
 
-            # Log de diagnostico (task #143/#144)
+            # Log de diagnostico (task #143/#144/#145)
+            _has_db_amb = _has_useful_ambientes_json(insp.get('ambientes_json'))
             try:
                 print(
                     '[AUTENTIQUE_PDF] insp=' + str(insp_id)[:12]
-                    + ' usando snapshot? ' + ('sim' if used_snap else 'nao')
-                    + ' — ' + str(_stats.get('rooms', 0)) + ' rooms, '
-                    + str(_stats.get('suites', 0)) + ' suites, '
-                    + str(_stats.get('sub_ambientes', 0)) + ' sub-ambientes',
+                    + ' snapshot=' + ('sim' if used_snap else 'nao')
+                    + ' rich_rooms=' + str(len(rich_rooms or []))
+                    + ' suites=' + str(_stats.get('suites', 0))
+                    + ' subs=' + str(_stats.get('sub_ambientes', 0))
+                    + ' ambientes_json_db=' + ('sim' if _has_db_amb else 'nao'),
                     flush=True,
                 )
             except Exception:
                 pass
 
             insp_for_pdf = dict(insp)
-            if used_snap:
-                # Sobrescreve insp['ambientes_json'] com a versao
-                # reconstruida do snapshot — essa eh a fonte canonica
-                # mais atualizada (autosave grava no snapshot a cada
-                # mudanca via PUT /api/inspections/{id}/snapshot).
-                if amb_json:
-                    insp_for_pdf['ambientes_json'] = amb_json
+            rooms_list = []
+
+            if used_snap and rich_rooms:
+                # Caminho rico: snapshot foi parseado e produziu pelo
+                # menos um ambiente. Usa rich_rooms + ambientes_json
+                # reconstruido como fonte canonica.
+                rooms_list = rich_rooms
+                if rich_amb_json:
+                    insp_for_pdf['ambientes_json'] = rich_amb_json
             else:
-                # === Caminho legacy: le apenas rooms + room_items ===
+                # Snapshot vazio/falhou — tenta legacy (rooms+room_items).
+                # Para laudos do wiz6 (task #111) essa query retorna 0
+                # registros, entao o pdf_service vai depender do
+                # ambientes_json que ja esta no banco (gravado pelo
+                # cliente quando ele clicou em "Baixar PDF").
                 rooms_list = _build_legacy_rooms(insp_id)
+                try:
+                    print(
+                        '[AUTENTIQUE_PDF] legacy_rooms='
+                        + str(len(rooms_list)) + ' insp='
+                        + str(insp_id)[:12], flush=True,
+                    )
+                except Exception:
+                    pass
+
+            # Task #145: SANITY CHECK ANTES de chamar _gen_pdf.
+            # Se nao tem rooms_list E nao tem ambientes_json valido no
+            # banco, nao adianta chamar _gen_pdf — ele geraria um PDF
+            # com placeholder "[ Ambientes, fotos numeradas... ]".
+            # Aborta com mensagem clara pro usuario.
+            if not rooms_list and not _has_db_amb:
+                print(
+                    '[AUTENTIQUE_PDF] ABORTA insp=' + str(insp_id)[:12]
+                    + ' — sem dados de ambientes (rooms vazio E '
+                    + 'ambientes_json vazio/invalido)',
+                    flush=True,
+                )
+                self._pdf_error_msg = (
+                    'O laudo ainda nao tem dados de ambientes salvos. '
+                    'Volte ao laudo, clique em "Gerar Laudo" / "Baixar PDF" '
+                    'para que o sistema persista os ambientes, e tente '
+                    'enviar para assinatura novamente.'
+                )
+                return None
 
             sigs = conn.execute(
                 'SELECT * FROM signatures WHERE inspection_id=?',
@@ -5967,32 +6029,38 @@ class SendToAutentiqueHandler(BaseHandler):
                     pass
                 ok = False
 
-            # Task #144: se o caminho rico gerou PDF vazio/falhou,
-            # tenta uma vez mais via legacy. Garante que o usuario
-            # sempre receba ALGO mesmo que o snapshot esteja corrompido.
-            if (not ok or not os.path.exists(pdf_path)) and used_snap:
-                print(
-                    '[AUTENTIQUE_PDF] retry com legacy insp='
-                    + str(insp_id)[:12] + ' (caminho rico falhou)',
-                    flush=True,
-                )
-                try:
-                    legacy_rooms = _build_legacy_rooms(insp_id)
-                    legacy_insp = dict(insp)  # sem o ambientes_json reconstruido
-                    ok = _gen_pdf(legacy_insp, legacy_rooms,
-                                  signatures_list, pdf_path)
-                except Exception as _retry_err:
-                    print(
-                        '[AUTENTIQUE_PDF] retry_legacy_failed insp='
-                        + str(insp_id)[:12] + ': ' + str(_retry_err),
-                        flush=True,
-                    )
-                    ok = False
-
             if not ok or not os.path.exists(pdf_path):
+                self._pdf_error_msg = (
+                    'Erro tecnico ao gerar o PDF. Tente novamente em '
+                    'alguns segundos. Se persistir, entre em contato com '
+                    'o suporte.'
+                )
                 return None
-            with open(pdf_path, 'rb') as f:
-                return f.read()
+
+            # Task #145: detecta PDF gerado com placeholder
+            # ("[ Ambientes, fotos numeradas... ]") — isso indica que
+            # o pdf_service nao recebeu ambientes uteis e gerou um
+            # documento sem conteudo. Em vez de enviar esse PDF "vazio"
+            # ao Autentique, abortamos com mensagem clara.
+            with open(pdf_path, 'rb') as _f:
+                pdf_bytes = _f.read()
+            if (b'Ambientes, fotos numeradas' in pdf_bytes
+                    or b'verifica\xc3\xa7\xc3\xb5es t\xc3\xa9cnicas inseridos automaticamente' in pdf_bytes):
+                print(
+                    '[AUTENTIQUE_PDF] PDF_PLACEHOLDER insp='
+                    + str(insp_id)[:12]
+                    + ' — _gen_pdf produziu PDF sem ambientes; abortando '
+                    + 'envio ao Autentique', flush=True,
+                )
+                self._pdf_error_msg = (
+                    'O laudo foi gerado sem os ambientes. '
+                    'Volte ao laudo, clique em "Gerar Laudo" / '
+                    '"Baixar PDF" para sincronizar os dados, e depois '
+                    'tente enviar para assinatura novamente.'
+                )
+                return None
+
+            return pdf_bytes
         except Exception as _e:
             import traceback as _tb
             print('[AUTENTIQUE] PDF_ERROR: ' + str(_e), flush=True)
@@ -6001,6 +6069,7 @@ class SendToAutentiqueHandler(BaseHandler):
                       + _tb.format_exc(), flush=True)
             except Exception:
                 pass
+            self._pdf_error_msg = 'Erro tecnico ao gerar o PDF.'
             return None
 
 
