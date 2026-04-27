@@ -5317,7 +5317,11 @@ def _build_rich_rooms_from_snapshot(insp):
     rooms_list = []
     amb_arr = []
 
+    # Task #144: blinda iteracao por ambiente — se um snapshot tem dados
+    # parciais ou em formato inesperado para um ambiente especifico, a
+    # gente pula esse ambiente em vez de derrubar o build inteiro.
     for i, room_name in enumerate(selected_rooms):
+      try:
         # itensData pode ter chaves string ou int (depende de como o JSON
         # foi serializado — ambos sao usados no front/back)
         d = itens_data.get(str(i))
@@ -5474,6 +5478,16 @@ def _build_rich_rooms_from_snapshot(insp):
         rooms_list.append(room_dict)
         amb_arr.append(amb_entry)
         stats['rooms'] += 1
+      except Exception as _amb_err:
+        try:
+            print(
+                '[AUTENTIQUE_PDF] skip room idx=' + str(i)
+                + ' name=' + repr(room_name)[:60]
+                + ' err=' + str(_amb_err),
+                flush=True,
+            )
+        except Exception:
+            pass
 
     try:
         amb_json = json.dumps(amb_arr, ensure_ascii=False)
@@ -5847,13 +5861,60 @@ class SendToAutentiqueHandler(BaseHandler):
         except Exception as _e:
             print('[AUTENTIQUE] pdf_service import fail: ' + str(_e), flush=True)
             return None
+
+        import traceback as _tb_mod
+
+        def _build_legacy_rooms(insp_id):
+            """Lista rooms+items do banco — compat. com laudos antigos."""
+            rooms = conn.execute(
+                'SELECT * FROM rooms WHERE inspection_id=? ORDER BY order_num',
+                (insp_id,)
+            ).fetchall()
+            out = []
+            for room in rooms:
+                room_dict = self.row_to_dict(room)
+                items = conn.execute(
+                    'SELECT * FROM room_items WHERE room_id=? ORDER BY created_at',
+                    (room['id'],)
+                ).fetchall()
+                room_dict['items'] = self.rows_to_list(items)
+                out.append(room_dict)
+            return out
+
         try:
             insp_id = insp.get('id')
 
             # === Tenta usar wizard_snapshot (caminho rico) ===
-            rooms_list, amb_json, used_snap, _stats = _build_rich_rooms_from_snapshot(insp)
+            # Task #144: try/except defensivo em volta da reconstrucao.
+            # Se algo der errado dentro de _build_rich_rooms_from_snapshot
+            # (snapshot malformado, dados parciais, etc), em vez de
+            # propagar a excecao a gente cai no caminho legacy e o
+            # usuario recebe um PDF, mesmo que sem a riqueza de
+            # sub-ambientes.
+            rooms_list = None
+            amb_json = None
+            used_snap = False
+            _stats = {'rooms': 0, 'suites': 0, 'sub_ambientes': 0}
+            try:
+                rooms_list, amb_json, used_snap, _stats = (
+                    _build_rich_rooms_from_snapshot(insp)
+                )
+            except Exception as _snap_err:
+                used_snap = False
+                rooms_list = None
+                print(
+                    '[AUTENTIQUE_PDF] erro no snapshot insp='
+                    + str(insp_id)[:12] + ' — usando fallback legacy: '
+                    + str(_snap_err),
+                    flush=True,
+                )
+                try:
+                    print('[AUTENTIQUE_PDF] snapshot_traceback: '
+                          + _tb_mod.format_exc(), flush=True)
+                except Exception:
+                    pass
 
-            # Log de diagnostico (task #143)
+            # Log de diagnostico (task #143/#144)
             try:
                 print(
                     '[AUTENTIQUE_PDF] insp=' + str(insp_id)[:12]
@@ -5866,29 +5927,17 @@ class SendToAutentiqueHandler(BaseHandler):
             except Exception:
                 pass
 
+            insp_for_pdf = dict(insp)
             if used_snap:
                 # Sobrescreve insp['ambientes_json'] com a versao
                 # reconstruida do snapshot — essa eh a fonte canonica
                 # mais atualizada (autosave grava no snapshot a cada
                 # mudanca via PUT /api/inspections/{id}/snapshot).
-                insp = dict(insp)
                 if amb_json:
-                    insp['ambientes_json'] = amb_json
+                    insp_for_pdf['ambientes_json'] = amb_json
             else:
                 # === Caminho legacy: le apenas rooms + room_items ===
-                rooms = conn.execute(
-                    'SELECT * FROM rooms WHERE inspection_id=? ORDER BY order_num',
-                    (insp_id,)
-                ).fetchall()
-                rooms_list = []
-                for room in rooms:
-                    room_dict = self.row_to_dict(room)
-                    items = conn.execute(
-                        'SELECT * FROM room_items WHERE room_id=? ORDER BY created_at',
-                        (room['id'],)
-                    ).fetchall()
-                    room_dict['items'] = self.rows_to_list(items)
-                    rooms_list.append(room_dict)
+                rooms_list = _build_legacy_rooms(insp_id)
 
             sigs = conn.execute(
                 'SELECT * FROM signatures WHERE inspection_id=?',
@@ -5896,11 +5945,50 @@ class SendToAutentiqueHandler(BaseHandler):
             ).fetchall()
             signatures_list = self.rows_to_list(sigs)
 
-            tipo = (insp.get('type') or 'entrada')
+            tipo = (insp_for_pdf.get('type') or 'entrada')
             pdf_filename = ('IZYLO_Laudo_autentique_' + str(tipo) + '_'
                             + str(insp_id)[:8].upper() + '.pdf')
             pdf_path = os.path.join(PDF_DIR, pdf_filename)
-            ok = _gen_pdf(insp, rooms_list, signatures_list, pdf_path)
+
+            ok = False
+            try:
+                ok = _gen_pdf(insp_for_pdf, rooms_list, signatures_list, pdf_path)
+            except Exception as _gen_err:
+                print(
+                    '[AUTENTIQUE_PDF] _gen_pdf threw insp='
+                    + str(insp_id)[:12] + ' (used_snap=' + str(used_snap)
+                    + '): ' + str(_gen_err),
+                    flush=True,
+                )
+                try:
+                    print('[AUTENTIQUE_PDF] gen_pdf_traceback: '
+                          + _tb_mod.format_exc(), flush=True)
+                except Exception:
+                    pass
+                ok = False
+
+            # Task #144: se o caminho rico gerou PDF vazio/falhou,
+            # tenta uma vez mais via legacy. Garante que o usuario
+            # sempre receba ALGO mesmo que o snapshot esteja corrompido.
+            if (not ok or not os.path.exists(pdf_path)) and used_snap:
+                print(
+                    '[AUTENTIQUE_PDF] retry com legacy insp='
+                    + str(insp_id)[:12] + ' (caminho rico falhou)',
+                    flush=True,
+                )
+                try:
+                    legacy_rooms = _build_legacy_rooms(insp_id)
+                    legacy_insp = dict(insp)  # sem o ambientes_json reconstruido
+                    ok = _gen_pdf(legacy_insp, legacy_rooms,
+                                  signatures_list, pdf_path)
+                except Exception as _retry_err:
+                    print(
+                        '[AUTENTIQUE_PDF] retry_legacy_failed insp='
+                        + str(insp_id)[:12] + ': ' + str(_retry_err),
+                        flush=True,
+                    )
+                    ok = False
+
             if not ok or not os.path.exists(pdf_path):
                 return None
             with open(pdf_path, 'rb') as f:
