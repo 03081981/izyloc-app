@@ -5309,10 +5309,25 @@ def _build_rich_rooms_from_snapshot(insp):
     if not isinstance(snap, dict):
         return None, None, False, stats
     selected_rooms = snap.get('selectedRooms') or []
-    itens_data = snap.get('itensData') or {}
+    itens_data = snap.get('itensData')
+    if itens_data is None:
+        itens_data = {}
     foto_store = snap.get('fotoStore') or {}
     if not isinstance(selected_rooms, list) or not selected_rooms:
         return None, None, False, stats
+
+    # Task #146: log estrutural pra diagnostico
+    try:
+        print(
+            '[AUTENTIQUE_PDF] snapshot shapes: selectedRooms='
+            + str(len(selected_rooms))
+            + ' itensData=' + type(itens_data).__name__
+            + (':' + str(len(itens_data)) if hasattr(itens_data, '__len__') else '')
+            + ' fotoStore=' + type(foto_store).__name__,
+            flush=True,
+        )
+    except Exception:
+        pass
 
     rooms_list = []
     amb_arr = []
@@ -5322,14 +5337,21 @@ def _build_rich_rooms_from_snapshot(insp):
     # gente pula esse ambiente em vez de derrubar o build inteiro.
     for i, room_name in enumerate(selected_rooms):
       try:
-        # itensData pode ter chaves string ou int (depende de como o JSON
-        # foi serializado — ambos sao usados no front/back)
-        d = itens_data.get(str(i))
-        if d is None:
-            d = itens_data.get(i)
-        if d is None and isinstance(itens_data, dict):
-            # alguns snapshots indexam por nome do ambiente
-            d = itens_data.get(room_name)
+        # Task #146: itensData pode vir do client como dict ({0:{},1:{}})
+        # OU como lista ([{},{}]). Em static/index.html L6707 e L8311 ele
+        # eh inicializado como [] em alguns paths (hardReset/wiz6), e o
+        # JSON.stringify preserva esse formato. Suportamos os dois.
+        d = None
+        if isinstance(itens_data, list):
+            if 0 <= i < len(itens_data):
+                d = itens_data[i]
+        elif isinstance(itens_data, dict):
+            d = itens_data.get(str(i))
+            if d is None:
+                d = itens_data.get(i)
+            if d is None:
+                # alguns snapshots indexam por nome do ambiente
+                d = itens_data.get(room_name)
         d = d or {}
 
         # === Verificacoes do ambiente principal ===
@@ -5338,7 +5360,8 @@ def _build_rich_rooms_from_snapshot(insp):
         )
 
         # === Fotos via fotoStore (chave por nome de ambiente) ===
-        fs = foto_store.get(room_name) or []
+        # foto_store sempre eh dict (chave por nome de ambiente).
+        fs = (foto_store.get(room_name) or []) if isinstance(foto_store, dict) else []
         first_desc = ''
         if fs and isinstance(fs, list) and isinstance(fs[0], dict):
             first_desc = fs[0].get('desc') or ''
@@ -5430,7 +5453,7 @@ def _build_rich_rooms_from_snapshot(insp):
                 )
 
             for sub_n in sub_names:
-                sd = subs_data.get(sub_n) or {}
+                sd = (subs_data.get(sub_n) or {}) if isinstance(subs_data, dict) else {}
                 sv, svo, stn = _verifs_from_testes(
                     sd.get('testes') or {}, sd.get('testesExtras') or []
                 )
