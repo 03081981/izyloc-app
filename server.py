@@ -4476,6 +4476,49 @@ class GeneratePDFHandler(BaseHandler):
                 if not insp:
                     return self.err('Vistoria nao encontrada', 404)
                 inspection_data = self.row_to_dict(insp)
+
+                # Task #148: se laudo foi assinado digitalmente via
+                # Autentique, serve o PDF assinado em vez de regenerar.
+                # Mesmo check que existe no GET handler — replicado aqui
+                # porque o frontend (botao "PDF" em Meus Laudos) chama o
+                # POST endpoint.
+                _auth_doc_id = inspection_data.get('autentique_doc_id')
+                _status = (inspection_data.get('status') or '').lower()
+                _signed_states = ('assinado_digital', 'assinado',
+                                  'assinado_fisico')
+                print(
+                    '[POST-PDF] insp=' + str(insp_id)[:12]
+                    + ' status=' + repr(_status)
+                    + ' autentique_doc_id=' + repr(_auth_doc_id),
+                    flush=True,
+                )
+                if _auth_doc_id and _status in _signed_states:
+                    signed_bytes = self._fetch_signed_pdf_from_autentique(
+                        _auth_doc_id)
+                    if signed_bytes and len(signed_bytes) > 1000:
+                        tipo = inspection_data.get('type', 'entrada')
+                        pdf_filename = (
+                            'izyLAUDO_Laudo_assinado_' + str(tipo) + '_'
+                            + str(insp_id)[:8].upper() + '.pdf')
+                        print(
+                            '[POST-PDF] insp=' + str(insp_id)[:12]
+                            + ' SERVINDO PDF ASSINADO do Autentique ('
+                            + str(len(signed_bytes)) + ' bytes)',
+                            flush=True,
+                        )
+                        self.set_header('Content-Type', 'application/pdf')
+                        self.set_header(
+                            'Content-Disposition',
+                            'attachment; filename="' + pdf_filename + '"')
+                        self.write(signed_bytes)
+                        self.finish()
+                        return
+                    print(
+                        '[POST-PDF] insp=' + str(insp_id)[:12]
+                        + ' Autentique nao retornou PDF assinado, '
+                        + 'fallback regen local', flush=True,
+                    )
+
                 rooms = conn.execute(
                     'SELECT * FROM rooms WHERE inspection_id=? ORDER BY order_num', (insp_id,)).fetchall()
                 rooms_list = []
