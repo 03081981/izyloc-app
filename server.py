@@ -6841,6 +6841,25 @@ class ManualHTMLHandler(tornado.web.RequestHandler):
             self.write(f.read())
 
 
+# Task #165: sitemap.xml do site institucional para Google Search Console.
+# Servido em /sitemap.xml com Content-Type application/xml. Precisa de rota
+# dedicada porque MainHandler eh catch-all e por padrao serviria o
+# index.html do site no lugar do XML.
+class SitemapHandler(tornado.web.RequestHandler):
+    def get(self):
+        path = os.path.join(
+            os.path.dirname(__file__),
+            'static', 'site', 'sitemap.xml')
+        if not os.path.exists(path):
+            self.set_status(404)
+            self.write({'error': 'sitemap nao encontrado'})
+            return
+        self.set_header('Content-Type', 'application/xml; charset=utf-8')
+        self.set_header('Cache-Control', 'public, max-age=3600')
+        with open(path, 'rb') as f:
+            self.write(f.read())
+
+
 # Task #152: Politica de Privacidade e Termos de Uso (PDFs estaticos).
 # Mesmo padrao do ManualUsuarioHandler: publico, inline, cache de 1h.
 # Linkados na tela de cadastro (/login pagina, formulario de registro).
@@ -6999,6 +7018,8 @@ def make_app():
         # PWA — manifest e service worker na raiz (task #154)
         (r'/manifest\.json', ManifestHandler),
         (r'/sw\.js', ServiceWorkerHandler),
+        # SEO — sitemap.xml do site institucional (task #165)
+        (r'/sitemap\.xml', SitemapHandler),
         # Laudos (custom routes)
         (r'/laudo/([^/]+)/status', LaudoStatusHandler),
         (r'/laudo/bulk-delete', LaudoBulkDeleteHandler),
