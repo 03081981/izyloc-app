@@ -2076,10 +2076,19 @@ canvas { display: block; }
   .db-foto-num { font-size: 20px; }
   .db-card-bottom { flex-direction: row; flex-wrap: wrap; }
   .dash-tab-content { padding: 16px 20px; box-sizing: border-box; overflow-x: hidden; }
-  .db-main-grid { width: 100%; max-width: 100%; box-sizing: border-box; }
+  .db-main-grid {
+    width: 100%; max-width: 100%; box-sizing: border-box;
+    /* !important pra vencer .db-main-grid{grid-template-columns:2fr 1fr}
+       da linha ~2315 que está fora de @media e cai depois deste bloco
+       no arquivo, sobrescrevendo a regra de coluna única. */
+    grid-template-columns: 1fr !important;
+  }
   .dash-grid-right { display: none !important; }
   .dash-grid { grid-template-columns: 1fr !important; }
   .db-col-main { width: 100% !important; display: block !important; }
+  /* Painel "Como funciona" mora em .db-col-side dentro de #dash-tab-vistorias.
+     Escondido no tablet pra não sobrepor os cards de laudos recentes. */
+  #dash-tab-vistorias .db-col-side { display: none !important; }
 }
 @media (max-width: 768px) {
   :root { --sidebar-w: 0px; }
