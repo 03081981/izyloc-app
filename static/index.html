@@ -2057,6 +2057,23 @@ canvas { display: block; }
   .db-col-side { display: flex; flex-direction: column; gap: 20px; width: 100%; }
   .db-como-card { height: auto!important; }
   .db-cards-row { grid-template-columns: repeat(3, 1fr); }
+
+  /* Task #161: ajustes específicos para tablet (768–1024px) — antes os
+     cards e o card de saldo ficavam espremidos, cortando imagens e textos.
+     Reduz colunas das métricas pra 2x2, encolhe paddings/fontes, garante
+     que o botão Mercado Pago e o valor do saldo não quebrem nem sumam. */
+  .db-metrics-row { grid-template-columns: repeat(2, 1fr) !important; gap: 12px; }
+  .db-card-novo { padding: 16px 18px; }
+  .db-card-top { flex-wrap: nowrap; gap: 10px; }
+  .db-saldo-valor { font-size: 24px; white-space: nowrap; }
+  .btn-comprar-mp { padding: 8px 12px; font-size: 12px; gap: 6px; flex-shrink: 0; }
+  .btn-comprar-mp-badge img { height: 28px !important; }
+  .db-fotos-grid { gap: 10px; }
+  .db-foto-bloco { padding: 12px; }
+  .db-foto-num { font-size: 20px; }
+  .db-card-bottom { flex-direction: row; flex-wrap: wrap; }
+  .dash-tab-content { padding: 16px 20px; box-sizing: border-box; overflow-x: hidden; }
+  .db-main-grid { width: 100%; max-width: 100%; box-sizing: border-box; }
 }
 @media (max-width: 768px) {
   :root { --sidebar-w: 0px; }
