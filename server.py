@@ -4805,9 +4805,19 @@ class DiagLocadoresHandler(BaseHandler):
 
 class MainHandler(tornado.web.RequestHandler):
     def get(self, path=None):
+        # Task #161: roteamento por host. www.izylaudo.com.br serve o site
+        # institucional (static/site/index.html). Qualquer outro host
+        # (app.izylaudo.com.br, dominio do Railway, localhost, etc.) serve
+        # o app SPA (static/index.html). Usa request.host (sem porta:
+        # tornado retorna so o hostname em ambientes proxied como Railway).
         static_dir = os.path.join(os.path.dirname(__file__), 'static')
+        host = (self.request.host or '').lower().split(':')[0]
+        if host.startswith('www.'):
+            target = os.path.join(static_dir, 'site', 'index.html')
+        else:
+            target = os.path.join(static_dir, 'index.html')
         self.set_header("Content-Type", "text/html; charset=utf-8")
-        with open(os.path.join(static_dir, 'index.html'), 'r', encoding='utf-8') as f:
+        with open(target, 'r', encoding='utf-8') as f:
             self.write(f.read())
 
 
