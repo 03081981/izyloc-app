@@ -2057,11 +2057,14 @@ canvas { display: block; }
   .db-col-side { display: flex; flex-direction: column; gap: 20px; width: 100%; }
   .db-como-card { height: auto!important; }
   .db-cards-row { grid-template-columns: repeat(3, 1fr); }
+}
 
-  /* Task #161: ajustes específicos para tablet (768–1024px) — antes os
-     cards e o card de saldo ficavam espremidos, cortando imagens e textos.
-     Reduz colunas das métricas pra 2x2, encolhe paddings/fontes, garante
-     que o botão Mercado Pago e o valor do saldo não quebrem nem sumam. */
+/* Task #163: regras dos cards/saldo/painel lateral isoladas pra tablet
+   (601–1024px). Antes ficavam dentro do @media (max-width: 1024px) e
+   sangravam pro mobile (≤600px), conflitando com o CSS específico de
+   celular (linha ~1464 e ~2061). O lower bound 601px garante que aqui
+   só pega tablets — celular continua usando o CSS dele. */
+@media (max-width: 1024px) and (min-width: 601px) {
   .db-metrics-row { grid-template-columns: repeat(2, 1fr) !important; gap: 12px; }
   .db-card-novo { padding: 16px 18px; }
   .db-card-top { flex-wrap: nowrap; gap: 10px; }
@@ -2074,11 +2077,6 @@ canvas { display: block; }
   .db-card-bottom { flex-direction: row; flex-wrap: wrap; }
   .dash-tab-content { padding: 16px 20px; box-sizing: border-box; overflow-x: hidden; }
   .db-main-grid { width: 100%; max-width: 100%; box-sizing: border-box; }
-
-  /* Task #162: ocultar painel lateral "Como funciona" e expandir conteúdo
-     principal pra ocupar 100% no tablet. Reforça com !important porque
-     existem regras em outros media queries (e na linha 2076 do mobile)
-     que mexem em .db-col-main e poderiam vencer por especificidade. */
   .dash-grid-right { display: none !important; }
   .dash-grid { grid-template-columns: 1fr !important; }
   .db-col-main { width: 100% !important; display: block !important; }
