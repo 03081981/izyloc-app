@@ -2074,6 +2074,14 @@ canvas { display: block; }
   .db-card-bottom { flex-direction: row; flex-wrap: wrap; }
   .dash-tab-content { padding: 16px 20px; box-sizing: border-box; overflow-x: hidden; }
   .db-main-grid { width: 100%; max-width: 100%; box-sizing: border-box; }
+
+  /* Task #162: ocultar painel lateral "Como funciona" e expandir conteúdo
+     principal pra ocupar 100% no tablet. Reforça com !important porque
+     existem regras em outros media queries (e na linha 2076 do mobile)
+     que mexem em .db-col-main e poderiam vencer por especificidade. */
+  .dash-grid-right { display: none !important; }
+  .dash-grid { grid-template-columns: 1fr !important; }
+  .db-col-main { width: 100% !important; display: block !important; }
 }
 @media (max-width: 768px) {
   :root { --sidebar-w: 0px; }
