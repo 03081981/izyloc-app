@@ -1862,6 +1862,20 @@ canvas { display: block; }
   100% { opacity: 1; }
 }
 .ia-analisando { animation: pulso 1.5s ease-in-out infinite; }
+
+/* Task #166: feedback visual em botões durante operações longas
+   (Gerar laudo na etapa 7 e Gerar PDF do dashboard). */
+.btn-loading {
+  opacity: 0.85;
+  cursor: not-allowed !important;
+  pointer-events: none;
+  animation: pulse-loading 1.2s ease-in-out infinite;
+}
+@keyframes pulse-loading {
+  0%, 100% { opacity: 0.85; }
+  50%      { opacity: 0.55; }
+}
+
 /* Task #125: badges informativos da etapa 6 — compactos no mobile */
 @media (max-width: 768px) {
   .wiz6-badges {
@@ -5671,7 +5685,7 @@ function _dashActionBtns(insp, statusKey) {
   if (canEdit) {
     html += '<button style="'+btnEdit+'" onclick="event.stopPropagation();dashEditar(\''+id+'\')">Editar</button>';
   }
-  html += '<button style="'+btnPdf+'" onclick="event.stopPropagation();dashGerarPdf(\''+id+'\')">PDF</button>';
+  html += '<button style="'+btnPdf+'" onclick="event.stopPropagation();dashGerarPdf(\''+id+'\',event)">PDF</button>';
   if (st === 'concluido') {
     html += '<button style="'+btnSign+'" onclick="event.stopPropagation();_mlEnviarAssinar(\''+id+'\')">Enviar p/ assinar</button>';
     html += '<button style="'+btnFis+'" onclick="event.stopPropagation();_mlOpenFisico(\''+id+'\')">Marcar f\u00edsico</button>';
@@ -6227,8 +6241,41 @@ function dashSetFiltro(tipo, btn) {
   }
   _renderDashList();
 }
-function dashGerarPdf(id) {
-  try { if (typeof openInspection === 'function') { openInspection(id); setTimeout(function(){ if (typeof gerarLaudoPDF === 'function') gerarLaudoPDF(); }, 400); return; } } catch(e){}
+function dashGerarPdf(id, ev) {
+  // Task #166: feedback visual no botão "PDF" do dashboard. A geração do
+  // PDF demora alguns segundos (ReportLab), então aplica .btn-loading
+  // (piscando + desabilitado) e também o overlay global. O botão é
+  // restaurado depois que generatePDF/gerarLaudoPDF termina.
+  var _btn = (ev && ev.target && ev.target.tagName === 'BUTTON') ? ev.target : null;
+  var _btnOrig = _btn ? _btn.innerHTML : null;
+  if (_btn) {
+    _btn.disabled = true;
+    _btn.classList.add('btn-loading');
+    _btn.innerHTML = 'Gerando PDF... aguarde ⏳';
+  }
+  try { if (typeof showLoading === 'function') showLoading('Gerando PDF... aguarde ⏳'); } catch(_){}
+  function _restoreBtn() {
+    if (!_btn) return;
+    _btn.disabled = false;
+    _btn.classList.remove('btn-loading');
+    if (_btnOrig !== null) _btn.innerHTML = _btnOrig;
+  }
+  try {
+    if (typeof openInspection === 'function') {
+      openInspection(id);
+      setTimeout(function(){
+        try { if (typeof gerarLaudoPDF === 'function') gerarLaudoPDF(); }
+        catch(_e){ try { if (typeof hideLoading === 'function') hideLoading(); } catch(_){} }
+        // generatePDF chama hideLoading() internamente; restauro o botão
+        // depois de um delay seguro pra cobrir o tempo da requisição.
+        setTimeout(_restoreBtn, 1500);
+      }, 400);
+      return;
+    }
+  } catch(e){}
+  // Caminho de erro / fallback: restaura tudo agora
+  _restoreBtn();
+  try { if (typeof hideLoading === 'function') hideLoading(); } catch(_){}
   customAlert({type:'info', title:'Abrir laudo', message:'Abra o laudo e gere o PDF.'});
 }
 async function dashAbrirAutentique(id) {
@@ -6481,7 +6528,7 @@ function _mlActionBtns(insp, statusKey) {
   var canEdit = (st === "em_andamento" || st === "concluido");
   var out = "";
   if (canEdit) out += "<button style=\""+btnEdit+"\" onclick=\"event.stopPropagation();editarLaudo('"+id+"','meus-laudos')\">Editar</button>";
-  out += "<button style=\""+btnPdf+"\" onclick=\"event.stopPropagation();dashGerarPdf('"+id+"')\">PDF</button>";
+  out += "<button style=\""+btnPdf+"\" onclick=\"event.stopPropagation();dashGerarPdf('"+id+"',event)\">PDF</button>";
   if (st === "concluido") {
     out += "<button style=\""+btnSign+"\" onclick=\"event.stopPropagation();_mlEnviarAssinar('"+id+"')\">Enviar p/ assinar</button>";
     out += "<button style=\""+btnFis+"\" onclick=\"event.stopPropagation();_mlOpenFisico('"+id+"')\">Marcar físico</button>";
@@ -7690,6 +7737,18 @@ async function saveSig(party) {
 }
 
 async function gerarLaudo() {
+  // Task #166: feedback visual durante a geração (~1 min de IA). Aplica
+  // .btn-loading no botão da etapa 7 e mostra overlay global. Restaurado
+  // no finally — cobre todos os early returns dentro da função.
+  var _gerarBtn = document.querySelector('button[onclick="gerarLaudo()"]');
+  var _gerarBtnOrig = _gerarBtn ? _gerarBtn.innerHTML : null;
+  if (_gerarBtn) {
+    _gerarBtn.disabled = true;
+    _gerarBtn.classList.add('btn-loading');
+    _gerarBtn.innerHTML = 'Aguarde... gerando seu laudo 📄';
+  }
+  try { if (typeof showLoading === 'function') showLoading('Gerando seu laudo... ⏳'); } catch(_){}
+  try {
   // Re-populate _fotoStore from latest wizard.itensData to ensure estado_geral and resumo are current
   if (typeof _wiz6Ambientes !== 'undefined' && wizard && wizard.itensData) {
     if (!window._fotoStore) window._fotoStore = {};
@@ -7811,6 +7870,15 @@ async function gerarLaudo() {
   if (window.wizard && body.status) wizard.status = body.status;
   try { if (typeof _wizSaveTO !== 'undefined' && _wizSaveTO) { clearTimeout(_wizSaveTO); _wizSaveTO = null; } } catch(_eC){}
   nextWizStep();
+  } finally {
+    // Task #166: restaura botão e overlay sempre, mesmo em early returns/erros
+    if (_gerarBtn) {
+      _gerarBtn.disabled = false;
+      _gerarBtn.classList.remove('btn-loading');
+      if (_gerarBtnOrig !== null) _gerarBtn.innerHTML = _gerarBtnOrig;
+    }
+    try { if (typeof hideLoading === 'function') hideLoading(); } catch(_){}
+  }
 }
 
 
