@@ -466,5 +466,23 @@ def init_db():
     # Migration: adicionar coluna email (idempotente)
     _run_migration(c, raw, "ALTER TABLE corretores ADD COLUMN IF NOT EXISTS email VARCHAR(200)")
 
+    # Task #167: tabela anti-abuso do bônus de boas-vindas. Persistente:
+    # NÃO tem FK para users (deve sobreviver a delete de conta). Email
+    # UNIQUE bloqueia recadastro do mesmo endereço para receber o bônus
+    # novamente. Sempre normalizado em lowercase no INSERT.
+    c.execute("""
+        CREATE TABLE IF NOT EXISTS bonus_concedido (
+            id SERIAL PRIMARY KEY,
+            email TEXT NOT NULL UNIQUE,
+            bonus_cents INTEGER NOT NULL,
+            granted_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+            user_id_origem TEXT,
+            notes TEXT
+        )
+    """)
+    raw.commit()
+    c.execute("CREATE INDEX IF NOT EXISTS idx_bonus_concedido_email ON bonus_concedido(email)")
+    raw.commit()
+
     raw.close()
     print("✅ Banco de dados PostgreSQL inicializado com sucesso")

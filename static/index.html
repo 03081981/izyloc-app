@@ -3209,29 +3209,12 @@ window._openFotoModal = function(imgSrc) {
       <div class="auth-title">Criar conta</div>
       <div class="auth-sub">Preencha os dados para se cadastrar</div>
       <div class="auth-error" id="reg-error"></div>
-      <div class="form-group">
-        <label class="form-label">Nome completo</label>
-        <input class="form-input" id="reg-name" type="text" placeholder="Seu nome"/>
-      </div>
+      <!-- Task #167: cadastro simplificado — apenas e-mail, senha e
+           confirmar senha. Nome/empresa/CRECI/telefone/CPF agora ficam
+           nas Configurações depois do login. Reduz fricção do signup. -->
       <div class="form-group">
         <label class="form-label">E-mail</label>
-        <input class="form-input" id="reg-email" type="email" placeholder="seu@email.com"/>
-      </div>
-      <div class="form-group">
-        <label class="form-label">Empresa / Imobiliária <span style="color:#999;font-weight:400">(opcional)</span></label>
-        <input class="form-input" id="reg-company" type="text" placeholder="Nome da empresa"/>
-      </div>
-      <div class="form-group">
-        <label class="form-label">CRECI <span style="color:#999;font-weight:400">(opcional)</span></label>
-        <input class="form-input" id="reg-creci" type="text" placeholder="Número do CRECI"/>
-      </div>
-      <div class="form-group">
-        <label class="form-label">Telefone <span style="color:#999;font-weight:400">(opcional)</span></label>
-        <input class="form-input" id="reg-phone" type="tel" placeholder="(11) 99999-9999" autocomplete="tel"/>
-      </div>
-      <div class="form-group">
-        <label class="form-label">CPF <span style="color:#999;font-weight:400">(opcional)</span></label>
-        <input class="form-input" id="reg-cpf" type="text" placeholder="000.000.000-00"/>
+        <input class="form-input" id="reg-email" type="email" placeholder="seu@email.com" autocomplete="email"/>
       </div>
       <div class="form-group">
         <label class="form-label">Senha</label>
@@ -5100,12 +5083,12 @@ async function doLogin() {
 }
 
 async function doRegister() {
-  const name = document.getElementById('reg-name').value.trim();
+  // Task #167: cadastro simplificado — só e-mail/senha/confirmar/termos.
+  // Nome derivado do email (parte antes do @) como username default;
+  // o backend aceita opcional e tem o mesmo fallback como defesa em
+  // profundidade. Os outros campos (empresa, CRECI, telefone, CPF) são
+  // preenchidos depois nas Configurações.
   const email = document.getElementById('reg-email').value.trim();
-  const company_name = document.getElementById('reg-company').value.trim();
-  const creci = document.getElementById('reg-creci').value.trim();
-  const phone = document.getElementById('reg-phone').value.trim();
-  const cpf = document.getElementById('reg-cpf').value.trim();
   const pwd = document.getElementById('reg-password').value;
   const pwd2 = document.getElementById('reg-password-confirm').value;
   const terms = document.getElementById('reg-terms').checked;
@@ -5113,24 +5096,22 @@ async function doRegister() {
   const btn = document.querySelector('#form-register .btn-primary');
   errBox.classList.remove('show'); errBox.textContent = '';
   const fail = (msg) => { errBox.textContent = msg; errBox.classList.add('show'); };
-  if (!name || name.length < 3) return fail('Nome deve ter pelo menos 3 caracteres');
   if (!email) return fail('E-mail é obrigatório');
   if (!pwd || pwd.length < 8) return fail('Senha deve ter no mínimo 8 caracteres');
   if (pwd !== pwd2) return fail('As senhas não coincidem');
   if (!terms) return fail('É necessário aceitar os Termos de Uso');
+  // Username default = parte antes do @ do email. Usuário troca depois
+  // nas Configurações > Perfil sem perder login.
+  const name = (email.split('@')[0] || email).slice(0, 60);
   btn.disabled = true; btn.textContent = 'Criando conta...';
   try {
     const body = { name, email, password: pwd, password_confirm: pwd2, terms_accepted: true };
-    if (company_name) body.company_name = company_name;
-    if (creci) body.creci = creci;
-    if (phone) body.phone = phone;
-    if (cpf) body.cpf = cpf;
     const r = await api('POST', '/api/auth/register', body);
     if (!r.ok) { fail(r.error || 'Erro ao cadastrar'); return; }
     saveSession(r);
     showPage('page-dashboard', null, false);
     loadDashboard();
-    toast('Conta criada! Verifique seu e-mail para ganhar R$ 5,00 de bônus.', 'success');
+    toast('Conta criada! R$ 5,00 já adicionados ao seu saldo. 🎁', 'success');
     showPendingVerificationBanner();
   } finally {
     btn.disabled = false; btn.textContent = 'Criar conta';

@@ -312,20 +312,21 @@ def enqueue_verification_email(conn, user_id, to_email, name, vtoken):
     # Task #153: usa APP_BASE_URL (env var) em vez de hardcoded — facilita
     # migracao de dominio e mantem consistencia com o resto do codigo.
     verify_link = f'{APP_BASE_URL.rstrip("/")}/verify-email?token={vtoken}'
-    subject = 'Confirme seu e-mail e ganhe R$ 5,00 para testar o izyLAUDO!'
+    # Task #167: bonus de R$5 ja foi creditado no cadastro. Email agora
+    # serve apenas para confirmar o endereco e ativar a conta.
+    subject = 'Confirme seu e-mail no izyLAUDO'
     body_html = f'''<!DOCTYPE html>
 <html><body style="font-family:Arial,sans-serif;max-width:600px;
 margin:0 auto;padding:20px;color:#1a2540">
 <h2 style="color:#1e3a5f">Ol\u00e1, {name}!</h2>
 <p>Seja bem-vindo ao <strong>izyLAUDO</strong> \u2014 a nova forma de
 fazer vistorias imobili\u00e1rias com intelig\u00eancia artificial.</p>
-<p>Voc\u00ea est\u00e1 a um clique de come\u00e7ar.<br>
-Confirme seu e-mail agora e receba
-<strong>R$ 5,00 de cr\u00e9dito gr\u00e1tis</strong> para testar a plataforma.</p>
+<p>Para ativar todos os recursos da sua conta, confirme seu e-mail
+clicando no bot\u00e3o abaixo.</p>
 <p style="text-align:center;margin:30px 0">
 <a href="{verify_link}" style="background:#16a34a;color:#fff;
 padding:14px 28px;border-radius:8px;text-decoration:none;
-font-weight:bold">\U0001F7E2 Confirmar e-mail e ganhar R$ 5,00</a></p>
+font-weight:bold">\U0001F7E2 Confirmar meu e-mail</a></p>
 <p>Com o izyLAUDO, voc\u00ea economiza tempo, padroniza seus laudos
 e moderniza sua opera\u00e7\u00e3o.</p>
 <p><strong>Quem testa uma vez, entende por que n\u00e3o faz sentido
@@ -342,8 +343,8 @@ izyLAUDO \u2014 Vistorias Imobili\u00e1rias com IA</p>
 Seja bem-vindo ao izyLAUDO \u2014 a nova forma de fazer vistorias
 imobili\u00e1rias com intelig\u00eancia artificial.
 
-Confirme seu e-mail agora e receba R$ 5,00 de cr\u00e9dito gr\u00e1tis
-para testar a plataforma:
+Para ativar todos os recursos da sua conta, confirme seu e-mail
+clicando no link abaixo:
 {verify_link}
 
 Com o izyLAUDO, voc\u00ea economiza tempo, padroniza seus laudos
@@ -468,19 +469,29 @@ class RegisterHandler(BaseHandler):
     def post(self):
         data = self.json_body()
 
+        # Task #167: cadastro simplificado. Front envia apenas
+        # email/password/password_confirm/terms_accepted (+ name opcional
+        # como username extraido do email). Demais campos (company_name,
+        # creci, phone, cpf) sao preenchidos depois nas Configuracoes.
         name = (data.get('name') or '').strip()
         email = (data.get('email') or '').strip().lower()
         pwd = data.get('password') or ''
         pwd_confirm = data.get('password_confirm') or ''
         terms = data.get('terms_accepted')
 
-        if not name or len(name) < 3:
-            return self.err('Nome deve ter pelo menos 3 caracteres')
-
         if not email:
             return self.err('E-mail \u00e9 obrigat\u00f3rio')
         if not valid_email(email):
             return self.err('Formato de e-mail inv\u00e1lido')
+
+        # Fallback de nome (defesa em profundidade): se o front nao enviar,
+        # usa a parte antes do @ do email. users.name permite NULL no
+        # schema, mas eh mais util ter um valor sensato pra exibir.
+        if not name:
+            try:
+                name = email.split('@')[0]
+            except Exception:
+                name = email
 
         ok_pwd, msg_pwd = valid_password(pwd)
         if not ok_pwd:
@@ -506,14 +517,71 @@ class RegisterHandler(BaseHandler):
             user_id = str(uuid.uuid4())
             now = datetime.utcnow()
 
+            # Task #167: bonus de boas-vindas creditado IMEDIATAMENTE no
+            # cadastro (nao mais apos verificar email). Tabela
+            # bonus_concedido bloqueia abuso: se o email ja recebeu bonus
+            # antes (mesmo que a conta tenha sido deletada), nao credita
+            # novamente. Lookup case-insensitive ja garantido pelo .lower()
+            # do email logo acima.
+            bonus_cents = 0
+            already_got_bonus = False
+            try:
+                prev = conn.execute(
+                    "SELECT 1 FROM bonus_concedido WHERE email=?",
+                    (email,)
+                ).fetchone()
+                already_got_bonus = bool(prev)
+            except Exception as _eb:
+                # Tabela ainda nao existe? Loga e segue sem bonus pra
+                # nao bloquear cadastro. Migration deve criar a tabela.
+                print(f'[AUTH] bonus_concedido lookup failed: {_eb}', flush=True)
+                already_got_bonus = True  # safe default: nao credita
+            if not already_got_bonus:
+                bonus_cents = 500
+                try:
+                    srow = conn.execute(
+                        "SELECT value FROM settings WHERE key='welcome_bonus_cents'"
+                    ).fetchone()
+                    if srow and srow['value'] is not None:
+                        bonus_cents = int(srow['value'])
+                except Exception as _es:
+                    print(f'[AUTH] welcome_bonus_cents read failed, fallback 500: {_es}',
+                          flush=True)
+
             conn.execute('''INSERT INTO users
                             (id, name, email, password_hash, company_name, creci, phone, cpf,
                              status, balance_cents, terms_accepted_at, created_at, updated_at)
-                            VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'pending_verification', 0, ?, ?, ?)''',
+                            VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'pending_verification', ?, ?, ?, ?)''',
                          (user_id, name, email, hash_password_v2(pwd),
                           company_name, creci, phone, cpf,
-                          now, now, now))
+                          bonus_cents, now, now, now))
             conn.commit()
+
+            # Registra a transacao do bonus + marca email como ja-bonificado
+            if bonus_cents > 0:
+                try:
+                    conn.execute(
+                        'INSERT INTO balance_transactions '
+                        '(user_id, type, amount_cents, balance_after_cents, description) '
+                        'VALUES (?, ?, ?, ?, ?)',
+                        (user_id, 'bonus', bonus_cents, bonus_cents,
+                         'Bonus de boas-vindas')
+                    )
+                    conn.execute(
+                        "INSERT INTO bonus_concedido "
+                        "(email, bonus_cents, user_id_origem, notes) "
+                        "VALUES (?, ?, ?, ?)",
+                        (email, bonus_cents, user_id, 'cadastro')
+                    )
+                    conn.commit()
+                    print(f'[AUTH] welcome_bonus_credited email={email} '
+                          f'user_id={user_id} cents={bonus_cents}', flush=True)
+                except Exception as _ec:
+                    print(f'[AUTH] welcome_bonus credit failed: {_ec}',
+                          flush=True)
+            else:
+                print(f'[AUTH] welcome_bonus skipped (already granted) '
+                      f'email={email} user_id={user_id}', flush=True)
 
             vtoken = generate_verification_token()
             expires_at = now + timedelta(hours=24)
@@ -547,9 +615,10 @@ class RegisterHandler(BaseHandler):
                 'phone': phone,
                 'plan': 'free',
                 'status': 'pending_verification',
-                'balance_cents': 0,
-                'balance_formatted': format_balance_brl(0),
-                'email_verified': False
+                'balance_cents': bonus_cents,
+                'balance_formatted': format_balance_brl(bonus_cents),
+                'email_verified': False,
+                'welcome_bonus_granted': bonus_cents > 0
             }}, 201)
         finally:
             conn.close()
@@ -965,33 +1034,14 @@ class EmailVerifyHandler(BaseHandler):
                       f'token_id={token_id}', flush=True)
                 return self._redirect_error('expired')
 
-            bonus_cents = 500
-            try:
-                srow = conn.execute(
-                    "SELECT value FROM settings WHERE key='welcome_bonus_cents'"
-                ).fetchone()
-                if srow and srow['value'] is not None:
-                    bonus_cents = int(srow['value'])
-            except Exception as _e:
-                print(f'[AUTH] welcome_bonus_cents read failed, fallback 500: {_e}',
-                      flush=True)
-
+            # Task #167: bonus de boas-vindas agora eh creditado no
+            # cadastro (RegisterHandler), NAO mais aqui. Este handler so
+            # marca o email como verificado e ativa a conta. O usuario
+            # nao precisa mais clicar no link pra receber o saldo.
             conn.execute(
                 "UPDATE users SET email_verified_at=NOW(), status='active', "
-                "balance_cents=balance_cents+?, updated_at=NOW() WHERE id=?",
-                (bonus_cents, user_id)
-            )
-            u = conn.execute(
-                'SELECT balance_cents FROM users WHERE id=?',
+                "updated_at=NOW() WHERE id=?",
                 (user_id,)
-            ).fetchone()
-            balance_after = int(u['balance_cents']) if u else bonus_cents
-
-            conn.execute(
-                'INSERT INTO balance_transactions '
-                '(user_id, type, amount_cents, balance_after_cents, description) '
-                'VALUES (?, ?, ?, ?, ?)',
-                (user_id, 'bonus', bonus_cents, balance_after, 'Bonus de boas-vindas')
             )
             conn.execute(
                 'UPDATE email_verification_tokens SET used_at=NOW() WHERE id=?',
@@ -1000,11 +1050,10 @@ class EmailVerifyHandler(BaseHandler):
             conn.commit()
 
             print(f'[AUTH] email_verified user_id={user_id} '
-                  f'bonus_cents={bonus_cents} new_balance={balance_after}',
+                  f'(welcome bonus already credited at register time)',
                   flush=True)
 
-            bonus_q = tornado.escape.url_escape(format_balance_brl(bonus_cents))
-            self.redirect(f'/?verified=true&bonus={bonus_q}')
+            self.redirect('/?verified=true')
         except Exception as e:
             try:
                 conn.rollback()
