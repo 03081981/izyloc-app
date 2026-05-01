@@ -3386,14 +3386,12 @@ window._openFotoModal = function(imgSrc) {
       </div>
 
       <!-- TOPBAR -->
-      <!-- Push 6: E-mail verification banner -->
+      <!-- Push 6 / Task #167: banner de boas-vindas. Texto atualizado
+           porque o bônus de R$5,00 agora é creditado imediatamente no
+           cadastro (RegisterHandler), sem precisar confirmar e-mail. -->
       <div id="verify-banner" style="display:none;background:#FEF3C7;border:1px solid #FCD34D;border-radius:8px;padding:12px 16px;margin-bottom:16px;align-items:center;gap:12px">
         <div style="flex:1;font-size:14px;color:#92400E">
-          <strong>Ganhe R$ 5,00 grátis para testar o izyLAUDO!</strong>
-          Clique no link de confirmação enviado para o seu e-mail e o
-          crédito será liberado automaticamente na sua conta.
-          <em>Experimente e descubra por que quem usa uma vez,
-          nunca mais deixa de usar.</em>
+          🎁 <strong>R$ 5,00 foram creditados na sua conta.</strong> Pode testar à vontade!
         </div>
         <button onclick="hidePendingVerificationBanner()" style="padding:6px 12px;background:transparent;border:1px solid #92400E;color:#92400E;border-radius:6px;cursor:pointer;font-size:13px">Fechar</button>
       </div>
