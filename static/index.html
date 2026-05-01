@@ -5052,6 +5052,16 @@ async function refreshMe() {
 }
 
 function showPendingVerificationBanner() {
+  // Task #168: banner one-shot — só aparece logo após o cadastro.
+  // doRegister() seta 'izylo_just_registered' antes de carregar o
+  // dashboard. Aqui consumimos a flag (remove no primeiro show), então
+  // logins subsequentes (mesmo com email_verified=false) não disparam
+  // de novo. Evita o usuário ver "R$ 5,00 foram creditados" em todo
+  // login quando o crédito foi creditado uma única vez.
+  try {
+    if (localStorage.getItem('izylo_just_registered') !== '1') return;
+    localStorage.removeItem('izylo_just_registered');
+  } catch (_) { return; }
   const b = document.getElementById('verify-banner');
   if (b) b.style.display = 'flex';
 }
@@ -5107,6 +5117,9 @@ async function doRegister() {
     const r = await api('POST', '/api/auth/register', body);
     if (!r.ok) { fail(r.error || 'Erro ao cadastrar'); return; }
     saveSession(r);
+    // Task #168: marca como "acabou de cadastrar" pra que o
+    // verify-banner apareça uma única vez (consumido no primeiro show).
+    try { localStorage.setItem('izylo_just_registered', '1'); } catch (_) {}
     showPage('page-dashboard', null, false);
     loadDashboard();
     toast('Conta criada! R$ 5,00 já adicionados ao seu saldo. 🎁', 'success');
