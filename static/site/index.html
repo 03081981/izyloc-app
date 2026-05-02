@@ -158,6 +158,50 @@ nav{position:fixed;top:0;left:0;right:0;z-index:1000;background:#fff;border-bott
 .print-label strong{font-size:13px;color:var(--txt);display:block;margin-bottom:4px}
 .print-label span{font-size:12px;color:var(--txt2)}
 
+/* Task #170: cards de laudos reais (seção "Veja na prática"). Substitui
+   os prints/screenshots por cards mostrando o texto que a IA gera, mais
+   convincente pra demonstrar qualidade do produto. Scroll interno limita
+   altura mas mantém os 3 cards uniformes; rodapé sticky avisa. */
+.lp-meta-badge{display:inline-flex;align-items:center;gap:6px;background:#eff6ff;border:1px solid #bfdbfe;color:#1d4ed8;font-size:12px;font-weight:600;padding:6px 14px;border-radius:999px;margin-top:10px}
+.lp-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;max-width:1100px;margin:0 auto;align-items:stretch}
+.lp-card{display:flex;flex-direction:column;background:#fff;border-radius:14px;overflow:hidden;border:1px solid #e2e8f0;box-shadow:0 6px 24px rgba(15,23,42,.08);min-height:560px}
+.lp-header{padding:18px 20px;color:#fff;position:relative}
+.lp-header-row{display:flex;align-items:center;gap:12px}
+.lp-icon{font-size:32px;line-height:1}
+.lp-title{font-size:18px;font-weight:700;line-height:1.2;color:#fff;margin:0}
+.lp-subtitle{font-size:12px;opacity:.85;color:#fff;margin-top:3px;font-weight:400}
+.lp-badge{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;padding:5px 12px;border-radius:999px;margin-top:12px}
+.lp-badge.warn{background:rgba(254,226,226,.95);color:#b91c1c}
+.lp-badge.regular{background:rgba(254,243,199,.95);color:#92400e}
+.lp-body{flex:1;padding:18px 18px 14px;overflow-y:auto;max-height:420px;font-size:13px;line-height:1.55;color:#334155;scrollbar-width:thin;scrollbar-color:#cbd5e1 transparent}
+.lp-body::-webkit-scrollbar{width:6px}
+.lp-body::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:3px}
+.lp-body::-webkit-scrollbar-track{background:transparent}
+.lp-conclusao{font-style:italic;color:#475569;font-size:12px;border-left:3px solid #2d6abf;padding:6px 0 6px 10px;margin-bottom:14px;background:#f8fafc;border-radius:0 6px 6px 0}
+.lp-conclusao strong{color:#1a2d4e;font-style:normal;display:block;font-size:13px;margin-bottom:3px}
+.lp-syn{font-size:12px;font-weight:700;color:#1a2d4e;letter-spacing:.5px;text-transform:uppercase;margin-bottom:8px}
+.lp-cat{font-size:13px;font-weight:700;color:#2d6abf;margin:14px 0 5px}
+.lp-cat:first-of-type{margin-top:0}
+.lp-list{list-style:none;padding:0;margin:0}
+.lp-list li{position:relative;padding-left:14px;margin-bottom:5px;font-size:12.5px}
+.lp-list li::before{content:'•';position:absolute;left:0;color:#94a3b8}
+.lp-obs-box{background:#fef9c3;border-left:4px solid #facc15;padding:11px 14px;margin:14px 0;border-radius:0 8px 8px 0}
+.lp-obs-box .lp-cat{color:#92400e;margin-top:0}
+.lp-obs-box .lp-list li{font-size:12px;color:#78350f}
+.lp-status{margin-top:12px;padding:10px 12px;background:#f1f5f9;border-radius:6px;font-size:12px;color:#334155}
+.lp-status strong{color:#1a2d4e}
+.lp-aval{display:inline-block;margin-top:10px;font-size:11px;font-weight:700;letter-spacing:.5px;padding:6px 12px;border-radius:6px}
+.lp-aval.warn{background:#fee2e2;color:#b91c1c}
+.lp-aval.regular{background:#fef3c7;color:#92400e}
+.lp-footer{display:flex;justify-content:space-between;align-items:center;padding:11px 16px;background:#f8fafc;border-top:1px solid #e2e8f0;font-size:11px;color:#64748b}
+.lp-footer .ai{font-weight:600;color:#475569}
+.lp-footer .scroll-hint{opacity:.7}
+@media(max-width:768px){
+  .lp-grid{grid-template-columns:1fr;max-width:540px}
+  .lp-card{min-height:auto}
+  .lp-body{max-height:380px}
+}
+
 /* FAQ */
 .faq-list{max-width:780px;margin:0 auto}
 .faq-item{border-bottom:1px solid #e8ecf0;padding:20px 0}
@@ -394,34 +438,258 @@ footer{background:#0f1e33;padding:40px 5%;display:flex;justify-content:space-bet
   </div>
 </section>
 
-<!-- PRINTS -->
+<!-- LAUDOS REAIS (Task #170: ex-PRINTS) -->
 <section class="section bg-gray">
   <div class="section-header">
     <h2>Veja na prática</h2>
-    <p>Prints reais do sistema izyLAUDO</p>
+    <p>Laudos reais gerados pela IA do izyLAUDO</p>
+    <span class="lp-meta-badge">✦ Texto gerado automaticamente a partir das fotos</span>
   </div>
-  <div class="prints-grid">
-    <div class="print-card">
-      <img src="/static/site/images/print-1-upload.png" alt="Envio de fotos" class="print-img">
-      <div class="print-label">
-        <strong>1. Envio de fotos</strong>
-        <span>Envie as fotos dos ambientes de forma rápida e organizada</span>
+  <div class="lp-grid">
+
+    <!-- CARD 1 — DORMITÓRIO -->
+    <article class="lp-card">
+      <header class="lp-header" style="background:#1e3a8a">
+        <div class="lp-header-row">
+          <span class="lp-icon">🛏️</span>
+          <div>
+            <h3 class="lp-title">Dormitório</h3>
+            <div class="lp-subtitle">Análise completa do ambiente</div>
+          </div>
+        </div>
+        <span class="lp-badge warn">⚠️ Com avaria</span>
+      </header>
+      <div class="lp-body">
+        <div class="lp-conclusao">
+          <strong>✦ CONCLUSÃO — DORMITÓRIO</strong>
+          A presente conclusão baseia-se nas condições gerais do ambiente Dormitório, conforme registrado nas fotos acima.
+        </div>
+        <div class="lp-syn">Síntese do ambiente</div>
+
+        <div class="lp-cat">Esquadrias</div>
+        <ul class="lp-list">
+          <li>Janela com caixilho em tom bege/champanhe, formato arqueado na parte superior, com duas folhas de correr e painéis com venezianas horizontais; ferragem metálica visível (fotos 3 e 8), estado bom</li>
+          <li>Janela de abrir com caixilho metálico escuro, dividida em seis painéis com venezianas horizontais e dobradiças metálicas centrais visíveis (foto 2), estado bom</li>
+          <li>Porta branca com almofadas em relevo e maçaneta metálica (fotos 7 e 8); a base da porta apresenta contato com o piso — empenamento visível na parte inferior, com a folha encostando no revestimento (foto 7)</li>
+        </ul>
+
+        <div class="lp-cat">Instalações</div>
+        <ul class="lp-list">
+          <li>Interruptor branco na parede (foto 6)</li>
+          <li>Duas tomadas visíveis na parede (foto 6)</li>
+          <li>Ponto de iluminação com plafon branco e lâmpada acesa (fotos 5 e 8)</li>
+        </ul>
+
+        <div class="lp-cat">Piso</div>
+        <ul class="lp-list">
+          <li>Revestimento cerâmico com padrão de veios, rejunte em tom marrom/cinza (fotos 3, 4, 6, 7 e 8), estado bom</li>
+        </ul>
+
+        <div class="lp-cat">Paredes</div>
+        <ul class="lp-list">
+          <li>Paredes em cor branca, acabamento liso, sem furos (fotos 3, 4, 6 e 8)</li>
+        </ul>
+
+        <div class="lp-cat">Teto</div>
+        <ul class="lp-list">
+          <li>Forro modular em placas brancas com estrutura metálica aparente (fotos 3, 5, 6 e 8); uma placa do forro apresenta mancha de infiltração aparente com contorno irregular e coloração amarronzada (foto 5); no encontro entre o forro e a parede lateral, observa-se mancha escura concentrada no canto (foto 3)</li>
+        </ul>
+
+        <div class="lp-cat">Rodapés</div>
+        <ul class="lp-list">
+          <li>Rodapé branco contínuo na base das paredes (fotos 4 e 6), estado bom</li>
+        </ul>
+
+        <div class="lp-cat">Itens e móveis</div>
+        <ul class="lp-list">
+          <li>Veneziana/painel com trinca linear visível na lâmina, apontada por dedo da vistoriadora (foto 1) — trinca inequivocamente documentada</li>
+        </ul>
+
+        <div class="lp-obs-box">
+          <div class="lp-cat">Observações</div>
+          <ul class="lp-list">
+            <li>Veneziana do painel da janela apresenta trinca linear visível em uma das lâminas, documentada em close com indicação manual (foto 1)</li>
+            <li>Placa do forro modular com mancha de infiltração aparente de contorno irregular e coloração amarronzada (foto 5)</li>
+            <li>Mancha escura no encontro entre forro e parede lateral (foto 3)</li>
+            <li>Porta branca, madeira, pintura nova (foto 7)</li>
+          </ul>
+        </div>
+
+        <div class="lp-status">
+          <strong>Estado geral:</strong> Com avaria — trinca em veneziana da janela (foto 1), mancha de infiltração aparente em placa do forro (foto 5)
+        </div>
+        <span class="lp-aval warn">AVALIAÇÃO: COM AVARIA</span>
       </div>
-    </div>
-    <div class="print-card">
-      <img src="/static/site/images/print-2-ia-analisando.png" alt="IA analisando" class="print-img">
-      <div class="print-label">
-        <strong>2. IA analisando</strong>
-        <span>Nossa IA analisa cada detalhe automaticamente</span>
+      <footer class="lp-footer">
+        <span class="ai">🤖 Gerado por IA</span>
+        <span class="scroll-hint">↕ Role para ver mais</span>
+      </footer>
+    </article>
+
+    <!-- CARD 2 — SALA DE ESTAR / JANTAR -->
+    <article class="lp-card">
+      <header class="lp-header" style="background:#065f46">
+        <div class="lp-header-row">
+          <span class="lp-icon">🛋️</span>
+          <div>
+            <h3 class="lp-title">Sala de Estar / Jantar</h3>
+            <div class="lp-subtitle">Análise completa do ambiente</div>
+          </div>
+        </div>
+        <span class="lp-badge regular">⚠️ Regular</span>
+      </header>
+      <div class="lp-body">
+        <div class="lp-conclusao">
+          <strong>✦ CONCLUSÃO — SALA DE ESTAR / JANTAR</strong>
+          A presente conclusão baseia-se nas condições gerais do ambiente Sala de estar / jantar, conforme registrado nas fotos acima.
+        </div>
+        <div class="lp-syn">Síntese do ambiente</div>
+
+        <div class="lp-cat">Piso</div>
+        <ul class="lp-list">
+          <li>Cerâmica clara com rejunte escuro, estado bom (fotos 1, 2, 3, 4)</li>
+        </ul>
+
+        <div class="lp-cat">Paredes</div>
+        <ul class="lp-list">
+          <li>Acabamento liso, cor branca, estado bom, sem furos (fotos 2, 3, 4)</li>
+        </ul>
+
+        <div class="lp-cat">Teto</div>
+        <ul class="lp-list">
+          <li>Branco, liso, apresenta mancha amarronzada ao redor do ponto de luz central — possível infiltração aparente (foto 5)</li>
+        </ul>
+
+        <div class="lp-cat">Rodapés</div>
+        <ul class="lp-list">
+          <li>Faixa branca na base das paredes, estado bom (fotos 3, 4)</li>
+        </ul>
+
+        <div class="lp-cat">Esquadrias</div>
+        <ul class="lp-list">
+          <li>Porta de grade branca com vidro (entrada/hall), com ferrugem visível na base/soleira e trilho inferior (fotos 1, 2)</li>
+          <li>Janela com grade branca e vidro, estado bom (fotos 2, 3, 4)</li>
+          <li>Porta-balcão com grade branca e vidro, estado bom (fotos 3, 5)</li>
+          <li>Porta branca com fechadura metálica visível, estado bom (foto 2)</li>
+          <li>Porta branca de passagem para ambiente interno, estado bom (foto 3)</li>
+        </ul>
+
+        <div class="lp-cat">Instalações</div>
+        <ul class="lp-list">
+          <li>Interruptor branco na parede do hall (foto 1), estado bom</li>
+          <li>Duas tomadas agrupadas na parede (foto 4), estado bom</li>
+          <li>Dois pontos elétricos baixos na parede (foto 4), estado bom</li>
+          <li>Ponto de luz central no teto com bocal/soquete exposto e fios aparentes, sem luminária nem lâmpada instalada (fotos 2, 5)</li>
+          <li>Fio elétrico aparente descendo pela parede (foto 3)</li>
+        </ul>
+
+        <div class="lp-cat">Itens e móveis</div>
+        <ul class="lp-list">
+          <li>Lata de tinta sobre o piso (foto 2) — item de obra, não pertence ao imóvel</li>
+        </ul>
+
+        <div class="lp-obs-box">
+          <div class="lp-cat">Observações</div>
+          <ul class="lp-list">
+            <li>Ferrugem visível na base/soleira e trilho inferior da porta de grade da entrada (foto 1)</li>
+            <li>Ponto de luz central sem luminária nem lâmpada: bocal/soquete exposto com fios aparentes (fotos 2, 5)</li>
+            <li>Mancha amarronzada no teto ao redor do ponto de luz central — possível infiltração aparente (foto 5)</li>
+            <li>Fio elétrico aparente descendo pela parede da sala (foto 3)</li>
+          </ul>
+        </div>
+
+        <div class="lp-status">
+          <strong>Estado geral:</strong> Regular — ponto de luz sem luminária com fios aparentes, mancha no teto ao redor do ponto de luz, ferrugem na base da porta de grade e fio elétrico aparente em parede (fotos 1, 3, 5)
+        </div>
+        <span class="lp-aval regular">AVALIAÇÃO: REGULAR</span>
       </div>
-    </div>
-    <div class="print-card">
-      <img src="/static/site/images/print-3-laudo-pronto.png" alt="Laudo pronto" class="print-img">
-      <div class="print-label">
-        <strong>3. Laudo pronto</strong>
-        <span>Laudo completo e profissional pronto para compartilhar</span>
+      <footer class="lp-footer">
+        <span class="ai">🤖 Gerado por IA</span>
+        <span class="scroll-hint">↕ Role para ver mais</span>
+      </footer>
+    </article>
+
+    <!-- CARD 3 — BANHEIRO SOCIAL -->
+    <article class="lp-card">
+      <header class="lp-header" style="background:#7c2d12">
+        <div class="lp-header-row">
+          <span class="lp-icon">🚿</span>
+          <div>
+            <h3 class="lp-title">Banheiro Social</h3>
+            <div class="lp-subtitle">Análise completa do ambiente</div>
+          </div>
+        </div>
+        <span class="lp-badge warn">⚠️ Com avaria</span>
+      </header>
+      <div class="lp-body">
+        <div class="lp-conclusao">
+          <strong>✦ CONCLUSÃO — BANHEIRO SOCIAL</strong>
+          A presente conclusão baseia-se nas condições gerais do ambiente Banheiro Social, conforme registrado nas fotos acima.
+        </div>
+        <div class="lp-syn">Síntese do ambiente</div>
+
+        <div class="lp-cat">Itens e móveis</div>
+        <ul class="lp-list">
+          <li>Chuveiro elétrico com crivo redondo branco, haste e braço brancos (foto 1), estado bom; fiação elétrica aparente (fios verde e azul) visível na caixa de instalação, sem acabamento/espelho de proteção (foto 1)</li>
+          <li>Toalheiro metálico cromado fixado na parede (foto 2), estado bom</li>
+          <li>Espelho redondo com moldura cinza (foto 10), estado bom, sem trincos</li>
+          <li>Bancada em tom bege claro com cuba esculpida integrada; manchas e sujidade visíveis na superfície (foto 10); gap/abertura entre bancada e parede (foto 11); fio elétrico exposto na parede abaixo (foto 11)</li>
+          <li>Torneira branca de bico curvo com registro manual (foto 10), estado bom</li>
+          <li>Sifão/tubulação de esgoto aparente abaixo da bancada (fotos 10 e 11), estado regular</li>
+          <li>Vaso sanitário branco com assento e tampa brancos (foto 8); bacia apresenta mancha consistente escura/acinzentada no interior</li>
+        </ul>
+
+        <div class="lp-cat">Piso</div>
+        <ul class="lp-list">
+          <li>Revestimento cerâmico claro com padrão de veios, rejunte cinza (fotos 8, 9, 10)</li>
+          <li>Faixa com ferrugem/oxidação intensa em elemento metálico sobre o piso externo visível pela porta (foto 4)</li>
+        </ul>
+
+        <div class="lp-cat">Paredes</div>
+        <ul class="lp-list">
+          <li>Revestimento cerâmico claro com padrão de veios, rejunte cinza (fotos 1, 2, 8, 10, 11), estado bom nas áreas visíveis</li>
+          <li>Parede com revestimento cerâmico em tom marrom/rosado visível ao lado da porta (fotos 3 e 5)</li>
+        </ul>
+
+        <div class="lp-cat">Esquadrias</div>
+        <ul class="lp-list">
+          <li>Porta branca de giro com maçaneta metálica cromada (fotos 3 e 5), estado regular; quebra/avaria grave na lateral: descascamento total da pintura com material interno exposto e ferrugem visível (foto 4)</li>
+          <li>Janela com caixilho metálico e vidros quadriculados; caixilho com ferrugem/oxidação intensa em múltiplos pontos (fotos 6 e 7); trinco com oxidação visível (foto 6)</li>
+        </ul>
+
+        <div class="lp-cat">Instalações</div>
+        <ul class="lp-list">
+          <li>Fiação elétrica aparente exposta na caixa do chuveiro, sem espelho/placa de proteção (foto 1)</li>
+          <li>Interruptor/espelho branco na parede acima da bancada (foto 10), estado bom</li>
+          <li>Dois bocais de arandela sem lâmpada instalada acima do espelho (foto 10), estado regular</li>
+          <li>Fio elétrico exposto na parede abaixo da bancada (foto 11)</li>
+          <li>Ralo no piso do box com oxidação aparente (foto 9)</li>
+        </ul>
+
+        <div class="lp-obs-box">
+          <div class="lp-cat">Observações</div>
+          <ul class="lp-list">
+            <li>Fiação elétrica aparente exposta na caixa do chuveiro, sem proteção (foto 1)</li>
+            <li>Dois bocais de arandela sem lâmpada acima do espelho (foto 10)</li>
+            <li>Porta com quebra e oxidação grave na testa/lateral: material exposto com ferrugem (foto 4)</li>
+            <li>Janela com caixilho com ferrugem/oxidação intensa em múltiplos pontos (fotos 6 e 7)</li>
+            <li>Vaso sanitário com mancha consistente escura no interior da bacia (foto 8)</li>
+            <li>Bancada com manchas, sujidade e gap em relação à parede (fotos 10 e 11)</li>
+            <li>Ferrugem/oxidação intensa em elemento metálico sobre piso externo (foto 4)</li>
+          </ul>
+        </div>
+
+        <div class="lp-status">
+          <strong>Estado geral:</strong> Com avaria — porta com quebra e oxidação grave na testa (foto 4), fiação elétrica exposta em dois pontos (foto 1), caixilho da janela com ferrugem intensa (fotos 6 e 7), bocais de iluminação sem lâmpada (foto 10), vaso com mancha interna (foto 8) e bancada com gap e sujidade (fotos 10 e 11)
+        </div>
+        <span class="lp-aval warn">AVALIAÇÃO: COM AVARIA</span>
       </div>
-    </div>
+      <footer class="lp-footer">
+        <span class="ai">🤖 Gerado por IA</span>
+        <span class="scroll-hint">↕ Role para ver mais</span>
+      </footer>
+    </article>
+
   </div>
 </section>
 
