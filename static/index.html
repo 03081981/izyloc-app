@@ -4788,6 +4788,21 @@ document.addEventListener('DOMContentLoaded', () => {
     showPage('page-dashboard'); loadDashboard();
   } else {
     showPage('page-auth');
+    // Task #169: rota direta /cadastro abre o form de registro em vez do
+    // form-login (default). Útil pros CTAs do site institucional levarem
+    // o usuário novo direto pro signup, sem fricção da tela de login.
+    // /login mantém o comportamento default (form-login visível).
+    try {
+      var _p = (location.pathname || '').toLowerCase();
+      if (_p === '/cadastro' || _p === '/cadastro/') {
+        var _fl = document.getElementById('form-login');
+        var _fr = document.getElementById('form-register');
+        if (_fl) _fl.classList.remove('show');
+        if (_fr) _fr.classList.add('show');
+        var _t = document.querySelector('.auth-title');
+        if (_t) _t.textContent = 'Criar conta';
+      }
+    } catch (_e) {}
   }
   document.getElementById('wi-date').value = new Date().toISOString().split('T')[0];
 });

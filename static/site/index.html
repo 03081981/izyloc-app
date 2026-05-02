@@ -40,6 +40,10 @@ nav{position:fixed;top:0;left:0;right:0;z-index:1000;background:#fff;border-bott
 .nav-links a:hover{color:var(--azul-c)}
 .nav-cta{background:var(--azul-c);color:#fff;padding:10px 22px;border-radius:8px;font-size:14px;font-weight:600;text-decoration:none;transition:background .2s}
 .nav-cta:hover{background:var(--azul)}
+/* Link "Entrar" discreto ao lado do CTA do header — pra usuários que já
+   têm conta acessarem o login sem passar pela tela de cadastro. */
+.nav-login{color:var(--txt2);font-size:14px;font-weight:500;text-decoration:none;margin-right:18px;transition:color .2s}
+.nav-login:hover{color:var(--azul-c)}
 .hamburger{display:none;flex-direction:column;gap:5px;cursor:pointer;background:none;border:none;padding:4px}
 .hamburger span{width:24px;height:2px;background:var(--txt);border-radius:2px}
 
@@ -183,7 +187,7 @@ footer{background:#0f1e33;padding:40px 5%;display:flex;justify-content:space-bet
 
 /* MOBILE */
 @media(max-width:768px){
-  .nav-links,.nav-cta{display:none}
+  .nav-links,.nav-cta,.nav-login{display:none}
   .hamburger{display:flex}
   .hero{flex-direction:column;padding:100px 5% 60px;gap:40px}
   .hero-right{max-width:100%}
@@ -215,7 +219,8 @@ footer{background:#0f1e33;padding:40px 5%;display:flex;justify-content:space-bet
     <li><a href="#depoimentos">Depoimentos</a></li>
     <li><a href="#faq">Dúvidas</a></li>
   </ul>
-  <a href="https://app.izylaudo.com.br" class="nav-cta">TESTAR GRÁTIS →</a>
+  <a href="https://app.izylaudo.com.br/login" class="nav-login">Entrar</a>
+  <a href="https://app.izylaudo.com.br/cadastro" class="nav-cta">TESTAR GRÁTIS →</a>
   <button class="hamburger" onclick="toggleMenu()">
     <span></span><span></span><span></span>
   </button>
@@ -233,7 +238,7 @@ footer{background:#0f1e33;padding:40px 5%;display:flex;justify-content:space-bet
       <span class="hero-pill">Sem erro</span>
     </div>
     <div class="hero-btns">
-      <a href="https://app.izylaudo.com.br" class="btn-primary">TESTAR GRÁTIS AGORA →</a>
+      <a href="https://app.izylaudo.com.br/cadastro" class="btn-primary">TESTAR GRÁTIS AGORA →</a>
     </div>
     <p class="hero-note">✓ Sem mensalidade &nbsp;•&nbsp; Pague apenas pelo uso</p>
   </div>
@@ -457,7 +462,7 @@ footer{background:#0f1e33;padding:40px 5%;display:flex;justify-content:space-bet
           </div>
         </div>
       </div>
-      <a href="https://app.izylaudo.com.br" class="btn-primary">Proteger meu imóvel agora →</a>
+      <a href="https://app.izylaudo.com.br/cadastro" class="btn-primary">Proteger meu imóvel agora →</a>
     </div>
   </div>
 </section>
@@ -491,7 +496,7 @@ footer{background:#0f1e33;padding:40px 5%;display:flex;justify-content:space-bet
 <section class="cta-final">
   <h2>Pare de perder tempo com vistoria manual.</h2>
   <p>Comece agora com o izyLAUDO. É grátis para testar.</p>
-  <a href="https://app.izylaudo.com.br" class="btn-primary">TESTAR GRÁTIS AGORA →</a>
+  <a href="https://app.izylaudo.com.br/cadastro" class="btn-primary">TESTAR GRÁTIS AGORA →</a>
   <p class="cta-note">Sem mensalidade · Pague apenas pelo uso</p>
 </section>
 
