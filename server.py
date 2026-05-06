@@ -7417,7 +7417,13 @@ def make_app():
         (r'/reset-password', ResetPasswordPageHandler),
         # Frontend (SPA)
         (r'/(.*)', MainHandler),
-    ], debug=True)
+    ],
+    debug=True,
+    # Task #172: cookie_secret necessario para set_secure_cookie() usado
+    # pelo state CSRF do GoogleAuthStartHandler. Reutiliza SECRET_KEY do
+    # JWT — ja é um segredo presente no env.
+    cookie_secret=SECRET_KEY,
+    )
 
 
 if __name__ == '__main__':
