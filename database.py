@@ -118,6 +118,15 @@ def init_db():
         "ALTER TABLE users ADD COLUMN IF NOT EXISTS last_login_at TIMESTAMP",
         "CREATE UNIQUE INDEX IF NOT EXISTS idx_users_google_id ON users(google_id)",
         "CREATE INDEX IF NOT EXISTS idx_users_status ON users(status)",
+        # Task #171: constraint de formato de email no banco. NOT VALID nao
+        # revalida registros antigos (caso algum legado nao passe), so vale
+        # pra novos INSERTs/UPDATEs. DO block evita erro se ja existe.
+        """DO $$ BEGIN
+            IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'users_email_format') THEN
+                ALTER TABLE users ADD CONSTRAINT users_email_format
+                CHECK (email ~* '^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,}$') NOT VALID;
+            END IF;
+        END $$;""",
     ]:
         _run_migration(c, raw, sql)
 

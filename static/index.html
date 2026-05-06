@@ -204,6 +204,12 @@ body {
 }
 .form-input::placeholder { color: var(--text-3); }
 .form-input.error { border-color: var(--error); }
+/* Task #171: feedback visual em tempo real no campo de email do cadastro */
+.form-input.input-valid { border-color: #16a34a; box-shadow: 0 0 0 2px rgba(22,163,74,.12); }
+.form-input.input-invalid { border-color: #dc2626; box-shadow: 0 0 0 2px rgba(220,38,38,.10); }
+.email-feedback { font-size: 12px; margin-top: 4px; min-height: 14px; line-height: 1.3; }
+.email-feedback.invalid { color: #dc2626; }
+.email-feedback.valid { color: #16a34a; }
 
 .btn {
   display: inline-flex; align-items: center; justify-content: center;
@@ -3215,6 +3221,7 @@ window._openFotoModal = function(imgSrc) {
       <div class="form-group">
         <label class="form-label">E-mail</label>
         <input class="form-input" id="reg-email" type="email" placeholder="seu@email.com" autocomplete="email"/>
+        <div class="email-feedback" id="reg-email-feedback"></div>
       </div>
       <div class="form-group">
         <label class="form-label">Senha</label>
@@ -5104,6 +5111,42 @@ async function doLogin() {
     btn.disabled = false; btn.textContent = 'Entrar';
   }
 }
+
+// Task #171: validação visual em tempo real do campo de email no cadastro.
+// Não bloqueia submit (backend faz a checagem real com regex+MX+descartáveis),
+// só dá feedback enquanto o usuário digita pra evitar erros bobos.
+(function _wireEmailLiveValidation() {
+  var EMAIL_RE = /^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$/;
+  function _validate(input, fb) {
+    var v = (input.value || '').trim();
+    if (!v) {
+      input.classList.remove('input-valid', 'input-invalid');
+      fb.textContent = '';
+      fb.classList.remove('valid', 'invalid');
+      return;
+    }
+    var ok = EMAIL_RE.test(v);
+    input.classList.toggle('input-valid', ok);
+    input.classList.toggle('input-invalid', !ok);
+    fb.classList.toggle('valid', ok);
+    fb.classList.toggle('invalid', !ok);
+    fb.textContent = ok ? '' : 'Digite um email válido (ex: nome@gmail.com)';
+  }
+  function _attach() {
+    var inp = document.getElementById('reg-email');
+    var fb = document.getElementById('reg-email-feedback');
+    if (!inp || !fb) return;
+    if (inp.dataset.wiredValidation === '1') return;
+    inp.dataset.wiredValidation = '1';
+    inp.addEventListener('input', function () { _validate(inp, fb); });
+    inp.addEventListener('blur',  function () { _validate(inp, fb); });
+  }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', _attach);
+  } else {
+    _attach();
+  }
+})();
 
 async function doRegister() {
   // Task #167: cadastro simplificado — só e-mail/senha/confirmar/termos.

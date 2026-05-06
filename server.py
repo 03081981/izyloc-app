@@ -282,6 +282,74 @@ def valid_email(email):
     pattern = r'^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$'
     return bool(re.match(pattern, email))
 
+
+# Task #171: validacao robusta de email no cadastro. Inclui:
+#   - lista de dominios descartaveis (mailinator, guerrillamail etc)
+#   - lookup MX em DNS pra confirmar que o dominio recebe emails
+#   - cache em memoria de 24h (evita lookup repetido pra dominios populares)
+DISPOSABLE_EMAIL_DOMAINS = frozenset([
+    'mailinator.com', 'guerrillamail.com', 'tempmail.com', 'throwam.com',
+    'yopmail.com', 'sharklasers.com', 'guerrillamailblock.com', 'grr.la',
+    'guerrillamail.info', 'spam4.me', 'trashmail.com', 'dispostable.com',
+    'getnada.com', 'fakeinbox.com', 'temp-mail.org', '10minutemail.com',
+    'tempr.email', 'tmpmail.org', 'maildrop.cc',
+])
+
+_MX_CACHE = {}  # domain (lower) -> (timestamp, has_mx_bool)
+_MX_CACHE_TTL = 24 * 3600  # 24h
+
+def has_mx_record(domain):
+    """Confirma que o dominio tem registro MX (recebe email).
+    Em caso de erro de rede/timeout, considera valido (fail-open) para nao
+    bloquear cadastros legitimos quando o DNS estiver indisponivel."""
+    if not domain:
+        return False
+    domain = domain.lower().strip().rstrip('.')
+    now = time.time()
+    cached = _MX_CACHE.get(domain)
+    if cached and (now - cached[0]) < _MX_CACHE_TTL:
+        return cached[1]
+    try:
+        import dns.resolver
+        resolver = dns.resolver.Resolver()
+        resolver.timeout = 3.0
+        resolver.lifetime = 3.0
+        answers = resolver.resolve(domain, 'MX')
+        result = len(list(answers)) > 0
+    except ImportError:
+        # dnspython nao disponivel; fail-open
+        print('[AUTH] dnspython unavailable, MX check skipped', flush=True)
+        result = True
+    except Exception as e:
+        # NXDOMAIN, NoAnswer, Timeout: dominio nao existe ou nao recebe email
+        # mas DNS errors transientes tambem caem aqui. Fail-open por seguranca:
+        # se nao for o nome (NXDOMAIN/NoAnswer), considera valido pra nao
+        # bloquear cadastros quando DNS estiver com problema.
+        try:
+            import dns.resolver as _dr
+            if isinstance(e, (_dr.NXDOMAIN, _dr.NoAnswer)):
+                result = False
+            else:
+                print(f'[AUTH] MX lookup transient error for {domain}: {e}', flush=True)
+                result = True  # fail-open
+        except Exception:
+            result = True
+    _MX_CACHE[domain] = (now, result)
+    return result
+
+def email_domain_ok(email):
+    """Retorna (ok, motivo). Usado pelo RegisterHandler depois de
+    valid_email() ja ter validado o formato."""
+    try:
+        domain = email.split('@', 1)[1].lower().strip()
+    except Exception:
+        return (False, 'Formato de email invalido')
+    if domain in DISPOSABLE_EMAIL_DOMAINS:
+        return (False, 'descartavel')
+    if not has_mx_record(domain):
+        return (False, 'sem_mx')
+    return (True, '')
+
 def valid_password(pwd):
     """Valida senha: 8+ chars, 1 maiuscula, 1 digito."""
     if not pwd or not isinstance(pwd, str):
@@ -483,6 +551,14 @@ class RegisterHandler(BaseHandler):
             return self.err('E-mail \u00e9 obrigat\u00f3rio')
         if not valid_email(email):
             return self.err('Formato de e-mail inv\u00e1lido')
+
+        # Task #171: rejeita emails de dominios descartaveis ou sem MX.
+        # Mensagem unica pro usuario (nao precisa diferenciar os dois).
+        # Origem do Google OAuth pula essa validacao (provider confiavel).
+        if not data.get('_oauth_verified'):
+            ok_dom, _why = email_domain_ok(email)
+            if not ok_dom:
+                return self.err('Este email n\u00e3o \u00e9 v\u00e1lido. Por favor, use um email real.')
 
         # Fallback de nome (defesa em profundidade): se o front nao enviar,
         # usa a parte antes do @ do email. users.name permite NULL no
