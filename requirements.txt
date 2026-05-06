@@ -11,3 +11,4 @@ ffmpeg-python>=0.2.0
 bcrypt>=4.0.0
 google-generativeai>=0.8.0
 dnspython>=2.3.0
+google-auth>=2.20.0

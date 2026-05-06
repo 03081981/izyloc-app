@@ -16,6 +16,8 @@ import bcrypt
 import hashlib
 import re
 import secrets
+import time
+import requests
 from datetime import datetime, timedelta, timezone
 
 # Timezone de Brasilia (UTC-3). Usado APENAS para exibicao de datas ao
@@ -66,6 +68,10 @@ MP_WEBHOOK_SECRET = os.environ.get('MP_WEBHOOK_SECRET', '')
 APP_BASE_URL = os.environ.get('APP_BASE_URL', 'https://app.izylaudo.com.br')
 AUTENTIQUE_TOKEN = os.environ.get('AUTENTIQUE_TOKEN', '7800e349d2e4353904f7749a3584af5d5d4ad35a3749df945cc84b6c5565893a')
 GEMINI_API_KEY = os.environ.get('GEMINI_API_KEY', '')
+# Task #172: Google OAuth — configurado em https://console.cloud.google.com
+# Authorized redirect URI deve bater EXATAMENTE com APP_BASE_URL/auth/google/callback
+GOOGLE_CLIENT_ID = os.environ.get('GOOGLE_CLIENT_ID', '')
+GOOGLE_CLIENT_SECRET = os.environ.get('GOOGLE_CLIENT_SECRET', '')
 UPLOAD_DIR = os.path.join(os.path.dirname(__file__), 'uploads')
 PDF_DIR = os.path.join(os.path.dirname(__file__), 'pdfs')
 Path(UPLOAD_DIR).mkdir(exist_ok=True)
@@ -6947,6 +6953,258 @@ class ManualUsuarioHandler(tornado.web.RequestHandler):
             self.write(f.read())
 
 
+# =========================================================================
+# Task #172: Google OAuth (login com Google)
+# Fluxo: usuario clica "Continuar com Google" -> /auth/google
+#        -> redireciona pro Google -> usuario aprova
+#        -> Google chama /auth/google/callback?code=...&state=...
+#        -> trocamos code por id_token, validamos, criamos/loga user,
+#           redirecionamos pro frontend com ?google_token=<JWT>
+# =========================================================================
+
+GOOGLE_AUTH_URL = 'https://accounts.google.com/o/oauth2/v2/auth'
+GOOGLE_TOKEN_URL = 'https://oauth2.googleapis.com/token'
+GOOGLE_OAUTH_SCOPES = 'openid email profile'
+
+def _google_redirect_uri():
+    return f'{APP_BASE_URL.rstrip("/")}/auth/google/callback'
+
+def _verify_google_id_token(id_token_str):
+    """Valida o id_token do Google contra as chaves publicas. Retorna o
+    payload (dict com email/sub/etc) ou None se invalido."""
+    if not id_token_str:
+        return None
+    try:
+        from google.oauth2 import id_token as g_id_token
+        from google.auth.transport import requests as g_requests
+        return g_id_token.verify_oauth2_token(
+            id_token_str,
+            g_requests.Request(),
+            GOOGLE_CLIENT_ID
+        )
+    except Exception as e:
+        print(f'[OAUTH] id_token verify failed: {e}', flush=True)
+        return None
+
+
+class GoogleAuthStartHandler(tornado.web.RequestHandler):
+    """GET /auth/google → redireciona pra autorizacao do Google.
+    Aceita ?next=login|cadastro pra customizar mensagem (atualmente nao usa)."""
+    def get(self):
+        if not GOOGLE_CLIENT_ID or not GOOGLE_CLIENT_SECRET:
+            self.set_status(503)
+            self.write('Google OAuth não configurado. Defina '
+                       'GOOGLE_CLIENT_ID e GOOGLE_CLIENT_SECRET no .env.')
+            return
+        # CSRF token via cookie httpOnly
+        state = secrets.token_urlsafe(32)
+        self.set_secure_cookie(
+            'gauth_state', state,
+            expires_days=None, httponly=True,
+            secure=APP_BASE_URL.startswith('https'),
+            samesite='Lax'
+        )
+        params = {
+            'client_id': GOOGLE_CLIENT_ID,
+            'redirect_uri': _google_redirect_uri(),
+            'response_type': 'code',
+            'scope': GOOGLE_OAUTH_SCOPES,
+            'state': state,
+            'access_type': 'online',
+            'prompt': 'select_account',
+        }
+        from urllib.parse import urlencode
+        self.redirect(f'{GOOGLE_AUTH_URL}?{urlencode(params)}')
+
+
+class GoogleAuthCallbackHandler(tornado.web.RequestHandler):
+    """GET /auth/google/callback?code=...&state=...
+    Troca o code por id_token, valida, faz upsert do user, gera JWT do
+    izyLAUDO e redireciona pro frontend com ?google_token=<JWT>."""
+
+    def _err_redirect(self, reason):
+        self.redirect(f'/?google_error={reason}')
+
+    def get(self):
+        if not GOOGLE_CLIENT_ID or not GOOGLE_CLIENT_SECRET:
+            return self._err_redirect('not_configured')
+        code = (self.get_argument('code', '') or '').strip()
+        state = (self.get_argument('state', '') or '').strip()
+        if not code:
+            err = self.get_argument('error', '') or 'no_code'
+            print(f'[OAUTH] callback sem code: error={err}', flush=True)
+            return self._err_redirect(err)
+        # CSRF
+        cookie_state = self.get_secure_cookie('gauth_state')
+        if cookie_state:
+            try:
+                cookie_state = cookie_state.decode('utf-8')
+            except Exception:
+                cookie_state = ''
+        if not state or state != cookie_state:
+            print(f'[OAUTH] state mismatch: cookie={cookie_state} '
+                  f'qs={state}', flush=True)
+            return self._err_redirect('state_mismatch')
+        self.clear_cookie('gauth_state')
+
+        # Trocar code por id_token
+        try:
+            r = requests.post(GOOGLE_TOKEN_URL, data={
+                'code': code,
+                'client_id': GOOGLE_CLIENT_ID,
+                'client_secret': GOOGLE_CLIENT_SECRET,
+                'redirect_uri': _google_redirect_uri(),
+                'grant_type': 'authorization_code',
+            }, timeout=10)
+            tok = r.json()
+        except Exception as e:
+            print(f'[OAUTH] token exchange failed: {e}', flush=True)
+            return self._err_redirect('token_exchange')
+        id_token_str = tok.get('id_token')
+        payload = _verify_google_id_token(id_token_str)
+        if not payload:
+            return self._err_redirect('invalid_token')
+
+        email = (payload.get('email') or '').strip().lower()
+        if not email:
+            return self._err_redirect('no_email')
+        if not payload.get('email_verified'):
+            return self._err_redirect('email_not_verified')
+        google_sub = payload.get('sub') or ''
+        name = (payload.get('name') or email.split('@')[0]).strip()
+
+        # Upsert: 1) por google_id, 2) por email (linkar conta existente),
+        # 3) criar nova conta + bonus se elegivel.
+        conn = get_conn()
+        try:
+            row = conn.execute(
+                "SELECT id, name, email, balance_cents, status "
+                "FROM users WHERE google_id=?",
+                (google_sub,)
+            ).fetchone()
+            if not row:
+                row = conn.execute(
+                    "SELECT id, name, email, balance_cents, status, google_id "
+                    "FROM users WHERE email=?",
+                    (email,)
+                ).fetchone()
+                if row:
+                    # Linka a conta existente ao google_id
+                    conn.execute(
+                        "UPDATE users SET google_id=?, "
+                        "email_verified_at=COALESCE(email_verified_at, NOW()), "
+                        "status=CASE WHEN status='pending_verification' "
+                        "THEN 'active' ELSE status END, "
+                        "updated_at=NOW() WHERE id=?",
+                        (google_sub, row['id'])
+                    )
+                    conn.commit()
+                    print(f'[OAUTH] linked existing account: {email} -> google_sub', flush=True)
+            user_id = None
+            new_account = False
+            if row:
+                user_id = row['id']
+            else:
+                # Cria nova conta (Google ja verificou email — pula MX/descartavel)
+                user_id = str(uuid.uuid4())
+                now = datetime.utcnow()
+                # Bonus de boas-vindas com mesma logica do RegisterHandler
+                bonus_cents = 0
+                already_got_bonus = False
+                try:
+                    prev = conn.execute(
+                        "SELECT 1 FROM bonus_concedido WHERE email=?",
+                        (email,)
+                    ).fetchone()
+                    already_got_bonus = bool(prev)
+                except Exception as _eb:
+                    print(f'[OAUTH] bonus_concedido lookup failed: {_eb}',
+                          flush=True)
+                    already_got_bonus = True
+                if not already_got_bonus:
+                    bonus_cents = 500
+                    try:
+                        srow = conn.execute(
+                            "SELECT value FROM settings WHERE key='welcome_bonus_cents'"
+                        ).fetchone()
+                        if srow and srow['value'] is not None:
+                            bonus_cents = int(srow['value'])
+                    except Exception:
+                        pass
+                conn.execute(
+                    "INSERT INTO users (id, name, email, password_hash, "
+                    "google_id, status, balance_cents, "
+                    "email_verified_at, terms_accepted_at, created_at, updated_at) "
+                    "VALUES (?, ?, ?, '', ?, 'active', ?, NOW(), NOW(), ?, ?)",
+                    (user_id, name, email, google_sub, bonus_cents,
+                     datetime.utcnow(), datetime.utcnow())
+                )
+                conn.commit()
+                if bonus_cents > 0:
+                    try:
+                        conn.execute(
+                            'INSERT INTO balance_transactions '
+                            '(user_id, type, amount_cents, balance_after_cents, description) '
+                            'VALUES (?, ?, ?, ?, ?)',
+                            (user_id, 'bonus', bonus_cents, bonus_cents,
+                             'Bonus de boas-vindas (Google)')
+                        )
+                        conn.execute(
+                            "INSERT INTO bonus_concedido "
+                            "(email, bonus_cents, user_id_origem, notes) "
+                            "VALUES (?, ?, ?, ?)",
+                            (email, bonus_cents, user_id, 'cadastro_google')
+                        )
+                        conn.commit()
+                    except Exception as _ec:
+                        print(f'[OAUTH] welcome_bonus credit failed: {_ec}',
+                              flush=True)
+                new_account = True
+                print(f'[OAUTH] created account: {email} ({user_id}) '
+                      f'bonus={bonus_cents}', flush=True)
+
+            # Atualiza last_login
+            try:
+                conn.execute(
+                    "UPDATE users SET last_login_at=NOW() WHERE id=?",
+                    (user_id,)
+                )
+                conn.commit()
+            except Exception:
+                pass
+
+            token, jti = create_token(user_id, email)
+            try:
+                conn.execute(
+                    "INSERT INTO user_sessions "
+                    "(user_id, token, expires_at, ip, user_agent) "
+                    "VALUES (?, ?, ?, ?, ?)",
+                    (user_id, jti,
+                     datetime.utcnow() + timedelta(days=30),
+                     self.request.remote_ip,
+                     self.request.headers.get('User-Agent', ''))
+                )
+                conn.commit()
+            except Exception:
+                pass
+
+            # Redireciona pro frontend com token. Frontend tem listener que
+            # detecta ?google_token=<JWT> e ?google_new=1, salva sessao,
+            # vai pro dashboard, e mostra banner se new=1.
+            qs = f'google_token={token}'
+            if new_account:
+                qs += '&google_new=1'
+            self.redirect(f'/?{qs}')
+        except Exception as e:
+            try: conn.rollback()
+            except Exception: pass
+            print(f'[OAUTH] callback error: {e}', flush=True)
+            return self._err_redirect('server_error')
+        finally:
+            try: conn.close()
+            except Exception: pass
+
+
 # Task #160: versao HTML do Manual do Usuario. PDF nao renderiza inline em
 # iframe no Chrome Android, entao o modal fullscreen do manual usa esta rota
 # em vez de /manual-usuario. A rota /manual-usuario (PDF) continua funcionando
@@ -7145,6 +7403,9 @@ def make_app():
         (r'/sw\.js', ServiceWorkerHandler),
         # SEO — sitemap.xml do site institucional (task #165)
         (r'/sitemap\.xml', SitemapHandler),
+        # Google OAuth (task #172)
+        (r'/auth/google', GoogleAuthStartHandler),
+        (r'/auth/google/callback', GoogleAuthCallbackHandler),
         # Laudos (custom routes)
         (r'/laudo/([^/]+)/status', LaudoStatusHandler),
         (r'/laudo/bulk-delete', LaudoBulkDeleteHandler),

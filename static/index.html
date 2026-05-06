@@ -210,6 +210,21 @@ body {
 .email-feedback { font-size: 12px; margin-top: 4px; min-height: 14px; line-height: 1.3; }
 .email-feedback.invalid { color: #dc2626; }
 .email-feedback.valid { color: #16a34a; }
+/* Task #172: botão "Continuar com Google" + separador "ou" */
+.btn-google { display:flex; align-items:center; justify-content:center; gap:10px;
+  width:100%; height:44px; background:#fff; color:#3c4043; border:1px solid #dadce0;
+  border-radius:8px; font-size:14px; font-weight:500; cursor:pointer; text-decoration:none;
+  transition:background .15s, box-shadow .15s; margin-bottom:12px; }
+.btn-google:hover { background:#f8f9fa; box-shadow:0 1px 3px rgba(60,64,67,.1); }
+.btn-google svg { flex-shrink:0; }
+.auth-divider { position:relative; text-align:center; margin:14px 0;
+  color:#94a3b8; font-size:12px; }
+.auth-divider::before, .auth-divider::after {
+  content:''; position:absolute; top:50%; width:42%; height:1px;
+  background:#e2e8f0; }
+.auth-divider::before { left:0; }
+.auth-divider::after { right:0; }
+.auth-divider span { background:#fff; padding:0 8px; position:relative; }
 
 .btn {
   display: inline-flex; align-items: center; justify-content: center;
@@ -3188,6 +3203,12 @@ window._openFotoModal = function(imgSrc) {
       <div class="auth-title">Bem-vindo de volta</div>
       <div class="auth-sub">Acesse sua conta para continuar</div>
       <div class="auth-error" id="login-invalid"></div>
+      <!-- Task #172: Google OAuth -->
+      <a href="/auth/google" class="btn-google" aria-label="Entrar com Google">
+        <svg viewBox="0 0 18 18" width="18" height="18" aria-hidden="true"><path fill="#4285F4" d="M17.64 9.205c0-.639-.057-1.252-.164-1.841H9v3.481h4.844a4.14 4.14 0 0 1-1.796 2.716v2.259h2.908c1.702-1.567 2.684-3.875 2.684-6.615z"/><path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 0 0 9 18z"/><path fill="#FBBC05" d="M3.964 10.71A5.41 5.41 0 0 1 3.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.996 8.996 0 0 0 0 9c0 1.452.348 2.827.957 4.042l3.007-2.332z"/><path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.892 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.958l3.007 2.332C4.672 5.163 6.656 3.58 9 3.58z"/></svg>
+        <span>Continuar com Google</span>
+      </a>
+      <div class="auth-divider"><span>ou</span></div>
       <div class="form-group">
         <label class="form-label">E-mail</label>
         <input class="form-input" id="login-email" type="email" placeholder="seu@email.com" autocomplete="email"/>
@@ -3218,6 +3239,12 @@ window._openFotoModal = function(imgSrc) {
       <!-- Task #167: cadastro simplificado — apenas e-mail, senha e
            confirmar senha. Nome/empresa/CRECI/telefone/CPF agora ficam
            nas Configurações depois do login. Reduz fricção do signup. -->
+      <!-- Task #172: Google OAuth -->
+      <a href="/auth/google" class="btn-google" aria-label="Cadastrar com Google">
+        <svg viewBox="0 0 18 18" width="18" height="18" aria-hidden="true"><path fill="#4285F4" d="M17.64 9.205c0-.639-.057-1.252-.164-1.841H9v3.481h4.844a4.14 4.14 0 0 1-1.796 2.716v2.259h2.908c1.702-1.567 2.684-3.875 2.684-6.615z"/><path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 0 0 9 18z"/><path fill="#FBBC05" d="M3.964 10.71A5.41 5.41 0 0 1 3.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.996 8.996 0 0 0 0 9c0 1.452.348 2.827.957 4.042l3.007-2.332z"/><path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.892 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.958l3.007 2.332C4.672 5.163 6.656 3.58 9 3.58z"/></svg>
+        <span>Continuar com Google</span>
+      </a>
+      <div class="auth-divider"><span>ou</span></div>
       <div class="form-group">
         <label class="form-label">E-mail</label>
         <input class="form-input" id="reg-email" type="email" placeholder="seu@email.com" autocomplete="email"/>
@@ -5012,6 +5039,49 @@ function handleAuthUrlParams() {
   const verified = qs.get('verified');
   const err = qs.get('verify_error');
   const resetToken = qs.get('reset_token');
+  // Task #172: callback do Google OAuth. Backend redireciona pra
+  // /?google_token=<JWT>[&google_new=1] depois de validar o id_token.
+  // Salvamos sessão, vamos pro dashboard, e mostramos banner se for novo
+  // (mesma logica do _wireOnceAfterRegister).
+  const googleToken = qs.get('google_token');
+  const googleErr = qs.get('google_error');
+  if (googleToken) {
+    try {
+      // Decodifica payload (sem verificar — é só pra extrair email/user_id
+      // e popular currentUser. Backend já validou tudo.)
+      const parts = googleToken.split('.');
+      const payload = JSON.parse(atob(parts[1].replace(/-/g,'+').replace(/_/g,'/')));
+      const fakeUser = {
+        id: payload.sub || payload.user_id,
+        email: payload.email,
+        name: (payload.email || '').split('@')[0],
+        plan: 'free',
+        status: 'active',
+        balance_cents: 0,
+        balance_formatted: 'R$ 0,00',
+        email_verified: true
+      };
+      saveSession({ token: googleToken, user: fakeUser });
+      if (qs.get('google_new') === '1') {
+        try { localStorage.setItem('izylo_just_registered', '1'); } catch (_) {}
+      }
+      window.history.replaceState({}, '', window.location.pathname);
+      showPage('page-dashboard', null, false);
+      loadDashboard();  // o /me real vai puxar dados completos (saldo, etc)
+      return;
+    } catch (e) { console.error('[OAuth] callback error:', e); }
+  }
+  if (googleErr) {
+    const gMsgs = {
+      'state_mismatch': 'Sessão expirou — tente novamente.',
+      'invalid_token': 'Não foi possível verificar o login com Google.',
+      'email_not_verified': 'Este email do Google não foi verificado.',
+      'not_configured': 'Login com Google ainda não está configurado.',
+      'token_exchange': 'Erro ao falar com o Google. Tente novamente.',
+    };
+    toast(gMsgs[googleErr] || 'Erro no login com Google.', 'error');
+    window.history.replaceState({}, '', window.location.pathname);
+  }
   if (verified === 'true') {
     const bonus = qs.get('bonus') || 'R$ 5,00';
     setTimeout(() => toast('E-mail verificado! ' + bonus + ' de bônus adicionados à sua conta.', 'success'), 400);
