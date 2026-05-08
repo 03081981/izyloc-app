@@ -7495,8 +7495,9 @@ function toggleMobiliado(checked) {
 
 async function wizardNext(step) {
   if (step === 1) {
-    if (!document.getElementById('wi-address').value.trim())
-      return toast('Endereço do imóvel é obrigatório', 'error');
+    // Push 53: removida validação obrigatória do endereço.
+    // Backend aceita property_address='' (schema TEXT, sem NOT NULL).
+    // Endereço/CEP podem ser preenchidos depois na Etapa 7 (Revisão).
     const dateVal = document.getElementById('wi-date').value;
     const fmtDate = dateVal ? new Date(dateVal+'T12:00:00').toLocaleDateString('pt-BR') : '';
     var _tp = (typeof wizard !== 'undefined' && wizard.tipo) || (document.getElementById('wi-type')||{}).value || '';
