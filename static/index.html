@@ -3970,9 +3970,16 @@ window._openFotoModal = function(imgSrc) {
       <div class="wiz-section-title">Dados do imóvel</div>
       <div class="wiz-section-sub">Preencha o endereço completo do imóvel vistoriado.</div>
 
-      <!-- Context tag -->
-      <div id="wi-context-tag" class="wi-context-tag">
-        <span class="wi-ctx-check">✓</span> <span id="wi-ctx-label">—</span>
+      <!-- Context tag + aviso (Push 54) -->
+      <div style="display:flex;align-items:flex-start;gap:12px;flex-wrap:wrap;margin-bottom:12px">
+        <div id="wi-context-tag" class="wi-context-tag" style="flex-shrink:0;margin-bottom:0">
+          <span class="wi-ctx-check">✓</span> <span id="wi-ctx-label">—</span>
+        </div>
+        <!-- Push 54: aviso endereço opcional -->
+        <div style="display:flex;align-items:flex-start;gap:8px;background:#e8f4fd;border:1px solid #b3d9f5;border-radius:10px;padding:10px 14px;font-size:13px;color:#1a6fa8;line-height:1.5;flex:1;min-width:240px">
+          <span style="flex-shrink:0">💡</span>
+          <span>Não tem o endereço agora? Sem problema! Selecione o tipo do imóvel abaixo e clique em Continuar — o endereço pode ser preenchido depois na Etapa 7.</span>
+        </div>
       </div>
 
       <!-- Hidden inputs -->
@@ -4162,6 +4169,11 @@ window._openFotoModal = function(imgSrc) {
     <div id="wstep-2" style="display:none">
 <div class="wiz-section-title">Partes envolvidas</div>
 <div class="wiz-section-sub">Preencha os dados do locador, locatário e corretor avaliador.</div>
+<!-- Push 54: aviso campos opcionais -->
+<div style="display:flex;align-items:flex-start;gap:8px;background:#e8f4fd;border:1px solid #b3d9f5;border-radius:10px;padding:10px 14px;font-size:13px;color:#1a6fa8;line-height:1.5;margin:12px 0 4px">
+  <span style="flex-shrink:0">💡</span>
+  <span>Todos os campos são opcionais! Se não tiver os dados agora, clique em Continuar — você pode preencher depois na Etapa 7.</span>
+</div>
 
 <!-- LOCADORES -->
 <div style="font-size: var(--fs-xxs);font-weight: var(--fw-bold);color:#8898aa;text-transform:uppercase;letter-spacing:0.5px;margin:16px 0 10px">Locador(es) — Proprietário<span id="wiz4-suf-loc"></span></div>
