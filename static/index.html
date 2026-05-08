@@ -3992,6 +3992,8 @@ window._openFotoModal = function(imgSrc) {
           </div>
         </div>
         <div id="wi-cep-tip" style="font-size: var(--fs-xxs);color:#2d7dd2;margin-bottom:10px;display:none">✓ Endereço preenchido automaticamente via ViaCEP</div>
+        <!-- Push 52: aviso opcional do CEP -->
+        <div id="wi-cep-skip-hint" style="font-size: var(--fs-xxs);color:#8898aa;font-style:italic;margin:-4px 0 10px">Não tem o CEP agora? Pode continuar e preencher depois (na Etapa 7 — Revisão).</div>
 
         <div style="display:flex;flex-direction:column;gap:4px;margin-bottom:10px">
           <label style="font-size: var(--fs-xs);font-weight: var(--fw-semibold);color:#4a5568">Endereço</label>
@@ -7388,12 +7390,10 @@ function updateContextTag() {
   if(tag) tag.textContent = tLabel+' · '+rLabel;
 }
 function validateAndGoWstep2() {
+  // Push 52: apenas Tipo do imóvel é obrigatório.
+  // CEP / endereço / área / data podem ficar pra Etapa 7 (Revisão).
   const required = [
-    {id:'wi-address', label:'Endereço'},
-    {id:'wi-bairro', label:'Bairro'},
-    {id:'wi-cidade', label:'Cidade'},
-    {id:'wi-prop-type', label:'Tipo do imóvel'},
-    {id:'wi-date', label:'Data da vistoria'}
+    {id:'wi-prop-type', label:'Tipo do imóvel'}
   ];
   let ok = true;
   required.forEach(f => {
