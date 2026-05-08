@@ -7524,10 +7524,57 @@ function toggleMobiliado(checked) {
 // (digitar campo, subir foto, rodar análise). Evita laudos
 // fantasma 'EM ANDAMENTO' sem nenhum dado preenchido.
 // ============================================================
+// === Push 56: gate de conteúdo real para lazy creation =========
+// _wizHasUserContent() retorna true SOMENTE se o user fez algo
+// real — input em campo NÃO pré-fillavel, ambiente selecionado,
+// foto subida, ou _userTouched setada por evento input/change real.
+// ============================================================
+function _wizHasUserContent() {
+  try {
+    if (typeof wizard !== "undefined" && wizard && wizard._userTouched) return true;
+    if (typeof wizard !== "undefined" && wizard && Array.isArray(wizard.selectedRooms) && wizard.selectedRooms.length > 0) return true;
+    if (Array.isArray(window._wiz6Ambientes) && window._wiz6Ambientes.length > 0) return true;
+    var fs = window._fotoStore || {};
+    for (var k in fs) { if (Array.isArray(fs[k]) && fs[k].length > 0) return true; }
+    var ids = ["wi-cep","wi-address","wi-número","wi-numero","wi-bairro","wi-cidade","wi-complemento","wi-area","wi-date","wi-hora","wi-obs"];
+    for (var i = 0; i < ids.length; i++) {
+      var el = document.getElementById(ids[i]);
+      if (el && el.value && String(el.value).trim()) return true;
+    }
+  } catch(_e) {}
+  return false;
+}
+window._wizHasUserContent = _wizHasUserContent;
+
+// Listener global: marca wizard._userTouched em qualquer input/change
+// REAL do usuário dentro de wstep-* (e.isTrusted exclui set programático).
+(function _push56InstallTouchListener(){
+  if (window._push56TouchInstalled) return;
+  window._push56TouchInstalled = true;
+  var _markTouched = function(e) {
+    try {
+      if (typeof wizard === "undefined" || !wizard) return;
+      if (!e || !e.isTrusted) return;
+      var t = e.target;
+      if (!t || !t.closest) return;
+      var w = t.closest("[id^=\"wstep-\"]");
+      if (w) wizard._userTouched = true;
+    } catch(_e){}
+  };
+  document.addEventListener("input", _markTouched, true);
+  document.addEventListener("change", _markTouched, true);
+})();
+
 async function ensureInspection() {
   if (typeof wizard !== 'undefined' && wizard.inspectionId) return wizard.inspectionId;
   if (window._ensureInspPromise) return await window._ensureInspPromise;
   window._ensureInspPromise = (async function() {
+    // Push 56: gate de conteúdo real — não cria sem dado do usuário
+    if (typeof _wizHasUserContent === "function" && !_wizHasUserContent()) {
+      var _e56 = new Error("sem conteúdo do usuário ainda");
+      _e56.silent = true;
+      throw _e56;
+    }
     var _tp = (typeof wizard !== 'undefined' && wizard.tipo) || (document.getElementById('wi-type')||{}).value || '';
     if (!_tp) { var _sel = document.querySelector('.tipo-card.selected'); if (_sel) _tp = _sel.getAttribute('data-tipo') || ''; }
     if (['entrada','saída','temporada'].indexOf(_tp) < 0) {
@@ -7582,6 +7629,11 @@ async function wizardNext(step) {
     gotoWStep(3);
   }
   else if (step === 2) {
+    // Push 56: skip silenciosamente se ainda não há conteúdo do usuário
+    if (!wizard.inspectionId && typeof _wizHasUserContent === "function" && !_wizHasUserContent()) {
+      gotoWStep(3);
+      return;
+    }
     showLoading('Salvando...');
     // Push 55: lazy create se ainda não foi criada
     try { await ensureInspection(); } catch(_e) { hideLoading(); return toast(_e.message || 'Erro ao criar vistoria', 'error'); }
@@ -8663,6 +8715,15 @@ window.addEventListener('resize', () => {
     var _origNext = wizardNext;
     wizardNext = async function(step) {
       if (step === 3) {
+        // Push 56: skip silenciosamente se ainda não há conteúdo do usuário
+        if (!wizard.inspectionId && typeof _wizHasUserContent === "function" && !_wizHasUserContent()) {
+          gotoWStep(4);
+          document.querySelectorAll("[id^=wstep-]").forEach(function(el) { el.style.display = "none"; });
+          var _ws3sk = document.getElementById("wstep-3");
+          if (_ws3sk) _ws3sk.style.display = "block";
+          window.scrollTo(0, 0);
+          return;
+        }
         // Push 55: lazy create — garante que inspeção existe antes de salvar
         showLoading('Salvando...');
         try { await ensureInspection(); } catch(_e) { hideLoading(); return toast(_e.message || 'Erro ao criar vistoria', 'error'); }
