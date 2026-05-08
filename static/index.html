@@ -7532,8 +7532,16 @@ function toggleMobiliado(checked) {
 function _wizHasUserContent() {
   try {
     if (typeof wizard !== "undefined" && wizard && wizard._userTouched) return true;
-    if (typeof wizard !== "undefined" && wizard && Array.isArray(wizard.selectedRooms) && wizard.selectedRooms.length > 0) return true;
-    if (Array.isArray(window._wiz6Ambientes) && window._wiz6Ambientes.length > 0) return true;
+    // Push 58: ignora fallback default ['Ambiente 1'] (criado quando user
+    // entra Step 6 sem selecionar ambiente nenhum em Step 5).
+    if (typeof wizard !== "undefined" && wizard && Array.isArray(wizard.selectedRooms)) {
+      var _realRooms = wizard.selectedRooms.filter(function(r){ return r && r !== "Ambiente 1"; });
+      if (_realRooms.length > 0) return true;
+    }
+    if (Array.isArray(window._wiz6Ambientes)) {
+      var _realAmb = window._wiz6Ambientes.filter(function(a){ return a && a !== "Ambiente 1"; });
+      if (_realAmb.length > 0) return true;
+    }
     var fs = window._fotoStore || {};
     for (var k in fs) { if (Array.isArray(fs[k]) && fs[k].length > 0) return true; }
     // Push 57: removidos wi-date e wi-hora — wi-date é auto-prefilled com hoje
