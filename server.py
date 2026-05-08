@@ -5263,29 +5263,51 @@ class LaudoStatusHandler(BaseHandler):
 
 
 class LaudoDeleteHandler(BaseHandler):
-    """DELETE /laudo/<id> -> exclui o laudo permanentemente."""
+    """DELETE /laudo/<id> -> exclui o laudo permanentemente.
+
+    Push 50: distingue 404 (laudo inexistente) de 403 (laudo de outro user)
+    em vez de mascarar tudo como 404. Loga cada exit pra diagnostico.
+    """
     def delete(self, insp_id):
         user = self.require_auth()
         if not user:
             return
         conn = get_conn()
         try:
-            row = conn.execute('SELECT id FROM inspections WHERE id=? AND user_id=?', (insp_id, user['user_id'])).fetchone()
+            row = conn.execute('SELECT id, user_id FROM inspections WHERE id=?', (insp_id,)).fetchone()
             if not row:
+                print(f'[LAUDO_DELETE] 404 not_found id={insp_id} requester={user["user_id"]} email={user.get("email","")}', flush=True)
                 self.set_status(404)
-                self.write(json.dumps({'error': 'Laudo nao encontrado'}))
+                self.write(json.dumps({'ok': False, 'error': 'Laudo nao encontrado'}))
+                return
+            owner_id = row['user_id'] if hasattr(row, 'keys') else row[1]
+            if str(owner_id) != str(user['user_id']):
+                print(f'[LAUDO_DELETE] 403 forbidden id={insp_id} owner={owner_id} requester={user["user_id"]} email={user.get("email","")}', flush=True)
+                self.set_status(403)
+                self.write(json.dumps({'ok': False, 'error': 'Voce nao tem permissao para excluir este laudo'}))
                 return
             try:
+                conn.execute('DELETE FROM item_photos WHERE item_id IN (SELECT id FROM room_items WHERE room_id IN (SELECT id FROM rooms WHERE inspection_id=?))', (insp_id,))
+            except Exception as e:
+                print(f'[LAUDO_DELETE] item_photos err: {e}', flush=True)
+            try:
                 conn.execute('DELETE FROM room_items WHERE room_id IN (SELECT id FROM rooms WHERE inspection_id=?)', (insp_id,))
-            except Exception:
-                pass
+            except Exception as e:
+                print(f'[LAUDO_DELETE] room_items err: {e}', flush=True)
             try:
                 conn.execute('DELETE FROM rooms WHERE inspection_id=?', (insp_id,))
-            except Exception:
-                pass
+            except Exception as e:
+                print(f'[LAUDO_DELETE] rooms err: {e}', flush=True)
             conn.execute('DELETE FROM inspections WHERE id=?', (insp_id,))
             conn.commit()
+            print(f'[LAUDO_DELETE] OK id={insp_id} user={user["user_id"]} email={user.get("email","")}', flush=True)
             self.write(json.dumps({'ok': True}))
+        except Exception as e:
+            try: conn.rollback()
+            except Exception: pass
+            print(f'[LAUDO_DELETE] 500 fatal id={insp_id} err={e}', flush=True)
+            self.set_status(500)
+            self.write(json.dumps({'ok': False, 'error': str(e)}))
         finally:
             conn.close()
 
