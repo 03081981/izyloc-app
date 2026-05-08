@@ -7536,7 +7536,9 @@ function _wizHasUserContent() {
     if (Array.isArray(window._wiz6Ambientes) && window._wiz6Ambientes.length > 0) return true;
     var fs = window._fotoStore || {};
     for (var k in fs) { if (Array.isArray(fs[k]) && fs[k].length > 0) return true; }
-    var ids = ["wi-cep","wi-address","wi-número","wi-numero","wi-bairro","wi-cidade","wi-complemento","wi-area","wi-date","wi-hora","wi-obs"];
+    // Push 57: removidos wi-date e wi-hora — wi-date é auto-prefilled com hoje
+    // pelo hardResetWizard. Se user digitar, _userTouched é setado pelo listener.
+    var ids = ["wi-cep","wi-address","wi-número","wi-numero","wi-bairro","wi-cidade","wi-complemento","wi-area","wi-obs"];
     for (var i = 0; i < ids.length; i++) {
       var el = document.getElementById(ids[i]);
       if (el && el.value && String(el.value).trim()) return true;
