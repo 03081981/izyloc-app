@@ -5055,18 +5055,27 @@ function _wizCollectSnapshot() {
   } catch(e) { return {}; }
 }
 function wizSaveSnapshot(immediate) {
+  // Push 55: não precisa mais ter inspectionId pra entrar.
+  // A criação acontece lazy dentro de doSave().
   var ws = (typeof wizard !== 'undefined') ? wizard : null;
-  if (!ws || !ws.inspectionId) return;
+  if (!ws) return;
   // Task #112: pin do id no momento da chamada — se o id mudar durante
   // o debounce (usuario abriu outro laudo), abortamos para nao vazar
   // dados de um laudo no snapshot de outro.
-  var _pinnedId = ws.inspectionId;
-  var doSave = function() {
+  var _pinnedId = ws.inspectionId; // pode ser null no Push 55
+  var doSave = async function() {
     try {
       var ws2 = (typeof wizard !== 'undefined') ? wizard : null;
-      if (!ws2 || ws2.inspectionId !== _pinnedId) {
+      if (!ws2) return;
+      if (_pinnedId && ws2.inspectionId !== _pinnedId) {
         console.warn('[wizSaveSnapshot] aborting — inspectionId mudou de', _pinnedId, 'para', (ws2 && ws2.inspectionId));
         return;
+      }
+      // Push 55: lazy create (a chegada aqui via debounce indica input do user)
+      if (!ws2.inspectionId) {
+        try { await ensureInspection(); }
+        catch(_e) { /* sem tipo selecionado ainda — silencioso */ return; }
+        _pinnedId = ws2.inspectionId;
       }
       var snap = _wizCollectSnapshot();
       var json = JSON.stringify(snap);
@@ -5092,7 +5101,12 @@ function wizSaveSnapshot(immediate) {
 // Upload de uma foto base64 para o servidor; retorna {id, url} ou null.
 async function wizUploadPhoto(ambiente, idx, base64, mime, subAmbiente) {
   var ws = (typeof wizard !== 'undefined') ? wizard : null;
-  if (!ws || !ws.inspectionId) return null;
+  if (!ws) return null;
+  // Push 55: lazy create antes de subir foto
+  if (!ws.inspectionId) {
+    try { await ensureInspection(); }
+    catch(e) { console.warn('[wizUploadPhoto] ensureInspection falhou', e); return null; }
+  }
   try {
     var r = await api('POST', '/api/inspections/' + ws.inspectionId + '/wiz-photo', {
       ambiente: ambiente || '',
@@ -7505,40 +7519,72 @@ function toggleMobiliado(checked) {
   }
 }
 
-async function wizardNext(step) {
-  if (step === 1) {
-    // Push 53: removida validação obrigatória do endereço.
-    // Backend aceita property_address='' (schema TEXT, sem NOT NULL).
-    // Endereço/CEP podem ser preenchidos depois na Etapa 7 (Revisão).
-    const dateVal = document.getElementById('wi-date').value;
-    const fmtDate = dateVal ? new Date(dateVal+'T12:00:00').toLocaleDateString('pt-BR') : '';
+// === Push 55: lazy creation idempotente da inspeção ===========
+// A row no banco só é criada quando user fizer algo de verdade
+// (digitar campo, subir foto, rodar análise). Evita laudos
+// fantasma 'EM ANDAMENTO' sem nenhum dado preenchido.
+// ============================================================
+async function ensureInspection() {
+  if (typeof wizard !== 'undefined' && wizard.inspectionId) return wizard.inspectionId;
+  if (window._ensureInspPromise) return await window._ensureInspPromise;
+  window._ensureInspPromise = (async function() {
     var _tp = (typeof wizard !== 'undefined' && wizard.tipo) || (document.getElementById('wi-type')||{}).value || '';
-        if (!_tp) { var _sel = document.querySelector('.tipo-card.selected'); if (_sel) _tp = _sel.getAttribute('data-tipo') || ''; }
-        if (['entrada','saída','temporada'].indexOf(_tp) < 0) { hideLoading(); return toast('Selecione o tipo de vistoria antes de continuar', 'error'); }
-        if (typeof wizard !== 'undefined') wizard.tipo = _tp;
-        var _wi = document.getElementById('wi-type'); if (_wi) _wi.value = _tp;
-        showLoading('Criando vistoria...');
-    const r = await api('POST', '/api/inspections', {
-      type: (typeof wizard !== 'undefined' && wizard.tipo) || document.getElementById('wi-type').value,
-      property_address: (function(){var _a=(document.getElementById('wi-address')||{value:''}).value.trim();var _n=(document.getElementById('wi-n\u00famero')||document.getElementById('wi-numero')||document.getElementById('wi-number')||{value:''}).value.trim();if(!_n)return _a;var _suf=', '+_n;if(_a&&_a.length>_suf.length&&_a.substring(_a.length-_suf.length)===_suf)return _a;return _a+_suf;})(),
-      property_type: document.getElementById('wi-prop-type').value,
-      property_area: document.getElementById('wi-area').value,
+    if (!_tp) { var _sel = document.querySelector('.tipo-card.selected'); if (_sel) _tp = _sel.getAttribute('data-tipo') || ''; }
+    if (['entrada','saída','temporada'].indexOf(_tp) < 0) {
+      throw new Error('Selecione o tipo de vistoria antes de continuar');
+    }
+    if (typeof wizard !== 'undefined') wizard.tipo = _tp;
+    var _wi = document.getElementById('wi-type'); if (_wi) _wi.value = _tp;
+    var dateVal = (document.getElementById('wi-date')||{value:''}).value;
+    var fmtDate = dateVal ? new Date(dateVal+'T12:00:00').toLocaleDateString('pt-BR') : '';
+    var addrFull = (function(){
+      var _a=(document.getElementById('wi-address')||{value:''}).value.trim();
+      var _n=(document.getElementById('wi-número')||document.getElementById('wi-numero')||document.getElementById('wi-number')||{value:''}).value.trim();
+      if(!_n)return _a; var _suf=', '+_n;
+      if(_a&&_a.length>_suf.length&&_a.substring(_a.length-_suf.length)===_suf)return _a;
+      return _a+_suf;
+    })();
+    var payload = {
+      type: _tp,
+      property_address: addrFull,
+      property_type: (document.getElementById('wi-prop-type')||{value:''}).value,
+      property_area: (document.getElementById('wi-area')||{value:''}).value,
       inspection_date: fmtDate,
-      mobiliado: wizard.mobiliado ? true : false,
+      mobiliado: (typeof wizard !== 'undefined' && wizard.mobiliado) ? true : false,
       imobiliaria_name: ((document.getElementById('wi-imob-name') || {}).value || '').trim(),
       imobiliaria_cnpj: ((document.getElementById('wi-imob-cnpj') || {}).value || '').trim(),
       imobiliaria_phone: ((document.getElementById('wi-imob-phone') || {}).value || '').trim(),
       imobiliaria_address: ((document.getElementById('wi-imob-address') || {}).value || '').trim(),
       imobiliaria_email: ((document.getElementById('wi-imob-email') || {}).value || '').trim(),
-    });
-    hideLoading();
-    if (!r.ok) return toast(r.error || 'Erro ao criar vistoria', 'error');
-    wizard.inspectionId = r.id; currentInspection = r;
-    localStorage.setItem('izylo_current_inspection', r.id);
+    };
+    var r = await api('POST', '/api/inspections', payload);
+    if (!r || !r.ok) throw new Error((r && r.error) || 'Erro ao criar vistoria');
+    if (typeof wizard !== 'undefined') wizard.inspectionId = r.id;
+    try { currentInspection = r; } catch(_e){}
+    try { localStorage.setItem('izylo_current_inspection', r.id); } catch(_e){}
+    return r.id;
+  })();
+  try { return await window._ensureInspPromise; }
+  finally { window._ensureInspPromise = null; }
+}
+window.ensureInspection = ensureInspection;
+
+async function wizardNext(step) {
+  if (step === 1) {
+    // Push 55: lazy creation. NÃO cria mais a inspeção aqui — só navega.
+    // A row no banco aparece apenas quando o user digitar campo,
+    // subir foto ou rodar análise IA (via ensureInspection).
+    var _tp = (typeof wizard !== 'undefined' && wizard.tipo) || (document.getElementById('wi-type')||{}).value || '';
+    if (!_tp) { var _sel = document.querySelector('.tipo-card.selected'); if (_sel) _tp = _sel.getAttribute('data-tipo') || ''; }
+    if (['entrada','saída','temporada'].indexOf(_tp) < 0) { return toast('Selecione o tipo de vistoria antes de continuar', 'error'); }
+    if (typeof wizard !== 'undefined') wizard.tipo = _tp;
+    var _wi = document.getElementById('wi-type'); if (_wi) _wi.value = _tp;
     gotoWStep(3);
   }
   else if (step === 2) {
     showLoading('Salvando...');
+    // Push 55: lazy create se ainda não foi criada
+    try { await ensureInspection(); } catch(_e) { hideLoading(); return toast(_e.message || 'Erro ao criar vistoria', 'error'); }
     const r = await api('PUT', `/api/inspections/${wizard.inspectionId}`, {
       locador_name: v('wi-loc-name'), locador_cpf: v('wi-loc-cpf'),
       locador_rg: v('wi-loc-rg'), locador_phone: v('wi-loc-phone'), locador_email: v('wi-loc-email'),
@@ -8617,16 +8663,9 @@ window.addEventListener('resize', () => {
     var _origNext = wizardNext;
     wizardNext = async function(step) {
       if (step === 3) {
-        // Guard: restore inspectionId from localStorage if lost
-        if (!wizard.inspectionId) {
-            var saved = localStorage.getItem('izylo_current_inspection');
-            if (saved) wizard.inspectionId = saved;
-        }
-        if (!wizard.inspectionId) {
-            toast('Erro: inspecao nao encontrada. Volte ao inicio.', 'error');
-            return;
-        }
+        // Push 55: lazy create — garante que inspeção existe antes de salvar
         showLoading('Salvando...');
+        try { await ensureInspection(); } catch(_e) { hideLoading(); return toast(_e.message || 'Erro ao criar vistoria', 'error'); }
         var locadores = [];
         document.querySelectorAll('#locadores-container .person-block').forEach(function(b) {
           var idx = b.id.replace('loc-block-', '');
