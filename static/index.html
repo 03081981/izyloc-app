@@ -5102,6 +5102,8 @@ function wizSaveSnapshot(immediate) {
 async function wizUploadPhoto(ambiente, idx, base64, mime, subAmbiente) {
   var ws = (typeof wizard !== 'undefined') ? wizard : null;
   if (!ws) return null;
+  // Push 59: subir foto conta como interação real → libera o gate
+  try { ws._userTouched = true; } catch(_e){}
   // Push 55: lazy create antes de subir foto
   if (!ws.inspectionId) {
     try { await ensureInspection(); }
@@ -7531,19 +7533,12 @@ function toggleMobiliado(checked) {
 // ============================================================
 function _wizHasUserContent() {
   try {
+    // Push 59: removidos checks de selectedRooms/_wiz6Ambientes/_fotoStore.
+    // Eram noisy — _wiz6Ambientes lê tags via [style*="border-radius:20px"]
+    // que pega badges não-ambientes (ex: 'Imóvel selecionado'), causando
+    // falsos positivos. Agora confiamos só no _userTouched (setado em
+    // input/change reais E em wizInc/wizDec/wizUploadPhoto).
     if (typeof wizard !== "undefined" && wizard && wizard._userTouched) return true;
-    // Push 58: ignora fallback default ['Ambiente 1'] (criado quando user
-    // entra Step 6 sem selecionar ambiente nenhum em Step 5).
-    if (typeof wizard !== "undefined" && wizard && Array.isArray(wizard.selectedRooms)) {
-      var _realRooms = wizard.selectedRooms.filter(function(r){ return r && r !== "Ambiente 1"; });
-      if (_realRooms.length > 0) return true;
-    }
-    if (Array.isArray(window._wiz6Ambientes)) {
-      var _realAmb = window._wiz6Ambientes.filter(function(a){ return a && a !== "Ambiente 1"; });
-      if (_realAmb.length > 0) return true;
-    }
-    var fs = window._fotoStore || {};
-    for (var k in fs) { if (Array.isArray(fs[k]) && fs[k].length > 0) return true; }
     // Push 57: removidos wi-date e wi-hora — wi-date é auto-prefilled com hoje
     // pelo hardResetWizard. Se user digitar, _userTouched é setado pelo listener.
     var ids = ["wi-cep","wi-address","wi-número","wi-numero","wi-bairro","wi-cidade","wi-complemento","wi-area","wi-obs"];
@@ -9909,6 +9904,8 @@ function wizInc(btn, key) {
   _syncLegacy(key, n);
   if (typeof incAmb === 'function') { /* keep legacy amb counts in sync */ }
   wizUpdateResumo();
+  // Push 59: clicar + em ambiente conta como interação real
+  try { if (typeof wizard !== 'undefined' && wizard) wizard._userTouched = true; } catch(_e){}
 }
 function wizDec(btn, key) {
   var v = document.getElementById('wiz-val-'+key);
@@ -9918,6 +9915,8 @@ function wizDec(btn, key) {
   v.classList.toggle('ativo', n > 0);
   _syncLegacy(key, n);
   wizUpdateResumo();
+  // Push 59: clicar - em ambiente também
+  try { if (typeof wizard !== 'undefined' && wizard) wizard._userTouched = true; } catch(_e){}
 }
 function wizIncSub(btn, key, subId) {
   wizInc(btn, key);
