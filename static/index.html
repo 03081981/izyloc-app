@@ -4605,9 +4605,11 @@ window._openFotoModal = function(imgSrc) {
 <script>
 // ── switchTab: sidebar navigation helper ──
 function switchTab(tab, el) {
-  // Garante que estamos no page-dashboard para as abas internas (tab-content)
+  // Garante que estamos no page-dashboard para as abas internas (tab-content).
+  // Push 51: chama showPage com addHistory=false pra nao empilhar entrada
+  // extra no history — o pushState com URL da tab e feito mais abaixo.
   if (typeof showPage === 'function') {
-    try { showPage('page-dashboard'); } catch(e){}
+    try { showPage('page-dashboard', null, false); } catch(e){}
   }
   document.querySelectorAll('.dash-tab-content').forEach(function(t) {
     t.classList.remove('active');
@@ -4619,6 +4621,16 @@ function switchTab(tab, el) {
   var titles = {vistorias:'Dashboard', estatisticas:'Extrato financeiro', perfil:'Configurações'};
   var tt = document.getElementById('dash-topbar-title');
   if (tt) tt.textContent = titles[tab] || 'Dashboard';
+
+  // Push 51: sincroniza URL com a tab atual do dashboard. Cada aba tem
+  // sua URL canonica (vistorias='/', extrato='/extrato', perfil='/configuracoes')
+  // pra F5 reabrir na aba certa.
+  try {
+    var _tabUrl = (typeof _DASH_TAB_URL !== 'undefined') ? _DASH_TAB_URL[tab] : null;
+    if (_tabUrl && location.pathname !== _tabUrl) {
+      history.pushState({ pageId: 'page-dashboard', tab: tab }, '', _tabUrl);
+    }
+  } catch (_e) {}
   // Ao abrir Configuracoes, carregar o perfil do usuario (com retry para cobrir race de load)
   if (tab === 'perfil') {
     var _tryLoad = function(attempt) {
@@ -4819,7 +4831,30 @@ document.addEventListener('DOMContentLoaded', () => {
   if (_bootHasResetToken) {
     // handleAuthUrlParams ja navegou para page-reset; nao sobrescrever.
   } else if (currentToken && currentUser) {
-    showPage('page-dashboard'); loadDashboard();
+    // Push 51: roteamento inicial baseado em pathname (suporta F5 e
+    // deep-link). showPage chamada com addHistory=false pra nao
+    // empilhar entrada duplicada na pilha de history.
+    var _initPath = (location.pathname || '').toLowerCase();
+    var _initPageId = _URL_PAGES[_initPath] || 'page-dashboard';
+    if (_initPageId === 'page-meus-laudos') {
+      showPage('page-meus-laudos', null, false);
+      // renderMeusLaudos depende de window._allInspections que e
+      // populado por loadDashboard — chama os dois em sequencia.
+      loadDashboard();
+      setTimeout(function(){
+        try { renderMeusLaudos && renderMeusLaudos(); } catch(_) {}
+      }, 200);
+    } else {
+      showPage('page-dashboard', null, false);
+      loadDashboard();
+      // Tab interna do dashboard baseado na URL (extrato, configuracoes)
+      var _initTab = _URL_DASH_TAB[_initPath];
+      if (_initTab && _initTab !== 'vistorias') {
+        setTimeout(function(){
+          try { switchTab(_initTab, null); } catch(_) {}
+        }, 100);
+      }
+    }
   } else {
     showPage('page-auth');
     // Task #169: rota direta /cadastro abre o form de registro em vez do
@@ -4842,6 +4877,39 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // ─── NAVIGATION ───────────────────────────────────────────────────────────────
+// Push 51: roteamento por URL. Mapeamento page-id <-> URL canonica usado por
+// showPage (sincroniza URL via pushState), pelo popstate global e pelo boot
+// inicial (F5/deep-link abre a pagina correta).
+const _PAGE_URLS = {
+  'page-dashboard':   '/',
+  'page-meus-laudos': '/meus-laudos',
+  'page-wizard':      '/nova-vistoria',
+  'page-reset':       '/reset-password',
+};
+const _URL_PAGES = {
+  '/':                'page-dashboard',
+  '/dashboard':       'page-dashboard',
+  '/extrato':         'page-dashboard',
+  '/configuracoes':   'page-dashboard',
+  '/meus-laudos':     'page-meus-laudos',
+  '/nova-vistoria':   'page-wizard',
+  '/reset-password':  'page-reset',
+};
+// Tabs internas do dashboard que se mapeiam pra URLs proprias
+const _URL_DASH_TAB = {
+  '/':              'vistorias',
+  '/dashboard':     'vistorias',
+  '/extrato':       'estatisticas',
+  '/configuracoes': 'perfil',
+};
+// URL canonica pra cada tab do dashboard (usado por switchTab pra
+// atualizar URL quando o user troca de aba)
+const _DASH_TAB_URL = {
+  'vistorias':     '/',
+  'estatisticas':  '/extrato',
+  'perfil':        '/configuracoes',
+};
+
 function showPage(id, title = null, addHistory = true) {
   hideLoading();
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
@@ -4870,7 +4938,39 @@ function showPage(id, title = null, addHistory = true) {
   }
 
   if (addHistory && id !== 'page-auth') pageHistory.push(id);
+
+  // Push 51: sincroniza URL com a pagina atual. addHistory=false significa
+  // que estamos reagindo a popstate / setup inicial — nao mexer em URL.
+  if (addHistory) {
+    try {
+      const targetUrl = _PAGE_URLS[id];
+      if (targetUrl && location.pathname !== targetUrl) {
+        history.pushState({ pageId: id }, '', targetUrl);
+      }
+    } catch (_e) {}
+  }
 }
+
+// Push 51: popstate global. Reage a back/forward do browser abrindo a
+// pagina/tab correspondente ao pathname atual. Se a URL nao bater com
+// nenhuma pagina conhecida, ignora (evita conflito com handlers locais).
+window.addEventListener('popstate', function(_ev) {
+  try {
+    const path = (location.pathname || '').toLowerCase();
+    const pageId = _URL_PAGES[path];
+    if (!pageId) return;
+    if (pageId === 'page-meus-laudos') {
+      showPage('page-meus-laudos', null, false);
+      try { typeof renderMeusLaudos === 'function' && renderMeusLaudos(); } catch(_) {}
+    } else if (pageId === 'page-dashboard') {
+      showPage('page-dashboard', null, false);
+      const tab = _URL_DASH_TAB[path];
+      if (tab) { try { switchTab(tab, null); } catch(_) {} }
+    } else {
+      showPage(pageId, null, false);
+    }
+  } catch (_e) {}
+});
 
 function goBack() {
   if (pageHistory.length > 1) {
@@ -6473,7 +6573,8 @@ async function dashExcluir(id) {
 window._mlState = window._mlState || { tipo: "todos", status: "todos", search: "", data: [], marcarFisicoId: null, excluirId: null, excluirStatus: null };
 
 function showMeusLaudosPage(el) {
-  try { if (window.history && window.history.pushState) window.history.pushState({}, "", "/meus-laudos"); } catch(e){}
+  // Push 51: pushState e feito pelo showPage() global agora; chamada
+  // manual aqui foi removida pra evitar duplicacao de entradas no history.
   showPage("page-meus-laudos");
   document.querySelectorAll(".nav-item").forEach(function(n){ n.classList.remove("active"); });
   if (el && el.classList) el.classList.add("active");
@@ -6822,13 +6923,10 @@ function _mlConfirmExcluir() {
     .catch(function(e){ customAlert({type:'error', title:'Erro ao excluir', message:(e.message||String(e))}); });
 }
 
-// URL-based entry: /meus-laudos
-(function(){
-  if (typeof window === "undefined") return;
-  function _mlCheckUrl(){ if (location.pathname === "/meus-laudos") { try { showMeusLaudosPage(); } catch(e){} } }
-  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", _mlCheckUrl); else setTimeout(_mlCheckUrl, 100);
-  window.addEventListener("popstate", function(){ if (location.pathname === "/meus-laudos") { try { showMeusLaudosPage(); } catch(e){} } });
-})();
+// Push 51: handlers de URL para /meus-laudos foram unificados no
+// roteador global (boot inicial + popstate em showPage). Mantido como
+// no-op pra compatibilidade com qualquer call-site externo que dependa.
+// — IIFE original neutralizado.
 
 
 
