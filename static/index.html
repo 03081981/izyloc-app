@@ -6101,6 +6101,8 @@ async function editarLaudo(id, origin) {
         }
         var locCont = document.getElementById("locadores-container");
         var _mkB = (typeof mkBlock === "function") ? mkBlock : (typeof window.mkBlock === "function" ? window.mkBlock : null);
+        // Push 61: garante pelo menos 1 bloco mesmo se laudo nao tem partes
+        if (!locs.length) locs = [{name:"",cpf:"",phone:"",email:""}];
         if (locCont && _mkB) {
           locCont.innerHTML = "";
           locs.forEach(function(p, i){
@@ -6123,6 +6125,8 @@ async function editarLaudo(id, origin) {
           tens = [{name: r.locatario_name, cpf: r.locatario_cpf, rg: r.locatario_rg, phone: r.locatario_phone, email: r.locatario_email}];
         }
         var tenCont = document.getElementById("locatários-container");
+        // Push 61: garante pelo menos 1 bloco mesmo se laudo nao tem partes
+        if (!tens.length) tens = [{name:"",cpf:"",phone:"",email:""}];
         if (tenCont && _mkB) {
           tenCont.innerHTML = "";
           tens.forEach(function(p, i){
@@ -8541,6 +8545,9 @@ window.addEventListener('resize', () => {
       if (lbl) lbl.textContent = 'Etapa ' + (step + 1) + ' de 8';
       window.scrollTo(0, 0);
     if(step===4) renderAmbientesPorTipo();
+    // Push 61: garante que loc-block-0 e locat-block-0 existam ao entrar
+    // em Partes (wstep-2). Defensivo contra editarLaudo + Nova Vistoria.
+    if(step===3) { try { window.ensurePartiesBlocks && window.ensurePartiesBlocks(); } catch(_eEPB){} }
     };
 
     // FIX 5: Define nextWizStep and prevWizStep for navigation buttons
@@ -8638,6 +8645,30 @@ window.addEventListener('resize', () => {
     // Task #115: expoe mkBlock globalmente pra que editarLaudo (fora desta IIFE)
     // possa renderizar locadores/locatarios ao restaurar partes salvas.
     window.mkBlock = mkBlock;
+
+    // Push 61: ensurePartiesBlocks — fix defensivo pro bug Step 4
+    // ====================================================================
+    // BUG: Os blocos loc-block-0 e locat-block-0 sao HTML estatico em wstep-2
+    // (linhas 4181/4221). Mas se o user fez Editar de algum laudo antigo sem
+    // partes (locadores_json='[]'), editarLaudo limpa innerHTML do container
+    // sem recriar — entao loc-block-0 some pro resto da sessao. Quando depois
+    // o user faz Nova Vistoria, hardResetWizard so preserva loc-block-0 SE
+    // existir (linha 7283-7284) — nao recria. Resultado: Step 4 sem forms.
+    // FIX: garantir blocks 0 antes de mostrar Step 4 (entrada em wstep-2).
+    window.ensurePartiesBlocks = function() {
+      try {
+        var locC = document.getElementById('locadores-container');
+        if (locC && !document.getElementById('loc-block-0')) {
+          locC.appendChild(mkBlock('loc', 0, 'Locador', false));
+          console.log('[ensurePartiesBlocks] loc-block-0 recriado');
+        }
+        var tenC = document.getElementById('locatários-container');
+        if (tenC && !document.getElementById('locat-block-0') && !document.getElementById('ten-block-0')) {
+          tenC.appendChild(mkBlock('locat', 0, 'Locatário', false));
+          console.log('[ensurePartiesBlocks] locat-block-0 recriado');
+        }
+      } catch(e) { console.warn('[ensurePartiesBlocks] err', e); }
+    };
 
     // ─── PF / PJ helpers (task #88) ─────────────────────────────────────
     window._pfPjGetTipo = function(prefix, idx) {
