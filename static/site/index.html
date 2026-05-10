@@ -47,6 +47,15 @@ nav{position:fixed;top:0;left:0;right:0;z-index:1000;background:#fff;border-bott
 .hamburger{display:none;flex-direction:column;gap:5px;cursor:pointer;background:none;border:none;padding:4px}
 .hamburger span{width:24px;height:2px;background:var(--txt);border-radius:2px}
 
+/* MENU MOBILE (Push 69) */
+.mobile-menu{display:none;position:fixed;top:72px;left:0;right:0;bottom:0;background:#fff;padding:16px 5% 24px;flex-direction:column;gap:0;z-index:999;overflow-y:auto;border-top:1px solid #eee}
+.mobile-menu.open{display:flex}
+.mobile-menu a{padding:14px 4px;color:var(--txt);font-size:16px;font-weight:500;text-decoration:none;border-bottom:1px solid #f0f0f0;transition:color .2s}
+.mobile-menu a:hover{color:var(--azul-c)}
+.mobile-menu .mm-login{color:var(--txt2);text-align:center;margin-top:12px;border-bottom:none;padding:12px}
+.mobile-menu .mm-cta{background:var(--azul-c);color:#fff;text-align:center;border-radius:8px;border-bottom:none;font-weight:600;margin-top:8px;padding:14px;font-size:15px}
+.mobile-menu .mm-cta:hover{background:var(--azul);color:#fff}
+
 /* HERO */
 .hero{padding:100px 5% 50px;display:flex;align-items:center;gap:60px;background:#fff}
 .hero-left{flex:1;max-width:560px}
@@ -271,6 +280,17 @@ footer{background:#0f1e33;padding:40px 5%;display:flex;justify-content:space-bet
     <span></span><span></span><span></span>
   </button>
 </nav>
+
+<!-- MENU MOBILE (Push 69) -->
+<div class="mobile-menu">
+  <a href="#como-funciona" onclick="closeMenu()">Como funciona</a>
+  <a href="#beneficios" onclick="closeMenu()">Benefícios</a>
+  <a href="#precos" onclick="closeMenu()">Preços</a>
+  <a href="#depoimentos" onclick="closeMenu()">Depoimentos</a>
+  <a href="#faq" onclick="closeMenu()">Dúvidas</a>
+  <a href="https://app.izylaudo.com.br/login" class="mm-login" onclick="closeMenu()">Entrar</a>
+  <a href="https://app.izylaudo.com.br/cadastro" class="mm-cta" onclick="closeMenu()">CRIAR CONTA →</a>
+</div>
 
 <!-- HERO -->
 <section class="hero">
@@ -790,10 +810,10 @@ footer{background:#0f1e33;padding:40px 5%;display:flex;justify-content:space-bet
 <script>
 function toggleFaq(el){el.parentElement.classList.toggle('open')}
 function toggleMenu(){
-  const links=document.querySelector('.nav-links');
-  const cta=document.querySelector('.nav-cta');
-  if(links.style.display==='flex'){links.style.display='none';cta.style.display='none';}
-  else{links.style.cssText='display:flex;flex-direction:column;position:fixed;top:72px;left:0;right:0;background:#fff;padding:20px 5%;border-bottom:1px solid #eee;z-index:999';cta.style.cssText='display:block;position:fixed;top:240px;left:5%;right:5%;text-align:center;z-index:999';}
+  document.querySelector('.mobile-menu').classList.toggle('open');
+}
+function closeMenu(){
+  document.querySelector('.mobile-menu').classList.remove('open');
 }
 </script>
 </body>
