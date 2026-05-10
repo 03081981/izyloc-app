@@ -64,7 +64,9 @@ nav{position:fixed;top:0;left:0;right:0;z-index:1000;background:#fff;border-bott
 .btn-secondary:hover{background:#e8f0fe}
 .hero-note{font-size:13px;color:#999}
 .hero-right{flex:1;max-width:580px}
-.hero-right img,.hero-right video{width:100%;display:block;border-radius:16px;box-shadow:0 20px 60px rgba(45,77,130,.15)}
+.hero-right img,.hero-right video{width:100%;height:auto;display:block;border-radius:16px;box-shadow:0 20px 60px rgba(45,77,130,.15)}
+.hero-right video{aspect-ratio:16/9;object-fit:cover;background:#0a1628}
+.hero-right{min-width:0}
 
 /* STATS */
 .stats{background:var(--azul);padding:28px 5%;display:flex;justify-content:space-around;flex-wrap:wrap;gap:20px}
