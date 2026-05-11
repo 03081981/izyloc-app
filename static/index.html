@@ -8150,35 +8150,65 @@ async function gerarLaudo() {
       ambArr.push({nome: amb, fotos: fotos, verificacoes: verifs, observações: obsAmb});
     });
     body.ambientes_json = JSON.stringify(ambArr);
-    // Coletar todos locadores do DOM
+    // Push 70: Coleta de locadores/locatários — prioridade pro estado da Etapa 7
+    // ============================================================================
+    // BUG corrigido: quando o user adicionava locador/locatário direto na Etapa 7
+    // (sem ter passado pela Etapa 4), o block nao existia no DOM e era ignorado.
+    // Agora usa window._wiz7Locs/_wiz7Tens (populados por initRevisao + edicoes
+    // na Etapa 7) como fonte primaria. Fallback pro DOM se arrays nao existirem.
     var _locArr = [];
-    document.querySelectorAll('#locadores-container .person-block').forEach(function(b) {
-      var x = b.id.replace('loc-block-','');
-      var _tpL = (typeof _pfPjGetTipo === 'function') ? _pfPjGetTipo('loc', x) : 'pf';
-      _locArr.push({
-        tipo_pessoa: _tpL,
-        name: (document.getElementById('loc-name-'+x)||{}).value||'',
-        cpf: (document.getElementById('loc-cpf-'+x)||{}).value||'',
-        phone: (document.getElementById('loc-phone-'+x)||{}).value||'',
-        email: (document.getElementById('loc-email-'+x)||{}).value||'',
-        representante: (document.getElementById('loc-rep-'+x)||{}).value||''
+    if (Array.isArray(window._wiz7Locs) && window._wiz7Locs.length > 0) {
+      _locArr = window._wiz7Locs.map(function(p){
+        return {
+          tipo_pessoa: (p.tipo_pessoa === 'pj') ? 'pj' : 'pf',
+          name: p.name || '',
+          cpf: p.cpf || '',
+          phone: p.phone || '',
+          email: p.email || '',
+          representante: p.representante || ''
+        };
       });
-    });
-    // Coletar todos locatários do DOM
+    } else {
+      document.querySelectorAll('#locadores-container .person-block').forEach(function(b) {
+        var x = b.id.replace('loc-block-','');
+        var _tpL = (typeof _pfPjGetTipo === 'function') ? _pfPjGetTipo('loc', x) : 'pf';
+        _locArr.push({
+          tipo_pessoa: _tpL,
+          name: (document.getElementById('loc-name-'+x)||{}).value||'',
+          cpf: (document.getElementById('loc-cpf-'+x)||{}).value||'',
+          phone: (document.getElementById('loc-phone-'+x)||{}).value||'',
+          email: (document.getElementById('loc-email-'+x)||{}).value||'',
+          representante: (document.getElementById('loc-rep-'+x)||{}).value||''
+        });
+      });
+    }
     var _tenArr = [];
-    document.querySelectorAll('#locatários-container .person-block').forEach(function(b) {
-      var prefix = b.id.indexOf('locat-block-') === 0 ? 'locat' : 'ten';
-      var x = b.id.replace('locat-block-','').replace('ten-block-','');
-      var _tpT = (typeof _pfPjGetTipo === 'function') ? _pfPjGetTipo(prefix, x) : 'pf';
-      _tenArr.push({
-        tipo_pessoa: _tpT,
-        name: (document.getElementById(prefix+'-name-'+x)||{}).value||'',
-        cpf: (document.getElementById(prefix+'-cpf-'+x)||{}).value||'',
-        phone: (document.getElementById(prefix+'-phone-'+x)||{}).value||'',
-        email: (document.getElementById(prefix+'-email-'+x)||{}).value||'',
-        representante: (document.getElementById(prefix+'-rep-'+x)||{}).value||''
+    if (Array.isArray(window._wiz7Tens) && window._wiz7Tens.length > 0) {
+      _tenArr = window._wiz7Tens.map(function(p){
+        return {
+          tipo_pessoa: (p.tipo_pessoa === 'pj') ? 'pj' : 'pf',
+          name: p.name || '',
+          cpf: p.cpf || '',
+          phone: p.phone || '',
+          email: p.email || '',
+          representante: p.representante || ''
+        };
       });
-    });
+    } else {
+      document.querySelectorAll('#locatários-container .person-block').forEach(function(b) {
+        var prefix = b.id.indexOf('locat-block-') === 0 ? 'locat' : 'ten';
+        var x = b.id.replace('locat-block-','').replace('ten-block-','');
+        var _tpT = (typeof _pfPjGetTipo === 'function') ? _pfPjGetTipo(prefix, x) : 'pf';
+        _tenArr.push({
+          tipo_pessoa: _tpT,
+          name: (document.getElementById(prefix+'-name-'+x)||{}).value||'',
+          cpf: (document.getElementById(prefix+'-cpf-'+x)||{}).value||'',
+          phone: (document.getElementById(prefix+'-phone-'+x)||{}).value||'',
+          email: (document.getElementById(prefix+'-email-'+x)||{}).value||'',
+          representante: (document.getElementById(prefix+'-rep-'+x)||{}).value||''
+        });
+      });
+    }
     if (_locArr.length) body.locadores_json = JSON.stringify(_locArr);
     if (_tenArr.length) body.locatarios_json = JSON.stringify(_tenArr);
     // Task #114: marca laudo como CONCLUIDO ao clicar Gerar laudo na etapa 7.
