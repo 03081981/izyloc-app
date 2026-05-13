@@ -3050,6 +3050,41 @@ class AdminInvestigateUserHandler(AdminHandler):
             conn.close()
 
 
+# Push 71.3: impersonate-user pra debug
+# Gera JWT valido pra um user qualquer pelo email - admin only.
+# Permite testar exatamente o que o frontend desse user veria.
+class AdminImpersonateUserHandler(AdminHandler):
+    def get(self):
+        if not self.require_admin():
+            return
+        email_raw = self.get_argument('email', '').strip()
+        if not email_raw:
+            self.set_status(400)
+            self.ok({'ok': False, 'error': 'param email obrigatorio'})
+            return
+        conn = get_conn()
+        try:
+            row = conn.execute(
+                'SELECT id, email FROM users WHERE LOWER(email) = ?',
+                (email_raw.lower(),),
+            ).fetchone()
+            if not row:
+                self.ok({'ok': False, 'error': 'user nao encontrado'})
+                return
+            token, jti = create_token(row['id'], row['email'])
+            print('[ADMIN] impersonate user=' + row['email']
+                  + ' jti=' + jti[:8] + '...', flush=True)
+            self.ok({
+                'ok': True,
+                'user_id': row['id'],
+                'email': row['email'],
+                'token': token,
+                'note': 'use no header Authorization: Bearer <token>',
+            })
+        finally:
+            conn.close()
+
+
 class InspectionsHandler(BaseHandler):
     def get(self):
         user = self.require_auth()
@@ -7536,6 +7571,7 @@ def make_app():
         (r'/api/admin/forgot-password', AdminForgotPasswordHandler),
         (r'/api/admin/autentique/sync', AdminAutentiqueSyncHandler),
         (r'/api/admin/investigate-user', AdminInvestigateUserHandler),
+        (r'/api/admin/impersonate-user', AdminImpersonateUserHandler),
         # Inspections
         (r'/api/inspections', InspectionsHandler),
         (r'/api/inspections/([^/]+)', InspectionHandler),
