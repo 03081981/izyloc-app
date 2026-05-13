@@ -1,0 +1,32 @@
+name: Meta Ads — Relatorio Diario
+
+on:
+  schedule:
+    # 9h BRT = 12h UTC, todo dia
+    - cron: '0 12 * * *'
+  workflow_dispatch:  # permite rodar manualmente do GitHub Actions UI
+
+jobs:
+  meta-ads-report:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install deps
+        run: pip install requests
+
+      - name: Run Meta Ads daily report
+        env:
+          META_ADS_TOKEN: ${{ secrets.META_ADS_TOKEN }}
+          META_AD_ACCOUNT_ID: ${{ secrets.META_AD_ACCOUNT_ID }}
+          META_API_VERSION: 'v21.0'
+          EMAIL_USER: ${{ secrets.EMAIL_USER }}
+          EMAIL_PASS: ${{ secrets.EMAIL_PASS }}
+          EMAIL_RECIPIENT: ${{ secrets.EMAIL_RECIPIENT }}
+        run: python .github/scripts/meta_ads_daily_report.py
