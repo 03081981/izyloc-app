@@ -76,9 +76,9 @@ nav{position:fixed;top:0;left:0;right:0;z-index:1000;background:#fff;border-bott
 .btn-secondary{background:transparent;color:var(--azul-c);border:2px solid var(--azul-c);padding:12px 24px;border-radius:10px;font-size:15px;font-weight:600;text-decoration:none;transition:all .2s}
 .btn-secondary:hover{background:#e8f0fe}
 .hero-note{font-size:13px;color:#999}
-.hero-right{flex:1.5;max-width:870px}
-.hero-right img,.hero-right video{width:100%;height:auto;display:block;border-radius:16px;box-shadow:0 20px 60px rgba(45,77,130,.15)}
-.hero-right video{aspect-ratio:16/9;object-fit:cover;background:#0a1628}
+.hero-right{flex:0 1 380px;max-width:380px;display:flex;justify-content:center;align-items:center}
+.hero-right img,.hero-right video{width:100%;height:auto;display:block;border-radius:24px;box-shadow:0 20px 60px rgba(45,77,130,.18)}
+.hero-right video{aspect-ratio:9/16;object-fit:cover;background:#0a1628}
 .hero-right{min-width:0}
 
 /* STATS */
@@ -249,7 +249,7 @@ footer{background:#0f1e33;padding:40px 5%;display:flex;justify-content:space-bet
   .nav-links,.nav-cta,.nav-login{display:none}
   .hamburger{display:flex}
   .hero{flex-direction:column;padding:80px 5% 40px;gap:30px}
-  .hero-right{max-width:100%}
+  .hero-right{max-width:320px;flex:0 0 auto;margin:0 auto}
   .compare-wrap{grid-template-columns:1fr;gap:0}
   .compare-vs{width:100%;height:40px}
   .compare-vs-badge{margin:0 auto}
