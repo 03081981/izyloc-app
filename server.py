@@ -3047,25 +3047,41 @@ class AdminInvestigateUserHandler(AdminHandler):
                 (user_id,),
             ).fetchall()
 
-            # 8) Push 74: registro em bonus_concedido (case-insensitive)
+            # 8) Push 74.1: registro em bonus_concedido (granted_at correto)
             bonus_records = []
             try:
                 bonus_records = conn.execute(
-                    'SELECT email, bonus_cents, user_id_origem, notes, created_at '
+                    'SELECT email, bonus_cents, user_id_origem, notes, granted_at '
                     'FROM bonus_concedido WHERE LOWER(email) = ?',
                     (email_lower,),
                 ).fetchall()
             except Exception as _eb:
+                # Reset txn pra proxima query nao herdar erro
+                try: conn.rollback()
+                except Exception: pass
                 bonus_records = [{'__error__': str(_eb)}]
 
-            # 9) Push 74: settings relevantes do bonus
+            # 9) Push 74.1: settings (welcome_bonus_cents)
             try:
                 bonus_setting = conn.execute(
                     "SELECT key, value FROM settings WHERE key = 'welcome_bonus_cents'"
                 ).fetchone()
                 bonus_setting_dict = dict(bonus_setting) if bonus_setting else None
             except Exception as _es:
+                try: conn.rollback()
+                except Exception: pass
                 bonus_setting_dict = {'__error__': str(_es)}
+
+            # 10) Push 74.1: total de bonus_concedido pra ver se a tabela tem dados
+            try:
+                bonus_count_row = conn.execute(
+                    'SELECT COUNT(*) AS c FROM bonus_concedido'
+                ).fetchone()
+                bonus_total = bonus_count_row['c'] if bonus_count_row else 0
+            except Exception as _ec:
+                try: conn.rollback()
+                except Exception: pass
+                bonus_total = {'__error__': str(_ec)}
 
             self.ok({
                 'ok': True,
@@ -3077,6 +3093,7 @@ class AdminInvestigateUserHandler(AdminHandler):
                 'top_users_last_7d': [dict(r) for r in top_users],
                 'transactions': [dict(t) for t in txs],
                 'bonus_concedido_records': [dict(b) if hasattr(b, 'keys') else b for b in bonus_records],
+                'bonus_concedido_total_rows': bonus_total,
                 'welcome_bonus_setting': bonus_setting_dict,
             })
         finally:
