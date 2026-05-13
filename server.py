@@ -3033,7 +3033,7 @@ class AdminInvestigateUserHandler(AdminHandler):
             top_users = conn.execute(
                 'SELECT u.email, COUNT(i.id) AS c '
                 'FROM users u LEFT JOIN inspections i ON i.user_id = u.id '
-                "WHERE i.created_at >= NOW() - INTERVAL '7 days' "
+                "WHERE i.created_at::timestamp >= NOW() - INTERVAL '7 days' "
                 'GROUP BY u.email ORDER BY c DESC LIMIT 10',
             ).fetchall()
 
