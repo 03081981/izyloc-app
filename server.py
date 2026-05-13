@@ -3072,13 +3072,31 @@ class AdminImpersonateUserHandler(AdminHandler):
                 self.ok({'ok': False, 'error': 'user nao encontrado'})
                 return
             token, jti = create_token(row['id'], row['email'])
+            # Registrar JTI em user_sessions pra verify_token aceitar
+            conn.execute(
+                'INSERT INTO user_sessions (user_id, token, expires_at, ip, user_agent) '
+                'VALUES (?, ?, ?, ?, ?)',
+                (row['id'], jti,
+                 datetime.utcnow() + timedelta(days=1),
+                 '127.0.0.1', 'admin-impersonate'),
+            )
+            conn.commit()
+            # Tambem retorna quantas sessoes ativas o user tem (debug)
+            sess_rows = conn.execute(
+                'SELECT COUNT(*) AS c FROM user_sessions '
+                'WHERE user_id = ? AND (expires_at IS NULL OR expires_at > NOW())',
+                (row['id'],),
+            ).fetchone()
+            active_sessions = sess_rows['c'] if sess_rows else 0
             print('[ADMIN] impersonate user=' + row['email']
-                  + ' jti=' + jti[:8] + '...', flush=True)
+                  + ' jti=' + jti[:8] + '... active_sessions=' + str(active_sessions),
+                  flush=True)
             self.ok({
                 'ok': True,
                 'user_id': row['id'],
                 'email': row['email'],
                 'token': token,
+                'active_sessions': active_sessions,
                 'note': 'use no header Authorization: Bearer <token>',
             })
         finally:
