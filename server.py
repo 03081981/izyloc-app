@@ -2960,6 +2960,97 @@ class AdminAutentiqueSyncHandler(AdminHandler):
             conn.close()
 
 
+# ----- Push 71: Endpoint admin de diagnostico -----
+# Investigacao de bug "laudos sumidos do dashboard" - confere user, total
+# de inspections, breakdown por status, lista os 50 mais recentes. Read-only.
+class AdminInvestigateUserHandler(AdminHandler):
+    def get(self):
+        if not self.require_admin():
+            return
+        email_raw = self.get_argument('email', '').strip()
+        if not email_raw:
+            self.set_status(400)
+            self.ok({'ok': False, 'error': 'param email obrigatorio'})
+            return
+        email_lower = email_raw.lower()
+        conn = get_conn()
+        try:
+            # 1) Encontrar user (case-insensitive)
+            user = conn.execute(
+                'SELECT id, email, name, created_at, '
+                'COALESCE(blocked, false) AS blocked, '
+                'COALESCE(balance_cents, 0) AS balance_cents, '
+                'COALESCE(role, \'user\') AS role '
+                'FROM users WHERE LOWER(email) = ?',
+                (email_lower,),
+            ).fetchone()
+            if not user:
+                self.ok({
+                    'ok': False,
+                    'error': 'usuario nao encontrado',
+                    'email_buscado': email_raw,
+                    'email_lower': email_lower,
+                })
+                return
+            user_id = user['id']
+
+            # 2) Total de inspections
+            tot = conn.execute(
+                'SELECT COUNT(*) AS c FROM inspections WHERE user_id = ?',
+                (user_id,),
+            ).fetchone()
+            total = tot['c'] if tot else 0
+
+            # 3) Por status (revela se algum filtro do dashboard exclui)
+            by_status = conn.execute(
+                "SELECT COALESCE(status, '(null)') AS status, "
+                'COUNT(*) AS c FROM inspections WHERE user_id = ? '
+                'GROUP BY status ORDER BY c DESC',
+                (user_id,),
+            ).fetchall()
+
+            # 4) Por type
+            by_type = conn.execute(
+                "SELECT COALESCE(type, '(null)') AS type, "
+                'COUNT(*) AS c FROM inspections WHERE user_id = ? '
+                'GROUP BY type ORDER BY c DESC',
+                (user_id,),
+            ).fetchall()
+
+            # 5) Lista detalhada (50 mais recentes)
+            rows = conn.execute(
+                'SELECT id, codigo, status, type, '
+                'COALESCE(property_address, \'\') AS property_address, '
+                'created_at, updated_at, '
+                "COALESCE(autentique_status, '') AS autentique_status "
+                'FROM inspections WHERE user_id = ? '
+                'ORDER BY COALESCE(updated_at, created_at) DESC NULLS LAST '
+                'LIMIT 50',
+                (user_id,),
+            ).fetchall()
+
+            # 6) Comparativo: laudos por user nos ultimos 7 dias (top 10)
+            #    pra checar se eh problema generalizado ou so deste user
+            top_users = conn.execute(
+                'SELECT u.email, COUNT(i.id) AS c '
+                'FROM users u LEFT JOIN inspections i ON i.user_id = u.id '
+                "WHERE i.created_at >= NOW() - INTERVAL '7 days' "
+                'GROUP BY u.email ORDER BY c DESC LIMIT 10',
+            ).fetchall()
+
+            self.ok({
+                'ok': True,
+                'user': dict(user),
+                'total_inspections': total,
+                'by_status': [dict(r) for r in by_status],
+                'by_type': [dict(r) for r in by_type],
+                'recent_inspections': [dict(r) for r in rows],
+                'top_users_last_7d': [dict(r) for r in top_users],
+            })
+        finally:
+            conn.close()
+
+
 class InspectionsHandler(BaseHandler):
     def get(self):
         user = self.require_auth()
@@ -7445,6 +7536,7 @@ def make_app():
         (r'/api/admin/change-password', AdminChangePasswordHandler),
         (r'/api/admin/forgot-password', AdminForgotPasswordHandler),
         (r'/api/admin/autentique/sync', AdminAutentiqueSyncHandler),
+        (r'/api/admin/investigate-user', AdminInvestigateUserHandler),
         # Inspections
         (r'/api/inspections', InspectionsHandler),
         (r'/api/inspections/([^/]+)', InspectionHandler),
