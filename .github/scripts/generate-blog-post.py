@@ -325,6 +325,37 @@ def main():
 
     print(f"[INFO] Total de temas: {len(themes)} | Usados: {len(used_themes)}")
 
+    # 2.5) Push 78: Auto-expansao se estoque baixo
+    # Roda expand-themes.py como subprocess pra evitar duplicar logica.
+    # Se expandiu, recarrega temas em memoria pra o resto do fluxo enxergar.
+    import subprocess
+    available_count = sum(1 for t in themes if t["theme"] not in used_themes)
+    if available_count < 20:
+        print(f"[INFO] Estoque baixo ({available_count} disponiveis). Acionando expand-themes.py...")
+        expand_script = Path(__file__).parent / "expand-themes.py"
+        try:
+            r = subprocess.run(
+                [sys.executable, str(expand_script)],
+                env=os.environ.copy(),
+                check=False,
+                capture_output=True,
+                text=True,
+                timeout=180,
+            )
+            print(r.stdout)
+            if r.stderr:
+                print(r.stderr, file=sys.stderr)
+            if r.returncode == 0:
+                # Recarrega temas (foram expandidos)
+                themes_md = read_file(CONFIG_DIR / "temas-blog.md")
+                themes = parse_themes(themes_md)
+                print(f"[OK] Temas recarregados: {len(themes)} no total")
+            else:
+                print(f"[WARN] expand-themes.py retornou {r.returncode} — segue com lista atual",
+                      file=sys.stderr)
+        except subprocess.TimeoutExpired:
+            print("[WARN] expand-themes.py timeout — segue com lista atual", file=sys.stderr)
+
     # 3) Escolhe writer
     writer = pick_writer()
     writer_persona = read_file(WRITERS_DIR / writer["file"])
