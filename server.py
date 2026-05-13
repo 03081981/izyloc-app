@@ -3037,6 +3037,36 @@ class AdminInvestigateUserHandler(AdminHandler):
                 'GROUP BY u.email ORDER BY c DESC LIMIT 10',
             ).fetchall()
 
+            # 7) Push 74: transacoes financeiras do user (todas)
+            txs = conn.execute(
+                'SELECT type, amount_cents, balance_after_cents, '
+                "COALESCE(status, '') AS status, "
+                "COALESCE(description, '') AS description, "
+                'created_at FROM balance_transactions '
+                'WHERE user_id = ? ORDER BY created_at DESC LIMIT 50',
+                (user_id,),
+            ).fetchall()
+
+            # 8) Push 74: registro em bonus_concedido (case-insensitive)
+            bonus_records = []
+            try:
+                bonus_records = conn.execute(
+                    'SELECT email, bonus_cents, user_id_origem, notes, created_at '
+                    'FROM bonus_concedido WHERE LOWER(email) = ?',
+                    (email_lower,),
+                ).fetchall()
+            except Exception as _eb:
+                bonus_records = [{'__error__': str(_eb)}]
+
+            # 9) Push 74: settings relevantes do bonus
+            try:
+                bonus_setting = conn.execute(
+                    "SELECT key, value FROM settings WHERE key = 'welcome_bonus_cents'"
+                ).fetchone()
+                bonus_setting_dict = dict(bonus_setting) if bonus_setting else None
+            except Exception as _es:
+                bonus_setting_dict = {'__error__': str(_es)}
+
             self.ok({
                 'ok': True,
                 'user': dict(user),
@@ -3045,6 +3075,9 @@ class AdminInvestigateUserHandler(AdminHandler):
                 'by_type': [dict(r) for r in by_type],
                 'recent_inspections': [dict(r) for r in rows],
                 'top_users_last_7d': [dict(r) for r in top_users],
+                'transactions': [dict(t) for t in txs],
+                'bonus_concedido_records': [dict(b) if hasattr(b, 'keys') else b for b in bonus_records],
+                'welcome_bonus_setting': bonus_setting_dict,
             })
         finally:
             conn.close()
