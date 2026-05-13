@@ -1292,6 +1292,30 @@ canvas { display: block; }
 }
 #detail-content * { word-break: break-word; overflow-wrap: anywhere; }
 
+/* Push 73: Fix layout Detalhes da Vistoria
+   ============================================================
+   1) Desktop: o #topbar global (position:fixed; height:56px) cobria o
+      .topbar interno do detail-content. Damos padding-top no wrapper.
+   2) Mobile: regra global '#detail-content * { overflow-wrap: anywhere }'
+      fazia o <h1> 'Detalhes do laudo' quebrar letra-a-letra quando o
+      espaco do flex item ficava estreito. Override no h1 forca quebra
+      por palavra. Reduz font-size em mobile pra caber melhor no header.
+*/
+#page-detail .dash-main-wrapper { padding-top: 56px; }
+#detail-content .topbar h1 {
+  overflow-wrap: normal !important;
+  word-break: keep-all !important;
+  font-size: 18px;
+  line-height: 1.3;
+}
+@media (max-width: 768px) {
+  #detail-content { padding: 16px; }
+  #detail-content .topbar { padding: 10px 14px !important; gap: 6px; }
+  #detail-content .topbar h1 { font-size: 15px; }
+  #detail-content .topbar button { padding: 5px 10px !important; font-size: 12px !important; }
+  #detail-content .topbar span { padding: 3px 6px !important; font-size: 9px !important; }
+}
+
 /* ─── MODAL ─── */
 .modal-overlay {
   display: none; position: fixed; inset: 0;
