@@ -317,7 +317,7 @@ footer{background:#0f1e33;padding:40px 5%;display:flex;justify-content:space-bet
     <p class="hero-note">👥 Feito para corretores, imobiliárias e vistoriadores profissionais</p>
   </div>
   <div class="hero-right">
-    <video src="/static/site/videos/hero.mp4" poster="/static/site/images/hero-poster.jpg" autoplay loop muted playsinline preload="metadata" aria-label="3 passos do izyLAUDO: Fotografe, IA Mapeia, Laudo Pronto"></video>
+    <video id="heroVideo" src="/static/site/videos/hero.mp4" poster="/static/site/images/hero-poster.jpg" autoplay loop muted playsinline preload="auto" aria-label="3 passos do izyLAUDO: Fotografe, IA Mapeia, Laudo Pronto"></video>
   </div>
 </section>
 
@@ -823,6 +823,17 @@ function toggleMenu(){
 function closeMenu(){
   document.querySelector('.mobile-menu').classList.remove('open');
 }
+// Push 87: garantia de loop continuo do hero (fallback defensivo)
+(function(){
+  var v = document.getElementById('heroVideo');
+  if(!v) return;
+  v.addEventListener('ended', function(){
+    try { v.currentTime = 0; v.play(); } catch(e){}
+  });
+  v.addEventListener('canplay', function(){
+    if(v.paused){ try { v.play(); } catch(e){} }
+  });
+})();
 </script>
 </body>
 </html>
