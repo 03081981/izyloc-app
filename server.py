@@ -2978,9 +2978,8 @@ class AdminInvestigateUserHandler(AdminHandler):
             # 1) Encontrar user (case-insensitive)
             user = conn.execute(
                 'SELECT id, email, name, created_at, '
-                'COALESCE(blocked, false) AS blocked, '
-                'COALESCE(balance_cents, 0) AS balance_cents, '
-                'COALESCE(role, \'user\') AS role '
+                'COALESCE(is_blocked, false) AS is_blocked, '
+                'COALESCE(balance_cents, 0) AS balance_cents '
                 'FROM users WHERE LOWER(email) = ?',
                 (email_lower,),
             ).fetchone()
