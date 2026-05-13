@@ -3110,10 +3110,22 @@ class InspectionsHandler(BaseHandler):
             return
         conn = get_conn()
         try:
-            # Inclui custo_total_cents: soma de debitos (em centavos) por
-            # laudo vindos de balance_transactions.
+            # Push 72: query otimizada do list view.
+            # ANTES: SELECT i.* retornava wizard_snapshot/ambientes_json (~500KB
+            # cada laudo) + subquery correlacionada sem indice causava timeout
+            # >30s. Liban com 7 laudos demorava 60s+.
+            # AGORA: lista explicita de colunas leves + LIMIT + indices novos
+            # (ver migrations idx_inspections_user_updated e idx_balance_tx_insp).
+            # JSONs gigantes (wizard_snapshot, ambientes_json, locadores_json,
+            # locatarios_json, observations) so vem em GET /api/inspections/:id.
             rows = conn.execute(
-                'SELECT i.*, '
+                'SELECT i.id, i.user_id, i.type, i.status, i.codigo, '
+                '  i.property_address, i.property_type, i.property_area, '
+                '  i.inspection_date, i.created_at, i.updated_at, '
+                '  i.autentique_status, i.autentique_doc_id, '
+                '  i.data_assinatura, i.last_step, i.snapshot_updated_at, '
+                '  i.locador_name, i.locatario_name, i.corretor_name, '
+                '  i.cep, i.bairro, i.cidade, i.estado, i.complemento, '
                 '  COALESCE(('
                 '    SELECT SUM(ABS(amount_cents)) '
                 '    FROM balance_transactions '
@@ -3122,7 +3134,8 @@ class InspectionsHandler(BaseHandler):
                 "      AND status = 'completed'"
                 '  ), 0) AS custo_total_cents '
                 'FROM inspections i WHERE i.user_id=? '
-                'ORDER BY COALESCE(i.updated_at, i.created_at) DESC NULLS LAST',
+                'ORDER BY COALESCE(i.updated_at, i.created_at) DESC NULLS LAST '
+                'LIMIT 200',
                 (user['user_id'],)).fetchall()
             self.ok({'inspections': self.rows_to_list(rows)})
         finally:
@@ -5317,6 +5330,12 @@ def _ensure_status_column():
             )""",
             "CREATE INDEX IF NOT EXISTS idx_wizard_photos_insp ON wizard_photos(inspection_id)",
             "CREATE INDEX IF NOT EXISTS idx_wizard_photos_amb ON wizard_photos(inspection_id, ambiente)",
+            # Push 72: indices criticos pra performance do GET /api/inspections.
+            # idx_inspections_user_updated: cobre WHERE user_id=? ORDER BY updated_at.
+            # idx_balance_tx_insp_type_status: cobre a subquery correlacionada
+            # que somava custo_total_cents - sem indice ela era full scan x N laudos.
+            "CREATE INDEX IF NOT EXISTS idx_inspections_user_updated ON inspections(user_id, updated_at DESC NULLS LAST, created_at DESC NULLS LAST)",
+            "CREATE INDEX IF NOT EXISTS idx_balance_tx_insp_type_status ON balance_transactions(inspection_id, type, status)",
             "ALTER TABLE balance_transactions ADD COLUMN IF NOT EXISTS status VARCHAR(30) DEFAULT 'completed'",
             "ALTER TABLE balance_transactions ADD COLUMN IF NOT EXISTS created_at TIMESTAMPTZ DEFAULT NOW()",
             "ALTER TABLE balance_transactions ADD COLUMN IF NOT EXISTS tx_ref VARCHAR(64)",
