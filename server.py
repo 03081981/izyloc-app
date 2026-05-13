@@ -7529,6 +7529,27 @@ class SitemapHandler(tornado.web.RequestHandler):
             self.write(f.read())
 
 
+# Push 81: robots.txt do site institucional.
+# Antes o Cloudflare AI Audit gerava um robots.txt automatico que bloqueava
+# meta-externalagent (FB scraper moderno) com Disallow: / -> Facebook
+# Debugger retornava 403. Servir robots.txt nosso pelo Tornado garante
+# que social previews funcionem.
+class RobotsTxtHandler(tornado.web.RequestHandler):
+    def get(self):
+        path = os.path.join(
+            os.path.dirname(__file__),
+            'static', 'site', 'robots.txt')
+        if not os.path.exists(path):
+            self.set_status(404)
+            self.set_header('Content-Type', 'text/plain')
+            self.write('# robots.txt nao encontrado')
+            return
+        self.set_header('Content-Type', 'text/plain; charset=utf-8')
+        self.set_header('Cache-Control', 'public, max-age=3600')
+        with open(path, 'rb') as f:
+            self.write(f.read())
+
+
 # Task #152: Politica de Privacidade e Termos de Uso (PDFs estaticos).
 # Mesmo padrao do ManualUsuarioHandler: publico, inline, cache de 1h.
 # Linkados na tela de cadastro (/login pagina, formulario de registro).
@@ -7708,6 +7729,8 @@ def make_app():
         (r'/sw\.js', ServiceWorkerHandler),
         # SEO — sitemap.xml do site institucional (task #165)
         (r'/sitemap\.xml', SitemapHandler),
+        # Push 81: robots.txt servido pelo Tornado (substitui o do Cloudflare AI Audit)
+        (r'/robots\.txt', RobotsTxtHandler),
         # Push 75: Blog (Fase 1) - posts em markdown em static/site/blog/posts/
         (r'/blog', BlogIndexHandler),
         (r'/blog/rss\.xml', BlogRSSHandler),
