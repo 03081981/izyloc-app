@@ -31,6 +31,7 @@ import urllib.parse
 from dotenv import load_dotenv
 
 from database import get_conn, init_db
+from blog_handlers import BlogIndexHandler, BlogPostHandler, BlogRSSHandler
 from ai_service import analyze_image, consolidate_environment, analyze_batch
 import threading
 
@@ -7707,6 +7708,10 @@ def make_app():
         (r'/sw\.js', ServiceWorkerHandler),
         # SEO — sitemap.xml do site institucional (task #165)
         (r'/sitemap\.xml', SitemapHandler),
+        # Push 75: Blog (Fase 1) - posts em markdown em static/site/blog/posts/
+        (r'/blog', BlogIndexHandler),
+        (r'/blog/rss\.xml', BlogRSSHandler),
+        (r'/blog/([\w\-]+)', BlogPostHandler),
         # Google OAuth (task #172)
         (r'/auth/google', GoogleAuthStartHandler),
         (r'/auth/google/callback', GoogleAuthCallbackHandler),
