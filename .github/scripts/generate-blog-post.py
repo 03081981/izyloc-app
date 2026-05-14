@@ -206,12 +206,61 @@ def pick_theme(writer_name: str, themes: list[dict], used: set) -> dict | None:
     return None
 
 
-def fetch_unsplash_image(query: str, access_key: str) -> dict | None:
-    """Busca foto na Unsplash com a query. Retorna {url, alt, credit}."""
+USED_IMAGES_FILE = Path(__file__).parent.parent / "blog-config" / "used_images.json"
+
+
+def load_used_images() -> set:
+    """Carrega IDs de fotos Unsplash ja usadas em posts anteriores (Push 102)."""
+    if USED_IMAGES_FILE.exists():
+        try:
+            return set(json.loads(USED_IMAGES_FILE.read_text()))
+        except (json.JSONDecodeError, OSError):
+            pass
+    return set()
+
+
+def save_used_image_id(photo_id: str) -> None:
+    """Adiciona ID na lista de imagens usadas (Push 102)."""
+    if not photo_id:
+        return
+    used = load_used_images()
+    used.add(photo_id)
+    USED_IMAGES_FILE.parent.mkdir(parents=True, exist_ok=True)
+    USED_IMAGES_FILE.write_text(json.dumps(sorted(used), indent=2))
+
+
+def extract_keywords_from_title(title: str) -> list:
+    """Extrai 2-3 palavras-chave do titulo pra busca Unsplash variada (Push 102).
+    Tira stopwords portuguesas e mantem substantivos relevantes."""
+    stopwords = {
+        'a','o','as','os','de','da','do','das','dos','em','no','na','nos','nas',
+        'para','por','com','sem','sob','sobre','um','uma','uns','umas','que',
+        'como','se','e','ou','mas','ja','nao','sim','seu','sua','seus','suas',
+        'voce','quando','onde','porque','isso','isto','aquilo','la','aqui','x',
+    }
+    words = re.findall(r"[A-Za-zÀ-ÿ]+", title.lower())
+    keywords = [w for w in words if w not in stopwords and len(w) >= 4]
+    # prioriza palavras mais raras (provavelmente substantivos especificos)
+    seen = set()
+    result = []
+    for w in keywords:
+        if w not in seen:
+            result.append(w)
+            seen.add(w)
+        if len(result) >= 3:
+            break
+    return result
+
+
+def fetch_unsplash_image(query: str, access_key: str, used_ids: set = None) -> dict | None:
+    """Busca foto na Unsplash. Retorna {url, alt, credit, id}.
+    Push 102: pula imagens cujo ID ja esta em used_ids."""
+    if used_ids is None:
+        used_ids = set()
     try:
         r = requests.get(
             "https://api.unsplash.com/search/photos",
-            params={"query": query, "per_page": 10, "orientation": "landscape"},
+            params={"query": query, "per_page": 30, "orientation": "landscape"},
             headers={"Authorization": f"Client-ID {access_key}"},
             timeout=15,
         )
@@ -220,13 +269,15 @@ def fetch_unsplash_image(query: str, access_key: str) -> dict | None:
         results = data.get("results", [])
         if not results:
             return None
-        # Pega o primeiro com largura suficiente
+        # Push 102: pega a primeira foto NAO usada antes
         for ph in results:
+            photo_id = ph.get("id")
+            if photo_id and photo_id in used_ids:
+                continue
             urls = ph.get("urls", {})
             img_url = urls.get("regular") or urls.get("full")
             if not img_url:
                 continue
-            # Adiciona params pra optimizar (1200w + auto format)
             if "?" in img_url:
                 img_url += "&w=1200&q=80&auto=format"
             else:
@@ -236,8 +287,9 @@ def fetch_unsplash_image(query: str, access_key: str) -> dict | None:
                 "alt": (ph.get("alt_description") or query)[:200],
                 "credit_name": ph.get("user", {}).get("name", ""),
                 "credit_url": ph.get("user", {}).get("links", {}).get("html", ""),
-                "id": ph.get("id"),
+                "id": photo_id,
             }
+        # Se todas as 30 ja foram usadas, retorna None pra fallback no caller
         return None
     except Exception as e:
         print(f"[WARN] Unsplash fetch falhou: {e}", file=sys.stderr)
@@ -248,6 +300,12 @@ def fetch_unsplash_image(query: str, access_key: str) -> dict | None:
 # PROMPT
 # -------------------------------------------------------------------
 SYSTEM_PROMPT_TEMPLATE = """Voce e um escritor especialista que escreve para o blog do izyLAUDO.
+
+# DATA ATUAL: {today_iso} (ano: {current_year})
+
+IMPORTANTE: SEMPRE que mencionar ano no texto, use {current_year}. NUNCA escreva "em 2025"
+ou anos passados como se fossem o presente. Tendencias, leis, dados de mercado devem
+referenciar {current_year} salvo se voce estiver falando especificamente de um historico.
 
 # CONTEXTO DO ECOSSISTEMA
 
@@ -268,6 +326,7 @@ SYSTEM_PROMPT_TEMPLATE = """Voce e um escritor especialista que escreve para o b
 7. Tom da marca: direto, pratico, sem encheracao
 8. Paragrafos curtos (max 4 linhas)
 9. Tamanho ideal: 800-1400 palavras
+10. Quando mencionar ano, use {current_year}
 
 # FORMATO DA RESPOSTA
 
@@ -372,9 +431,12 @@ def main():
 
     # 5) Chama Claude
     client = Anthropic(api_key=anthropic_key)
+    today_for_prompt = br_today()
     system = SYSTEM_PROMPT_TEMPLATE.format(
         ecosystem=ecosystem,
         writer_persona=writer_persona,
+        today_iso=today_for_prompt.isoformat(),
+        current_year=today_for_prompt.year,
     )
     user_msg = build_user_message(theme["theme"], cat_label)
     print("[INFO] Chamando Claude...")
@@ -404,18 +466,48 @@ def main():
     reading_time = int(article.get("reading_time_min", 6))
     tags = article.get("tags", [])[:5]
 
-    # 6) Imagem Unsplash
-    print("[INFO] Buscando imagem Unsplash...")
-    img_query = UNSPLASH_QUERY_BY_CATEGORY.get(theme["category"], "real estate")
-    img = fetch_unsplash_image(img_query, unsplash_key)
+    # 6) Imagem Unsplash — Push 102: usa palavras-chave do titulo + anti-duplicacao
+    print("[INFO] Buscando imagem Unsplash unica baseada no titulo...")
+    used_image_ids = load_used_images()
+    print(f"[INFO] {len(used_image_ids)} imagens ja usadas anteriormente, evitando repeticao.")
+
+    # Tenta primeiro com keywords do titulo (mais especifica), depois fallback categoria
+    title_keywords = extract_keywords_from_title(title)
+    queries_to_try = []
+    if title_keywords:
+        # combina top-2 keywords pra busca mais especifica
+        queries_to_try.append(" ".join(title_keywords[:2]))
+        if len(title_keywords) >= 3:
+            queries_to_try.append(" ".join(title_keywords[1:3]))
+        queries_to_try.append(title_keywords[0])
+    # fallback final: categoria generica
+    queries_to_try.append(UNSPLASH_QUERY_BY_CATEGORY.get(theme["category"], "real estate"))
+    # ultimo recurso: real estate generico
+    queries_to_try.append("real estate brazil")
+
+    img = None
+    used_query = None
+    for q in queries_to_try:
+        print(f"[INFO] Tentando query: '{q}'")
+        img = fetch_unsplash_image(q, unsplash_key, used_image_ids)
+        if img:
+            used_query = q
+            break
+
     if not img:
-        # Fallback: usa OG default do site
+        # Fallback final: usa OG default do site
+        print("[WARN] Nenhuma imagem unica encontrada, usando fallback OG default.")
         img = {
             "url": "https://www.izylaudo.com.br/static/site/og-image.jpg",
             "alt": title,
             "credit_name": "",
             "credit_url": "",
+            "id": None,
         }
+    else:
+        print(f"[OK] Imagem encontrada via '{used_query}' (id={img.get('id')})")
+        # Push 102: registra ID pra nao repetir em proximos posts
+        save_used_image_id(img.get("id"))
 
     # 7) Monta frontmatter + escreve arquivo
     slug = slugify(title)
