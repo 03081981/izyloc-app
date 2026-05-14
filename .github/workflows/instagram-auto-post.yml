@@ -22,7 +22,10 @@ jobs:
           python-version: '3.11'
 
       - name: Install deps
-        run: pip install requests
+        run: pip install requests pillow
+
+      - name: Install fonts (DejaVu)
+        run: sudo apt-get update && sudo apt-get install -y fonts-dejavu-core
 
       - name: Run Instagram auto-post
         env:
@@ -32,6 +35,7 @@ jobs:
           RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
           EMAIL_FROM: ${{ secrets.EMAIL_FROM }}
           EMAIL_RECIPIENT: ${{ secrets.EMAIL_RECIPIENT }}
+          GITHUB_REPO: ${{ github.repository }}
         run: python .github/scripts/instagram_auto_post.py
 
       - name: Commit state.json se mudou
