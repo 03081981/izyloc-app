@@ -21,9 +21,6 @@ import os
 import sys
 import json
 import requests
-import smtplib
-from email.mime.text import MIMEText
-from email.mime.multipart import MIMEMultipart
 from datetime import datetime, timedelta, timezone
 
 # ---------- CONFIG ----------
@@ -32,8 +29,9 @@ AD_ACCOUNT = os.environ.get('META_AD_ACCOUNT_ID', '293213758001508')
 API_VERSION = os.environ.get('META_API_VERSION', 'v21.0')
 BASE_URL = f'https://graph.facebook.com/{API_VERSION}'
 
-EMAIL_USER = os.environ.get('EMAIL_USER')
-EMAIL_PASS = os.environ.get('EMAIL_PASS')
+# Resend (Carlos ja tem RESEND_API_KEY configurada no Railway)
+RESEND_API_KEY = os.environ.get('RESEND_API_KEY')
+EMAIL_FROM = os.environ.get('EMAIL_FROM', 'izyLAUDO Automation <noreply@izylaudo.com.br>')
 EMAIL_RECIPIENT = os.environ.get('EMAIL_RECIPIENT', 'cansliban@gmail.com')
 
 # Regras de otimizacao — calibradas com base nas campanhas atuais do Carlos
@@ -87,48 +85,35 @@ def check_token_expiration():
 
 
 def send_token_warning(days_left):
-    """Envia alerta urgente se token esta proximo do vencimento."""
-    if not EMAIL_USER or not EMAIL_PASS:
+    """Envia alerta urgente se token esta proximo do vencimento (via Resend)."""
+    if not RESEND_API_KEY:
         return
-    subject = f'⚠️ TOKEN META ADS expira em {days_left} dias — RENOVAR'
     body_html = f'''<!DOCTYPE html><html><body style="font-family:sans-serif;padding:24px">
 <div style="max-width:600px;margin:0 auto;background:#fef2f2;border-left:4px solid #dc2626;padding:24px;border-radius:8px">
-<h1 style="color:#dc2626;margin:0 0 16px 0">⚠️ Atencao: Token Meta Ads expira em {days_left} dias</h1>
+<h1 style="color:#dc2626;margin:0 0 16px 0">⚠️ Token Meta Ads expira em {days_left} dias</h1>
 <p>O token <code>META_ADS_TOKEN</code> usado pela automacao Meta Ads do izyLAUDO
-esta proximo do vencimento. Se nao renovar antes, a automacao vai PARAR.</p>
+esta proximo do vencimento. Se nao renovar antes, a automacao PARA.</p>
 
 <h2 style="color:#1f2937">Como renovar (3 minutos):</h2>
 <ol style="line-height:1.8">
-<li>Acesse: <a href="https://developers.facebook.com/tools/explorer/999362752748273">Graph API Explorer com app izyLAUDO</a></li>
-<li>Loga com a conta <strong>cansliban@gmail.com</strong> se necessario</li>
-<li>Clica em <strong>"Generate Access Token"</strong></li>
-<li>Marca os scopes: <code>ads_management</code>, <code>ads_read</code>, <code>business_management</code>, <code>pages_read_engagement</code></li>
-<li>Confirma e copia o token gerado</li>
-<li>Clica no botao <strong>"i"</strong> (info) ao lado do token</li>
-<li>No popup, clica em <strong>"Extend Access Token"</strong> (estende para 60 dias)</li>
+<li>Acesse o <a href="https://developers.facebook.com/tools/explorer/999362752748273">Graph API Explorer com app izyLAUDO</a></li>
+<li>Loga (conta com acesso a Ad Account 293213758001508)</li>
+<li>Clica em <strong>"Gerar token de acesso"</strong> → marca os 7 scopes (ads_management, ads_read, business_management, pages_read_engagement, pages_show_list, whatsapp_business_management, whatsapp_business_messaging)</li>
+<li>Copia o token gerado</li>
+<li>Abre o <a href="https://developers.facebook.com/tools/debug/accesstoken/">Access Token Debugger</a>, cola e clica "Estender token de acesso" (vira 60 dias)</li>
 <li>Copia o novo token estendido</li>
-<li>Acessa o <a href="https://railway.app/project/">Railway</a> -> projeto izyLAUDO -> Variables</li>
-<li>Edita a variavel <code>META_ADS_TOKEN</code> e cola o novo valor</li>
-<li>Salva. Pronto, mais 60 dias garantidos.</li>
+<li>No <a href="https://railway.com/project/3589ba5e-42d0-40c4-af08-a15c366bb9c7/service/90773bbf-c4c7-4a33-ad7f-1caffddba463/variables">Railway → izyloc-app → Variables</a>, edita <code>META_ADS_TOKEN</code> e cola o novo valor</li>
+<li>Deploy. Pronto, +60 dias.</li>
 </ol>
 
 <p style="color:#6b7280;font-size:12px;margin-top:24px">
-🤖 Este alerta vai aparecer todo dia ate o token ser renovado.<br>
-Apos renovar, esse email para automaticamente.
+🤖 Este alerta vai aparecer todo dia ate o token ser renovado.
 </p>
 </div></body></html>'''
-    msg = MIMEMultipart('alternative')
-    msg['Subject'] = subject
-    msg['From'] = EMAIL_USER
-    msg['To'] = EMAIL_RECIPIENT
-    msg.attach(MIMEText(body_html, 'html', 'utf-8'))
-    try:
-        with smtplib.SMTP_SSL('smtp.gmail.com', 465, timeout=30) as s:
-            s.login(EMAIL_USER, EMAIL_PASS)
-            s.send_message(msg)
-        print(f'[token-warning] alerta enviado: {days_left} dias para expirar')
-    except Exception as e:
-        print(f'[token-warning] erro envio: {e}')
+    summary_stub = {'total_spend': 0, 'count_scale': 0, 'count_pause': 0}
+    subject = f'⚠️ TOKEN META ADS expira em {days_left} dias — RENOVAR'
+    send_email(body_html, summary_stub, subject_override=subject)
+    print(f'[token-warning] alerta enviado: {days_left} dias para expirar')
 
 
 def fetch_campaigns():
@@ -313,21 +298,32 @@ def render_html_report(campaigns_with_insights, summary):
 </html>'''
 
 
-def send_email(html_body, summary):
-    """Envia o relatorio por email via SMTP."""
-    if not EMAIL_USER or not EMAIL_PASS:
-        print('[email] EMAIL_USER/EMAIL_PASS nao configurados, pulando envio')
+def send_email(html_body, summary, subject_override=None):
+    """Envia o relatorio por email via Resend API."""
+    if not RESEND_API_KEY:
+        print('[email] RESEND_API_KEY nao configurado, pulando envio')
         return
-    msg = MIMEMultipart('alternative')
-    msg['Subject'] = f'📊 Meta Ads izyLAUDO — Gasto R${summary["total_spend"]:.2f}, {summary["count_scale"]} pra escalar, {summary["count_pause"]} pra pausar'
-    msg['From'] = EMAIL_USER
-    msg['To'] = EMAIL_RECIPIENT
-    msg.attach(MIMEText(html_body, 'html', 'utf-8'))
+    subject = subject_override or (
+        f'📊 Meta Ads izyLAUDO — Gasto R${summary["total_spend"]:.2f}, '
+        f'{summary["count_scale"]} pra escalar, {summary["count_pause"]} pra pausar'
+    )
+    payload = {
+        'from': EMAIL_FROM,
+        'to': [EMAIL_RECIPIENT],
+        'subject': subject,
+        'html': html_body,
+    }
     try:
-        with smtplib.SMTP_SSL('smtp.gmail.com', 465, timeout=30) as s:
-            s.login(EMAIL_USER, EMAIL_PASS)
-            s.send_message(msg)
-        print(f'[email] enviado para {EMAIL_RECIPIENT}')
+        r = requests.post(
+            'https://api.resend.com/emails',
+            headers={'Authorization': f'Bearer {RESEND_API_KEY}', 'Content-Type': 'application/json'},
+            json=payload,
+            timeout=30
+        )
+        if r.status_code in (200, 202):
+            print(f'[email] enviado via Resend para {EMAIL_RECIPIENT}')
+        else:
+            print(f'[email] erro Resend {r.status_code}: {r.text[:300]}')
     except Exception as e:
         print(f'[email] erro: {e}')
 
