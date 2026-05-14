@@ -1,0 +1,249 @@
+{
+  "name": "izyLAUDO — Auto-post Instagram a partir do Blog",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 12,21 * * *"
+            }
+          ]
+        }
+      },
+      "id": "schedule-trigger",
+      "name": "Schedule 9h e 18h BRT",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [240, 300]
+    },
+    {
+      "parameters": {
+        "url": "https://www.izylaudo.com.br/blog/rss.xml",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "text"
+            }
+          }
+        }
+      },
+      "id": "fetch-rss",
+      "name": "Buscar RSS do Blog",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [460, 300]
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "parse-xml",
+      "name": "Parse XML",
+      "type": "n8n-nodes-base.xml",
+      "typeVersion": 1,
+      "position": [680, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Extrai o post mais recente do feed RSS e verifica se ja foi postado\nconst items = $input.first().json.rss.channel.item;\nconst latest = Array.isArray(items) ? items[0] : items;\n\nconst slug = (latest.guid && typeof latest.guid === 'object' ? latest.guid['#'] : latest.guid || '')\n  .split('/').pop();\n\n// Static workflow data — guarda o ultimo slug postado\nconst staticData = $getWorkflowStaticData('global');\nconst lastPosted = staticData.lastInstagramPostSlug || '';\n\nconst isNew = slug && slug !== lastPosted;\n\nconst imageUrl = (latest['media:content'] && latest['media:content']['$']?.url) ||\n                 (latest['media:thumbnail'] && latest['media:thumbnail']['$']?.url) ||\n                 (latest.enclosure && latest.enclosure['$']?.url) ||\n                 'https://www.izylaudo.com.br/static/site/images/og-image.jpg';\n\nreturn [{\n  json: {\n    isNew,\n    slug,\n    lastPosted,\n    title: latest.title,\n    link: latest.link,\n    summary: latest.description,\n    author: latest.author,\n    category: latest.category,\n    imageUrl,\n  }\n}];"
+      },
+      "id": "check-new-post",
+      "name": "Verificar Post Novo",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [900, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "is-new",
+              "leftValue": "={{ $json.isNew }}",
+              "rightValue": "true",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "if-new",
+      "name": "IF: é novo?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [1120, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.anthropic.com/v1/messages",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {"name": "x-api-key", "value": "={{ $env.ANTHROPIC_API_KEY }}"},
+            {"name": "anthropic-version", "value": "2023-06-01"},
+            {"name": "content-type", "value": "application/json"}
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"model\": \"claude-sonnet-4-5-20250929\",\n  \"max_tokens\": 1500,\n  \"system\": \"Voce e especialista em marketing imobiliario para Instagram. Cria posts envolventes para o @izylaudo (vistorias imobiliarias com IA). Regras: maximo 2200 caracteres incluindo emojis e hashtags; tom profissional mas acessivel; 3-5 emojis estrategicos; terminar com CTA 'Link na bio para ler o artigo completo'; incluir hashtags: #izylaudo #vistoriaimobiliaria #laudodigital #inteligenciaartificial #corretordeimoveis #imobiliaria #vistorialocacao #leidoinquilinato. NAO usar markdown, retorne apenas o texto puro do post. NAO mencione que e um post de blog, escreva como se fosse conteudo original do Instagram.\",\n  \"messages\": [\n    {\n      \"role\": \"user\",\n      \"content\": \"Crie um post Instagram baseado neste artigo do blog:\\n\\nTITULO: {{ $json.title }}\\n\\nRESUMO: {{ $json.summary }}\\n\\nCATEGORIA: {{ $json.category }}\\n\\nLINK: {{ $json.link }}\"\n    }\n  ]\n}"
+      },
+      "id": "claude-caption",
+      "name": "Claude: Gerar Caption",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1340, 240]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Extrai o texto gerado pelo Claude e prepara payload Instagram\nconst response = $input.first().json;\nconst caption = response.content?.[0]?.text || '';\nconst previousData = $('Verificar Post Novo').first().json;\n\nreturn [{\n  json: {\n    caption,\n    imageUrl: previousData.imageUrl,\n    slug: previousData.slug,\n    title: previousData.title,\n    link: previousData.link,\n  }\n}];"
+      },
+      "id": "build-payload",
+      "name": "Preparar Payload Instagram",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1560, 240]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://graph.facebook.com/v21.0/{{ $env.INSTAGRAM_USER_ID }}/media",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"image_url\": \"{{ $json.imageUrl }}\",\n  \"caption\": {{ JSON.stringify($json.caption) }},\n  \"access_token\": \"{{ $env.INSTAGRAM_ACCESS_TOKEN }}\"\n}"
+      },
+      "id": "ig-create-media",
+      "name": "Instagram: Upload Media Container",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1780, 240]
+    },
+    {
+      "parameters": {
+        "amount": 30,
+        "unit": "seconds"
+      },
+      "id": "wait-processing",
+      "name": "Aguardar processamento (30s)",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [2000, 240],
+      "webhookId": "ig-wait-30s"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://graph.facebook.com/v21.0/{{ $env.INSTAGRAM_USER_ID }}/media_publish",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"creation_id\": \"{{ $('Instagram: Upload Media Container').first().json.id }}\",\n  \"access_token\": \"{{ $env.INSTAGRAM_ACCESS_TOKEN }}\"\n}"
+      },
+      "id": "ig-publish",
+      "name": "Instagram: Publicar",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [2220, 240]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Salva slug postado pra nao postar de novo\nconst payload = $('Preparar Payload Instagram').first().json;\nconst publishResp = $input.first().json;\nconst staticData = $getWorkflowStaticData('global');\nstaticData.lastInstagramPostSlug = payload.slug;\nstaticData.lastInstagramPostId = publishResp.id;\nstaticData.lastInstagramPostAt = new Date().toISOString();\nreturn [{ json: { ok: true, slug: payload.slug, instagramMediaId: publishResp.id, postedAt: staticData.lastInstagramPostAt } }];"
+      },
+      "id": "save-state",
+      "name": "Salvar Estado",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [2440, 240]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.resend.com/emails",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {"name": "Authorization", "value": "=Bearer {{ $env.RESEND_API_KEY }}"},
+            {"name": "Content-Type", "value": "application/json"}
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"from\": \"izyLAUDO Automation <noreply@izylaudo.com.br>\",\n  \"to\": [\"cansliban@gmail.com\"],\n  \"subject\": \"📸 Novo post Instagram publicado — {{ $('Preparar Payload Instagram').first().json.title }}\",\n  \"html\": \"<h2>Post publicado no Instagram @izylaudo</h2><p><strong>Titulo:</strong> {{ $('Preparar Payload Instagram').first().json.title }}</p><p><strong>Slug:</strong> {{ $('Preparar Payload Instagram').first().json.slug }}</p><p><strong>Media ID:</strong> {{ $('Salvar Estado').first().json.instagramMediaId }}</p><p><strong>Link do blog:</strong> <a href=\\\"{{ $('Preparar Payload Instagram').first().json.link }}\\\">{{ $('Preparar Payload Instagram').first().json.link }}</a></p><hr><p><strong>Caption usada:</strong></p><pre style=\\\"white-space:pre-wrap;font-family:inherit;background:#f5f5f5;padding:12px;border-radius:8px\\\">{{ $('Preparar Payload Instagram').first().json.caption }}</pre>\"\n}"
+      },
+      "id": "notify-email",
+      "name": "Notificar por Email",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [2660, 240]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Path do IF=false: nao ha post novo, apenas loga\nreturn [{ json: { skipped: true, reason: 'Nenhum post novo desde o ultimo run', lastPosted: $('Verificar Post Novo').first().json.lastPosted } }];"
+      },
+      "id": "no-new-post",
+      "name": "Sem post novo",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1340, 400]
+    }
+  ],
+  "connections": {
+    "Schedule 9h e 18h BRT": {
+      "main": [[{"node": "Buscar RSS do Blog", "type": "main", "index": 0}]]
+    },
+    "Buscar RSS do Blog": {
+      "main": [[{"node": "Parse XML", "type": "main", "index": 0}]]
+    },
+    "Parse XML": {
+      "main": [[{"node": "Verificar Post Novo", "type": "main", "index": 0}]]
+    },
+    "Verificar Post Novo": {
+      "main": [[{"node": "IF: é novo?", "type": "main", "index": 0}]]
+    },
+    "IF: é novo?": {
+      "main": [
+        [{"node": "Claude: Gerar Caption", "type": "main", "index": 0}],
+        [{"node": "Sem post novo", "type": "main", "index": 0}]
+      ]
+    },
+    "Claude: Gerar Caption": {
+      "main": [[{"node": "Preparar Payload Instagram", "type": "main", "index": 0}]]
+    },
+    "Preparar Payload Instagram": {
+      "main": [[{"node": "Instagram: Upload Media Container", "type": "main", "index": 0}]]
+    },
+    "Instagram: Upload Media Container": {
+      "main": [[{"node": "Aguardar processamento (30s)", "type": "main", "index": 0}]]
+    },
+    "Aguardar processamento (30s)": {
+      "main": [[{"node": "Instagram: Publicar", "type": "main", "index": 0}]]
+    },
+    "Instagram: Publicar": {
+      "main": [[{"node": "Salvar Estado", "type": "main", "index": 0}]]
+    },
+    "Salvar Estado": {
+      "main": [[{"node": "Notificar por Email", "type": "main", "index": 0}]]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "timezone": "America/Sao_Paulo"
+  },
+  "staticData": null,
+  "tags": [],
+  "triggerCount": 1,
+  "updatedAt": "2026-05-13T23:30:00.000Z",
+  "versionId": "1"
+}

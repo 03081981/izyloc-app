@@ -411,7 +411,9 @@ class BlogPostHandler(tornado.web.RequestHandler):
 
 
 class BlogRSSHandler(tornado.web.RequestHandler):
-    """GET /blog/rss.xml - feed RSS dos ultimos 20 posts."""
+    """GET /blog/rss.xml - feed RSS dos ultimos 20 posts.
+    Push 95: inclui imagem do post via <enclosure> + <media:content>
+    para facilitar consumo pelo n8n no fluxo de auto-post Instagram."""
     def get(self):
         posts = list_all_posts(limit=20)
         site_url = 'https://www.izylaudo.com.br'
@@ -423,6 +425,17 @@ class BlogRSSHandler(tornado.web.RequestHandler):
                 pub_date = d.strftime('%a, %d %b %Y 09:00:00 -0300')
             except (ValueError, TypeError):
                 pass
+            img_url = p.get('image_url') or ''
+            # garantir URL absoluta pro n8n e Instagram Graph API
+            if img_url and img_url.startswith('/'):
+                img_url = f'{site_url}{img_url}'
+            img_xml = ''
+            if img_url:
+                img_xml = (
+                    f'<enclosure url="{html_escape(img_url)}" type="image/jpeg" length="0" />\n'
+                    f'<media:content url="{html_escape(img_url)}" type="image/jpeg" medium="image" />\n'
+                    f'<media:thumbnail url="{html_escape(img_url)}" />\n'
+                )
             items_xml += f"""<item>
 <title>{html_escape(p.get('title', ''))}</title>
 <link>{site_url}/blog/{p.get('slug', '')}</link>
@@ -431,10 +444,10 @@ class BlogRSSHandler(tornado.web.RequestHandler):
 <category>{html_escape(p.get('category_label') or '')}</category>
 <pubDate>{pub_date}</pubDate>
 <guid isPermaLink="true">{site_url}/blog/{p.get('slug', '')}</guid>
-</item>
+{img_xml}</item>
 """
         rss = f"""<?xml version="1.0" encoding="UTF-8" ?>
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:media="http://search.yahoo.com/mrss/">
 <channel>
 <title>izyLAUDO Blog</title>
 <link>{site_url}/blog</link>
