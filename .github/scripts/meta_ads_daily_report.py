@@ -60,6 +60,77 @@ def graph_get(endpoint, params=None):
     return r.json()
 
 
+def check_token_expiration():
+    """Verifica quantos dias o token ainda tem de validade.
+    Retorna numero de dias restantes (0 = expira hoje, -1 = nao expira).
+    Avisa por email se <= 7 dias para renovar (Plano C — User Access Token).
+    """
+    try:
+        url = f'{BASE_URL}/debug_token'
+        params = {'input_token': TOKEN, 'access_token': TOKEN}
+        r = requests.get(url, params=params, timeout=15)
+        if r.status_code != 200:
+            print(f'[token-check] falha: {r.status_code}')
+            return None
+        data = r.json().get('data', {})
+        expires_at = data.get('expires_at', 0)
+        if expires_at == 0:
+            print('[token-check] token nao expira (System User)')
+            return -1
+        now = int(datetime.now(timezone.utc).timestamp())
+        days_left = max(0, int((expires_at - now) / 86400))
+        print(f'[token-check] token expira em {days_left} dias')
+        return days_left
+    except Exception as e:
+        print(f'[token-check] erro: {e}')
+        return None
+
+
+def send_token_warning(days_left):
+    """Envia alerta urgente se token esta proximo do vencimento."""
+    if not EMAIL_USER or not EMAIL_PASS:
+        return
+    subject = f'⚠️ TOKEN META ADS expira em {days_left} dias — RENOVAR'
+    body_html = f'''<!DOCTYPE html><html><body style="font-family:sans-serif;padding:24px">
+<div style="max-width:600px;margin:0 auto;background:#fef2f2;border-left:4px solid #dc2626;padding:24px;border-radius:8px">
+<h1 style="color:#dc2626;margin:0 0 16px 0">⚠️ Atencao: Token Meta Ads expira em {days_left} dias</h1>
+<p>O token <code>META_ADS_TOKEN</code> usado pela automacao Meta Ads do izyLAUDO
+esta proximo do vencimento. Se nao renovar antes, a automacao vai PARAR.</p>
+
+<h2 style="color:#1f2937">Como renovar (3 minutos):</h2>
+<ol style="line-height:1.8">
+<li>Acesse: <a href="https://developers.facebook.com/tools/explorer/999362752748273">Graph API Explorer com app izyLAUDO</a></li>
+<li>Loga com a conta <strong>cansliban@gmail.com</strong> se necessario</li>
+<li>Clica em <strong>"Generate Access Token"</strong></li>
+<li>Marca os scopes: <code>ads_management</code>, <code>ads_read</code>, <code>business_management</code>, <code>pages_read_engagement</code></li>
+<li>Confirma e copia o token gerado</li>
+<li>Clica no botao <strong>"i"</strong> (info) ao lado do token</li>
+<li>No popup, clica em <strong>"Extend Access Token"</strong> (estende para 60 dias)</li>
+<li>Copia o novo token estendido</li>
+<li>Acessa o <a href="https://railway.app/project/">Railway</a> -> projeto izyLAUDO -> Variables</li>
+<li>Edita a variavel <code>META_ADS_TOKEN</code> e cola o novo valor</li>
+<li>Salva. Pronto, mais 60 dias garantidos.</li>
+</ol>
+
+<p style="color:#6b7280;font-size:12px;margin-top:24px">
+🤖 Este alerta vai aparecer todo dia ate o token ser renovado.<br>
+Apos renovar, esse email para automaticamente.
+</p>
+</div></body></html>'''
+    msg = MIMEMultipart('alternative')
+    msg['Subject'] = subject
+    msg['From'] = EMAIL_USER
+    msg['To'] = EMAIL_RECIPIENT
+    msg.attach(MIMEText(body_html, 'html', 'utf-8'))
+    try:
+        with smtplib.SMTP_SSL('smtp.gmail.com', 465, timeout=30) as s:
+            s.login(EMAIL_USER, EMAIL_PASS)
+            s.send_message(msg)
+        print(f'[token-warning] alerta enviado: {days_left} dias para expirar')
+    except Exception as e:
+        print(f'[token-warning] erro envio: {e}')
+
+
 def fetch_campaigns():
     """Retorna lista de campanhas ativas + paused do ad account."""
     data = graph_get(f'act_{AD_ACCOUNT}/campaigns', {
@@ -266,6 +337,11 @@ def main():
     if not TOKEN:
         print('ERRO: META_ADS_TOKEN nao definido em env vars')
         sys.exit(1)
+
+    # Plano C: verifica expiracao do User Access Token (60 dias)
+    days_left = check_token_expiration()
+    if days_left is not None and 0 <= days_left <= 7:
+        send_token_warning(days_left)
 
     print(f'[meta-ads] Buscando campanhas do ad account {AD_ACCOUNT}...')
     campaigns = fetch_campaigns()
