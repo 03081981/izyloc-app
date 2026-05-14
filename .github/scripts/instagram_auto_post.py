@@ -27,12 +27,15 @@ Variaveis de ambiente requeridas:
 
 import os
 import sys
+import io
 import json
 import time
+import subprocess
 import requests
 from datetime import datetime, timezone, timedelta
 from pathlib import Path
 import xml.etree.ElementTree as ET
+from PIL import Image, ImageDraw, ImageFont
 
 # ---------- CONFIG ----------
 IG_USER_ID = os.environ.get('INSTAGRAM_USER_ID', '17841440015991642')
@@ -45,6 +48,13 @@ EMAIL_RECIPIENT = os.environ.get('EMAIL_RECIPIENT', 'cansliban@gmail.com')
 GRAPH_API = 'https://graph.facebook.com/v21.0'
 RSS_URL = 'https://www.izylaudo.com.br/blog/rss.xml'
 STATE_FILE = Path(os.environ.get('STATE_FILE', 'automation/instagram_state.json'))
+
+# Push 104 — sobreposicao discreta de titulo na imagem antes de publicar
+UPLOADS_DIR = Path('automation/instagram-uploads')
+GITHUB_REPO = os.environ.get('GITHUB_REPO', '03081981/izyloc-app')
+RAW_BASE = f'https://raw.githubusercontent.com/{GITHUB_REPO}/main'
+FONT_PATH = '/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf'
+FONT_PATH_BOLD = '/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf'
 
 CLAUDE_MODEL = 'claude-sonnet-4-5-20250929'
 CLAUDE_SYSTEM = (
@@ -154,6 +164,89 @@ def generate_caption(post):
         caption = caption[:2197] + '...'
     print(f'[ig] caption gerada ({len(caption)} chars)')
     return caption
+
+
+def prepare_image_with_title(image_url: str, titulo: str, slug: str) -> Path:
+    """Push 104: baixa imagem Unsplash, redimensiona 1080x1080 (cover-fit),
+    sobrepoe titulo discreto no topo com sombra suave, salva em
+    automation/instagram-uploads/{slug}.jpg. Retorna Path local."""
+    print(f'[img] baixando {image_url[:80]}')
+    r = requests.get(image_url, timeout=30)
+    r.raise_for_status()
+    src = Image.open(io.BytesIO(r.content)).convert('RGB')
+
+    # Cover-fit pra 1080x1080 (centraliza e corta o excesso, sem distorcer)
+    target = 1080
+    iw, ih = src.size
+    ratio = max(target / iw, target / ih)
+    new_size = (int(iw * ratio), int(ih * ratio))
+    resized = src.resize(new_size, Image.LANCZOS)
+    left = (resized.width - target) // 2
+    top = (resized.height - target) // 2
+    img = resized.crop((left, top, left + target, top + target))
+
+    draw = ImageDraw.Draw(img)
+    try:
+        font = ImageFont.truetype(FONT_PATH_BOLD, 38)
+    except OSError:
+        font = ImageFont.truetype(FONT_PATH, 38)
+
+    # Quebra texto em linhas que caibam no max_w
+    padding = 40
+    max_w = 1080 - (padding * 2)
+    words = titulo.split()
+    lines = []
+    current = ''
+    for word in words:
+        test = (current + ' ' + word).strip()
+        bbox = draw.textbbox((0, 0), test, font=font)
+        if bbox[2] - bbox[0] <= max_w:
+            current = test
+        else:
+            if current:
+                lines.append(current)
+            current = word
+    if current:
+        lines.append(current)
+
+    # Desenha cada linha com sombra suave
+    y = padding
+    for line in lines:
+        # sombra 1px deslocada
+        draw.text((padding + 1, y + 1), line, font=font, fill=(0, 0, 0))
+        # texto branco por cima
+        draw.text((padding, y), line, font=font, fill=(255, 255, 255))
+        y += 48
+
+    UPLOADS_DIR.mkdir(parents=True, exist_ok=True)
+    ts = datetime.now(timezone.utc).strftime('%Y%m%d-%H%M%S')
+    out_path = UPLOADS_DIR / f'{ts}-{slug[:60]}.jpg'
+    img.save(out_path, 'JPEG', quality=92, optimize=True)
+    print(f'[img] salvo em {out_path} ({out_path.stat().st_size // 1024} KB)')
+    return out_path
+
+
+def commit_and_push_image(path: Path) -> None:
+    """Commit + push da imagem gerada pra raw.githubusercontent.com servir como URL publica."""
+    print(f'[git] commitando {path.name}...')
+    try:
+        subprocess.run(['git', 'config', 'user.email', 'automation@izylaudo.com.br'], check=True)
+        subprocess.run(['git', 'config', 'user.name', 'izyLAUDO Automation Bot'], check=True)
+        subprocess.run(['git', 'add', str(path)], check=True)
+        subprocess.run(
+            ['git', 'commit', '-m', f'chore(automation): instagram image {path.name}'],
+            check=True,
+        )
+        subprocess.run(['git', 'push'], check=True)
+        print(f'[git] {path.name} pushed')
+    except subprocess.CalledProcessError as e:
+        print(f'[git] erro: {e}', file=sys.stderr)
+        raise
+
+
+def public_url_for(path: Path) -> str:
+    """Path local -> URL publica raw.githubusercontent."""
+    return f'{RAW_BASE}/{path.as_posix()}'
 
 
 def ig_create_media(image_url, caption):
@@ -268,7 +361,16 @@ def main():
     print(f'[ig] novo post detectado (ultimo: {last_slug or "(nenhum)"}). Publicando...')
 
     caption = generate_caption(post)
-    container = ig_create_media(post['imageUrl'], caption)
+
+    # Push 104 — gera imagem com titulo sobreposto, commita, usa raw URL
+    local_img = prepare_image_with_title(post['imageUrl'], post['title'], post['slug'])
+    commit_and_push_image(local_img)
+    print('[ig] aguardando 15s para raw.githubusercontent.com propagar...')
+    time.sleep(15)
+    public_img_url = public_url_for(local_img)
+    print(f'[ig] URL publica da imagem: {public_img_url}')
+
+    container = ig_create_media(public_img_url, caption)
     ig_wait_ready(container)
     media_id = ig_publish(container)
 
