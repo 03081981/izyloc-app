@@ -1,15 +1,15 @@
 ---
-title: "Como a Inteligência Artificial está transformando vistorias imobiliárias em 2025"
+title: "Como a Inteligência Artificial está transformando vistorias imobiliárias em 2026"
 slug: "como-a-inteligencia-artificial-esta-transformando-vistorias-imobiliarias-em-2025"
 author: "Rafael Torres"
 author_role: "Especialista em Tecnologia Imobiliária"
 category: "tecnologia-ia"
 category_label: "Tecnologia e IA"
 date: "2026-05-13"
-image_url: "https://images.unsplash.com/photo-1766066014773-0074bf4911de?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w5NTA0OTB8MHwxfHNlYXJjaHwxfHx0ZWNobm9sb2d5JTIwbGFwdG9wJTIwbW9kZXJuJTIwb2ZmaWNlfGVufDB8MHx8fDE3Nzg3MDk5MzF8MA&ixlib=rb-4.1.0&q=80&w=1080&w=1200&q=80&auto=format"
-image_alt: "Man holding a laptop in a modern office setting."
-image_credit_name: "BaljkanN 4"
-image_credit_url: "https://unsplash.com/@baljkann4"
+image_url: "https://images.unsplash.com/photo-1560520653-9e0e4c89eb11?w=1200&q=80&auto=format&fit=crop"
+image_alt: "Modelo de casa de madeira ao lado de uma lupa, simbolizando inspecao imobiliaria"
+image_credit_name: "Tierra Mallorca"
+image_credit_url: "https://unsplash.com/@tierramallorca"
 summary: "Descubra como a IA reduz vistorias de 3 horas para 20 minutos, elimina erros humanos e gera laudos profissionais automaticamente."
 reading_time: 8
 tags: ["inteligência artificial", "vistoria imobiliária", "tecnologia", "produtividade", "automação"]
