@@ -32,6 +32,7 @@ from dotenv import load_dotenv
 
 from database import get_conn, init_db
 from blog_handlers import BlogIndexHandler, BlogPostHandler, BlogRSSHandler
+from whatsapp_handlers import WhatsAppWebhookHandler
 from ai_service import analyze_image, consolidate_environment, analyze_batch
 import threading
 
@@ -7711,6 +7712,8 @@ def make_app():
         # Autentique - assinatura digital
         (r'/api/inspections/([^/]+)/send-to-autentique', SendToAutentiqueHandler),
         (r'/api/webhooks/autentique', AutentiqueWebhookHandler),
+        # WhatsApp Cloud API webhook (Push 106 — Grupo izy)
+        (r'/webhook/whatsapp', WhatsAppWebhookHandler),
         # Extrato financeiro
         (r'/api/billing/transactions', BillingTransactionsHandler),
         (r'/api/billing/transactions/pdf', BillingTransactionsPDFHandler),
