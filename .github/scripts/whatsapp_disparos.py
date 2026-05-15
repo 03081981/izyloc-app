@@ -128,11 +128,9 @@ GATILHOS = {
                   SELECT 1 FROM whatsapp_opt_out o WHERE o.phone = u.phone
               )
         """,
-        'components_fn': lambda row: [
-            {'type': 'body', 'parameters': [
-                {'type': 'text', 'text': LINK_VIDEO_TUTORIAL},
-            ]},
-        ],
+        # Push 109: template tem link fixo no body, sem variavel {{1}}.
+        # Nao passar components - Meta rejeita 'parameter mismatch' caso contrario.
+        'components_fn': lambda row: None,
     },
 
     # 3. Reengajamento — 2 dias sem gerar laudo nenhum
