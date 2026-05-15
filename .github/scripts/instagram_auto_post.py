@@ -50,11 +50,20 @@ RSS_URL = 'https://www.izylaudo.com.br/blog/rss.xml'
 STATE_FILE = Path(os.environ.get('STATE_FILE', 'automation/instagram_state.json'))
 
 # Push 104 — sobreposicao discreta de titulo na imagem antes de publicar
+# Push 111 — Poppins Bold (mais cheia/arredondada) + sombra dupla
 UPLOADS_DIR = Path('automation/instagram-uploads')
 GITHUB_REPO = os.environ.get('GITHUB_REPO', '03081981/izyloc-app')
 RAW_BASE = f'https://raw.githubusercontent.com/{GITHUB_REPO}/main'
 FONT_PATH = '/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf'
 FONT_PATH_BOLD = '/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf'
+
+# Push 111 — Poppins Bold (Google Fonts) baixado on-the-fly.
+# Visual mais arredondado e encorpado que DejaVu, padrao de social media.
+# Cacheia no runner. Fallback: DejaVu Bold se download falhar.
+POPPINS_BOLD_URL = (
+    'https://raw.githubusercontent.com/google/fonts/main/ofl/poppins/Poppins-Bold.ttf'
+)
+POPPINS_CACHE = Path('/tmp/Poppins-Bold.ttf')
 
 CLAUDE_MODEL = 'claude-sonnet-4-5-20250929'
 CLAUDE_SYSTEM = (
@@ -166,10 +175,34 @@ def generate_caption(post):
     return caption
 
 
+def _load_title_font(size: int) -> ImageFont.FreeTypeFont:
+    """Push 111: Tenta carregar Poppins Bold (cheia, arredondada, padrao social media).
+    Baixa do repo oficial do Google Fonts se nao tiver cache. Fallback: DejaVu Sans Bold."""
+    if not POPPINS_CACHE.exists():
+        try:
+            print(f'[font] baixando Poppins Bold de {POPPINS_BOLD_URL[:60]}...')
+            r = requests.get(POPPINS_BOLD_URL, timeout=20, allow_redirects=True)
+            r.raise_for_status()
+            POPPINS_CACHE.write_bytes(r.content)
+            print(f'[font] Poppins Bold salvo em {POPPINS_CACHE} ({len(r.content) // 1024} KB)')
+        except Exception as e:
+            print(f'[font] WARN: download Poppins falhou ({e}), usando DejaVu como fallback')
+    if POPPINS_CACHE.exists():
+        try:
+            return ImageFont.truetype(str(POPPINS_CACHE), size)
+        except OSError as e:
+            print(f'[font] WARN: Poppins corrompida ({e}), usando DejaVu')
+    try:
+        return ImageFont.truetype(FONT_PATH_BOLD, size)
+    except OSError:
+        return ImageFont.truetype(FONT_PATH, size)
+
+
 def prepare_image_with_title(image_url: str, titulo: str, slug: str) -> Path:
     """Push 104: baixa imagem Unsplash, redimensiona 1080x1080 (cover-fit),
     sobrepoe titulo discreto no topo com sombra suave, salva em
-    automation/instagram-uploads/{slug}.jpg. Retorna Path local."""
+    automation/instagram-uploads/{slug}.jpg. Retorna Path local.
+    Push 111: Poppins Bold 44px + sombra dupla (mais cheia, mais legivel no mobile)."""
     print(f'[img] baixando {image_url[:80]}')
     r = requests.get(image_url, timeout=30)
     r.raise_for_status()
@@ -186,13 +219,12 @@ def prepare_image_with_title(image_url: str, titulo: str, slug: str) -> Path:
     img = resized.crop((left, top, left + target, top + target))
 
     draw = ImageDraw.Draw(img)
-    try:
-        font = ImageFont.truetype(FONT_PATH_BOLD, 38)
-    except OSError:
-        font = ImageFont.truetype(FONT_PATH, 38)
+    font_size = 44  # Push 111: 38 -> 44 (Poppins Bold e mais arredondada)
+    font = _load_title_font(font_size)
+    line_height = int(font_size * 1.25)  # ~55px
 
     # Quebra texto em linhas que caibam no max_w
-    padding = 40
+    padding = 48
     max_w = 1080 - (padding * 2)
     words = titulo.split()
     lines = []
@@ -209,14 +241,19 @@ def prepare_image_with_title(image_url: str, titulo: str, slug: str) -> Path:
     if current:
         lines.append(current)
 
-    # Desenha cada linha com sombra suave
+    # Push 111: sombra dupla pra dar mais contraste no mobile
+    # camada 1: sombra escura deslocada 3px (preto puro, alpha total)
+    # camada 2: sombra intermediaria 1px (preto)
+    # camada 3: texto branco
     y = padding
     for line in lines:
-        # sombra 1px deslocada
+        # Sombra grande (offset 3px) — da profundidade
+        draw.text((padding + 3, y + 3), line, font=font, fill=(0, 0, 0))
+        # Sombra media (offset 1px) — melhora bordas
         draw.text((padding + 1, y + 1), line, font=font, fill=(0, 0, 0))
-        # texto branco por cima
+        # Texto branco em cima
         draw.text((padding, y), line, font=font, fill=(255, 255, 255))
-        y += 48
+        y += line_height
 
     UPLOADS_DIR.mkdir(parents=True, exist_ok=True)
     ts = datetime.now(timezone.utc).strftime('%Y%m%d-%H%M%S')
