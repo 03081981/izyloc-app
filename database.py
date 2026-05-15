@@ -493,5 +493,39 @@ def init_db():
     c.execute("CREATE INDEX IF NOT EXISTS idx_bonus_concedido_email ON bonus_concedido(email)")
     raw.commit()
 
+    # Push 107: tabela de controle de disparos WhatsApp automatizados.
+    # Garante que cada gatilho ('boas_vindas', 'video_tutorial', etc) seja
+    # enviado no maximo 1x por usuario. user_id + gatilho UNIQUE.
+    c.execute("""
+        CREATE TABLE IF NOT EXISTS whatsapp_mensagens_enviadas (
+            id SERIAL PRIMARY KEY,
+            user_id TEXT,
+            phone TEXT NOT NULL,
+            gatilho TEXT NOT NULL,
+            template_name TEXT,
+            sent_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+            status TEXT NOT NULL DEFAULT 'sent',
+            meta_message_id TEXT,
+            error TEXT,
+            UNIQUE (phone, gatilho)
+        )
+    """)
+    raw.commit()
+    c.execute("CREATE INDEX IF NOT EXISTS idx_wamsg_user ON whatsapp_mensagens_enviadas(user_id)")
+    c.execute("CREATE INDEX IF NOT EXISTS idx_wamsg_phone ON whatsapp_mensagens_enviadas(phone)")
+    c.execute("CREATE INDEX IF NOT EXISTS idx_wamsg_sent_at ON whatsapp_mensagens_enviadas(sent_at DESC)")
+    raw.commit()
+
+    # Push 107: tabela de opt-out (clientes que pediram pra parar de receber disparos).
+    c.execute("""
+        CREATE TABLE IF NOT EXISTS whatsapp_opt_out (
+            phone TEXT PRIMARY KEY,
+            user_id TEXT,
+            reason TEXT,
+            opted_out_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+        )
+    """)
+    raw.commit()
+
     raw.close()
     print("✅ Banco de dados PostgreSQL inicializado com sucesso")
