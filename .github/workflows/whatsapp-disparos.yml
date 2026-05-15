@@ -1,0 +1,41 @@
+name: WhatsApp Disparos Automaticos
+
+on:
+  schedule:
+    # A cada 15 minutos entre 11:00 e 21:00 UTC (= 8h-18h BRT, GMT-03:00)
+    # Em horario de verao do hemisferio norte, BRT continua GMT-03 (Brasil nao adota DST).
+    - cron: '*/15 11-21 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: whatsapp-disparos
+  cancel-in-progress: false
+
+jobs:
+  disparos:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install deps
+        run: pip install requests psycopg2-binary
+
+      - name: Run WhatsApp disparos
+        env:
+          WHATSAPP_ACCESS_TOKEN: ${{ secrets.WHATSAPP_ACCESS_TOKEN }}
+          WHATSAPP_PHONE_NUMBER_ID: ${{ secrets.WHATSAPP_PHONE_NUMBER_ID }}
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+          EMAIL_FROM: ${{ secrets.EMAIL_FROM }}
+          EMAIL_RECIPIENT: ${{ secrets.EMAIL_RECIPIENT }}
+          LINK_VIDEO_TUTORIAL: ${{ secrets.LINK_VIDEO_TUTORIAL }}
+        run: python .github/scripts/whatsapp_disparos.py
