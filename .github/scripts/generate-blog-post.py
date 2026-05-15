@@ -337,11 +337,31 @@ Voce DEVE responder APENAS com JSON valido, sem texto antes ou depois, no format
   "summary": "Resumo de 1-2 frases que vai no card do blog (max 220 chars)",
   "content_md": "Conteudo completo do artigo em markdown, sem frontmatter, sem o titulo H1 (o titulo ja vem do campo title acima)",
   "reading_time_min": 7,
-  "tags": ["tag1", "tag2", "tag3"]
+  "tags": ["tag1", "tag2", "tag3"],
+  "image_query": "Query EM INGLES de 3-5 palavras concretas pra buscar foto no Unsplash que represente o tema visualmente"
 }}
 
 NAO inclua o titulo H1 dentro do content_md - ele vai ser renderizado separadamente.
 Comece o content_md direto com o primeiro paragrafo de texto.
+
+# REGRA CRITICA — image_query
+
+O campo image_query DEVE ser em INGLES (Unsplash indexa em ingles). Use SUBSTANTIVOS
+CONCRETOS e VISUAIS — coisas que existem no mundo fisico e fotografos fotografam.
+
+EVITE palavras abstratas: "process", "checklist", "guide", "tips", "verification".
+PREFIRA objetos/cenas concretas: "apartment keys", "house move out", "rental contract",
+"property inspection clipboard", "real estate handover".
+
+Exemplos de boas image_query por tipo de post:
+- Post sobre vistoria de saida: "apartment keys handover landlord"
+- Post sobre contrato de locacao: "rental contract signing pen"
+- Post sobre tecnologia/IA: "modern apartment laptop tablet"
+- Post sobre lei do inquilinato: "lawyer office contract documents"
+- Post sobre mercado imobiliario: "modern apartment building facade"
+
+NUNCA use palavras que possam vir em outro idioma (ex: "entrada" pode confundir com italiano).
+Sempre 3-5 palavras em INGLES PURO.
 """
 
 
@@ -466,23 +486,31 @@ def main():
     reading_time = int(article.get("reading_time_min", 6))
     tags = article.get("tags", [])[:5]
 
-    # 6) Imagem Unsplash — Push 102: usa palavras-chave do titulo + anti-duplicacao
+    # 6) Imagem Unsplash — Push 102 + 111
+    # Push 111: Claude agora retorna image_query EM INGLES no JSON pra busca semantica.
+    # Fallbacks: keywords do titulo (PT) -> categoria -> generica.
     print("[INFO] Buscando imagem Unsplash unica baseada no titulo...")
     used_image_ids = load_used_images()
     print(f"[INFO] {len(used_image_ids)} imagens ja usadas anteriormente, evitando repeticao.")
 
-    # Tenta primeiro com keywords do titulo (mais especifica), depois fallback categoria
-    title_keywords = extract_keywords_from_title(title)
     queries_to_try = []
+    # Push 111: prioridade 1 — image_query em ingles que o Claude gerou
+    claude_image_query = (article.get("image_query") or "").strip()
+    if claude_image_query:
+        queries_to_try.append(claude_image_query)
+
+    # Fallback 1: keywords do titulo (em portugues — menos preciso, mas as vezes pega palavra
+    # como "apartamento" que existe em ingles via tradutor automatico do Unsplash)
+    title_keywords = extract_keywords_from_title(title)
     if title_keywords:
-        # combina top-2 keywords pra busca mais especifica
         queries_to_try.append(" ".join(title_keywords[:2]))
         if len(title_keywords) >= 3:
             queries_to_try.append(" ".join(title_keywords[1:3]))
         queries_to_try.append(title_keywords[0])
-    # fallback final: categoria generica
+
+    # Fallback 2: categoria generica (sempre em ingles, sempre relevante)
     queries_to_try.append(UNSPLASH_QUERY_BY_CATEGORY.get(theme["category"], "real estate"))
-    # ultimo recurso: real estate generico
+    # Ultimo recurso
     queries_to_try.append("real estate brazil")
 
     img = None
