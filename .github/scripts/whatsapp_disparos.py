@@ -91,8 +91,8 @@ GATILHOS = {
             SELECT u.id::TEXT AS user_id, u.phone, u.name
             FROM users u
             WHERE u.phone IS NOT NULL AND u.phone <> ''
-              AND u.created_at >= NOW() - INTERVAL '30 minutes'
-              AND u.created_at <= NOW() - INTERVAL '5 minutes'
+              AND u.created_at::timestamptz >= NOW() - INTERVAL '30 minutes'
+              AND u.created_at::timestamptz <= NOW() - INTERVAL '5 minutes'
               AND NOT EXISTS (
                   SELECT 1 FROM whatsapp_mensagens_enviadas w
                   WHERE w.phone = u.phone AND w.gatilho = 'boas_vindas'
@@ -143,8 +143,8 @@ GATILHOS = {
             SELECT u.id::TEXT AS user_id, u.phone, u.name
             FROM users u
             WHERE u.phone IS NOT NULL AND u.phone <> ''
-              AND u.created_at <= NOW() - INTERVAL '2 days'
-              AND u.created_at >= NOW() - INTERVAL '7 days'
+              AND u.created_at::timestamptz <= NOW() - INTERVAL '2 days'
+              AND u.created_at::timestamptz >= NOW() - INTERVAL '7 days'
               AND NOT EXISTS (
                   SELECT 1 FROM inspections i WHERE i.user_id = u.id
               )
@@ -172,9 +172,9 @@ GATILHOS = {
             FROM users u
             JOIN inspections i ON i.user_id = u.id
             WHERE u.phone IS NOT NULL AND u.phone <> ''
-              AND i.status IN ('draft', 'em_andamento', 'pending')
-              AND i.created_at <= NOW() - INTERVAL '24 hours'
-              AND i.created_at >= NOW() - INTERVAL '7 days'
+              AND i.status = 'rascunho'
+              AND i.created_at::timestamptz <= NOW() - INTERVAL '24 hours'
+              AND i.created_at::timestamptz >= NOW() - INTERVAL '7 days'
               AND NOT EXISTS (
                   SELECT 1 FROM whatsapp_mensagens_enviadas w
                   WHERE w.phone = u.phone AND w.gatilho = 'vistoria_parada'
@@ -199,11 +199,11 @@ GATILHOS = {
             FROM users u
             JOIN inspections i ON i.user_id = u.id
             WHERE u.phone IS NOT NULL AND u.phone <> ''
-              AND i.status = 'completed'
-              AND i.updated_at >= NOW() - INTERVAL '30 minutes'
+              AND i.status = 'concluido'
+              AND i.updated_at::timestamptz >= NOW() - INTERVAL '30 minutes'
               AND (
                   SELECT COUNT(*) FROM inspections ii
-                  WHERE ii.user_id = u.id AND ii.status = 'completed'
+                  WHERE ii.user_id = u.id AND ii.status = 'concluido'
               ) = 1
               AND NOT EXISTS (
                   SELECT 1 FROM whatsapp_mensagens_enviadas w
@@ -228,9 +228,9 @@ GATILHOS = {
             SELECT u.id::TEXT AS user_id, u.phone, u.name
             FROM users u
             WHERE u.phone IS NOT NULL AND u.phone <> ''
-              AND u.last_login IS NOT NULL
-              AND u.last_login <= NOW() - INTERVAL '7 days'
-              AND u.last_login >= NOW() - INTERVAL '30 days'
+              AND u.last_login_at IS NOT NULL
+              AND u.last_login_at <= NOW() - INTERVAL '7 days'
+              AND u.last_login_at >= NOW() - INTERVAL '30 days'
               AND NOT EXISTS (
                   SELECT 1 FROM whatsapp_mensagens_enviadas w
                   WHERE w.phone = u.phone AND w.gatilho = 'sumiu_7_dias'
