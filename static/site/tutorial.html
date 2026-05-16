@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tutorial · izyLAUDO — Como fazer vistoria imobiliária com IA em 9 passos</title>
+<meta name="description" content="Aprenda a usar o izyLAUDO em 9 passos simples. Do celular ao laudo profissional com IA, sem Word.">
+<link rel="canonical" href="https://www.izylaudo.com.br/tutorial">
+<meta property="og:title" content="Tutorial · izyLAUDO">
+<meta property="og:description" content="Aprenda a usar o izyLAUDO em 9 passos simples. Do celular ao laudo profissional com IA.">
+<meta property="og:image" content="https://www.izylaudo.com.br/static/site/og-image.jpg">
+<meta property="og:url" content="https://www.izylaudo.com.br/tutorial">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --azul: #1B4FBB; --azul-claro: #2979FF; --azul-escuro: #0D2360;
+    --branco: #ffffff; --cinza-claro: #F4F6FB; --cinza-texto: #6B7280;
+    --grafite: #111827; --borda: #E5E7EB;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Inter', sans-serif; background: var(--branco); color: var(--grafite); }
+
+  nav {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 16px 48px; border-bottom: 1px solid var(--borda);
+    background: white; position: sticky; top: 0; z-index: 100;
+  }
+  .logo-wrap { display: flex; flex-direction: column; }
+  .logo { font-size: 20px; font-weight: 800; line-height: 1; }
+  .logo .izy { color: var(--azul-claro); } .logo .laudo { color: var(--azul-escuro); }
+  .logo-tagline { font-size: 11px; color: #9CA3AF; margin-top: 2px; }
+  .nav-links { display: flex; gap: 28px; }
+  .nav-links a { text-decoration: none; font-size: 14px; color: #374151; transition: color 0.2s; }
+  .nav-links a:hover, .nav-links a.active { color: var(--azul); font-weight: 600; }
+  .nav-right { display: flex; gap: 16px; align-items: center; }
+  .btn-entrar { font-size: 14px; color: #374151; text-decoration: none; }
+  .btn-criar { background: var(--azul); color: white; padding: 10px 20px; border-radius: 8px; font-size: 14px; font-weight: 700; text-decoration: none; }
+
+  .page-header { text-align: center; padding: 60px 48px 44px; }
+  .page-header h1 { font-size: 38px; font-weight: 800; color: var(--grafite); margin-bottom: 12px; }
+  .page-header p { font-size: 16px; color: var(--cinza-texto); max-width: 500px; margin: 0 auto 24px; line-height: 1.65; }
+  .pills { display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; }
+  .pill { background: #EFF6FF; color: var(--azul); font-size: 12px; font-weight: 600; padding: 5px 13px; border-radius: 20px; border: 1px solid #BFDBFE; }
+  .divider { height: 1px; background: var(--borda); }
+
+  .steps-wrap { max-width: 1040px; margin: 0 auto; padding: 64px 48px; }
+  .step {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 64px; align-items: center;
+    padding-bottom: 64px; margin-bottom: 64px;
+    border-bottom: 1px solid var(--borda);
+  }
+  .step:last-child { border-bottom: none; padding-bottom: 0; margin-bottom: 0; }
+  .step.rev .step-img { order: 2; }
+  .step.rev .step-txt { order: 1; }
+
+  .step-img {
+    border-radius: 12px; overflow: hidden;
+    border: 1px solid var(--borda);
+    box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+    cursor: zoom-in; position: relative;
+    transition: box-shadow 0.2s, transform 0.2s;
+  }
+  .step-img:hover { box-shadow: 0 8px 36px rgba(27,79,187,0.18); transform: translateY(-2px); }
+  .step-img img { width: 100%; height: auto; display: block; }
+  .zoom-hint {
+    position: absolute; bottom: 10px; right: 10px;
+    background: rgba(0,0,0,0.55); color: white;
+    font-size: 12px; padding: 4px 10px; border-radius: 20px;
+    opacity: 0; transition: opacity 0.2s; pointer-events: none;
+  }
+  .step-img:hover .zoom-hint { opacity: 1; }
+
+  /* Destaque especial para o passo da IA */
+  .step.destaque-ia { background: #F0F7FF; border-radius: 16px; padding: 40px; margin: 0 -40px 64px; }
+  .step.destaque-ia .step-n { background: var(--azul-claro); width: 36px; height: 36px; font-size: 15px; }
+  .step.destaque-ia .step-tag { color: var(--azul-claro); }
+  .step.destaque-ia h2 { color: var(--azul-escuro); }
+
+  .step-badge { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+  .step-n {
+    width: 32px; height: 32px; background: var(--azul); color: white;
+    border-radius: 50%; font-size: 14px; font-weight: 700;
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  }
+  .step-tag { font-size: 11px; font-weight: 700; color: var(--azul); text-transform: uppercase; letter-spacing: 1.2px; }
+  .step-txt h2 { font-size: 22px; font-weight: 700; color: var(--grafite); margin-bottom: 12px; line-height: 1.35; }
+  .step-txt p { font-size: 15px; color: var(--cinza-texto); line-height: 1.75; margin-bottom: 14px; }
+  .tip {
+    display: flex; gap: 8px; background: #EFF6FF; border-left: 3px solid var(--azul-claro);
+    padding: 10px 14px; border-radius: 0 7px 7px 0; font-size: 13px; color: #1D4ED8; line-height: 1.5;
+  }
+
+  /* LIGHTBOX */
+  .lightbox {
+    display: none; position: fixed; inset: 0;
+    background: rgba(0,0,0,0.92); z-index: 9999;
+    align-items: center; justify-content: center; padding: 24px; cursor: zoom-out;
+  }
+  .lightbox.open { display: flex; }
+  .lightbox img {
+    max-width: 92vw; max-height: 92vh; border-radius: 10px;
+    box-shadow: 0 24px 80px rgba(0,0,0,0.6); object-fit: contain;
+  }
+  .lightbox-close {
+    position: fixed; top: 20px; right: 28px; color: white;
+    font-size: 40px; cursor: pointer; line-height: 1; opacity: 0.8;
+    transition: opacity 0.2s; z-index: 10000;
+  }
+  .lightbox-close:hover { opacity: 1; }
+
+  .cta-section {
+    background: var(--cinza-claro); border-top: 1px solid var(--borda);
+    padding: 56px 48px; text-align: center;
+  }
+  .cta-section h2 { font-size: 26px; font-weight: 800; color: var(--grafite); margin-bottom: 8px; }
+  .cta-section p { font-size: 15px; color: var(--cinza-texto); margin-bottom: 24px; }
+  .btn-cta { display: inline-block; background: var(--azul); color: white; padding: 13px 32px; border-radius: 8px; font-size: 14px; font-weight: 700; text-decoration: none; }
+  .cta-note { margin-top: 12px; color: #9CA3AF; font-size: 13px; }
+  .cta-note span { margin: 0 5px; }
+</style>
+</head>
+<body>
+
+<div class="lightbox" id="lightbox" onclick="closeLightbox()">
+  <span class="lightbox-close" onclick="closeLightbox()">×</span>
+  <img id="lightbox-img" src="" alt=""/>
+</div>
+
+<nav>
+  <a href="https://www.izylaudo.com.br/" class="logo-wrap" style="text-decoration:none;color:inherit">
+    <div class="logo"><span class="izy">izy</span><span class="laudo">LAUDO</span></div>
+    <span class="logo-tagline">Vistorias Imobiliárias com IA</span>
+  </a>
+  <div class="nav-links">
+    <a href="https://www.izylaudo.com.br/#como-funciona">Como funciona</a><a href="https://www.izylaudo.com.br/#beneficios">Benefícios</a><a href="https://www.izylaudo.com.br/#precos">Preços</a><a href="https://www.izylaudo.com.br/#depoimentos">Depoimentos</a><a href="https://www.izylaudo.com.br/#faq">Dúvidas</a><a href="/blog">Blog</a><a href="/tutorial" class="active">Tutorial</a>
+  </div>
+  <div class="nav-right">
+    <a href="https://app.izylaudo.com.br/login" class="btn-entrar">Entrar</a>
+    <a href="https://app.izylaudo.com.br/cadastro" class="btn-criar">CRIAR CONTA →</a>
+  </div>
+</nav>
+
+<div class="page-header">
+  <h1>Como usar o izyLAUDO</h1>
+  <p>Do celular ao laudo profissional em 9 passos simples. Sem Word, sem gravação de áudio.</p>
+  <div class="pills"><span class="pill">1 · Tipo de vistoria</span><span class="pill">2 · Quem realiza</span><span class="pill">3 · Dados do imóvel</span><span class="pill">4 · Partes envolvidas</span><span class="pill">5 · Ambientes</span><span class="pill">6 · Fotos + IA</span><span class="pill">7 · Descrição da IA</span><span class="pill">8 · Testes funcionais</span><span class="pill">9 · PDF pronto</span></div>
+</div>
+
+<div class="divider"></div>
+
+<div class="steps-wrap">
+<div class="step"><div class="step-img" onclick="openLightbox(this)" title="Clique para ampliar">
+      <img src="/static/site/tutorial/passo1-tipo.png" alt="Tela de selecao do tipo de vistoria (entrada, saida ou temporada)" loading="lazy"/>
+      <div class="zoom-hint">🔍 Clique para ampliar</div>
+    </div><div class="step-txt">
+      <div class="step-badge"><div class="step-n">1</div><span class="step-tag">Tipo de vistoria</span></div>
+      <h2>Escolha o tipo de vistoria</h2>
+      <p>Clique em <strong>+ Nova vistoria</strong> e selecione: <strong>Entrada</strong> (início da locação), <strong>Saída</strong> (fim da locação) ou <strong>Temporada</strong>. Isso define o modelo correto do laudo.</p>
+      <div class='tip'>💡 Entrada documenta o estado inicial. Saída compara com a entrada e aponta diferenças.</div>
+    </div></div><div class="step rev"><div class="step-txt">
+      <div class="step-badge"><div class="step-n">2</div><span class="step-tag">Quem realiza</span></div>
+      <h2>Informe quem realiza a vistoria</h2>
+      <p>Selecione <strong>Imobiliária/Corretor</strong> ou <strong>Proprietário direto</strong>. Isso define os campos de assinatura e o modelo do laudo gerado.</p>
+      
+    </div><div class="step-img" onclick="openLightbox(this)" title="Clique para ampliar">
+      <img src="/static/site/tutorial/passo2-quem-realiza.png" alt="Tela de selecao de quem realiza a vistoria" loading="lazy"/>
+      <div class="zoom-hint">🔍 Clique para ampliar</div>
+    </div></div><div class="step"><div class="step-img" onclick="openLightbox(this)" title="Clique para ampliar">
+      <img src="/static/site/tutorial/passo3-imovel.png" alt="Tela de cadastro dos dados do imovel" loading="lazy"/>
+      <div class="zoom-hint">🔍 Clique para ampliar</div>
+    </div><div class="step-txt">
+      <div class="step-badge"><div class="step-n">3</div><span class="step-tag">Dados do imóvel</span></div>
+      <h2>Preencha os dados do imóvel</h2>
+      <p>Informe o endereço e selecione o tipo: casa, apartamento, sala comercial e muito mais. Não tem o CEP agora? Sem problema — pode preencher depois na revisão.</p>
+      <div class='tip'>💡 Digite o CEP e o endereço é preenchido automaticamente!</div>
+    </div></div><div class="step rev"><div class="step-txt">
+      <div class="step-badge"><div class="step-n">4</div><span class="step-tag">Partes envolvidas</span></div>
+      <h2>Cadastre as partes envolvidas</h2>
+      <p>Informe os dados do locador (proprietário), locatário (inquilino) e corretor avaliador. Todos os campos são opcionais — pode preencher depois se preferir.</p>
+      
+    </div><div class="step-img" onclick="openLightbox(this)" title="Clique para ampliar">
+      <img src="/static/site/tutorial/passo4-partes.png" alt="Tela de cadastro das partes envolvidas" loading="lazy"/>
+      <div class="zoom-hint">🔍 Clique para ampliar</div>
+    </div></div><div class="step"><div class="step-img" onclick="openLightbox(this)" title="Clique para ampliar">
+      <img src="/static/site/tutorial/passo5-ambientes.png" alt="Tela de configuracao dos ambientes do imovel" loading="lazy"/>
+      <div class="zoom-hint">🔍 Clique para ampliar</div>
+    </div><div class="step-txt">
+      <div class="step-badge"><div class="step-n">5</div><span class="step-tag">Ambientes</span></div>
+      <h2>Configure os ambientes do imóvel</h2>
+      <p>Selecione todos os cômodos: dormitórios, banheiros, sala, cozinha, área externa, garagem e mais. Crie também ambientes personalizados como home office e edícula.</p>
+      <div class='tip'>💡 Adicione sub-ambientes como closet, varanda e despensa dentro de cada cômodo.</div>
+    </div></div><div class="step rev"><div class="step-txt">
+      <div class="step-badge"><div class="step-n">6</div><span class="step-tag">Fotos + IA</span></div>
+      <h2>Fotografe e acione a análise da IA</h2>
+      <p>Para cada ambiente, adicione de <strong>4 a 20 fotos</strong> pelo celular ou computador. Clique em <strong>Analisar com IA</strong> — o processo começa imediatamente.</p>
+      <div class='tip'>💡 Fotografe visão geral, piso, paredes, teto, janelas e detalhes de cada ambiente.</div>
+    </div><div class="step-img" onclick="openLightbox(this)" title="Clique para ampliar">
+      <img src="/static/site/tutorial/passo6-config-ambientes.png" alt="Tela de configuracao de fotos e analise por IA" loading="lazy"/>
+      <div class="zoom-hint">🔍 Clique para ampliar</div>
+    </div></div><div class="step"><div class="step-img" onclick="openLightbox(this)" title="Clique para ampliar">
+      <img src="/static/site/tutorial/passo7-ia-descricao.png" alt="Tela com descricao gerada pela IA" loading="lazy"/>
+      <div class="zoom-hint">🔍 Clique para ampliar</div>
+    </div><div class="step-txt">
+      <div class="step-badge"><div class="step-n">7</div><span class="step-tag">Descrição da IA</span></div>
+      <h2>A IA descreve tudo automaticamente</h2>
+      <p>Em segundos a IA gera uma <strong>descrição técnica completa</strong> do ambiente: itens e móveis presentes, estado de conservação, anomalias identificadas, piso, paredes, teto, instalações e observações. Tudo pronto para o laudo.</p>
+      <div class='tip'>💡 Você pode revisar e editar qualquer trecho gerado pela IA antes de finalizar.</div>
+    </div></div><div class="step rev"><div class="step-txt">
+      <div class="step-badge"><div class="step-n">8</div><span class="step-tag">Testes funcionais</span></div>
+      <h2>Realize os testes funcionais</h2>
+      <p>Marque o estado de cada item: torneira, chuveiro, descarga, iluminação e muito mais. Registre observações gerais sobre o ambiente. Tudo fica documentado no laudo.</p>
+      
+    </div><div class="step-img" onclick="openLightbox(this)" title="Clique para ampliar">
+      <img src="/static/site/tutorial/passo8-testes-preench.png" alt="Tela de testes funcionais do ambiente" loading="lazy"/>
+      <div class="zoom-hint">🔍 Clique para ampliar</div>
+    </div></div><div class="step"><div class="step-img" onclick="openLightbox(this)" title="Clique para ampliar">
+      <img src="/static/site/tutorial/passo9-pdf.png" alt="Tela final com PDF pronto para download" loading="lazy"/>
+      <div class="zoom-hint">🔍 Clique para ampliar</div>
+    </div><div class="step-txt">
+      <div class="step-badge"><div class="step-n">9</div><span class="step-tag">PDF pronto</span></div>
+      <h2>Baixe o PDF ou envie para assinatura</h2>
+      <p>Laudo pronto! Baixe o <strong>PDF profissional</strong> ou envie para assinatura digital via <strong>Autentique</strong>. Rápido, seguro e sem precisar do Word.</p>
+      <div class='tip'>💡 A assinatura digital tem validade jurídica igual ao documento físico.</div>
+    </div></div>
+</div>
+
+<div class="cta-section">
+  <h2>Pronto para fazer seu primeiro laudo?</h2>
+  <p>Crie sua conta gratuitamente e ganhe R$5,00 de créditos para começar.</p>
+  <a href="https://app.izylaudo.com.br/cadastro" class="btn-cta">CRIAR CONTA GRÁTIS →</a>
+  <p class="cta-note">Sem mensalidade <span>·</span> Sem cartão de crédito <span>·</span> Sem Word</p>
+</div>
+
+<script>
+  function openLightbox(el) {
+    const img = el.querySelector('img');
+    document.getElementById('lightbox-img').src = img.src;
+    document.getElementById('lightbox').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeLightbox() {
+    document.getElementById('lightbox').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLightbox(); });
+</script>
+</body>
+</html>
