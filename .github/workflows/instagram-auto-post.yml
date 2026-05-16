@@ -2,8 +2,10 @@ name: Instagram Auto-Post
 
 on:
   schedule:
-    # 9h BRT (12h UTC) e 18h BRT (21h UTC) todos os dias
-    - cron: '0 12,21 * * *'
+    # Push 115: 30min depois do blog (que roda 12h e 21h UTC) pra evitar race
+    # condition. O blog precisa terminar de gerar+commitar+propagar RSS antes
+    # do Instagram ler. 9h30 BRT (12h30 UTC) e 18h30 BRT (21h30 UTC).
+    - cron: '30 12,21 * * *'
   workflow_dispatch:
 
 permissions:
