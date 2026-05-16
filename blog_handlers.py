@@ -214,6 +214,7 @@ NAV_HTML = """
     <li><a href="https://www.izylaudo.com.br/#como-funciona">Como funciona</a></li>
     <li><a href="https://www.izylaudo.com.br/#beneficios">Benefícios</a></li>
     <li><a href="https://www.izylaudo.com.br/#precos">Preços</a></li>
+    <li><a href="/tutorial">Tutorial</a></li>
     <li><a href="/blog" class="active">Blog</a></li>
   </ul>
   <div style="display:flex;align-items:center">
@@ -228,6 +229,7 @@ FOOTER_HTML = """
   <p>© 2026 izyLAUDO · Vistorias Imobiliárias com Inteligência Artificial</p>
   <p style="margin-top:8px">
     <a href="https://www.izylaudo.com.br/">Home</a> ·
+    <a href="/tutorial">Tutorial</a> ·
     <a href="/blog">Blog</a> ·
     <a href="https://app.izylaudo.com.br/cadastro">Criar conta</a>
   </p>
