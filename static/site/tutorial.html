@@ -118,6 +118,58 @@
   .btn-cta { display: inline-block; background: var(--azul); color: white; padding: 13px 32px; border-radius: 8px; font-size: 14px; font-weight: 700; text-decoration: none; }
   .cta-note { margin-top: 12px; color: #9CA3AF; font-size: 13px; }
   .cta-note span { margin: 0 5px; }
+
+  /* Push 113: Responsivo mobile */
+  @media (max-width: 768px) {
+    /* Nav */
+    nav { padding: 14px 20px; }
+    .nav-links { display: none; }
+    .btn-entrar { display: none; }
+
+    /* Header */
+    .page-header { padding: 40px 20px 32px; }
+    .page-header h1 { font-size: 26px; }
+    .page-header p { font-size: 15px; }
+
+    /* Pills scroll horizontal */
+    .pills {
+      flex-wrap: nowrap;
+      overflow-x: auto;
+      justify-content: flex-start;
+      padding-bottom: 8px;
+      -webkit-overflow-scrolling: touch;
+    }
+    .pill { flex-shrink: 0; }
+
+    /* Steps — empilhar imagem em cima, texto embaixo */
+    .steps-wrap { padding: 40px 20px; }
+    .step {
+      grid-template-columns: 1fr !important;
+      gap: 24px;
+      padding-bottom: 40px;
+      margin-bottom: 40px;
+    }
+
+    /* Cancelar alternância — imagem sempre em cima */
+    .step .step-img,
+    .step.rev .step-img { order: 0 !important; }
+    .step .step-txt,
+    .step.rev .step-txt { order: 1 !important; }
+
+    /* Imagem largura total */
+    .step-img { width: 100%; }
+    .step-img img { width: 100%; height: auto; }
+
+    /* Texto */
+    .step-txt h2 { font-size: 20px; }
+    .step-txt p { font-size: 14px; }
+
+    /* CTA */
+    .cta-section { padding: 40px 20px; }
+    .cta-section h2 { font-size: 22px; }
+    .btn-cta { display: block; width: 100%; text-align: center; padding: 14px 20px; }
+    .cta-note { font-size: 12px; }
+  }
 </style>
 </head>
 <body>
@@ -151,7 +203,7 @@
 
 <div class="steps-wrap">
 <div class="step"><div class="step-img" onclick="openLightbox(this)" title="Clique para ampliar">
-      <img src="/static/site/tutorial/passo1-tipo.png" alt="Tela de selecao do tipo de vistoria (entrada, saida ou temporada)" loading="lazy"/>
+      <img src="/static/site/tutorial/passo1-tipo-vistoria.png" alt="Tela de selecao do tipo de vistoria (entrada, saida ou temporada)" loading="lazy"/>
       <div class="zoom-hint">🔍 Clique para ampliar</div>
     </div><div class="step-txt">
       <div class="step-badge"><div class="step-n">1</div><span class="step-tag">Tipo de vistoria</span></div>
@@ -167,7 +219,7 @@
       <img src="/static/site/tutorial/passo2-quem-realiza.png" alt="Tela de selecao de quem realiza a vistoria" loading="lazy"/>
       <div class="zoom-hint">🔍 Clique para ampliar</div>
     </div></div><div class="step"><div class="step-img" onclick="openLightbox(this)" title="Clique para ampliar">
-      <img src="/static/site/tutorial/passo3-imovel.png" alt="Tela de cadastro dos dados do imovel" loading="lazy"/>
+      <img src="/static/site/tutorial/passo3-dados-imovel.png" alt="Tela de cadastro dos dados do imovel" loading="lazy"/>
       <div class="zoom-hint">🔍 Clique para ampliar</div>
     </div><div class="step-txt">
       <div class="step-badge"><div class="step-n">3</div><span class="step-tag">Dados do imóvel</span></div>
@@ -180,7 +232,7 @@
       <p>Informe os dados do locador (proprietário), locatário (inquilino) e corretor avaliador. Todos os campos são opcionais — pode preencher depois se preferir.</p>
       
     </div><div class="step-img" onclick="openLightbox(this)" title="Clique para ampliar">
-      <img src="/static/site/tutorial/passo4-partes.png" alt="Tela de cadastro das partes envolvidas" loading="lazy"/>
+      <img src="/static/site/tutorial/passo4-partes-envolvidas.png" alt="Tela de cadastro das partes envolvidas" loading="lazy"/>
       <div class="zoom-hint">🔍 Clique para ampliar</div>
     </div></div><div class="step"><div class="step-img" onclick="openLightbox(this)" title="Clique para ampliar">
       <img src="/static/site/tutorial/passo5-ambientes.png" alt="Tela de configuracao dos ambientes do imovel" loading="lazy"/>
@@ -196,7 +248,7 @@
       <p>Para cada ambiente, adicione de <strong>4 a 20 fotos</strong> pelo celular ou computador. Clique em <strong>Analisar com IA</strong> — o processo começa imediatamente.</p>
       <div class='tip'>💡 Fotografe visão geral, piso, paredes, teto, janelas e detalhes de cada ambiente.</div>
     </div><div class="step-img" onclick="openLightbox(this)" title="Clique para ampliar">
-      <img src="/static/site/tutorial/passo6-config-ambientes.png" alt="Tela de configuracao de fotos e analise por IA" loading="lazy"/>
+      <img src="/static/site/tutorial/passo6-fotos-analisar.png" alt="Tela de configuracao de fotos e analise por IA" loading="lazy"/>
       <div class="zoom-hint">🔍 Clique para ampliar</div>
     </div></div><div class="step"><div class="step-img" onclick="openLightbox(this)" title="Clique para ampliar">
       <img src="/static/site/tutorial/passo7-ia-descricao.png" alt="Tela com descricao gerada pela IA" loading="lazy"/>
@@ -212,10 +264,10 @@
       <p>Marque o estado de cada item: torneira, chuveiro, descarga, iluminação e muito mais. Registre observações gerais sobre o ambiente. Tudo fica documentado no laudo.</p>
       
     </div><div class="step-img" onclick="openLightbox(this)" title="Clique para ampliar">
-      <img src="/static/site/tutorial/passo8-testes-preench.png" alt="Tela de testes funcionais do ambiente" loading="lazy"/>
+      <img src="/static/site/tutorial/passo8-testes-funcionais.png" alt="Tela de testes funcionais do ambiente" loading="lazy"/>
       <div class="zoom-hint">🔍 Clique para ampliar</div>
     </div></div><div class="step"><div class="step-img" onclick="openLightbox(this)" title="Clique para ampliar">
-      <img src="/static/site/tutorial/passo9-pdf.png" alt="Tela final com PDF pronto para download" loading="lazy"/>
+      <img src="/static/site/tutorial/passo9-pdf-pronto.png" alt="Tela final com PDF pronto para download" loading="lazy"/>
       <div class="zoom-hint">🔍 Clique para ampliar</div>
     </div><div class="step-txt">
       <div class="step-badge"><div class="step-n">9</div><span class="step-tag">PDF pronto</span></div>
