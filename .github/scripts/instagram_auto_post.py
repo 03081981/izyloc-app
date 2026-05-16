@@ -79,9 +79,17 @@ CLAUDE_SYSTEM = (
 
 # ---------- HELPERS ----------
 def fetch_latest_post():
-    """Le RSS e retorna dict com title, link, summary, imageUrl, slug."""
-    print(f'[ig] buscando {RSS_URL}')
-    r = requests.get(RSS_URL, timeout=30)
+    """Le RSS e retorna dict com title, link, summary, imageUrl, slug.
+    Push 115: bypass de cache via query string + header pra garantir que pega
+    o RSS atualizado (Cloudflare/Tornado cacheiam 10min)."""
+    bust = int(time.time())
+    url = f'{RSS_URL}?nocache={bust}'
+    print(f'[ig] buscando {url}')
+    r = requests.get(
+        url,
+        timeout=30,
+        headers={'Cache-Control': 'no-cache', 'Pragma': 'no-cache'},
+    )
     r.raise_for_status()
     root = ET.fromstring(r.text)
     ns = {'media': 'http://search.yahoo.com/mrss/', 'atom': 'http://www.w3.org/2005/Atom'}
